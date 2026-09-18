@@ -1,0 +1,2 @@
+import 'package:field_sales_mobile/core/api/api_client.dart'; import 'package:field_sales_mobile/core/storage/secret_store.dart'; import 'package:flutter_test/flutter_test.dart';
+void main(){test('slashless paths get exactly one separator',(){final c=ApiClient(SecretStore());expect(c.path('customers'),endsWith('/api/v1/customers'));expect(c.path('/customers'),endsWith('/api/v1/customers'));expect(c.path('customers'),isNot(contains('/api/v1customers')));});}
