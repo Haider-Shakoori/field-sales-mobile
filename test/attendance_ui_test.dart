@@ -126,6 +126,7 @@ void main() {
     // The completed card title and the End Day snackbar both say it.
     expect(find.text('Day completed'), findsWidgets);
     expect(find.text('Tracking Active'), findsNothing);
+    expect(find.byKey(const Key('startDayButton')), findsNothing);
     expect(await WorkSessionRepository.instance.activeSession(), isNull);
   });
 

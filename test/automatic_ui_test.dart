@@ -8,6 +8,7 @@ import 'package:field_sales_mobile/core/storage/attendance_tracking_settings_rep
 import 'package:field_sales_mobile/core/storage/gps_point_repository.dart';
 import 'package:field_sales_mobile/core/storage/privacy_ack_store.dart';
 import 'package:field_sales_mobile/core/storage/work_session_repository.dart';
+import 'package:field_sales_mobile/core/time/tenant_time.dart';
 import 'package:field_sales_mobile/features/attendance/attendance_card.dart';
 import 'package:field_sales_mobile/features/attendance/attendance_controller.dart';
 import 'package:field_sales_mobile/features/attendance/attendance_sync_service.dart';
@@ -34,13 +35,13 @@ void main() {
   }) async {
     final env = _UiEnv(
       settings: settings,
-      now: now ?? DateTime(2026, 9, 18, 10),
+      now: now ?? DateTime.utc(2026, 9, 18, 10),
       foreground: foreground,
       servicesEnabled: servicesEnabled,
     );
     final configured = env.settings;
     if (configured != null) {
-      await env.repo.saveTrusted(configured, tenantId: 3);
+      await env.repo.saveTrusted(configured, tenantId: '3');
     }
     await env.controller.restore();
     if (acknowledge) {
@@ -83,7 +84,7 @@ void main() {
     await pumpCard(
       tester,
       settings: _settings(),
-      now: DateTime(2026, 9, 18, 7, 30),
+      now: DateTime.utc(2026, 9, 18, 7, 30),
     );
 
     expect(find.text('Automatic Work Day'), findsOneWidget);
@@ -150,11 +151,27 @@ void main() {
     await pumpCard(
       tester,
       settings: _settings(),
-      now: DateTime(2026, 9, 18, 19),
+      now: DateTime.utc(2026, 9, 18, 19),
     );
 
     expect(find.text('Work day not active'), findsOneWidget);
     expect(find.byKey(const Key('startDayButton')), findsNothing);
+  });
+
+  testWidgets('automatic after completion shows day completed', (tester) async {
+    final env = await pumpCard(tester, settings: _settings());
+    expect(find.text('Tracking Active'), findsOneWidget);
+
+    await env.controller.endDay();
+    await env.controller.evaluateAutomaticPolicy();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(find.text('Day completed'), findsWidgets);
+    expect(find.byKey(const Key('startDayButton')), findsNothing);
+    expect(env.controller.activeSession, isNull);
+
+    await disposeEnv(tester, env);
   });
 
   testWidgets('gpsTrackingEnabled=false keeps Start Day available', (
@@ -196,6 +213,7 @@ AttendanceTrackingSettings _settings({bool gpsTrackingEnabled = true}) =>
       workdayStartTime: '08:00',
       workdayEndTime: '17:00',
       gpsTrackingEnabled: gpsTrackingEnabled,
+      timezone: 'UTC',
     );
 
 class _UiEnv {
@@ -274,6 +292,7 @@ class _UiEnv {
       notificationPermissions: FakeNotificationPermissionService(),
       settingsRepository: repo,
       clock: clock,
+      tenantTime: TenantTimeResolver(clock: clock),
       boundaryScheduler: scheduler,
     );
     return controller;

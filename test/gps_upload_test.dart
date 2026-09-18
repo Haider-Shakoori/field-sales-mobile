@@ -171,6 +171,13 @@ void main() {
               'accepted_uuids': ['point-1'],
               'duplicate_uuids': ['point-2'],
               'rejected_uuids': ['point-3'],
+              'rejected_details': [
+                {
+                  'client_uuid': 'point-3',
+                  'code': 'low_accuracy',
+                  'reason': 'low_accuracy',
+                },
+              ],
             },
           ),
         );
@@ -184,9 +191,76 @@ void main() {
           "SELECT * FROM local_gps_points WHERE sync_status = 'rejected'",
         )).single;
         expect(rejected['client_uuid'], 'point-3');
-        expect(rejected['last_error'], contains('per-point'));
+        expect(rejected['last_error'], 'rejected: low_accuracy');
       },
     );
+
+    test(
+      'mixed batch: accepted + duplicate uploaded, only rejected preserved',
+      () async {
+        await seed(4);
+        final client = RecordingApiClient(
+          handler: (request) async => ApiEnvelope(
+            data: {
+              'accepted': 2,
+              'duplicates': 1,
+              'rejected': 1,
+              'batch_id': 77,
+              'accepted_uuids': ['point-1', 'point-2'],
+              'duplicate_uuids': ['point-3'],
+              'rejected_uuids': ['point-4'],
+              'rejected_details': [
+                {
+                  'client_uuid': 'point-4',
+                  'code': 'invalid_latitude',
+                  'reason': 'invalid_latitude',
+                },
+              ],
+            },
+          ),
+        );
+        final uploader = buildUploader(client);
+
+        final outcome = await uploader.flush();
+
+        expect(outcome.uploaded, 2);
+        expect(outcome.duplicates, 1);
+        expect(outcome.rejected, 1);
+        expect(await gpsPoints.pendingCount(), 0);
+        expect(await gpsPoints.countByStatus(GpsPointSyncStatus.uploaded), 3);
+        expect(await gpsPoints.countByStatus(GpsPointSyncStatus.rejected), 1);
+        final rejected = (await DbAsserts.query(
+          "SELECT client_uuid, last_error FROM local_gps_points "
+          "WHERE sync_status = 'rejected'",
+        )).single;
+        expect(rejected['client_uuid'], 'point-4');
+        expect(rejected['last_error'], contains('invalid_latitude'));
+      },
+    );
+
+    test('all-accepted batch with empty duplicate/rejected arrays', () async {
+      await seed(2);
+      final client = RecordingApiClient(
+        handler: (request) async => ApiEnvelope(
+          data: {
+            'accepted': 2,
+            'duplicates': 0,
+            'rejected': 0,
+            'batch_id': 5,
+            'accepted_uuids': ['point-1', 'point-2'],
+            'duplicate_uuids': <String>[],
+            'rejected_uuids': <String>[],
+            'rejected_details': <Object>[],
+          },
+        ),
+      );
+      final uploader = buildUploader(client);
+
+      await uploader.flush();
+
+      expect(await gpsPoints.pendingCount(), 0);
+      expect(await gpsPoints.countByStatus(GpsPointSyncStatus.uploaded), 2);
+    });
 
     test('skips entirely while offline and keeps points pending', () async {
       await seed(2);

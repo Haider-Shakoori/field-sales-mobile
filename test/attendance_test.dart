@@ -202,8 +202,8 @@ void main() {
         await store.save(
           GpsPrivacyAcknowledgement(
             acknowledgedAt: DateTime.utc(2026, 1, 15, 8),
-            userId: 7,
-            tenantId: 3,
+            userId: '7',
+            tenantId: '3',
             deviceUuid: 'device-1',
             appVersion: '1.0.0',
           ),
@@ -211,8 +211,8 @@ void main() {
 
         final loaded = await store.load();
         expect(loaded!.policyVersion, kGpsTrackingPolicyVersion);
-        expect(loaded.userId, 7);
-        expect(loaded.tenantId, 3);
+        expect(loaded.userId, '7');
+        expect(loaded.tenantId, '3');
         expect(loaded.syncStatus, 'pending');
         expect(loaded.isSynced, isFalse);
       },

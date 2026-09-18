@@ -222,10 +222,14 @@ class AppL10n {
   String get locationPermissionRequired => _t('Location permission required');
   String get locationServicesDisabled => _t('Location services disabled');
   String get automaticWaitingForLocation => _t('Waiting for a GPS location');
+  String get timezoneUnavailable =>
+      _t('Company timezone unavailable. Contact your administrator.');
   String get gpsDisabledByPolicy =>
       _t('Continuous GPS is disabled by company policy.');
   String get workDayNotActive => _t('Work day not active');
   String get startedAutomatically => _t('Started automatically');
+  String get sessionAlreadyCompletedToday =>
+      _t('A work session already exists for today.');
 
   static const List<Locale> supported = supportedLocales;
 }

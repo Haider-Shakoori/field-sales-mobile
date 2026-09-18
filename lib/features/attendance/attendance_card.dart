@@ -98,16 +98,18 @@ class _ManualStartCard extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ],
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton.icon(
-                key: const Key('startDayButton'),
-                onPressed: () => _startDayFlow(context),
-                icon: const Icon(Icons.play_arrow),
-                label: Text(l10n.startDay),
+            if (completed == null) ...[
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  key: const Key('startDayButton'),
+                  onPressed: () => _startDayFlow(context),
+                  icon: const Icon(Icons.play_arrow),
+                  label: Text(l10n.startDay),
+                ),
               ),
-            ),
+            ],
           ],
         ),
       ),
@@ -136,7 +138,10 @@ class _AutomaticStartCard extends StatelessWidget {
     final l10n = AppL10n.of(context);
     final scheme = Theme.of(context).colorScheme;
     final state = controller.automaticState;
-    final outside = state == AutomaticPolicyState.outsideSchedule;
+    final completedState = state == AutomaticPolicyState.completedToday;
+    final outside =
+        state == AutomaticPolicyState.outsideSchedule ||
+        state == AutomaticPolicyState.completedToday;
 
     return Card(
       child: Padding(
@@ -147,12 +152,18 @@ class _AutomaticStartCard extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  outside ? Icons.event_busy : Icons.schedule,
+                  completedState
+                      ? Icons.check_circle_outline
+                      : (outside ? Icons.event_busy : Icons.schedule),
                   color: scheme.primary,
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  outside ? l10n.workDayNotActive : l10n.automaticWorkDay,
+                  completedState
+                      ? l10n.dayCompleted
+                      : (outside
+                            ? l10n.workDayNotActive
+                            : l10n.automaticWorkDay),
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const Spacer(),
@@ -181,7 +192,8 @@ class _AutomaticStartCard extends StatelessWidget {
           ),
         ];
       case AutomaticPolicyState.outsideSchedule:
-        final summary = completed;
+      case AutomaticPolicyState.completedToday:
+        final summary = completed ?? controller.completedToday;
         return [
           Text(
             summary == null
@@ -269,6 +281,18 @@ class _AutomaticStartCard extends StatelessWidget {
             icon: Icons.refresh,
             label: l10n.retry,
             onPressed: () => unawaited(controller.retryAutomaticStart()),
+          ),
+        ];
+      case AutomaticPolicyState.missingTimezone:
+        return [
+          Text(
+            l10n.automaticTrackingWaiting,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            l10n.timezoneUnavailable,
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
         ];
       case AutomaticPolicyState.gpsDisabled:
@@ -529,6 +553,10 @@ Future<void> _presentStartResult(
       );
     case StartDayOutcome.alreadyActive:
       await controller.refreshPendingGpsCount();
+    case StartDayOutcome.alreadyCompletedToday:
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.sessionAlreadyCompletedToday)),
+      );
     case StartDayOutcome.failed:
       messenger.showSnackBar(
         SnackBar(content: Text(result.message ?? l10n.error)),

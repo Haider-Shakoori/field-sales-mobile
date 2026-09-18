@@ -20,6 +20,7 @@ class SessionMetaStore {
         'key': _userKey,
         'value': jsonEncode({
           'id': session.user.id,
+          'public_id': session.user.publicId,
           'name': session.user.name,
           'email': session.user.email,
           'role': session.user.role,
@@ -30,6 +31,7 @@ class SessionMetaStore {
         'key': _tenantKey,
         'value': jsonEncode({
           'id': session.tenant.id,
+          'public_id': session.tenant.publicId,
           'name': session.tenant.name,
           'slug': session.tenant.slug,
         }),
@@ -59,14 +61,16 @@ class SessionMetaStore {
 
     return (
       user: UserInfo(
-        id: userMap?['id'] as int? ?? 0,
+        id: tolerantIntId(userMap?['id']),
+        publicId: userMap?['public_id']?.toString() ?? '',
         name: userMap?['name']?.toString() ?? '',
         email: userMap?['email']?.toString() ?? '',
         role: userMap?['role']?.toString(),
         branchId: (userMap?['branch_id'] as num?)?.toInt(),
       ),
       tenant: TenantInfo(
-        id: tenantMap?['id'] as int? ?? 0,
+        id: tolerantIntId(tenantMap?['id']),
+        publicId: tenantMap?['public_id']?.toString() ?? '',
         name: tenantMap?['name']?.toString() ?? '',
         slug: tenantMap?['slug']?.toString(),
       ),

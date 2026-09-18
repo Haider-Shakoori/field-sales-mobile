@@ -72,6 +72,11 @@ class GpsUploadService {
   /// controller stops tracking and preserves all local points.
   void Function(ApiException error)? onAuthorizationLost;
 
+  /// Optional pre-drain hook. The controller wires the attendance outbox here
+  /// so the server has the day's WorkSession before GPS points are ingested
+  /// (Laravel rejects points for days without a work session).
+  Future<void> Function()? beforeFlush;
+
   bool get flushing => _flushing;
 
   /// Starts the 5-minute GPS flush cadence used while a session is tracking.
@@ -102,6 +107,14 @@ class GpsUploadService {
     var duplicates = 0;
     var batches = 0;
     try {
+      // Ensure the attendance side is attempted first so a freshly started
+      // work session exists server-side before its GPS points arrive.
+      try {
+        await beforeFlush?.call();
+      } catch (error) {
+        _lastError = error.toString();
+      }
+
       while (!_disposed) {
         final points = await _gpsPoints.pending(limit: config.batchSize);
         if (points.isEmpty) {
@@ -168,17 +181,42 @@ class GpsUploadService {
     final batchUuids = points.map((p) => p.clientUuid).toSet();
 
     if (result.hasPerPointVerdicts) {
+      // Laravel Batch 7 returns precise per-point verdicts. accepted and
+      // duplicate both mean the server knows the point; rejected points are
+      // preserved individually with their diagnostic code/reason.
       final uploaded = <String>{
         ...result.acceptedUuids,
         ...result.duplicateUuids,
       }.where(batchUuids.contains).toList();
       final rejected = result.rejectedUuids.where(batchUuids.contains).toList();
+
+      // Map rejection diagnostics by client_uuid, falling back to the batch
+      // index for malformed entries that carried no UUID.
+      final diagnostics = <String, String>{};
+      for (final detail in result.rejectedDetails) {
+        final uuid = detail.clientUuid;
+        if (uuid != null && uuid.isNotEmpty) {
+          diagnostics[uuid] = detail.diagnostic;
+        }
+        final index = detail.index;
+        if (index != null && index >= 0 && index < points.length) {
+          diagnostics.putIfAbsent(
+            points[index].clientUuid,
+            () => detail.diagnostic,
+          );
+        }
+      }
+
       await _gpsPoints.markUploaded(uploaded, batchUuid: batchUuid);
-      await _gpsPoints.markRejected(
-        rejected,
-        batchUuid: batchUuid,
-        error: 'Rejected by server (per-point verdict).',
-      );
+      for (final uuid in rejected) {
+        await _gpsPoints.markRejected(
+          [uuid],
+          batchUuid: batchUuid,
+          error: diagnostics[uuid] ?? 'rejected by server',
+        );
+      }
+
+      // Points not mentioned by any verdict stay pending for a safe retry.
       return;
     }
 

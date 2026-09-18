@@ -167,8 +167,43 @@ class LocalGpsPoint {
 }
 
 /// Server verdict for one uploaded GPS batch (contract §8.6 / sync design §4.3).
+/// One per-point rejection from `POST /api/v1/gps/locations`.
+///
+/// Laravel returns `rejected_details: [{client_uuid, code, reason}]` (malformed
+/// points may only carry an index). The diagnostic is persisted in
+/// `last_error`; technical stack traces are never exposed.
+class GpsRejectionDetail {
+  const GpsRejectionDetail({
+    this.clientUuid,
+    this.index,
+    required this.code,
+    this.reason,
+  });
+
+  factory GpsRejectionDetail.fromJson(Map<String, dynamic> json) =>
+      GpsRejectionDetail(
+        clientUuid: json['client_uuid']?.toString(),
+        index: (json['index'] as num?)?.toInt(),
+        code: json['code']?.toString() ?? 'rejected',
+        reason: json['reason']?.toString(),
+      );
+
+  final String? clientUuid;
+  final int? index;
+  final String code;
+  final String? reason;
+
+  String get diagnostic {
+    final reasonText = reason;
+    if (reasonText == null || reasonText.isEmpty || reasonText == code) {
+      return 'rejected: $code';
+    }
+    return 'rejected: $code ($reasonText)';
+  }
+}
+
 class GpsUploadResult {
-  const GpsUploadResult({
+  GpsUploadResult({
     required this.accepted,
     required this.rejected,
     required this.duplicates,
@@ -176,7 +211,9 @@ class GpsUploadResult {
     this.acceptedUuids = const [],
     this.rejectedUuids = const [],
     this.duplicateUuids = const [],
-  });
+    this.rejectedDetails = const [],
+    bool? hasUuidArrays,
+  }) : hasPerPointVerdicts = hasUuidArrays ?? false;
 
   factory GpsUploadResult.fromJson(Map<String, dynamic> json) {
     List<String> uuidList(Object? value) {
@@ -186,6 +223,21 @@ class GpsUploadResult {
       return value.map((e) => e.toString()).toList();
     }
 
+    List<GpsRejectionDetail> detailList(Object? value) {
+      if (value is! List) {
+        return const [];
+      }
+      return value
+          .whereType<Map<String, dynamic>>()
+          .map(GpsRejectionDetail.fromJson)
+          .toList();
+    }
+
+    final hasArrays =
+        json.containsKey('accepted_uuids') ||
+        json.containsKey('duplicate_uuids') ||
+        json.containsKey('rejected_uuids');
+
     return GpsUploadResult(
       accepted: (json['accepted'] as num?)?.toInt() ?? 0,
       rejected: (json['rejected'] as num?)?.toInt() ?? 0,
@@ -194,6 +246,8 @@ class GpsUploadResult {
       acceptedUuids: uuidList(json['accepted_uuids']),
       rejectedUuids: uuidList(json['rejected_uuids']),
       duplicateUuids: uuidList(json['duplicate_uuids']),
+      rejectedDetails: detailList(json['rejected_details']),
+      hasUuidArrays: hasArrays,
     );
   }
 
@@ -202,19 +256,21 @@ class GpsUploadResult {
   final int duplicates;
   final int? batchId;
 
-  /// Optional per-point verdicts; the current contract returns aggregate
-  /// counts only, but the parser accepts precise lists if the server adds
-  /// them later.
+  /// Per-point verdicts returned by Laravel Batch 7. Empty lists are still a
+  /// valid verdict (that category simply has no points).
   final List<String> acceptedUuids;
   final List<String> rejectedUuids;
   final List<String> duplicateUuids;
+  final List<GpsRejectionDetail> rejectedDetails;
 
-  bool get hasPerPointVerdicts =>
-      acceptedUuids.isNotEmpty ||
-      rejectedUuids.isNotEmpty ||
-      duplicateUuids.isNotEmpty;
+  /// True when the response included UUID arrays (even empty ones).
+  final bool hasPerPointVerdicts;
 
+  /// Laravel semantics: accepted = newly inserted, duplicates = already known,
+  /// rejected = invalid/policy rejected. Duplicates are NOT part of accepted.
   int get uploadedCount => accepted + duplicates;
 
   bool get fullyUploaded => rejected == 0 && uploadedCount > 0;
+
+  int get submittedCount => accepted + duplicates + rejected;
 }

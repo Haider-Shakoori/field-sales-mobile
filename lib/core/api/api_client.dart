@@ -71,14 +71,32 @@ class ApiClient {
     }
   }
 
-  Future<void> _applyDeviceHeaders(RequestOptions options) async {
+  /// Returns the persisted installation UUID, generating and storing one on
+  /// first use. Shared by the device headers and the login body so a fresh
+  /// install never sends an empty `device_uuid` (which the API rejects).
+  Future<String> ensureInstallationUuid() async {
     var uuid = await _secretStore.readInstallationUuid();
     if (uuid.isEmpty) {
       uuid = const Uuid().v4();
       await _secretStore.writeInstallationUuid(uuid);
     }
+    return uuid;
+  }
+
+  Future<void> _applyDeviceHeaders(RequestOptions options) async {
+    final uuid = await ensureInstallationUuid();
     options.headers['X-Installation-UUID'] = uuid;
     options.headers['X-Device-UUID'] = uuid;
+  }
+
+  /// Ensures exactly one slash between the versioned base URL and the endpoint
+  /// path. Callers may pass `/customers` or `customers` — both resolve to
+  /// `<base>/customers`, never `.../api/v1customers`.
+  static String normalizePath(String path) {
+    if (path.isEmpty) {
+      return '/';
+    }
+    return path.startsWith('/') ? path : '/$path';
   }
 
   /// Performs a JSON request and returns the full envelope (data + meta).
@@ -97,7 +115,7 @@ class ApiClient {
             : {'X-Idempotency-Key': idempotencyKey},
       );
       final response = await _dio.request<Object?>(
-        path,
+        normalizePath(path),
         queryParameters: query,
         data: body,
         options: options,
@@ -151,7 +169,7 @@ class ApiClient {
           : error['message']?.toString() ?? 'Request failed';
 
       final fields = <String, List<String>>{};
-      dynamic errData = error['data'] ?? error['errors'];
+      dynamic errData = error['data'] ?? error['errors'] ?? error['details'];
       if (errData is Map<String, dynamic>) {
         errData.forEach((key, value) {
           if (value is List) {

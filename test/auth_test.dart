@@ -61,6 +61,78 @@ void main() {
       expect(await store.readCachedEmail(), 'sales@shop.test');
     });
 
+    test(
+      'parses real Laravel UUID public ids without losing identity',
+      () async {
+        api.onRequest = (method, path, body) async => {
+          'token': 'tok-uuid',
+          'user': {
+            'id': '01a0b06e-cb99-71e0-baf6-0d305b07693a',
+            'name': 'Salesman',
+            'email': 'salesman@demo.test',
+            'role': 'salesman',
+            'branch_id': null,
+          },
+          'tenant': {
+            'id': '01a0b06e-c5b0-73c0-a8b6-2f44977f916e',
+            'name': 'Demo Distributors',
+            'slug': 'demo-distributors',
+          },
+          'permissions': <String>[],
+          'device': {
+            'id': '01a0b06e-d0ea-7188-829a-c98934555250',
+            'uuid': 'dev-1',
+            'status': 'active',
+          },
+        };
+
+        final session = await auth.login(
+          email: 'salesman@demo.test',
+          password: 'secret',
+          pushToken: '',
+        );
+
+        expect(session.user.id, 0);
+        expect(session.user.key, '01a0b06e-cb99-71e0-baf6-0d305b07693a');
+        expect(session.tenant.key, '01a0b06e-c5b0-73c0-a8b6-2f44977f916e');
+        expect(session.device!.uuid, 'dev-1');
+      },
+    );
+
+    test(
+      'generates and persists an installation uuid for a fresh install',
+      () async {
+        final freshStore = FakeSecretStore(installationUuid: '');
+        final freshApi = _AuthApi(freshStore);
+        final freshAuth = AuthRepository(
+          apiClient: freshApi,
+          secureStorage: freshStore,
+          deviceModelProvider: () async => 'TestPatch',
+        );
+        Object? capturedBody;
+        freshApi.onRequest = (method, path, body) async {
+          capturedBody = body;
+          return {
+            'token': 'tok-fresh',
+            'user': {'id': 'u-1', 'name': 'A', 'email': 'a@b.c'},
+            'tenant': {'id': 't-1', 'name': 'T'},
+            'permissions': <String>[],
+          };
+        };
+
+        await freshAuth.login(
+          email: 'a@b.c',
+          password: 'secret',
+          pushToken: '',
+        );
+
+        final deviceUuid = (capturedBody! as Map)['device_uuid'] as String;
+        expect(deviceUuid, isNotEmpty);
+        expect(deviceUuid.length, greaterThan(20));
+        expect(await freshStore.readInstallationUuid(), deviceUuid);
+      },
+    );
+
     test('propagates invalid-credentials without persisting a token', () async {
       api.onRequest = (method, path, body) async {
         throw ApiException(

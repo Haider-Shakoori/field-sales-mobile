@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../../core/api/api_exception.dart';
+import '../../core/api/privacy_ack_api.dart';
 import '../../core/location/location_fix.dart';
 import '../../core/location/location_permission_service.dart';
 import '../../core/location/location_source.dart';
@@ -20,6 +21,7 @@ import '../../core/storage/work_session_repository.dart';
 import '../../core/sync/connectivity_service.dart';
 import '../../core/sync/sync_status.dart';
 import '../../core/time/clock.dart';
+import '../../core/time/tenant_time.dart';
 import '../tracking/gps_tracking_config.dart';
 import '../tracking/gps_tracking_service.dart';
 import '../tracking/gps_upload_service.dart';
@@ -29,6 +31,9 @@ import 'boundary_scheduler.dart';
 enum StartDayOutcome {
   started,
   alreadyActive,
+
+  /// A completed session already exists for the tenant-local work date.
+  alreadyCompletedToday,
   needsPrivacyAck,
   servicesDisabled,
   permissionDenied,
@@ -108,6 +113,14 @@ enum AutomaticPolicyState {
   /// Inside the window, but no acceptable GPS fix could be obtained.
   waitingForLocation,
 
+  /// A work session was already completed for the tenant-local work date;
+  /// automatic mode must not create a second (server-rejected) session.
+  completedToday,
+
+  /// Automatic mode, but the tenant timezone is missing/invalid. New automatic
+  /// starts are blocked rather than guessing with the device timezone.
+  missingTimezone,
+
   /// Automatic mode with `gpsTrackingEnabled = false`; no auto start.
   gpsDisabled,
 
@@ -147,7 +160,9 @@ class AttendanceController extends ChangeNotifier {
     required SecretStore secureStorage,
     required NotificationPermissionService notificationPermissions,
     AttendanceTrackingSettingsRepository? settingsRepository,
+    PrivacyAcknowledgementApi? privacyAckApi,
     Clock clock = const Clock(),
+    TenantTimeResolver tenantTime = const TenantTimeResolver(),
     BoundaryScheduler? boundaryScheduler,
     this.config = const GpsTrackingConfig(),
     String appVersion = '1.0.0',
@@ -163,12 +178,15 @@ class AttendanceController extends ChangeNotifier {
        _notificationPermissions = notificationPermissions,
        _settingsRepository =
            settingsRepository ?? AttendanceTrackingSettingsRepository.instance,
+       _privacyAckApi = privacyAckApi,
        _clock = clock,
+       _tenantTime = tenantTime,
        _boundaryScheduler = boundaryScheduler ?? TimerBoundaryScheduler(),
        _appVersion = appVersion {
     _tracking.addListener(_onTrackingChanged);
     _gpsUpload.onAuthorizationLost = _handleAuthorizationLost;
     _attendanceSync.onAuthorizationLost = _handleAuthorizationLost;
+    _gpsUpload.beforeFlush = () => _attendanceSync.flushPending();
     _connectivitySub = _connectivity.states.listen(_onNetworkChanged);
   }
 
@@ -183,7 +201,9 @@ class AttendanceController extends ChangeNotifier {
   final SecretStore _secureStorage;
   final NotificationPermissionService _notificationPermissions;
   final AttendanceTrackingSettingsRepository _settingsRepository;
+  final PrivacyAcknowledgementApi? _privacyAckApi;
   final Clock _clock;
+  final TenantTimeResolver _tenantTime;
   final BoundaryScheduler _boundaryScheduler;
   final GpsTrackingConfig config;
   final String _appVersion;
@@ -200,13 +220,32 @@ class AttendanceController extends ChangeNotifier {
   bool _restoring = true;
   bool get restoring => _restoring;
 
-  bool _privacyAcknowledged = false;
-  bool get privacyAcknowledged => _privacyAcknowledged;
   GpsPrivacyAcknowledgement? get acknowledgement => _acknowledgement;
   GpsPrivacyAcknowledgement? _acknowledgement;
 
+  /// Company policy version effective for this tenant. Falls back to the local
+  /// disclosure version until trusted server settings provide one.
+  String get effectivePolicyVersion {
+    final version = _settings.privacyPolicyVersion?.trim();
+    return version == null || version.isEmpty
+        ? kGpsTrackingPolicyVersion
+        : version;
+  }
+
+  /// True only when the stored acknowledgement matches the effective policy
+  /// version; a server version change therefore forces re-acknowledgement.
+  bool get privacyAcknowledged =>
+      _acknowledgement != null &&
+      _acknowledgement!.policyVersion == effectivePolicyVersion;
+
   bool _signedIn = false;
   bool get signedIn => _signedIn;
+
+  /// True once [restore] has finished loading the local state. Auth state can
+  /// become known before that (AppState restoration runs concurrently), so
+  /// reconciliation/evaluation waits for this.
+  bool _restored = false;
+  bool get restored => _restored;
 
   bool _authorizationLost = false;
   bool get authorizationLost => _authorizationLost;
@@ -217,8 +256,8 @@ class AttendanceController extends ChangeNotifier {
   String? _lastError;
   String? get lastError => _lastError;
 
-  int? _userId;
-  int? _tenantId;
+  String? _userId;
+  String? _tenantId;
 
   // ---------------------------------------------------------------------------
   // Company settings / automatic policy
@@ -283,9 +322,6 @@ class AttendanceController extends ChangeNotifier {
     notifyListeners();
     try {
       _acknowledgement = await _privacyAcks.load();
-      _privacyAcknowledged =
-          _acknowledgement != null &&
-          _acknowledgement!.policyVersion == kGpsTrackingPolicyVersion;
       _activeSession = await _workSessions.activeSession();
       _completedToday = _activeSession == null
           ? await _recentCompletedToday()
@@ -295,11 +331,11 @@ class AttendanceController extends ChangeNotifier {
       await reloadSettings();
     } finally {
       _restoring = false;
+      _restored = true;
       notifyListeners();
     }
     if (_signedIn) {
-      await _reconcileTracking();
-      await evaluateAutomaticPolicy();
+      await _onSignedInReady();
     }
   }
 
@@ -308,11 +344,12 @@ class AttendanceController extends ChangeNotifier {
     _signedIn = signedIn;
     if (signedIn) {
       _authorizationLost = false;
-      await _attendanceSync.resetFailedEntries();
-      await reloadSettings(refreshFromServer: true);
-      unawaited(_flushPending());
-      await _reconcileTracking();
-      await evaluateAutomaticPolicy();
+      if (!_restored) {
+        // AppState restoration can beat AttendanceController.restore();
+        // restore() runs the full signed-in path once loading completes.
+        return;
+      }
+      await _onSignedInReady();
     } else {
       _automaticState = AutomaticPolicyState.notSignedIn;
       _boundaryScheduler.cancel();
@@ -320,7 +357,19 @@ class AttendanceController extends ChangeNotifier {
     }
   }
 
-  void updateIdentity({int? userId, int? tenantId}) {
+  /// Runs the full signed-in reconciliation exactly once state is restored:
+  /// refresh trusted settings from Laravel, retry the privacy ack, drain the
+  /// attendance outbox, reconcile tracking and evaluate the automatic policy.
+  Future<void> _onSignedInReady() async {
+    await _attendanceSync.resetFailedEntries();
+    await reloadSettings(refreshFromServer: true);
+    await _syncPendingPrivacyAck();
+    unawaited(_flushPending());
+    await _reconcileTracking();
+    await evaluateAutomaticPolicy();
+  }
+
+  void updateIdentity({String? userId, String? tenantId}) {
     _userId = userId ?? _userId;
     _tenantId = tenantId ?? _tenantId;
   }
@@ -420,10 +469,29 @@ class AttendanceController extends ChangeNotifier {
         return;
       }
 
-      final now = _clock.now();
-      if (!window.contains(now)) {
+      // Company work hours are evaluated in the TENANT timezone, never the
+      // device timezone. A missing/invalid tenant zone blocks new automatic
+      // starts (safe state) instead of guessing with the device clock.
+      final tenantNow = _tenantTime.nowIn(_settings.timezone);
+      if (tenantNow == null) {
+        _setAutomaticState(AutomaticPolicyState.missingTimezone);
+        _boundaryScheduler.cancel();
+        return;
+      }
+
+      // One session per tenant-local work date (server-enforced): once today's
+      // session is completed, automatic mode must not start another.
+      final today = await _workSessions.sessionForDayKey(dateKeyOf(tenantNow));
+      if (today != null && today.status == WorkSessionStatus.completed) {
+        _completedToday = today;
+        _setAutomaticState(AutomaticPolicyState.completedToday);
+        _rescheduleBoundaryTimer();
+        return;
+      }
+
+      if (!window.contains(tenantNow)) {
         _setAutomaticState(
-          window.isBeforeStart(now)
+          window.isBeforeStart(tenantNow)
               ? AutomaticPolicyState.waitingForSchedule
               : AutomaticPolicyState.outsideSchedule,
         );
@@ -431,7 +499,7 @@ class AttendanceController extends ChangeNotifier {
         return;
       }
 
-      if (!_privacyAcknowledged) {
+      if (!privacyAcknowledged) {
         _setAutomaticState(AutomaticPolicyState.waitingForPrivacy);
         _rescheduleBoundaryTimer();
         return;
@@ -468,6 +536,8 @@ class AttendanceController extends ChangeNotifier {
   ) => switch (result.outcome) {
     StartDayOutcome.started ||
     StartDayOutcome.alreadyActive => AutomaticPolicyState.active,
+    StartDayOutcome.alreadyCompletedToday =>
+      AutomaticPolicyState.completedToday,
     StartDayOutcome.needsPrivacyAck => AutomaticPolicyState.waitingForPrivacy,
     StartDayOutcome.servicesDisabled => AutomaticPolicyState.waitingForServices,
     StartDayOutcome.permissionDenied ||
@@ -485,16 +555,19 @@ class AttendanceController extends ChangeNotifier {
     if (!_settings.gpsTrackingEnabled) {
       return AutomaticPolicyState.gpsDisabled;
     }
-    final now = _clock.now();
     if (window == null) {
       return AutomaticPolicyState.failed;
     }
-    if (window.contains(now)) {
-      return _privacyAcknowledged
+    final tenantNow = _tenantTime.nowIn(_settings.timezone);
+    if (tenantNow == null) {
+      return AutomaticPolicyState.missingTimezone;
+    }
+    if (window.contains(tenantNow)) {
+      return privacyAcknowledged
           ? AutomaticPolicyState.waitingForLocation
           : AutomaticPolicyState.waitingForPrivacy;
     }
-    return window.isBeforeStart(now)
+    return window.isBeforeStart(tenantNow)
         ? AutomaticPolicyState.waitingForSchedule
         : AutomaticPolicyState.outsideSchedule;
   }
@@ -506,14 +579,23 @@ class AttendanceController extends ChangeNotifier {
         _activeSession == null) {
       return;
     }
-    final now = _clock.now();
-    if (window.contains(now)) {
+    final tenantNow = _tenantTime.nowIn(_settings.timezone);
+    if (tenantNow == null) {
+      // No trustworthy tenant clock: preserve the active session.
+      return;
+    }
+    if (window.contains(tenantNow)) {
       return;
     }
     // Never auto-end a session that was started outside the window (e.g. a
     // manual late start); only sessions begun inside the company window are
-    // closed by the automatic policy.
-    if (!window.contains(_activeSession!.startTime.toLocal())) {
+    // closed by the automatic policy. The start instant is converted into the
+    // tenant zone before comparison.
+    final sessionStart = _tenantTime.atIn(
+      _settings.timezone,
+      _activeSession!.startTime,
+    );
+    if (sessionStart == null || !window.contains(sessionStart)) {
       return;
     }
 
@@ -533,7 +615,10 @@ class AttendanceController extends ChangeNotifier {
     if (!_settings.isAutomatic && !_settings.autoEndSession) {
       return;
     }
-    final delay = _window!.nextBoundaryDelay(_clock.now());
+    // Boundaries are computed in the tenant timezone (DST-aware), not device
+    // local time. An invalid zone leaves no timer and the evaluation surfaces
+    // the missing-timezone state.
+    final delay = _tenantTime.nextBoundaryDelay(_window!, _settings.timezone);
     if (delay == null) {
       return;
     }
@@ -552,8 +637,16 @@ class AttendanceController extends ChangeNotifier {
 
   /// Persists the GPS tracking disclosure acknowledgement locally (structured
   /// so it can be pushed to the server audit log later).
+  ///
+  /// Offline-first: the local row is written before any network attempt, and a
+  /// pending acknowledgement is retried later without creating duplicate local
+  /// records. A pending ack for a previous policy version is flushed first so
+  /// the server audit trail is not lost when the version changes.
   Future<GpsPrivacyAcknowledgement> acknowledgePrivacy() async {
+    await _syncPendingPrivacyAck();
+
     final acknowledgement = GpsPrivacyAcknowledgement(
+      policyVersion: effectivePolicyVersion,
       acknowledgedAt: _clock.now().toUtc(),
       userId: _userId,
       tenantId: _tenantId,
@@ -562,9 +655,47 @@ class AttendanceController extends ChangeNotifier {
     );
     await _privacyAcks.save(acknowledgement);
     _acknowledgement = acknowledgement;
-    _privacyAcknowledged = true;
     notifyListeners();
-    return acknowledgement;
+
+    await _syncPendingPrivacyAck();
+    return _acknowledgement!;
+  }
+
+  /// Pushes the locally stored acknowledgement to Laravel when online.
+  ///
+  /// Failures keep the local row pending; retries reuse the same policy
+  /// version / acknowledged_at so the server-side unique key stays idempotent.
+  Future<void> syncPrivacyAcknowledgement() => _syncPendingPrivacyAck();
+
+  Future<void> _syncPendingPrivacyAck() async {
+    final api = _privacyAckApi;
+    final current = _acknowledgement;
+    if (api == null ||
+        current == null ||
+        current.isSynced ||
+        !_signedIn ||
+        _authorizationLost ||
+        !_connectivity.isOnline) {
+      return;
+    }
+
+    try {
+      final response = await api.acknowledge(
+        policyVersion: current.policyVersion,
+        acknowledgedAt: current.acknowledgedAt,
+        appVersion: current.appVersion ?? _appVersion,
+      );
+      final synced = current.copyWith(
+        syncStatus: 'synced',
+        serverId: response.id,
+        serverUuid: response.uuid,
+      );
+      await _privacyAcks.save(synced);
+      _acknowledgement = synced;
+      notifyListeners();
+    } catch (error) {
+      _lastError = error.toString();
+    }
   }
 
   /// The single Start Day flow used by BOTH manual taps and automatic policy.
@@ -581,7 +712,19 @@ class AttendanceController extends ChangeNotifier {
       return const StartDayResult(StartDayOutcome.alreadyActive);
     }
 
-    if (!_privacyAcknowledged) {
+    // Laravel enforces one work session per user per tenant-local date; never
+    // create a second local session that could not be synced.
+    final tenantNow = _tenantTime.nowIn(_settings.timezone);
+    if (tenantNow != null) {
+      final today = await _workSessions.sessionForDayKey(dateKeyOf(tenantNow));
+      if (today != null && today.status == WorkSessionStatus.completed) {
+        _completedToday = today;
+        notifyListeners();
+        return const StartDayResult(StartDayOutcome.alreadyCompletedToday);
+      }
+    }
+
+    if (!privacyAcknowledged) {
       if (!privacyAlreadyAcknowledged) {
         return const StartDayResult(StartDayOutcome.needsPrivacyAck);
       }
@@ -626,8 +769,20 @@ class AttendanceController extends ChangeNotifier {
         gpsTrackingEnabled: gpsEnabled,
       );
     }
+    // The attendance API rejects accuracies worse than the server threshold;
+    // never create a local session that cannot be synced.
+    if (fix.accuracy != null &&
+        fix.accuracy! > config.maxServerAccuracyMeters) {
+      return StartDayResult(
+        StartDayOutcome.locationUnavailable,
+        backgroundAccess: background,
+        notificationPermissionGranted: notificationPermissionGranted,
+        gpsTrackingEnabled: gpsEnabled,
+      );
+    }
 
     try {
+      final tenantNow = _tenantTime.nowIn(_settings.timezone);
       final session = await _workSessions.startSession(
         latitude: fix.latitude,
         longitude: fix.longitude,
@@ -636,6 +791,7 @@ class AttendanceController extends ChangeNotifier {
             ? null
             : utcIso(_acknowledgement!.acknowledgedAt),
         startedAt: _clock.now(),
+        localDateKeyOverride: tenantNow == null ? null : dateKeyOf(tenantNow),
         source: source,
       );
       _activeSession = session;
@@ -833,7 +989,7 @@ class AttendanceController extends ChangeNotifier {
       await _tracking.stop();
       return;
     }
-    if (!_privacyAcknowledged) {
+    if (!privacyAcknowledged) {
       _pauseReason = TrackingPauseReason.noAcknowledgement;
       await _tracking.stop();
       return;
@@ -880,6 +1036,7 @@ class AttendanceController extends ChangeNotifier {
 
   void _onNetworkChanged(NetworkState state) {
     if (_signedIn && state == NetworkState.online) {
+      unawaited(_syncPendingPrivacyAck());
       unawaited(_flushPending());
     }
   }
@@ -889,7 +1046,10 @@ class AttendanceController extends ChangeNotifier {
   }
 
   Future<LocalWorkSession?> _recentCompletedToday() async {
-    final session = await _workSessions.sessionForDay(_clock.now());
+    final tenantNow = _tenantTime.nowIn(_settings.timezone);
+    final session = tenantNow == null
+        ? await _workSessions.sessionForDay(_clock.now())
+        : await _workSessions.sessionForDayKey(dateKeyOf(tenantNow));
     return session != null && session.status == WorkSessionStatus.completed
         ? session
         : null;

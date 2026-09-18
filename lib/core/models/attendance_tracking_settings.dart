@@ -38,6 +38,7 @@ class AttendanceTrackingSettings {
     this.gpsStationaryIntervalSeconds = defaultGpsStationaryIntervalSeconds,
     this.gpsStaleAfterMinutes = defaultGpsStaleAfterMinutes,
     this.timezone,
+    this.privacyPolicyVersion,
     this.settingsVersion,
     this.updatedAt,
     this.fetchedAt,
@@ -57,6 +58,7 @@ class AttendanceTrackingSettings {
       gpsStationaryIntervalSeconds = defaultGpsStationaryIntervalSeconds,
       gpsStaleAfterMinutes = defaultGpsStaleAfterMinutes,
       timezone = null,
+      privacyPolicyVersion = null,
       settingsVersion = null,
       updatedAt = null,
       fetchedAt = null,
@@ -88,17 +90,20 @@ class AttendanceTrackingSettings {
   /// Latest accepted point older than this is considered stale.
   final int gpsStaleAfterMinutes;
 
-  /// Optional IANA tenant timezone. Not used for conversion in this phase:
-  /// the work window is evaluated in device-local time until the server
-  /// contract defines timezone semantics. Kept for the future contract.
+  /// Optional IANA tenant timezone (e.g. `Asia/Kabul`). Automatic work-window
+  /// evaluation converts "now" into this zone; an invalid/missing value blocks
+  /// automatic starts rather than silently using the device timezone.
   final String? timezone;
+
+  /// Company privacy policy version the acknowledgement must match.
+  final String? privacyPolicyVersion;
 
   final String? settingsVersion;
   final DateTime? updatedAt;
   final DateTime? fetchedAt;
 
   /// Tenant the settings were fetched for; guards against cross-tenant reuse.
-  final int? tenantId;
+  final String? tenantId;
 
   /// True only for settings that came from a trusted server payload.
   final bool trusted;
@@ -127,11 +132,42 @@ class AttendanceTrackingSettings {
             (json['gps_stale_after_minutes'] as num?)?.toInt() ??
             defaultGpsStaleAfterMinutes,
         timezone: json['timezone']?.toString(),
+        privacyPolicyVersion: json['privacy_policy_version']?.toString(),
         settingsVersion: json['settings_version']?.toString(),
         updatedAt: _parseDate(json['updated_at']),
         fetchedAt: _parseDate(json['fetched_at']),
-        tenantId: (json['tenant_id'] as num?)?.toInt(),
+        tenantId: json['tenant_id']?.toString(),
         trusted: json['trusted'] == true,
+      );
+
+  /// Maps the real Laravel mobile payload
+  /// (`GET /api/v1/settings/attendance-tracking`).
+  ///
+  /// The response is not trusted until [AttendanceTrackingSettingsRepository]
+  /// stamps it with the active tenant; [trusted] stays false here.
+  factory AttendanceTrackingSettings.fromApiJson(Map<String, dynamic> json) =>
+      AttendanceTrackingSettings(
+        startMode: WorkSessionStartMode.from(
+          json['work_session_start_mode']?.toString(),
+        ),
+        workdayStartTime:
+            json['workday_start_time']?.toString() ?? defaultWorkdayStartTime,
+        workdayEndTime:
+            json['workday_end_time']?.toString() ?? defaultWorkdayEndTime,
+        autoEndSession: json['auto_end_session'] == true,
+        gpsTrackingEnabled: json['gps_tracking_enabled'] != false,
+        gpsMovingIntervalSeconds:
+            (json['gps_moving_interval_seconds'] as num?)?.toInt() ??
+            defaultGpsMovingIntervalSeconds,
+        gpsStationaryIntervalSeconds:
+            (json['gps_stationary_interval_seconds'] as num?)?.toInt() ??
+            defaultGpsStationaryIntervalSeconds,
+        gpsStaleAfterMinutes:
+            (json['gps_stale_after_minutes'] as num?)?.toInt() ??
+            defaultGpsStaleAfterMinutes,
+        timezone: json['timezone']?.toString(),
+        privacyPolicyVersion: json['privacy_policy_version']?.toString(),
+        updatedAt: _parseDate(json['updated_at']),
       );
 
   Map<String, dynamic> toJson() => {
@@ -144,6 +180,7 @@ class AttendanceTrackingSettings {
     'gps_stationary_interval_seconds': gpsStationaryIntervalSeconds,
     'gps_stale_after_minutes': gpsStaleAfterMinutes,
     'timezone': timezone,
+    'privacy_policy_version': privacyPolicyVersion,
     'settings_version': settingsVersion,
     'updated_at': updatedAt == null ? null : utcIso(updatedAt!),
     'fetched_at': fetchedAt == null ? null : utcIso(fetchedAt!),
@@ -216,10 +253,11 @@ class AttendanceTrackingSettings {
     int? gpsStationaryIntervalSeconds,
     int? gpsStaleAfterMinutes,
     String? timezone,
+    String? privacyPolicyVersion,
     String? settingsVersion,
     DateTime? updatedAt,
     DateTime? fetchedAt,
-    int? tenantId,
+    String? tenantId,
     bool? trusted,
   }) => AttendanceTrackingSettings(
     startMode: startMode ?? this.startMode,
@@ -233,6 +271,7 @@ class AttendanceTrackingSettings {
         gpsStationaryIntervalSeconds ?? this.gpsStationaryIntervalSeconds,
     gpsStaleAfterMinutes: gpsStaleAfterMinutes ?? this.gpsStaleAfterMinutes,
     timezone: timezone ?? this.timezone,
+    privacyPolicyVersion: privacyPolicyVersion ?? this.privacyPolicyVersion,
     settingsVersion: settingsVersion ?? this.settingsVersion,
     updatedAt: updatedAt ?? this.updatedAt,
     fetchedAt: fetchedAt ?? this.fetchedAt,

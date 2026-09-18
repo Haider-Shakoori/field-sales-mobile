@@ -12,6 +12,7 @@ class GpsTrackingConfig {
     this.stationaryInterval = const Duration(seconds: 60),
     this.movementSpeedThreshold = 0.5,
     this.maxAccuracyMeters = 100,
+    this.maxServerAccuracyMeters = 200,
     this.debounceDistanceMeters = 5,
     this.debounceWindow = const Duration(seconds: 5),
     this.maxFutureSkew = const Duration(minutes: 5),
@@ -33,6 +34,7 @@ class GpsTrackingConfig {
       ),
       movementSpeedThreshold: fallback.movementSpeedThreshold,
       maxAccuracyMeters: fallback.maxAccuracyMeters,
+      maxServerAccuracyMeters: fallback.maxServerAccuracyMeters,
       debounceDistanceMeters: fallback.debounceDistanceMeters,
       debounceWindow: fallback.debounceWindow,
       maxFutureSkew: fallback.maxFutureSkew,
@@ -58,6 +60,11 @@ class GpsTrackingConfig {
   /// (`min_accuracy_threshold`) is 100 m, so the client uses the stricter,
   /// documented value.
   final double maxAccuracyMeters;
+
+  /// Largest accuracy the attendance API accepts for the one-shot Start/End
+  /// Day fix (Laravel `max:200`). A worse fix must not create a server-invalid
+  /// work session.
+  final double maxServerAccuracyMeters;
 
   /// Debounce: skip a fix within this distance AND window of the previous
   /// accepted point.

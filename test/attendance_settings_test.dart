@@ -92,7 +92,7 @@ void main() {
         settingsVersion: '7',
         updatedAt: DateTime.utc(2026, 9, 18, 6),
         fetchedAt: DateTime.utc(2026, 9, 18, 6, 5),
-        tenantId: 3,
+        tenantId: '3',
         trusted: true,
       );
 
@@ -111,7 +111,7 @@ void main() {
       expect(restored.timezone, 'Asia/Kabul');
       expect(restored.settingsVersion, '7');
       expect(restored.updatedAt, DateTime.utc(2026, 9, 18, 6));
-      expect(restored.tenantId, 3);
+      expect(restored.tenantId, '3');
       expect(restored.trusted, isTrue);
     });
   });
@@ -139,14 +139,14 @@ void main() {
             workdayEndTime: '17:00',
             autoEndSession: true,
           ),
-          tenantId: 3,
+          tenantId: '3',
         );
 
         expect(result.trusted, isTrue);
-        expect(result.settings.tenantId, 3);
+        expect(result.settings.tenantId, '3');
         expect(result.settings.fetchedAt, DateTime.utc(2026, 9, 18, 6));
 
-        final loaded = await repo.load(tenantId: 3);
+        final loaded = await repo.load(tenantId: '3');
         expect(loaded.trusted, isTrue);
         expect(loaded.settings.isAutomatic, isTrue);
         expect(loaded.settings.autoEndSession, isTrue);
@@ -213,10 +213,10 @@ void main() {
         const AttendanceTrackingSettings(
           startMode: WorkSessionStartMode.automatic,
         ),
-        tenantId: 3,
+        tenantId: '3',
       );
 
-      final loaded = await repo.load(tenantId: 99);
+      final loaded = await repo.load(tenantId: '99');
 
       expect(loaded.source, SettingsSource.defaults);
       expect(loaded.settings.isAutomatic, isFalse);
@@ -228,10 +228,10 @@ void main() {
         const AttendanceTrackingSettings(
           startMode: WorkSessionStartMode.automatic,
         ),
-        tenantId: 3,
+        tenantId: '3',
       );
 
-      final refreshed = await repo.refreshFromServer(tenantId: 3);
+      final refreshed = await repo.refreshFromServer(tenantId: '3');
 
       expect(refreshed.trusted, isTrue);
       expect(refreshed.settings.isAutomatic, isTrue);
@@ -251,14 +251,14 @@ void main() {
         clock: TestClock(DateTime.utc(2026, 9, 18, 6)),
       );
 
-      final refreshed = await remoteRepo.refreshFromServer(tenantId: 3);
+      final refreshed = await remoteRepo.refreshFromServer(tenantId: '3');
 
       expect(source.fetchCalls, 1);
       expect(refreshed.trusted, isTrue);
       expect(refreshed.settings.workdayStartTime, '07:00');
       expect(refreshed.settings.settingsVersion, '9');
 
-      final loaded = await remoteRepo.load(tenantId: 3);
+      final loaded = await remoteRepo.load(tenantId: '3');
       expect(loaded.settings.workdayEndTime, '15:00');
     });
 
@@ -273,10 +273,10 @@ void main() {
           const AttendanceTrackingSettings(
             startMode: WorkSessionStartMode.automatic,
           ),
-          tenantId: 3,
+          tenantId: '3',
         );
 
-        final refreshed = await remoteRepo.refreshFromServer(tenantId: 3);
+        final refreshed = await remoteRepo.refreshFromServer(tenantId: '3');
 
         expect(source.fetchCalls, 1);
         expect(refreshed.settings.isAutomatic, isTrue);

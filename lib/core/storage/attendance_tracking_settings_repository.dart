@@ -58,7 +58,7 @@ class AttendanceTrackingSettingsRepository {
   final Clock _clock;
 
   /// Reads the last trusted settings, or safe defaults.
-  Future<SettingsLoadResult> load({int? tenantId}) async {
+  Future<SettingsLoadResult> load({String? tenantId}) async {
     final db = await AppDatabase.instance;
     final rows = await db.query(
       'local_settings',
@@ -130,7 +130,7 @@ class AttendanceTrackingSettingsRepository {
   /// Validates and persists a trusted (server-sourced) payload.
   Future<SettingsLoadResult> saveTrusted(
     AttendanceTrackingSettings settings, {
-    int? tenantId,
+    String? tenantId,
   }) async {
     final issues = <String>[];
     final sanitized = settings.sanitized(issues);
@@ -155,17 +155,29 @@ class AttendanceTrackingSettingsRepository {
 
   /// Attempts a server refresh when a transport has been bound; otherwise
   /// returns the cached/default load unchanged. This is the single seam the
-  /// future Laravel settings endpoint plugs into.
-  Future<SettingsLoadResult> refreshFromServer({int? tenantId}) async {
+  /// Laravel settings endpoint plugs into.
+  ///
+  /// A failed refresh NEVER erases a valid trusted cache: the last trusted
+  /// settings for the current tenant are returned with a diagnostic issue.
+  Future<SettingsLoadResult> refreshFromServer({String? tenantId}) async {
     final source = _remoteSource;
     if (source == null) {
       return load(tenantId: tenantId);
     }
-    final remote = await source.fetch();
-    if (remote == null) {
-      return load(tenantId: tenantId);
+    try {
+      final remote = await source.fetch();
+      if (remote == null) {
+        return await load(tenantId: tenantId);
+      }
+      return await saveTrusted(remote, tenantId: tenantId);
+    } catch (error) {
+      final cached = await load(tenantId: tenantId);
+      return SettingsLoadResult(
+        settings: cached.settings,
+        source: cached.source,
+        issues: [...cached.issues, 'settings refresh failed: $error'],
+      );
     }
-    return saveTrusted(remote, tenantId: tenantId);
   }
 
   Future<void> clear() async {

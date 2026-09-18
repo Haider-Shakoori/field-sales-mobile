@@ -35,6 +35,22 @@ void main() {
       expect(err.isDeviceRevoked, isTrue);
       expect(err.isUnauthenticated, isFalse);
     });
+
+    test('device revoked detection covers Laravel 403 without a code', () {
+      final laravelStyle = ApiException(
+        status: 403,
+        message:
+            'This device has been revoked. Reinstall the app or contact '
+            'support.',
+      );
+      expect(laravelStyle.isDeviceRevoked, isTrue);
+
+      final plainForbidden = ApiException(
+        status: 403,
+        message: 'You are not allowed to view other users locations.',
+      );
+      expect(plainForbidden.isDeviceRevoked, isFalse);
+    });
   });
 
   testWidgets('shows sign in form title', (tester) async {

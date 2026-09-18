@@ -26,7 +26,9 @@ class AttendanceApi {
         'offline_uuid': offlineUuid,
         'latitude': latitude,
         'longitude': longitude,
-        'accuracy': ?accuracy,
+        // Laravel requires a numeric accuracy; 0 is the provider sentinel for
+        // "unknown" and geolocator always supplies a real value in practice.
+        'accuracy': accuracy ?? 0,
       },
     );
     return AttendanceSession.fromJson(data as Map<String, dynamic>);
@@ -48,7 +50,7 @@ class AttendanceApi {
       body: {
         'latitude': latitude,
         'longitude': longitude,
-        'accuracy': ?accuracy,
+        'accuracy': accuracy ?? 0,
       },
     );
     return AttendanceSession.fromJson(data as Map<String, dynamic>);

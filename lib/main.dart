@@ -3,8 +3,10 @@ import 'package:provider/provider.dart';
 
 import 'core/api/api_client.dart';
 import 'core/api/attendance_api.dart';
+import 'core/api/attendance_tracking_settings_api.dart';
 import 'core/api/auth_repository.dart';
 import 'core/api/gps_api.dart';
+import 'core/api/privacy_ack_api.dart';
 import 'core/location/location_permission_service.dart';
 import 'core/location/location_source.dart';
 import 'core/permissions/notification_permission_service.dart';
@@ -19,6 +21,7 @@ import 'core/storage/work_session_repository.dart';
 import 'core/sync/connectivity_service.dart';
 import 'core/sync/sync_controller.dart';
 import 'core/sync/sync_engine.dart';
+import 'core/time/tenant_time.dart';
 import 'features/attendance/attendance_controller.dart';
 import 'features/attendance/attendance_sync_service.dart';
 import 'features/auth/login_screen.dart';
@@ -34,6 +37,9 @@ import 'theme/app_theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  // Parse the IANA timezone database before the first frame so tenant-time
+  // evaluation never blocks the interaction thread.
+  initializeTenantTimeZones();
   runApp(const FieldSalesApp());
 }
 
@@ -118,8 +124,21 @@ class FieldSalesApp extends StatelessWidget {
           create: (context) =>
               AttendanceSyncService(api: context.read<AttendanceApi>()),
         ),
+        Provider<AttendanceTrackingSettingsApi>(
+          create: (context) => AttendanceTrackingSettingsApi(
+            apiClient: context.read<ApiClient>(),
+          ),
+        ),
+        Provider<PrivacyAcknowledgementApi>(
+          create: (context) =>
+              PrivacyAcknowledgementApi(apiClient: context.read<ApiClient>()),
+        ),
         Provider<AttendanceTrackingSettingsRepository>(
-          create: (_) => AttendanceTrackingSettingsRepository.instance,
+          create: (context) => AttendanceTrackingSettingsRepository(
+            remoteSource: HttpAttendanceTrackingSettingsSource(
+              api: context.read<AttendanceTrackingSettingsApi>(),
+            ),
+          ),
         ),
         ChangeNotifierProvider<AttendanceController>(
           create: (context) => AttendanceController(
@@ -136,6 +155,7 @@ class FieldSalesApp extends StatelessWidget {
                 .read<NotificationPermissionService>(),
             settingsRepository: context
                 .read<AttendanceTrackingSettingsRepository>(),
+            privacyAckApi: context.read<PrivacyAcknowledgementApi>(),
           )..restore(),
         ),
         ChangeNotifierProvider<AppState>(

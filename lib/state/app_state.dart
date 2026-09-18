@@ -53,8 +53,8 @@ class AppState extends ChangeNotifier {
         permissions: meta.permissions,
       );
       _attendance.updateIdentity(
-        userId: meta.user.id,
-        tenantId: meta.tenant.id,
+        userId: meta.user.key,
+        tenantId: meta.tenant.key,
       );
       notifyListeners();
       await _attendance.setSignedIn(true);
@@ -77,8 +77,8 @@ class AppState extends ChangeNotifier {
     await _sessionMeta.save(session);
     _session = session;
     _attendance.updateIdentity(
-      userId: session.user.id,
-      tenantId: session.tenant.id,
+      userId: session.user.key,
+      tenantId: session.tenant.key,
     );
     notifyListeners();
     await _sync.maybeSync();

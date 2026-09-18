@@ -11,6 +11,7 @@ import 'package:field_sales_mobile/core/storage/gps_point_repository.dart';
 import 'package:field_sales_mobile/core/storage/privacy_ack_store.dart';
 import 'package:field_sales_mobile/core/storage/work_session_repository.dart';
 import 'package:field_sales_mobile/core/sync/sync_repository.dart';
+import 'package:field_sales_mobile/core/time/tenant_time.dart';
 import 'package:field_sales_mobile/features/attendance/attendance_controller.dart';
 import 'package:field_sales_mobile/features/attendance/attendance_sync_service.dart';
 import 'package:field_sales_mobile/features/tracking/gps_tracking_config.dart';
@@ -30,7 +31,10 @@ void main() {
 
   group('MANUAL — safe fallback', () {
     test('no trusted settings means MANUAL and no auto session', () async {
-      final h = _AutoHarness(settings: null, now: DateTime(2026, 9, 18, 10));
+      final h = _AutoHarness(
+        settings: null,
+        now: DateTime.utc(2026, 9, 18, 10),
+      );
       final controller = await h.build(saveSettings: false);
 
       expect(controller.settings.startMode, WorkSessionStartMode.manual);
@@ -43,7 +47,10 @@ void main() {
     });
 
     test('manual Start Day still creates the session and starts GPS', () async {
-      final h = _AutoHarness(settings: null, now: DateTime(2026, 9, 18, 10));
+      final h = _AutoHarness(
+        settings: null,
+        now: DateTime.utc(2026, 9, 18, 10),
+      );
       final controller = await h.build(saveSettings: false);
 
       final result = await controller.startDay();
@@ -60,7 +67,10 @@ void main() {
     });
 
     test('manual End Day still stops tracking and completes locally', () async {
-      final h = _AutoHarness(settings: null, now: DateTime(2026, 9, 18, 10));
+      final h = _AutoHarness(
+        settings: null,
+        now: DateTime.utc(2026, 9, 18, 10),
+      );
       final controller = await h.build(saveSettings: false);
       await controller.startDay();
 
@@ -81,8 +91,9 @@ void main() {
             startMode: WorkSessionStartMode.automatic,
             workdayStartTime: '08:00',
             workdayEndTime: '17:00',
+            timezone: 'UTC',
           ),
-          now: DateTime(2026, 9, 18, 10),
+          now: DateTime.utc(2026, 9, 18, 10),
         );
         final controller = await h.build();
 
@@ -108,7 +119,7 @@ void main() {
     test('before the schedule does not start', () async {
       final h = _AutoHarness(
         settings: _automatic(),
-        now: DateTime(2026, 9, 18, 7, 30),
+        now: DateTime.utc(2026, 9, 18, 7, 30),
       );
       final controller = await h.build();
 
@@ -127,7 +138,7 @@ void main() {
     test('after the schedule does not start', () async {
       final h = _AutoHarness(
         settings: _automatic(),
-        now: DateTime(2026, 9, 18, 19),
+        now: DateTime.utc(2026, 9, 18, 19),
       );
       final controller = await h.build();
 
@@ -139,13 +150,13 @@ void main() {
     test('an existing active session prevents a duplicate start', () async {
       final h = _AutoHarness(
         settings: _automatic(),
-        now: DateTime(2026, 9, 18, 7, 30),
+        now: DateTime.utc(2026, 9, 18, 7, 30),
       );
       final controller = await h.build();
       final manual = await controller.startDay();
       final firstSession = controller.activeSession!;
 
-      h.clock.value = DateTime(2026, 9, 18, 10);
+      h.clock.value = DateTime.utc(2026, 9, 18, 10);
       await controller.evaluateAutomaticPolicy();
 
       expect(manual.outcome, StartDayOutcome.started);
@@ -249,12 +260,12 @@ void main() {
     test('app resume during the window starts automatically', () async {
       final h = _AutoHarness(
         settings: _automatic(),
-        now: DateTime(2026, 9, 18, 7, 30),
+        now: DateTime.utc(2026, 9, 18, 7, 30),
       );
       final controller = await h.build();
       expect(controller.activeSession, isNull);
 
-      h.clock.value = DateTime(2026, 9, 18, 8, 5);
+      h.clock.value = DateTime.utc(2026, 9, 18, 8, 5);
       await controller.onAppResumed();
 
       expect(controller.activeSession, isNotNull);
@@ -263,37 +274,155 @@ void main() {
     test('the boundary timer firing starts automatically', () async {
       final h = _AutoHarness(
         settings: _automatic(),
-        now: DateTime(2026, 9, 18, 7, 59),
+        now: DateTime.utc(2026, 9, 18, 7, 59),
       );
       final controller = await h.build();
       expect(controller.activeSession, isNull);
 
-      h.clock.value = DateTime(2026, 9, 18, 8, 0);
+      h.clock.value = DateTime.utc(2026, 9, 18, 8, 0);
       h.scheduler.fire();
-      await pumpEventQueue();
+      await waitForCondition(() => controller.activeSession != null);
 
       expect(controller.activeSession, isNotNull);
     });
 
     test('switching MANUAL → AUTOMATIC inside the window starts', () async {
-      final h = _AutoHarness(settings: null, now: DateTime(2026, 9, 18, 10));
+      final h = _AutoHarness(
+        settings: null,
+        now: DateTime.utc(2026, 9, 18, 10),
+      );
       final controller = await h.build(saveSettings: false);
       expect(controller.activeSession, isNull);
 
-      await h.repo.saveTrusted(_automatic(), tenantId: 3);
+      await h.repo.saveTrusted(_automatic(), tenantId: '3');
       await controller.reloadSettings();
       await controller.evaluateAutomaticPolicy();
 
       expect(controller.activeSession, isNotNull);
       expect(controller.automaticMode, isTrue);
     });
+
+    test('tenant timezone wins over device/UTC time', () async {
+      // 12:30 UTC is 13:30 in London on 2026-07-01 (BST), i.e. OUTSIDE the
+      // 12:00–13:00 tenant window even though it is inside the same window in
+      // UTC/device time.
+      final h = _AutoHarness(
+        settings: _automatic(
+          start: '12:00',
+          end: '13:00',
+          timezone: 'Europe/London',
+        ),
+        now: DateTime.utc(2026, 7, 1, 12, 30),
+      );
+      final controller = await h.build();
+
+      expect(controller.activeSession, isNull);
+      expect(controller.automaticState, AutomaticPolicyState.outsideSchedule);
+    });
+
+    test('DST-adjusted tenant window starts correctly (BST)', () async {
+      // 11:30 UTC is 12:30 in London on 2026-07-01 (BST) — inside the window.
+      // A fixed-offset implementation without DST would see 11:30 and skip.
+      final h = _AutoHarness(
+        settings: _automatic(
+          start: '12:00',
+          end: '13:00',
+          timezone: 'Europe/London',
+        ),
+        now: DateTime.utc(2026, 7, 1, 11, 30),
+      );
+      final controller = await h.build();
+
+      expect(controller.activeSession, isNotNull);
+      expect(controller.automaticMode, isTrue);
+    });
+
+    test('missing/invalid tenant timezone blocks auto start safely', () async {
+      final h = _AutoHarness(
+        settings: _automatic(timezone: 'Not/AZone'),
+        now: DateTime.utc(2026, 9, 18, 10),
+      );
+      final controller = await h.build();
+
+      expect(controller.activeSession, isNull);
+      expect(controller.automaticState, AutomaticPolicyState.missingTimezone);
+      expect(h.attendanceRequests, isEmpty);
+
+      // Manual mode keeps working without a tenant zone.
+      final manualStart = await controller.startDay();
+      expect(manualStart.outcome, StartDayOutcome.started);
+    });
+
+    test('automatic does not start again after today is completed', () async {
+      final h = _AutoHarness(
+        settings: _automatic(),
+        now: DateTime.utc(2026, 9, 18, 10),
+      );
+      final controller = await h.build();
+      expect(controller.activeSession, isNotNull);
+
+      // Still inside the tenant window after End Day.
+      await controller.endDay();
+      await controller.evaluateAutomaticPolicy();
+
+      expect(controller.automaticState, AutomaticPolicyState.completedToday);
+      expect(controller.activeSession, isNull);
+      expect(
+        await DbAsserts.query('SELECT * FROM local_work_sessions'),
+        hasLength(1),
+      );
+    });
+
+    test('manual second Start Day on the same work date is rejected', () async {
+      final h = _AutoHarness(
+        settings: _manual(),
+        now: DateTime.utc(2026, 9, 18, 10),
+      );
+      final controller = await h.build();
+
+      expect((await controller.startDay()).outcome, StartDayOutcome.started);
+      expect((await controller.endDay()).outcome, EndDayOutcome.ended);
+
+      final second = await controller.startDay();
+      expect(second.outcome, StartDayOutcome.alreadyCompletedToday);
+      expect(
+        await DbAsserts.query('SELECT * FROM local_work_sessions'),
+        hasLength(1),
+      );
+      expect(await queue.next(entityType: 'attendance'), hasLength(2));
+    });
+
+    test(
+      'overnight tenant window starts and auto-ends in tenant time',
+      () async {
+        final h = _AutoHarness(
+          settings: _automatic(
+            start: '20:00',
+            end: '04:00',
+            autoEndSession: true,
+            timezone: 'Asia/Kabul',
+          ),
+          // 16:30 UTC = 21:00 Kabul — inside the overnight window.
+          now: DateTime.utc(2026, 9, 18, 16, 30),
+        );
+        final controller = await h.build();
+        expect(controller.activeSession, isNotNull);
+
+        // 00:30 UTC next day = 05:00 Kabul — after the window.
+        h.clock.value = DateTime.utc(2026, 9, 19, 0, 30);
+        await controller.evaluateAutomaticPolicy();
+
+        expect(controller.activeSession, isNull);
+        expect(controller.completedToday, isNotNull);
+      },
+    );
   });
 
   group('MANUAL + gpsTrackingEnabled=false', () {
     test('session stays available but continuous GPS stays off', () async {
       final h = _AutoHarness(
         settings: _automatic(gpsTrackingEnabled: false),
-        now: DateTime(2026, 9, 18, 10),
+        now: DateTime.utc(2026, 9, 18, 10),
       );
       // Automatic cannot start; fall back to the manual flow.
       final controller = await h.build();
@@ -316,12 +445,12 @@ void main() {
     test('autoEnd=false leaves the session active after the window', () async {
       final h = _AutoHarness(
         settings: _automatic(autoEndSession: false),
-        now: DateTime(2026, 9, 18, 10),
+        now: DateTime.utc(2026, 9, 18, 10),
       );
       final controller = await h.build();
       expect(controller.activeSession, isNotNull);
 
-      h.clock.value = DateTime(2026, 9, 18, 18);
+      h.clock.value = DateTime.utc(2026, 9, 18, 18);
       await controller.evaluateAutomaticPolicy();
 
       expect(controller.activeSession, isNotNull);
@@ -331,12 +460,12 @@ void main() {
     test('autoEnd=true completes the session after the window', () async {
       final h = _AutoHarness(
         settings: _automatic(autoEndSession: true),
-        now: DateTime(2026, 9, 18, 10),
+        now: DateTime.utc(2026, 9, 18, 10),
       );
       final controller = await h.build();
       expect(controller.activeSession, isNotNull);
 
-      h.clock.value = DateTime(2026, 9, 18, 18);
+      h.clock.value = DateTime.utc(2026, 9, 18, 18);
       await controller.evaluateAutomaticPolicy();
 
       expect(controller.activeSession, isNull);
@@ -354,11 +483,11 @@ void main() {
     test('offline automatic end persists locally without network', () async {
       final h = _AutoHarness(
         settings: _automatic(autoEndSession: true),
-        now: DateTime(2026, 9, 18, 10),
+        now: DateTime.utc(2026, 9, 18, 10),
       );
       final controller = await h.build();
 
-      h.clock.value = DateTime(2026, 9, 18, 18);
+      h.clock.value = DateTime.utc(2026, 9, 18, 18);
       await controller.evaluateAutomaticPolicy();
 
       expect(h.attendanceRequests, isEmpty);
@@ -370,11 +499,11 @@ void main() {
     test('automatic end is idempotent (no duplicate end)', () async {
       final h = _AutoHarness(
         settings: _automatic(autoEndSession: true),
-        now: DateTime(2026, 9, 18, 10),
+        now: DateTime.utc(2026, 9, 18, 10),
       );
       final controller = await h.build();
 
-      h.clock.value = DateTime(2026, 9, 18, 18);
+      h.clock.value = DateTime.utc(2026, 9, 18, 18);
       await controller.evaluateAutomaticPolicy();
       await controller.evaluateAutomaticPolicy();
       await controller.evaluateAutomaticPolicy();
@@ -393,7 +522,7 @@ void main() {
     test('a session started outside the window is not auto-ended', () async {
       final h = _AutoHarness(
         settings: _automatic(autoEndSession: true),
-        now: DateTime(2026, 9, 18, 18, 30),
+        now: DateTime.utc(2026, 9, 18, 18, 30),
       );
       final controller = await h.build();
       expect(controller.activeSession, isNull);
@@ -413,12 +542,12 @@ void main() {
           end: '04:00',
           autoEndSession: true,
         ),
-        now: DateTime(2026, 9, 18, 21),
+        now: DateTime.utc(2026, 9, 18, 21),
       );
       final controller = await h.build();
       expect(controller.activeSession, isNotNull);
 
-      h.clock.value = DateTime(2026, 9, 19, 5);
+      h.clock.value = DateTime.utc(2026, 9, 19, 5);
       await controller.evaluateAutomaticPolicy();
 
       expect(controller.activeSession, isNull);
@@ -430,7 +559,7 @@ void main() {
     test('company intervals reach the tracker and adapt on movement', () async {
       final h = _AutoHarness(
         settings: _automatic(moving: 30, stationary: 120),
-        now: DateTime(2026, 9, 18, 10),
+        now: DateTime.utc(2026, 9, 18, 10),
       );
       final controller = await h.build();
       expect(controller.isTracking, isTrue);
@@ -466,7 +595,7 @@ void main() {
       () async {
         final h = _AutoHarness(
           settings: _automatic(),
-          now: DateTime(2026, 9, 18, 10),
+          now: DateTime.utc(2026, 9, 18, 10),
         );
         final controller = await h.build();
         expect(controller.isTracking, isTrue);
@@ -474,7 +603,7 @@ void main() {
 
         await h.repo.saveTrusted(
           _automatic(gpsTrackingEnabled: false),
-          tenantId: 3,
+          tenantId: '3',
         );
         await controller.reloadSettings();
         await pumpEventQueue();
@@ -491,13 +620,13 @@ void main() {
       () async {
         final h = _AutoHarness(
           settings: _automatic(gpsTrackingEnabled: false),
-          now: DateTime(2026, 9, 18, 10),
+          now: DateTime.utc(2026, 9, 18, 10),
         );
         final controller = await h.build();
         await controller.startDay();
         expect(controller.isTracking, isFalse);
 
-        await h.repo.saveTrusted(_automatic(), tenantId: 3);
+        await h.repo.saveTrusted(_automatic(), tenantId: '3');
         await controller.reloadSettings();
         await controller.resumeTracking();
 
@@ -512,7 +641,7 @@ void main() {
       final offlineUuid = controller.activeSession!.offlineUuid;
       expect(controller.isTracking, isTrue);
 
-      await h.repo.saveTrusted(_manual(), tenantId: 3);
+      await h.repo.saveTrusted(_manual(), tenantId: '3');
       await controller.reloadSettings();
       await controller.evaluateAutomaticPolicy();
 
@@ -570,6 +699,61 @@ void main() {
       expect(controller.isTracking, isFalse);
       expect(controller.pauseReason, TrackingPauseReason.permissionMissing);
     });
+
+    test(
+      'restored active session does not track when gps policy is disabled',
+      () async {
+        await sessions.startSession(latitude: 34.5, longitude: 69.2);
+        final h = _AutoHarness(settings: _manual(gpsTrackingEnabled: false));
+        final controller = await h.build();
+
+        expect(controller.activeSession, isNotNull);
+        expect(controller.isTracking, isFalse);
+        expect(controller.pauseReason, TrackingPauseReason.gpsDisabled);
+      },
+    );
+
+    test(
+      'auth restore racing controller restore still obeys gps policy',
+      () async {
+        await sessions.startSession(latitude: 34.5, longitude: 69.2);
+        final h = _AutoHarness(settings: _manual(gpsTrackingEnabled: false));
+        final controller = await h.create();
+        await controller.acknowledgePrivacy();
+
+        await Future.wait([controller.restore(), controller.setSignedIn(true)]);
+
+        expect(controller.activeSession, isNotNull);
+        expect(controller.isTracking, isFalse);
+        expect(controller.pauseReason, TrackingPauseReason.gpsDisabled);
+      },
+    );
+
+    test(
+      'deferred sign-in still refreshes trusted settings from Laravel',
+      () async {
+        await sessions.startSession(latitude: 34.5, longitude: 69.2);
+        await AttendanceTrackingSettingsRepository().saveTrusted(
+          _manual(gpsTrackingEnabled: false),
+          tenantId: '3',
+        );
+        final h = _AutoHarness(
+          settings: _manual(gpsTrackingEnabled: false),
+          repository: AttendanceTrackingSettingsRepository(
+            remoteSource: _FixedSettingsSource(
+              _manual(gpsTrackingEnabled: true),
+            ),
+          ),
+        );
+        final controller = await h.create(saveSettings: false);
+        await controller.acknowledgePrivacy();
+
+        await Future.wait([controller.restore(), controller.setSignedIn(true)]);
+
+        expect(controller.gpsTrackingEnabled, isTrue);
+        expect(controller.isTracking, isTrue);
+      },
+    );
   });
 
   group('GPS FRESHNESS', () {
@@ -606,6 +790,7 @@ AttendanceTrackingSettings _automatic({
   bool gpsTrackingEnabled = true,
   int moving = 15,
   int stationary = 60,
+  String? timezone = 'UTC',
 }) => AttendanceTrackingSettings(
   startMode: WorkSessionStartMode.automatic,
   workdayStartTime: start,
@@ -614,25 +799,32 @@ AttendanceTrackingSettings _automatic({
   gpsTrackingEnabled: gpsTrackingEnabled,
   gpsMovingIntervalSeconds: moving,
   gpsStationaryIntervalSeconds: stationary,
+  timezone: timezone,
 );
 
-AttendanceTrackingSettings _manual({bool gpsTrackingEnabled = true}) =>
-    AttendanceTrackingSettings(
-      startMode: WorkSessionStartMode.manual,
-      gpsTrackingEnabled: gpsTrackingEnabled,
-    );
+AttendanceTrackingSettings _manual({
+  bool gpsTrackingEnabled = true,
+  String? timezone = 'UTC',
+}) => AttendanceTrackingSettings(
+  startMode: WorkSessionStartMode.manual,
+  gpsTrackingEnabled: gpsTrackingEnabled,
+  timezone: timezone,
+);
 
 class _AutoHarness {
   _AutoHarness({
     AttendanceTrackingSettings? settings,
     DateTime? now,
     bool online = false,
+    AttendanceTrackingSettingsRepository? repository,
   }) : settings = settings ?? _automatic(),
-       clock = TestClock(now ?? DateTime(2026, 9, 18, 10)),
+       clock = TestClock(now ?? DateTime.utc(2026, 9, 18, 10)),
        connectivity = FakeConnectivityService(online: online),
-       repo = AttendanceTrackingSettingsRepository(
-         clock: TestClock(now ?? DateTime(2026, 9, 18, 10)),
-       ) {
+       repo =
+           repository ??
+           AttendanceTrackingSettingsRepository(
+             clock: TestClock(now ?? DateTime.utc(2026, 9, 18, 10)),
+           ) {
     locationSource.current = LocationFix(
       latitude: 34.5553,
       longitude: 69.2075,
@@ -673,13 +865,11 @@ class _AutoHarness {
 
   late GpsTrackingService tracking;
 
-  Future<AttendanceController> build({
-    bool saveSettings = true,
-    bool acknowledge = true,
-    bool signedIn = true,
-  }) async {
+  /// Constructs the controller without restoring/signing in (for concurrency
+  /// and lifecycle tests).
+  Future<AttendanceController> create({bool saveSettings = true}) async {
     if (saveSettings) {
-      await repo.saveTrusted(settings, tenantId: 3);
+      await repo.saveTrusted(settings, tenantId: '3');
     }
     tracking = GpsTrackingService(
       locationSource: locationSource,
@@ -689,7 +879,7 @@ class _AutoHarness {
       config: const GpsTrackingConfig(),
       clock: clock,
     );
-    final controller = AttendanceController(
+    return AttendanceController(
       workSessions: WorkSessionRepository.instance,
       privacyAcks: PrivacyAckStore.instance,
       permissions: permissions,
@@ -708,8 +898,17 @@ class _AutoHarness {
       notificationPermissions: notificationPermissions,
       settingsRepository: repo,
       clock: clock,
+      tenantTime: TenantTimeResolver(clock: clock),
       boundaryScheduler: scheduler,
     );
+  }
+
+  Future<AttendanceController> build({
+    bool saveSettings = true,
+    bool acknowledge = true,
+    bool signedIn = true,
+  }) async {
+    final controller = await create(saveSettings: saveSettings);
     await controller.restore();
     if (acknowledge) {
       await controller.acknowledgePrivacy();
@@ -719,4 +918,13 @@ class _AutoHarness {
     }
     return controller;
   }
+}
+
+class _FixedSettingsSource implements AttendanceTrackingSettingsSource {
+  _FixedSettingsSource(this.settings);
+
+  final AttendanceTrackingSettings settings;
+
+  @override
+  Future<AttendanceTrackingSettings?> fetch() async => settings;
 }

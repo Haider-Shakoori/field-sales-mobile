@@ -60,12 +60,19 @@ class WorkSessionRepository {
   }
 
   /// Most recent session started on the local calendar day of [day].
-  Future<LocalWorkSession?> sessionForDay(DateTime day) async {
+  Future<LocalWorkSession?> sessionForDay(DateTime day) =>
+      sessionForDayKey(localDateKey(day));
+
+  /// Most recent session for a pre-computed local date key (`yyyy-MM-dd`).
+  ///
+  /// Used with tenant-timezone dates so local "today" matches the server's
+  /// tenant-local work date.
+  Future<LocalWorkSession?> sessionForDayKey(String dateKey) async {
     final db = await _db;
     final rows = await db.query(
       'local_work_sessions',
       where: 'date = ?',
-      whereArgs: [localDateKey(day)],
+      whereArgs: [dateKey],
       orderBy: 'start_time DESC',
       limit: 1,
     );
@@ -104,6 +111,7 @@ class WorkSessionRepository {
     double? accuracy,
     String? privacyAckAt,
     DateTime? startedAt,
+    String? localDateKeyOverride,
     WorkSessionStartSource source = WorkSessionStartSource.manual,
   }) async {
     final db = await _db;
@@ -113,7 +121,7 @@ class WorkSessionRepository {
 
     final session = LocalWorkSession(
       offlineUuid: offlineUuid,
-      date: localDateKey(at),
+      date: localDateKeyOverride ?? localDateKey(at),
       startTime: at,
       startLatitude: latitude,
       startLongitude: longitude,

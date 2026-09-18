@@ -32,7 +32,7 @@ class AuthRepository {
     final body = <String, dynamic>{
       'email': email,
       'password': password,
-      'device_uuid': (await _secretStore.readInstallationUuid()),
+      'device_uuid': await _apiClient.ensureInstallationUuid(),
       'device_model': await _resolveDeviceModel(),
       'manufacturer': 'unknown',
       'android_version': '14',

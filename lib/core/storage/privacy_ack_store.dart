@@ -61,4 +61,23 @@ class PrivacyAckStore {
       whereArgs: [settingKey],
     );
   }
+
+  /// Marks the stored acknowledgement as audited server-side, keeping the
+  /// original policy version / acknowledged_at metadata for idempotent retries.
+  Future<GpsPrivacyAcknowledgement?> markSynced({
+    required int serverId,
+    String? serverUuid,
+  }) async {
+    final current = await load();
+    if (current == null) {
+      return null;
+    }
+    return save(
+      current.copyWith(
+        syncStatus: 'synced',
+        serverId: serverId,
+        serverUuid: serverUuid,
+      ),
+    );
+  }
 }

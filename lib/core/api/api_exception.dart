@@ -24,7 +24,16 @@ class ApiException implements Exception {
   final bool retryable;
 
   bool get isUnauthenticated => status == 401 || code == 'TOKEN_REVOKED';
-  bool get isDeviceRevoked => code == 'DEVICE_REVOKED';
+
+  /// Device revocation.
+  ///
+  /// Laravel returns `403` with a human message ("This device has been
+  /// revoked…") and no machine code from its device middleware, so the message
+  /// is used as a compatibility fallback alongside the canonical code/status.
+  bool get isDeviceRevoked =>
+      code == 'DEVICE_REVOKED' ||
+      status == 440 ||
+      (status == 403 && message.toLowerCase().contains('revoked'));
 
   /// The minimum app version middleware (`EnforceMinimumAppVersion`) returns
   /// 426 with upgrade details when `X-App-Version` is below the threshold.
