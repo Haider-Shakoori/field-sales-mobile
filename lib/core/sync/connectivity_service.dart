@@ -22,6 +22,11 @@ class ConnectivityService {
   NetworkState _state = NetworkState.offline;
   NetworkState get state => _state;
 
+  String _connectionType = 'offline';
+
+  /// Interface label for GPS telemetry (`wifi` | `cellular` | `offline`).
+  String get connectionType => _connectionType;
+
   /// Emits whenever connectivity changes (online/offline/limited).
   Stream<NetworkState> get states => _controller.stream;
 
@@ -45,6 +50,7 @@ class ConnectivityService {
   Future<void> _onChanged(List<ConnectivityResult> results) async {
     final hasInterface =
         results.isNotEmpty && results.any((r) => r != ConnectivityResult.none);
+    _connectionType = hasInterface ? _describe(results) : 'offline';
     if (!hasInterface) {
       _set(NetworkState.offline);
       return;
@@ -52,6 +58,17 @@ class ConnectivityService {
 
     final reachable = await probe();
     _set(reachable ? NetworkState.online : NetworkState.limited);
+  }
+
+  String _describe(List<ConnectivityResult> results) {
+    if (results.contains(ConnectivityResult.wifi) ||
+        results.contains(ConnectivityResult.ethernet)) {
+      return 'wifi';
+    }
+    if (results.contains(ConnectivityResult.mobile)) {
+      return 'cellular';
+    }
+    return 'cellular';
   }
 
   Future<bool> probe({Uri? target}) async {

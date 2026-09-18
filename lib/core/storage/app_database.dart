@@ -8,11 +8,15 @@ import '../sync/sync_status.dart';
 /// v1 held the sync queue, the pending-local entities mirror, settings and the
 /// sync log. v2 adds the master-data cache tables (customers, territories,
 /// routes, route customers, products, price lists + items) and session meta so
-/// the app stays fully readable offline. All schema is created idempotently.
+/// the app stays fully readable offline. v3 adds the attendance/GPS tracking
+/// tables (`local_work_sessions`, `local_gps_points`). v4 additively adds
+/// `local_work_sessions.start_source` (manual | automatic) for the
+/// company-controlled attendance policy. All schema is created idempotently
+/// and upgrades are additive — no Batch 6/7 data is ever dropped.
 class AppDatabase {
   AppDatabase._();
 
-  static const version = 2;
+  static const version = 4;
   static Database? _instance;
   static Future<Database>? _opening;
 
@@ -55,6 +59,8 @@ class AppDatabase {
     await _createLocalTables(db);
     await _createMasterDataTables(db);
     await _createSessionTables(db);
+    await _createAttendanceTables(db);
+    await _addStartSourceColumn(db);
   }
 
   static Future<void> upgradeSchema(
@@ -65,6 +71,12 @@ class AppDatabase {
     if (oldVersion < 2) {
       await _createMasterDataTables(db);
       await _createSessionTables(db);
+    }
+    if (oldVersion < 3) {
+      await _createAttendanceTables(db);
+    }
+    if (oldVersion < 4) {
+      await _addStartSourceColumn(db);
     }
   }
 
@@ -284,6 +296,83 @@ class AppDatabase {
         value TEXT
       )
     ''');
+  }
+
+  /// Batch 7 attendance + GPS tracking foundation.
+  ///
+  /// `local_work_sessions` mirrors the attendance work session (v3); a partial
+  /// unique index guarantees at most one ACTIVE session locally.
+  /// `local_gps_points` is the append-only GPS buffer that survives network
+  /// loss and backgrounding until the dedicated GPS uploader drains it.
+  static Future<void> _createAttendanceTables(Database db) async {
+    await db.execute('''
+      CREATE TABLE local_work_sessions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        offline_uuid TEXT NOT NULL UNIQUE,
+        server_id INTEGER,
+        date TEXT NOT NULL,
+        start_time TEXT NOT NULL,
+        end_time TEXT,
+        start_latitude REAL NOT NULL,
+        start_longitude REAL NOT NULL,
+        start_accuracy REAL,
+        end_latitude REAL,
+        end_longitude REAL,
+        end_accuracy REAL,
+        status TEXT NOT NULL DEFAULT 'active',
+        sync_status TEXT NOT NULL DEFAULT '${nameOf(SyncStatus.pending)}',
+        privacy_ack_at TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      )
+    ''');
+    await db.execute(
+      'CREATE UNIQUE INDEX idx_work_sessions_single_active '
+      "ON local_work_sessions(status) WHERE status = 'active'",
+    );
+    await db.execute(
+      'CREATE INDEX idx_work_sessions_date ON local_work_sessions(date)',
+    );
+
+    await db.execute('''
+      CREATE TABLE local_gps_points (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        client_uuid TEXT NOT NULL UNIQUE,
+        latitude REAL NOT NULL,
+        longitude REAL NOT NULL,
+        altitude REAL,
+        accuracy REAL,
+        speed REAL,
+        heading REAL,
+        battery_level INTEGER,
+        is_charging INTEGER NOT NULL DEFAULT 0,
+        network_status TEXT,
+        is_mock_location INTEGER NOT NULL DEFAULT 0,
+        provider TEXT,
+        recorded_at TEXT NOT NULL,
+        sequence_number INTEGER NOT NULL DEFAULT 0,
+        batch_uuid TEXT,
+        sync_status TEXT NOT NULL DEFAULT 'pending',
+        last_error TEXT,
+        uploaded_at TEXT,
+        created_at TEXT NOT NULL
+      )
+    ''');
+    await db.execute(
+      'CREATE INDEX idx_gps_points_sync ON local_gps_points(sync_status, id)',
+    );
+    await db.execute(
+      'CREATE INDEX idx_gps_points_recorded ON local_gps_points(recorded_at)',
+    );
+  }
+
+  /// v4 additive column: why the local session was started. Purely local
+  /// audit/UI metadata — the attendance API payload stays contract-exact.
+  static Future<void> _addStartSourceColumn(Database db) async {
+    await db.execute(
+      "ALTER TABLE local_work_sessions "
+      "ADD COLUMN start_source TEXT NOT NULL DEFAULT 'manual'",
+    );
   }
 
   static Future<void> close() async {

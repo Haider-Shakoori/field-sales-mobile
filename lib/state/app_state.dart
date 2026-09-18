@@ -6,6 +6,7 @@ import '../core/models/session.dart';
 import '../core/storage/secret_store.dart';
 import '../core/storage/session_meta_store.dart';
 import '../core/sync/sync_controller.dart';
+import '../features/attendance/attendance_controller.dart';
 
 /// Root application state: whether the user is signed in and the current
 /// session. The UI flips between the login flow and the home shell based on
@@ -16,15 +17,18 @@ class AppState extends ChangeNotifier {
     required SyncController sync,
     required SecretStore secureStorage,
     required SessionMetaStore sessionMeta,
+    required AttendanceController attendance,
   }) : _auth = auth,
        _sync = sync,
        _secureStorage = secureStorage,
-       _sessionMeta = sessionMeta;
+       _sessionMeta = sessionMeta,
+       _attendance = attendance;
 
   final AuthRepository _auth;
   final SyncController _sync;
   final SecretStore _secureStorage;
   final SessionMetaStore _sessionMeta;
+  final AttendanceController _attendance;
 
   Session? _session;
   bool get isSignedIn => _session != null;
@@ -48,8 +52,16 @@ class AppState extends ChangeNotifier {
         tenant: meta.tenant,
         permissions: meta.permissions,
       );
+      _attendance.updateIdentity(
+        userId: meta.user.id,
+        tenantId: meta.tenant.id,
+      );
+      notifyListeners();
+      await _attendance.setSignedIn(true);
+      return;
     }
     notifyListeners();
+    await _attendance.setSignedIn(false);
   }
 
   Future<void> signIn({
@@ -64,8 +76,13 @@ class AppState extends ChangeNotifier {
     );
     await _sessionMeta.save(session);
     _session = session;
+    _attendance.updateIdentity(
+      userId: session.user.id,
+      tenantId: session.tenant.id,
+    );
     notifyListeners();
     await _sync.maybeSync();
+    await _attendance.setSignedIn(true);
   }
 
   /// Maps transport failures to friendly codes for the login form.
@@ -94,6 +111,9 @@ class AppState extends ChangeNotifier {
   Future<void> signOut() async {
     final auth = _auth;
     final sync = _sync;
+    // Stop GPS tracking before the token is cleared so no foreground service
+    // keeps collecting after logout. Local attendance/GPS rows are preserved.
+    await _attendance.stopTrackingForLogout();
     await auth.logout();
     await _sessionMeta.clear();
     _session = null;

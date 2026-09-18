@@ -34,14 +34,35 @@ class SyncQueueRepository {
 
   /// Returns the next batch of pending entries, ordered by priority then
   /// creation time. Failed and syncing entries are not returned (retry and
-  /// resumable drains are Batch 12 behavior).
-  Future<List<QueueEntry>> next({int limit = 50}) async {
+  /// resumable drains are Batch 12 behavior). Pass [entityType] to read only
+  /// one entity family — Batch 7 uses this for the dedicated attendance
+  /// outbox drain.
+  Future<List<QueueEntry>> next({int limit = 50, String? entityType}) async {
     final db = await _db;
     final rows = await db.query(
       'sync_queue',
-      where: 'status = ?',
-      whereArgs: [nameOf(SyncStatus.pending)],
+      where: entityType == null
+          ? 'status = ?'
+          : 'status = ? AND entity_type = ?',
+      whereArgs: [nameOf(SyncStatus.pending), ?entityType],
       orderBy: 'priority ASC, created_at ASC',
+      limit: limit,
+    );
+    return rows.map(QueueEntry.fromRow).toList();
+  }
+
+  /// Failed entries for an entity family — used by the attendance outbox to
+  /// re-queue entries that failed while the token was revoked.
+  Future<List<QueueEntry>> failedForEntity(
+    String entityType, {
+    int limit = 100,
+  }) async {
+    final db = await _db;
+    final rows = await db.query(
+      'sync_queue',
+      where: 'status = ? AND entity_type = ?',
+      whereArgs: [nameOf(SyncStatus.failed), entityType],
+      orderBy: 'created_at ASC',
       limit: limit,
     );
     return rows.map(QueueEntry.fromRow).toList();

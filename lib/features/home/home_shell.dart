@@ -5,6 +5,8 @@ import '../../core/sync/sync_controller.dart';
 import '../../l10n/app_l10n.dart';
 import '../../state/app_state.dart';
 import '../../state/master_data_controller.dart';
+import '../attendance/attendance_card.dart';
+import '../attendance/attendance_controller.dart';
 import 'master_data_screens.dart';
 import 'sync_status_indicator.dart';
 
@@ -19,15 +21,30 @@ class HomeShell extends StatefulWidget {
   State<HomeShell> createState() => _HomeShellState();
 }
 
-class _HomeShellState extends State<HomeShell> {
+class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
   int _index = 0;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<MasterDataController>().refresh();
     });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && mounted) {
+      // Automatic attendance re-evaluates when the app returns to foreground.
+      context.read<AttendanceController>().onAppResumed();
+    }
   }
 
   @override
@@ -112,6 +129,8 @@ class _DashboardScreen extends StatelessWidget {
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.all(16),
           children: [
+            const AttendanceCard(),
+            const SizedBox(height: 16),
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(20),
