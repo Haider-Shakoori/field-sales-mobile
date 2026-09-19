@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:uuid/uuid.dart';
 
-import '../../core/api/api_exception.dart';
 import '../../core/db/app_database.dart';
 import '../../core/db/local_first_transaction.dart';
+import '../../core/sync/sync_retry_store.dart';
 import '../master_data/master_data_repository.dart';
 import '../master_data/master_data_source.dart';
 
@@ -14,12 +14,13 @@ class CustomerRepository {
     required this.transactions,
     required this.masterData,
     required this.source,
-  });
+  }) : retry = SyncRetryStore(database);
 
   final AppDatabase database;
   final LocalFirstTransaction transactions;
   final MasterDataRepository masterData;
   final MasterDataSource source;
+  final SyncRetryStore retry;
 
   Future<Map<String, dynamic>> createOffline({
     required String tenantId,
@@ -83,8 +84,17 @@ class CustomerRepository {
   Future<CustomerSyncResult> syncPending(String tenantId) async {
     final rows = await database.db.query(
       'sync_queue',
-      where: 'tenant_id = ? AND entity_type = ? AND action = ? AND status = ?',
-      whereArgs: [tenantId, 'customer', 'create', 'pending'],
+      where:
+          'tenant_id = ? AND entity_type = ? AND action = ? '
+          'AND status IN (?,?,?)',
+      whereArgs: [
+        tenantId,
+        'customer',
+        'create',
+        'pending',
+        'failed',
+        'blocked',
+      ],
       orderBy: 'priority ASC, created_at ASC',
     );
 
@@ -93,6 +103,16 @@ class CustomerRepository {
 
     for (final queueRow in rows) {
       final id = queueRow['id'] as int;
+      final entityUuid = queueRow['entity_uuid'].toString();
+
+      if (!await retry.shouldAttempt(
+        tenantId: tenantId,
+        entityType: 'customer',
+        entityUuid: entityUuid,
+      )) {
+        continue;
+      }
+
       final payload = Map<String, dynamic>.from(
         jsonDecode(queueRow['payload'] as String) as Map,
       );
@@ -114,6 +134,7 @@ class CustomerRepository {
               'status': 'done',
               'server_uuid': server['id']?.toString(),
               'error_message': null,
+              'next_retry_at': null,
               'updated_at': DateTime.now().toUtc().toIso8601String(),
             },
             where: 'id = ?',
@@ -121,12 +142,20 @@ class CustomerRepository {
           );
         });
 
+        await retry.clear(
+          tenantId: tenantId,
+          entityType: 'customer',
+          entityUuid: entityUuid,
+        );
         synced++;
-      } on ApiException catch (error) {
-        await _markFailure(id, error.message);
-        failed++;
       } catch (error) {
-        await _markFailure(id, '$error');
+        final failure = await retry.recordFailure(
+          tenantId: tenantId,
+          entityType: 'customer',
+          entityUuid: entityUuid,
+          error: error,
+        );
+        await _markFailure(id, failure);
         failed++;
       }
     }
@@ -134,12 +163,18 @@ class CustomerRepository {
     return CustomerSyncResult(synced: synced, failed: failed);
   }
 
-  Future<void> _markFailure(int id, String message) async {
-    await database.db.rawUpdate(
-      'UPDATE sync_queue '
-      'SET attempts = attempts + 1, error_message = ?, updated_at = ? '
-      'WHERE id = ?',
-      [message, DateTime.now().toUtc().toIso8601String(), id],
+  Future<void> _markFailure(int id, SyncFailureState failure) async {
+    await database.db.update(
+      'sync_queue',
+      {
+        'status': failure.blocked ? 'blocked' : 'failed',
+        'attempts': failure.attempts,
+        'error_message': failure.message,
+        'next_retry_at': failure.nextRetryAt?.toIso8601String(),
+        'updated_at': DateTime.now().toUtc().toIso8601String(),
+      },
+      where: 'id=?',
+      whereArgs: [id],
     );
   }
 }

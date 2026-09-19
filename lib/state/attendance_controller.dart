@@ -406,6 +406,7 @@ class AttendanceController extends ChangeNotifier {
     if (tenantId == null) return;
 
     try {
+      await gps.uploadPrivacyAcknowledgements(tenantId);
       await attendance.drain(tenantId);
       if (appState.session?.tenantId == tenantId) {
         await gps.upload(tenantId);

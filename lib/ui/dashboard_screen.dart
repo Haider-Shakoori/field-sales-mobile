@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -7,6 +9,7 @@ import '../state/collection_controller.dart';
 import '../state/expense_controller.dart';
 import '../state/master_data_controller.dart';
 import '../state/order_controller.dart';
+import '../state/sync_controller.dart';
 import '../state/target_controller.dart';
 import '../state/visit_controller.dart';
 import 'customers_screen.dart';
@@ -48,15 +51,37 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        context.read<MasterDataController>().initialize();
-        context.read<VisitController>().initialize();
-        context.read<CallActivityController>().initialize();
-        context.read<OrderController>().initialize();
-        context.read<CollectionController>().initialize();
-        context.read<ExpenseController>().initialize();
-        context.read<TargetController>().initialize();
+        unawaited(_initializeData());
       }
     });
+  }
+
+  Future<void> _initializeData() async {
+    await Future.wait([
+      context.read<MasterDataController>().reloadLocal(),
+      context.read<VisitController>().reloadLocal(),
+      context.read<CallActivityController>().reloadLocal(),
+      context.read<OrderController>().reloadLocal(),
+      context.read<CollectionController>().reloadLocal(),
+      context.read<ExpenseController>().reloadLocal(),
+      context.read<TargetController>().reloadLocal(),
+    ]);
+
+    if (!mounted) return;
+
+    await context.read<SyncController>().run(triggerSource: 'startup');
+
+    if (!mounted) return;
+
+    await Future.wait([
+      context.read<MasterDataController>().reloadLocal(),
+      context.read<VisitController>().reloadLocal(),
+      context.read<CallActivityController>().reloadLocal(),
+      context.read<OrderController>().reloadLocal(),
+      context.read<CollectionController>().reloadLocal(),
+      context.read<ExpenseController>().reloadLocal(),
+      context.read<TargetController>().reloadLocal(),
+    ]);
   }
 
   @override
@@ -67,13 +92,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final orders = context.watch<OrderController>();
     final collections = context.watch<CollectionController>();
     final expenses = context.watch<ExpenseController>();
+    final sync = context.watch<SyncController>();
     final pending =
         master.pending +
         visits.pending +
         calls.pending +
         orders.pending +
         collections.pending +
-        expenses.pending;
+        expenses.pending +
+        sync.infrastructurePending;
 
     return Scaffold(
       appBar: AppBar(
@@ -85,7 +112,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Badge(
                 label: Text('$pending'),
                 child: IconButton(
-                  tooltip: 'Pending sync',
+                  tooltip: sync.blockedCount > 0
+                      ? 'Sync issues need attention'
+                      : 'Pending sync',
                   onPressed: () => Navigator.of(
                     context,
                   ).push(MaterialPageRoute(builder: (_) => const SyncScreen())),
