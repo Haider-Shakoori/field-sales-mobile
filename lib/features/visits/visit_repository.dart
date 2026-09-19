@@ -276,7 +276,7 @@ class VisitRepository {
       );
     }
 
-    await _syncPhotos(tenantId, row['offline_uuid'].toString(), serverUuid);
+    await _syncPhotos(tenantId, row['offline_uuid'].toString(), serverUuid!);
   }
 
   Future<void> _syncPhotos(
