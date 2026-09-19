@@ -179,6 +179,15 @@ class AppDatabase {
   }
 
   Future<void> _upgrade(Database database, int oldVersion, int newVersion) async {
+    if (oldVersion < 5 &&
+        await _tableExists(database, 'sync_queue') &&
+        !await _hasColumn(database, 'sync_queue', 'tenant_id')) {
+      await database.execute(
+        'ALTER TABLE sync_queue '
+        'ADD COLUMN tenant_id TEXT NOT NULL DEFAULT ""',
+      );
+    }
+
     await _createSyncTables(database);
     await _createAttendanceTables(database);
 
@@ -232,17 +241,18 @@ class AppDatabase {
       await database.delete(name, where: 'tenant_id = ?', whereArgs: ['']);
     }
 
-    if (tables.contains('sync_queue') &&
-        !await _hasColumn(database, 'sync_queue', 'tenant_id')) {
-      await database.execute(
-        'ALTER TABLE sync_queue '
-        'ADD COLUMN tenant_id TEXT NOT NULL DEFAULT ""',
-      );
-    }
-
     if (tables.contains('local_products')) {
       await database.execute('DROP TABLE IF EXISTS local_products');
     }
+  }
+
+  Future<bool> _tableExists(Database database, String table) async {
+    final rows = await database.rawQuery(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
+      [table],
+    );
+
+    return rows.isNotEmpty;
   }
 
   Future<bool> _hasColumn(
