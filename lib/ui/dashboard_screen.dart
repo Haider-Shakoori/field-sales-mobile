@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../state/attendance_controller.dart';
+import '../state/call_activity_controller.dart';
 import '../state/master_data_controller.dart';
 import '../state/visit_controller.dart';
 import 'customers_screen.dart';
@@ -47,6 +48,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       if (mounted) {
         context.read<MasterDataController>().initialize();
         context.read<VisitController>().initialize();
+        context.read<CallActivityController>().initialize();
       }
     });
   }
@@ -55,7 +57,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     final master = context.watch<MasterDataController>();
     final visits = context.watch<VisitController>();
-    final pending = master.pending + visits.pending;
+    final calls = context.watch<CallActivityController>();
+    final pending = master.pending + visits.pending + calls.pending;
 
     return Scaffold(
       appBar: AppBar(
