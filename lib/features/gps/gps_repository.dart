@@ -269,6 +269,86 @@ class GpsRepository {
     }
   }
 
+  Future<void> uploadPrivacyAcknowledgements(String tenantId) async {
+    if (tenantId.isEmpty) return;
+
+    final rows = await db.db.query(
+      'privacy_acknowledgements',
+      where: 'tenant_id=? AND sync_status IN (?,?,?)',
+      whereArgs: [tenantId, 'pending', 'failed', 'blocked'],
+      orderBy: 'acknowledged_at ASC',
+    );
+
+    for (final row in rows) {
+      final entityUuid =
+          '${row['policy_version']}:${row['user_id']}:${row['device_id']}';
+
+      if (!await retry.shouldAttempt(
+        tenantId: tenantId,
+        entityType: 'privacy_ack',
+        entityUuid: entityUuid,
+      )) {
+        continue;
+      }
+
+      try {
+        final result = Map<String, dynamic>.from(
+          await api.post(
+            'gps/privacy-acknowledgement',
+            data: {
+              'policy_version': row['policy_version'],
+              'acknowledged_at': row['acknowledged_at'],
+              'app_version': row['app_version'],
+            },
+          ) as Map,
+        );
+
+        await db.db.update(
+          'privacy_acknowledgements',
+          {
+            'sync_status': 'synced',
+            'server_id': result['id'],
+            'server_uuid': result['uuid'],
+          },
+          where:
+              'tenant_id=? AND policy_version=? AND user_id=? AND device_id=?',
+          whereArgs: [
+            tenantId,
+            row['policy_version'],
+            row['user_id'],
+            row['device_id'],
+          ],
+        );
+
+        await retry.clear(
+          tenantId: tenantId,
+          entityType: 'privacy_ack',
+          entityUuid: entityUuid,
+        );
+      } catch (error) {
+        final failure = await retry.recordFailure(
+          tenantId: tenantId,
+          entityType: 'privacy_ack',
+          entityUuid: entityUuid,
+          error: error,
+        );
+
+        await db.db.update(
+          'privacy_acknowledgements',
+          {'sync_status': failure.blocked ? 'blocked' : 'failed'},
+          where:
+              'tenant_id=? AND policy_version=? AND user_id=? AND device_id=?',
+          whereArgs: [
+            tenantId,
+            row['policy_version'],
+            row['user_id'],
+            row['device_id'],
+          ],
+        );
+      }
+    }
+  }
+
   Future<Map<String, dynamic>?> current({String? userId}) async {
     final data = await api.get(
       'gps/current',
