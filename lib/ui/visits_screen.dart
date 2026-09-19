@@ -94,7 +94,7 @@ class VisitsScreen extends StatelessWidget {
           context: context,
           builder: (dialogContext) => StatefulBuilder(
             builder: (context, setState) => AlertDialog(
-              title: Text('Check out · ' + visit['customer_name'].toString()),
+              title: Text("Check out · ${visit['customer_name']}"),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -225,25 +225,22 @@ class VisitsScreen extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 6),
-                          Text(type + ' · ' + geofence),
+                          Text('$type · $geofence'),
                           const SizedBox(height: 4),
                           Text(
-                            'Check-in: ' +
-                                (visit['checked_in_at']?.toString() ?? '—'),
+                            "Check-in: ${visit['checked_in_at'] ?? '—'}",
                             style: TextStyle(color: Colors.grey.shade600),
                           ),
                           if (!active && visit['outcome'] != null) ...[
                             const SizedBox(height: 4),
                             Text(
-                              'Outcome: ' +
-                                  (outcomes[visit['outcome']] ??
-                                      visit['outcome'].toString()),
+                              "Outcome: ${outcomes[visit['outcome']] ?? visit['outcome']}",
                             ),
                           ],
                           if (syncStatus != 'synced') ...[
                             const SizedBox(height: 6),
                             Text(
-                              'Sync: ' + syncStatus,
+                              'Sync: $syncStatus',
                               style: TextStyle(color: Colors.orange.shade700),
                             ),
                           ],
