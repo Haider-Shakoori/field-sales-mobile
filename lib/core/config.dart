@@ -3,8 +3,9 @@ class AppConfig {
   static const _configuredAppVersion = String.fromEnvironment('APP_VERSION');
   static const _debugApiBaseUrl = 'http://10.0.2.2:8000/api/v1';
 
-  static String get apiBaseUrl =>
-      _configuredApiBaseUrl.isNotEmpty ? _configuredApiBaseUrl : _debugApiBaseUrl;
+  static String get apiBaseUrl => _configuredApiBaseUrl.isNotEmpty
+      ? _configuredApiBaseUrl
+      : _debugApiBaseUrl;
 
   static String get appVersion =>
       _configuredAppVersion.isNotEmpty ? _configuredAppVersion : '1.0.0';
@@ -12,7 +13,7 @@ class AppConfig {
   static const privacyPolicyVersionFallback = '1';
 
   static void validateForStartup({
-    bool productMode = bool.fromEnvironment('dart.vm.product'),
+    bool productMode = const bool.fromEnvironment('dart.vm.product'),
   }) {
     final uri = Uri.tryParse(apiBaseUrl);
 
