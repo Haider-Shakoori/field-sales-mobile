@@ -13,6 +13,7 @@ import '../../features/orders/order_repository.dart';
 import '../../features/targets/target_repository.dart';
 import '../../features/visits/visit_repository.dart';
 import '../db/app_database.dart';
+import 'local_dependency_guard.dart';
 import 'sync_retry_store.dart';
 
 class SyncCoordinator {
@@ -111,15 +112,37 @@ class SyncCoordinator {
       return const SyncStageReport.success('attendance');
     });
 
-    await stage('gps', () async {
-      await gps.upload(tenantId);
-      return const SyncStageReport.success('gps');
-    });
+    final attendancePending =
+        await LocalDependencyGuard(db).hasPendingAttendance(tenantId);
 
-    await stage('visits', () async {
-      final result = await visits.syncPending(tenantId);
-      return SyncStageReport.fromCounts('visits', result.synced, result.failed);
-    });
+    if (attendancePending) {
+      stages.add(
+        const SyncStageReport.deferred(
+          'gps',
+          'Waiting for attendance to synchronize.',
+        ),
+      );
+      stages.add(
+        const SyncStageReport.deferred(
+          'visits',
+          'Waiting for attendance to synchronize.',
+        ),
+      );
+    } else {
+      await stage('gps', () async {
+        await gps.upload(tenantId);
+        return const SyncStageReport.success('gps');
+      });
+
+      await stage('visits', () async {
+        final result = await visits.syncPending(tenantId);
+        return SyncStageReport.fromCounts(
+          'visits',
+          result.synced,
+          result.failed,
+        );
+      });
+    }
 
     await stage('calls', () async {
       final result = await calls.syncPending(tenantId);
@@ -162,7 +185,9 @@ class SyncCoordinator {
     final waiting = await retryStore.waitingCount(tenantId);
     final blocked = await retryStore.blockedCount(tenantId);
     final completedAt = DateTime.now().toUtc();
-    final status = failed > 0 || issues > 0 ? 'partial' : 'success';
+    final hasDeferred = stages.any((stage) => stage.status == 'deferred');
+    final status =
+        failed > 0 || issues > 0 || hasDeferred ? 'partial' : 'success';
 
     await db.db.update(
       'local_sync_cycles',
@@ -246,6 +271,15 @@ class SyncStageReport {
 
   const SyncStageReport.success(String name)
     : this(name: name, status: 'success', synced: 0, failed: 0);
+
+  const SyncStageReport.deferred(String name, String message)
+    : this(
+        name: name,
+        status: 'deferred',
+        synced: 0,
+        failed: 0,
+        message: message,
+      );
 
   factory SyncStageReport.fromCounts(String name, int synced, int failed) {
     return SyncStageReport(
