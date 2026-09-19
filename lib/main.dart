@@ -15,9 +15,11 @@ import 'features/gps/tracking_service.dart';
 import 'features/master_data/master_data_repository.dart';
 import 'features/master_data/master_data_source.dart';
 import 'features/settings/settings_repository.dart';
+import 'features/visits/visit_repository.dart';
 import 'state/app_state.dart';
 import 'state/attendance_controller.dart';
 import 'state/master_data_controller.dart';
+import 'state/visit_controller.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,6 +35,7 @@ Future<void> main() async {
   final attendance = AttendanceRepository(api: api, db: db);
   final gps = GpsRepository(api: api, db: db);
   final tracking = TrackingService(db: db, gpsRepository: gps);
+  final visits = VisitRepository(api: api, db: db);
 
   final masterSource = ApiMasterDataSource(api);
   final masterData = MasterDataRepository(database: db, source: masterSource);
@@ -53,6 +56,11 @@ Future<void> main() async {
     customersRepository: customers,
   );
 
+  final visitController = VisitController(
+    appState: appState,
+    repository: visits,
+  );
+
   final attendanceController = AttendanceController(
     appState: appState,
     attendance: attendance,
@@ -71,8 +79,10 @@ Future<void> main() async {
         ChangeNotifierProvider.value(value: appState),
         ChangeNotifierProvider.value(value: attendanceController),
         ChangeNotifierProvider.value(value: masterDataController),
+        ChangeNotifierProvider.value(value: visitController),
         Provider.value(value: masterData),
         Provider.value(value: customers),
+        Provider.value(value: visits),
       ],
       child: const FieldSalesApp(),
     ),
