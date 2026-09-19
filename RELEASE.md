@@ -59,7 +59,7 @@ Build:
 flutter pub get --enforce-lockfile
 
 flutter build appbundle --release \
-  --dart-define=API_BASE_URL=https://YOUR_DOMAIN/api/v1 \
+  --dart-define=API_BASE_URL=https://fieldpulse.businessos.af/api/v1 \
   --dart-define=APP_VERSION=1.0.0
 
 flutter build apk --release \
@@ -85,7 +85,7 @@ Configure the following GitHub Actions secrets:
 
 Configure this GitHub Actions repository variable:
 
-- `PRODUCTION_API_BASE_URL` — for example `https://sales.example.com/api/v1`
+- `PRODUCTION_API_BASE_URL` — canonical value: `https://fieldpulse.businessos.af/api/v1`
 
 Generate the base64 keystore value without adding the keystore to Git:
 
@@ -147,3 +147,20 @@ This resolves the repository-side branding blocker. Batch 19 still requires phys
 Stage 2 Batch 19 physical-device acceptance steps are documented in [UAT.md](UAT.md).
 
 A green CI release build is necessary but not sufficient for production promotion. The signed release candidate must still be installed on a physical Android device and the documented offline, reconnect, background GPS, device revocation and admin round-trip scenarios must be executed with real evidence before Batch 19 can be marked complete.
+
+
+## Canonical FieldPulse production endpoint
+
+The production web/admin/backend host is:
+
+```text
+https://fieldpulse.businessos.af
+```
+
+The Android production API base URL is:
+
+```text
+https://fieldpulse.businessos.af/api/v1
+```
+
+The GitHub Actions repository variable `PRODUCTION_API_BASE_URL` must use that exact HTTPS URL before generating the externally signed release candidate. The workflow intentionally does not contain a production fallback so a missing variable fails closed instead of silently shipping against the wrong backend.

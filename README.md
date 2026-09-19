@@ -46,3 +46,8 @@ git diff --check
 Production builds are HTTPS-only, require external release signing credentials, and are verified in CI with a signed release AAB smoke build. Real release keys are never stored in the repository.
 
 See [RELEASE.md](RELEASE.md) for signing setup, GitHub Actions secrets/variables, versioning, artifact checksums, and the release checklist.
+
+
+## Production endpoint
+
+The canonical FieldPulse production backend is `https://fieldpulse.businessos.af`. Production Android releases must be built with `PRODUCTION_API_BASE_URL=https://fieldpulse.businessos.af/api/v1`. Debug/local builds remain configurable independently through `API_BASE_URL`.
