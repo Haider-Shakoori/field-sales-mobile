@@ -170,8 +170,9 @@ class AttendanceController extends ChangeNotifier {
     try {
       final tenantId = appState.session?.tenantId;
       final date = tenantDate;
-      if (tenantId == null)
+      if (tenantId == null) {
         throw StateError('Signed-in tenant is unavailable.');
+      }
       if (date == null) throw StateError('Company timezone is unavailable.');
       if (await attendance.forDate(tenantId, date) != null) {
         throw StateError('Day completed or already started.');
