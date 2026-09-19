@@ -368,6 +368,8 @@ class AppDatabase {
       'latitude REAL NOT NULL, '
       'longitude REAL NOT NULL, '
       'accuracy REAL NOT NULL, '
+      'distance_meters REAL, '
+      'within_geofence INTEGER, '
       'balance_before REAL NOT NULL DEFAULT 0, '
       'overpayment_flag INTEGER NOT NULL DEFAULT 0, '
       'notes TEXT, '
@@ -403,6 +405,7 @@ class AppDatabase {
       'verified_collections REAL NOT NULL DEFAULT 0, '
       'pending_collections REAL NOT NULL DEFAULT 0, '
       'outstanding_balance REAL NOT NULL DEFAULT 0, '
+      'available_to_collect REAL NOT NULL DEFAULT 0, '
       'updated_at TEXT NOT NULL'
       ')',
     );
