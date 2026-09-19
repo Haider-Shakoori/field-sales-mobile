@@ -44,6 +44,7 @@ void main() {
           'privacy_acknowledgements',
           'local_visits',
           'local_visit_photos',
+          'local_call_activities',
         ]),
       );
 
@@ -80,6 +81,7 @@ void main() {
           'idx_gps_recorded',
           'idx_visits_tenant_uuid',
           'idx_visit_photos_tenant_uuid',
+          'idx_calls_tenant_uuid',
         ]),
       );
 
