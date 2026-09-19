@@ -12,19 +12,23 @@ import 'features/auth/auth_repository.dart';
 import 'features/customers/customer_repository.dart';
 import 'features/calls/call_activity_repository.dart';
 import 'features/collections/collection_repository.dart';
+import 'features/expenses/expense_repository.dart';
 import 'features/gps/gps_repository.dart';
 import 'features/gps/tracking_service.dart';
 import 'features/master_data/master_data_repository.dart';
 import 'features/master_data/master_data_source.dart';
 import 'features/orders/order_repository.dart';
 import 'features/settings/settings_repository.dart';
+import 'features/targets/target_repository.dart';
 import 'features/visits/visit_repository.dart';
 import 'state/app_state.dart';
 import 'state/call_activity_controller.dart';
 import 'state/collection_controller.dart';
+import 'state/expense_controller.dart';
 import 'state/attendance_controller.dart';
 import 'state/master_data_controller.dart';
 import 'state/order_controller.dart';
+import 'state/target_controller.dart';
 import 'state/visit_controller.dart';
 
 Future<void> main() async {
@@ -44,6 +48,8 @@ Future<void> main() async {
   final visits = VisitRepository(api: api, db: db);
   final calls = CallActivityRepository(api: api, db: db);
   final collections = CollectionRepository(api: api, db: db);
+  final expenses = ExpenseRepository(api: api, db: db);
+  final targets = TargetRepository(api: api, db: db);
 
   final masterSource = ApiMasterDataSource(api);
   final masterData = MasterDataRepository(database: db, source: masterSource);
@@ -73,6 +79,16 @@ Future<void> main() async {
   final collectionController = CollectionController(
     appState: appState,
     repository: collections,
+  );
+
+  final expenseController = ExpenseController(
+    appState: appState,
+    repository: expenses,
+  );
+
+  final targetController = TargetController(
+    appState: appState,
+    repository: targets,
   );
 
   final orderController = OrderController(
@@ -107,12 +123,16 @@ Future<void> main() async {
         ChangeNotifierProvider.value(value: callActivityController),
         ChangeNotifierProvider.value(value: orderController),
         ChangeNotifierProvider.value(value: collectionController),
+        ChangeNotifierProvider.value(value: expenseController),
+        ChangeNotifierProvider.value(value: targetController),
         Provider.value(value: masterData),
         Provider.value(value: customers),
         Provider.value(value: visits),
         Provider.value(value: calls),
         Provider.value(value: orders),
         Provider.value(value: collections),
+        Provider.value(value: expenses),
+        Provider.value(value: targets),
       ],
       child: const FieldSalesApp(),
     ),
