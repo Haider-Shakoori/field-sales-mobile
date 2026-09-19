@@ -1,6 +1,6 @@
 # Field Sales Android — Release Candidate UAT
 
-Use this checklist only with a signed release-candidate APK built for the staging/UAT HTTPS API. Record actual evidence; do not mark an item passed from unit-test results alone.
+Use this checklist only with a signed release-candidate APK built for the staging/UAT HTTPS API. Record actual evidence; do not mark an item passed from unit-test results alone. Copy `UAT_RESULTS_TEMPLATE.md` for each execution and keep the completed result record with the release evidence.
 
 ## Before the device test
 
