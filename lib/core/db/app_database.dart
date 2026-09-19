@@ -4,7 +4,7 @@ import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
 class AppDatabase {
-  static const version = 9;
+  static const version = 10;
 
   Database? _db;
 
@@ -16,18 +16,19 @@ class AppDatabase {
     _db = await openDatabase(
       p.join(dir, 'field_sales.db'),
       version: version,
-      onCreate: (database, _) => _createV9(database),
+      onCreate: (database, _) => _createV10(database),
       onUpgrade: _upgrade,
     );
   }
 
-  Future<void> _createV9(Database database) async {
+  Future<void> _createV10(Database database) async {
     await _createSyncTables(database);
     await _createMasterTables(database);
     await _createAttendanceTables(database);
     await _createVisitTables(database);
     await _createOrderTables(database);
     await _createCollectionTables(database);
+    await _createExpenseTargetTables(database);
   }
 
   Future<void> _createSyncTables(Database database) async {
@@ -415,6 +416,75 @@ class AppDatabase {
     );
   }
 
+  Future<void> _createExpenseTargetTables(Database database) async {
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_expenses ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL, '
+      'offline_uuid TEXT NOT NULL, '
+      'server_uuid TEXT, '
+      'expense_number TEXT NOT NULL, '
+      'spent_at TEXT NOT NULL, '
+      'category TEXT NOT NULL, '
+      'currency TEXT NOT NULL, '
+      'amount REAL NOT NULL, '
+      'merchant TEXT, '
+      'reference_number TEXT, '
+      'latitude REAL NOT NULL, '
+      'longitude REAL NOT NULL, '
+      'accuracy REAL NOT NULL, '
+      'status TEXT NOT NULL DEFAULT "pending", '
+      'notes TEXT, '
+      'review_note TEXT, '
+      'reviewed_at TEXT, '
+      'reviewed_by TEXT, '
+      'sync_status TEXT NOT NULL DEFAULT "pending", '
+      'last_error TEXT, '
+      'created_at TEXT NOT NULL, '
+      'updated_at TEXT NOT NULL'
+      ')',
+    );
+    await database.execute(
+      'CREATE UNIQUE INDEX IF NOT EXISTS idx_expenses_tenant_uuid '
+      'ON local_expenses(tenant_id,offline_uuid)',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_expenses_sync '
+      'ON local_expenses(tenant_id,sync_status,spent_at)',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_expenses_spent '
+      'ON local_expenses(tenant_id,spent_at)',
+    );
+
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_targets ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL, '
+      'target_uuid TEXT NOT NULL, '
+      'target_type TEXT NOT NULL, '
+      'currency TEXT, '
+      'target_value REAL NOT NULL, '
+      'achieved_value REAL NOT NULL DEFAULT 0, '
+      'remaining_value REAL NOT NULL DEFAULT 0, '
+      'progress_percent REAL NOT NULL DEFAULT 0, '
+      'period_start TEXT NOT NULL, '
+      'period_end TEXT NOT NULL, '
+      'notes TEXT, '
+      'is_current INTEGER NOT NULL DEFAULT 0, '
+      'updated_at TEXT NOT NULL'
+      ')',
+    );
+    await database.execute(
+      'CREATE UNIQUE INDEX IF NOT EXISTS idx_targets_tenant_uuid '
+      'ON local_targets(tenant_id,target_uuid)',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_targets_period '
+      'ON local_targets(tenant_id,is_current,period_start,period_end)',
+    );
+  }
+
   Future<void> _upgrade(
     Database database,
     int oldVersion,
@@ -459,6 +529,7 @@ class AppDatabase {
     await _createVisitTables(database);
     await _createOrderTables(database);
     await _createCollectionTables(database);
+    await _createExpenseTargetTables(database);
 
     if (oldVersion < 4 &&
         !await _hasColumn(database, 'local_work_sessions', 'start_source')) {
