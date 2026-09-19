@@ -43,11 +43,12 @@ class AttendanceController extends ChangeNotifier {
   bool get working => session?['status'] == 'active';
 
   Future<void> restore() async {
-    session = await attendance.active();
+    final tenantId = appState.session?.tenantId;
+    session = tenantId == null ? null : await attendance.active(tenantId);
     restored = true;
     if (appState.signedIn) {
       await appState.refreshPolicy();
-      await attendance.drain();
+      await _flushPending();
       await reconcile();
       await evaluateAutomaticPolicy();
     }
@@ -56,8 +57,17 @@ class AttendanceController extends ChangeNotifier {
 
   Future<void> reconcile() async {
     final policy = appState.policy;
-    if (session != null && policy?.gpsTrackingEnabled == true) {
-      await tracking.start(movingSeconds: policy!.movingSeconds);
+    final tenantId = appState.session?.tenantId;
+    final sessionTenant = session?['tenant_id']?.toString();
+
+    if (session != null &&
+        tenantId != null &&
+        sessionTenant == tenantId &&
+        policy?.gpsTrackingEnabled == true) {
+      await tracking.start(
+        tenantId: tenantId,
+        movingSeconds: policy!.movingSeconds,
+      );
       _startUploader();
     } else {
       tracking.stop();
@@ -158,9 +168,11 @@ class AttendanceController extends ChangeNotifier {
     message = null;
     notifyListeners();
     try {
+      final tenantId = appState.session?.tenantId;
       final date = tenantDate;
+      if (tenantId == null) throw StateError('Signed-in tenant is unavailable.');
       if (date == null) throw StateError('Company timezone is unavailable.');
-      if (await attendance.forDate(date) != null) {
+      if (await attendance.forDate(tenantId, date) != null) {
         throw StateError('Day completed or already started.');
       }
       if (!await hasPrivacyAck()) {
@@ -170,6 +182,7 @@ class AttendanceController extends ChangeNotifier {
       final fix = await tracking.oneShot();
       if (fix == null) throw StateError('A usable GPS location is required.');
       await gps.store(
+        tenantId: tenantId,
         latitude: fix.latitude,
         longitude: fix.longitude,
         accuracy: fix.accuracy,
@@ -180,6 +193,7 @@ class AttendanceController extends ChangeNotifier {
         recordedAt: fix.timestamp,
       );
       await attendance.start(
+        tenantId: tenantId,
         date: date,
         at: DateTime.now(),
         lat: fix.latitude,
@@ -188,9 +202,9 @@ class AttendanceController extends ChangeNotifier {
         source: source,
         privacyAckAt: DateTime.now().toUtc().toIso8601String(),
       );
-      session = await attendance.active();
+      session = await attendance.active(tenantId);
       await reconcile();
-      unawaited(attendance.drain().then((_) => gps.upload()));
+      unawaited(_flushPending());
     } catch (error) {
       message = '$error'.replaceFirst('Bad state: ', '');
     } finally {
@@ -204,6 +218,8 @@ class AttendanceController extends ChangeNotifier {
     busy = true;
     notifyListeners();
     try {
+      final tenantId = appState.session?.tenantId;
+      if (tenantId == null) throw StateError('Signed-in tenant is unavailable.');
       final fix = await tracking.oneShot(timeout: const Duration(seconds: 10));
       late final double latitude;
       late final double longitude;
@@ -215,6 +231,8 @@ class AttendanceController extends ChangeNotifier {
       } else {
         final points = await db.db.query(
           'local_gps_points',
+          where: 'tenant_id=?',
+          whereArgs: [tenantId],
           orderBy: 'recorded_at DESC',
           limit: 1,
         );
@@ -242,7 +260,7 @@ class AttendanceController extends ChangeNotifier {
         accuracy: accuracy,
       );
       session = null;
-      unawaited(attendance.drain().then((_) => gps.upload()));
+      unawaited(_flushPending());
       _scheduleBoundary();
     } catch (error) {
       message = '$error';
@@ -254,8 +272,10 @@ class AttendanceController extends ChangeNotifier {
 
   Future<void> evaluateAutomaticPolicy() async {
     final policy = appState.policy;
+    final tenantId = appState.session?.tenantId;
     final now = _tenantNow();
     if (!appState.signedIn ||
+        tenantId == null ||
         policy == null ||
         !policy.trusted ||
         now == null) {
@@ -268,7 +288,10 @@ class AttendanceController extends ChangeNotifier {
         tracking.stop();
         _stopUploader();
       } else if (!tracking.active) {
-        await tracking.start(movingSeconds: policy.movingSeconds);
+        await tracking.start(
+          tenantId: tenantId,
+          movingSeconds: policy.movingSeconds,
+        );
         _startUploader();
       }
       if (policy.autoEndSession &&
@@ -283,7 +306,8 @@ class AttendanceController extends ChangeNotifier {
         inside &&
         policy.gpsTrackingEnabled) {
       final date = tenantDate;
-      if (date != null && await attendance.forDate(date) == null) {
+      if (date != null &&
+          await attendance.forDate(tenantId, date) == null) {
         if (!await hasPrivacyAck()) {
           message = 'Review tracking policy before automatic Start Day.';
         } else {
@@ -346,6 +370,11 @@ class AttendanceController extends ChangeNotifier {
 
   Future<void> refreshPolicyAndEvaluate() async {
     await appState.refreshPolicy();
+    final tenantId = appState.session?.tenantId;
+    if (tenantId != null && session == null) {
+      session = await attendance.active(tenantId);
+    }
+    await _flushPending();
     await reconcile();
     await evaluateAutomaticPolicy();
   }
@@ -360,13 +389,27 @@ class AttendanceController extends ChangeNotifier {
   void _startUploader() {
     _uploader ??= Timer.periodic(
       const Duration(minutes: 5),
-      (_) => unawaited(attendance.drain().then((_) => gps.upload())),
+      (_) => unawaited(_flushPending()),
     );
   }
 
   void _stopUploader() {
     _uploader?.cancel();
     _uploader = null;
+  }
+
+  Future<void> _flushPending() async {
+    final tenantId = appState.session?.tenantId;
+    if (tenantId == null) return;
+
+    try {
+      await attendance.drain(tenantId);
+      if (appState.session?.tenantId == tenantId) {
+        await gps.upload(tenantId);
+      }
+    } catch (_) {
+      // Offline and transient API failures leave local rows pending for retry.
+    }
   }
 
   Future<void> handleRevocation() async {
