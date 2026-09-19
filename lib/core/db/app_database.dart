@@ -1,21 +1,287 @@
 import 'dart:convert';
+
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
+
 class AppDatabase {
-  static const version = 4; Database? _db; Database get db => _db!;
-  Future<void> open() async { final dir=await getDatabasesPath(); _db=await openDatabase(p.join(dir,'field_sales.db'),version:version,onCreate:(db,_)=>_createV4(db),onUpgrade:_upgrade); }
-  Future<void> _createV4(Database db) async { await db.execute('CREATE TABLE sync_queue (id INTEGER PRIMARY KEY AUTOINCREMENT, entity_type TEXT NOT NULL, entity_uuid TEXT NOT NULL, action TEXT NOT NULL, payload TEXT NOT NULL, priority INTEGER NOT NULL DEFAULT 100, attempts INTEGER NOT NULL DEFAULT 0, max_attempts INTEGER NOT NULL DEFAULT 10, status TEXT NOT NULL DEFAULT "pending", error_message TEXT, next_retry_at TEXT, server_id INTEGER, server_uuid TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL)'); await db.execute('CREATE INDEX idx_sync_status_priority ON sync_queue(status,priority,created_at)'); await db.execute('CREATE INDEX idx_sync_entity ON sync_queue(entity_type,entity_uuid)');
-    await db.execute('CREATE TABLE local_settings (key TEXT PRIMARY KEY, value TEXT NOT NULL)'); await db.execute('CREATE TABLE local_sync_log (id INTEGER PRIMARY KEY AUTOINCREMENT, level TEXT, message TEXT, created_at TEXT NOT NULL)'); await db.execute('CREATE TABLE local_products (id INTEGER PRIMARY KEY, payload TEXT NOT NULL, cached_at TEXT NOT NULL)');
-    for(final name in ['customers','territories','routes','route_customers','products','price_lists','price_list_items']) { await db.execute('CREATE TABLE $name (id INTEGER PRIMARY KEY, uuid TEXT, payload TEXT NOT NULL, cached_at TEXT NOT NULL)'); }
-    await db.execute('CREATE TABLE session_meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)');
-    await db.execute('CREATE TABLE local_work_sessions (id INTEGER PRIMARY KEY AUTOINCREMENT, offline_uuid TEXT NOT NULL UNIQUE, server_id INTEGER, date TEXT NOT NULL, start_time TEXT NOT NULL, end_time TEXT, start_latitude REAL NOT NULL, start_longitude REAL NOT NULL, start_accuracy REAL NOT NULL, end_latitude REAL, end_longitude REAL, end_accuracy REAL, status TEXT NOT NULL, sync_status TEXT NOT NULL, start_source TEXT NOT NULL DEFAULT "manual", privacy_ack_at TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL)');
-    await db.execute('CREATE UNIQUE INDEX one_active_session ON local_work_sessions(status) WHERE status="active"');
-    await db.execute('CREATE TABLE local_gps_points (id INTEGER PRIMARY KEY AUTOINCREMENT, client_uuid TEXT NOT NULL UNIQUE, latitude REAL NOT NULL, longitude REAL NOT NULL, altitude REAL, accuracy REAL NOT NULL, speed REAL, heading REAL, battery_level INTEGER, is_charging INTEGER NOT NULL DEFAULT 0, network_status TEXT, is_mock_location INTEGER NOT NULL DEFAULT 0, provider TEXT, recorded_at TEXT NOT NULL, sequence_number INTEGER NOT NULL, batch_uuid TEXT, sync_status TEXT NOT NULL DEFAULT "pending", last_error TEXT, uploaded_at TEXT, created_at TEXT NOT NULL)');
-    await db.execute('CREATE INDEX idx_gps_pending ON local_gps_points(sync_status,id)'); await db.execute('CREATE INDEX idx_gps_recorded ON local_gps_points(recorded_at)');
-    await db.execute('CREATE TABLE privacy_acknowledgements (id INTEGER PRIMARY KEY AUTOINCREMENT, policy_version TEXT NOT NULL, acknowledged_at TEXT NOT NULL, user_id TEXT, tenant_id TEXT, device_id TEXT, app_version TEXT NOT NULL, sync_status TEXT NOT NULL DEFAULT "pending", server_id INTEGER, server_uuid TEXT, UNIQUE(policy_version,user_id,tenant_id,device_id))');
+  static const version = 5;
+
+  Database? _db;
+
+  Database get db => _db!;
+
+  Future<void> open() async {
+    final dir = await getDatabasesPath();
+
+    _db = await openDatabase(
+      p.join(dir, 'field_sales.db'),
+      version: version,
+      onCreate: (database, _) => _createV5(database),
+      onUpgrade: _upgrade,
+    );
   }
-  Future<bool> _hasColumn(Database db,String table,String column) async => (await db.rawQuery('PRAGMA table_info($table)')).any((r)=>r['name']==column);
-  Future<void> _upgrade(Database db,int old,int next) async { if(old<4){ final tables=(await db.rawQuery("SELECT name FROM sqlite_master WHERE type='table'")).map((x)=>x['name']).toSet(); if(!tables.contains('local_work_sessions')) { await _createV4(db); return; } if(!await _hasColumn(db,'local_work_sessions','start_source')) await db.execute('ALTER TABLE local_work_sessions ADD COLUMN start_source TEXT NOT NULL DEFAULT "manual"'); if(!tables.contains('local_gps_points')) { await db.execute('CREATE TABLE local_gps_points (id INTEGER PRIMARY KEY AUTOINCREMENT, client_uuid TEXT NOT NULL UNIQUE, latitude REAL NOT NULL, longitude REAL NOT NULL, altitude REAL, accuracy REAL NOT NULL, speed REAL, heading REAL, battery_level INTEGER, is_charging INTEGER NOT NULL DEFAULT 0, network_status TEXT, is_mock_location INTEGER NOT NULL DEFAULT 0, provider TEXT, recorded_at TEXT NOT NULL, sequence_number INTEGER NOT NULL, batch_uuid TEXT, sync_status TEXT NOT NULL DEFAULT "pending", last_error TEXT, uploaded_at TEXT, created_at TEXT NOT NULL)'); await db.execute('CREATE INDEX idx_gps_pending ON local_gps_points(sync_status,id)'); await db.execute('CREATE INDEX idx_gps_recorded ON local_gps_points(recorded_at)'); } if(!tables.contains('privacy_acknowledgements')) await db.execute('CREATE TABLE privacy_acknowledgements (id INTEGER PRIMARY KEY AUTOINCREMENT, policy_version TEXT NOT NULL, acknowledged_at TEXT NOT NULL, user_id TEXT, tenant_id TEXT, device_id TEXT, app_version TEXT NOT NULL, sync_status TEXT NOT NULL DEFAULT "pending", server_id INTEGER, server_uuid TEXT, UNIQUE(policy_version,user_id,tenant_id,device_id))'); } }
-  Future<void> setting(String key,Object value)=>db.insert('local_settings',{'key':key,'value':jsonEncode(value)},conflictAlgorithm:ConflictAlgorithm.replace);
-  Future<dynamic> readSetting(String key) async { final rows=await db.query('local_settings',where:'key=?',whereArgs:[key],limit:1);return rows.isEmpty?null:jsonDecode(rows.first['value'] as String); }
+
+  Future<void> _createV5(Database database) async {
+    await _createSyncTables(database);
+    await _createMasterTables(database);
+    await _createAttendanceTables(database);
+  }
+
+  Future<void> _createSyncTables(Database database) async {
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS sync_queue ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL DEFAULT "", '
+      'entity_type TEXT NOT NULL, '
+      'entity_uuid TEXT NOT NULL, '
+      'action TEXT NOT NULL, '
+      'payload TEXT NOT NULL, '
+      'priority INTEGER NOT NULL DEFAULT 100, '
+      'attempts INTEGER NOT NULL DEFAULT 0, '
+      'max_attempts INTEGER NOT NULL DEFAULT 10, '
+      'status TEXT NOT NULL DEFAULT "pending", '
+      'error_message TEXT, '
+      'next_retry_at TEXT, '
+      'server_id INTEGER, '
+      'server_uuid TEXT, '
+      'created_at TEXT NOT NULL, '
+      'updated_at TEXT NOT NULL'
+      ')',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_sync_status_priority '
+      'ON sync_queue(tenant_id,status,priority,created_at)',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_sync_entity '
+      'ON sync_queue(tenant_id,entity_type,entity_uuid)',
+    );
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_settings ('
+      'key TEXT PRIMARY KEY, '
+      'value TEXT NOT NULL'
+      ')',
+    );
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_sync_log ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'level TEXT, '
+      'message TEXT, '
+      'created_at TEXT NOT NULL'
+      ')',
+    );
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS session_meta ('
+      'key TEXT PRIMARY KEY, '
+      'value TEXT NOT NULL'
+      ')',
+    );
+  }
+
+  Future<void> _createMasterTables(Database database) async {
+    for (final name in masterTables) {
+      await database.execute(
+        'CREATE TABLE IF NOT EXISTS $name ('
+        'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+        'tenant_id TEXT NOT NULL, '
+        'uuid TEXT NOT NULL, '
+        'payload TEXT NOT NULL, '
+        'cached_at TEXT NOT NULL, '
+        'source TEXT NOT NULL DEFAULT "server", '
+        'sync_status TEXT NOT NULL DEFAULT "synced"'
+        ')',
+      );
+      await database.execute(
+        'CREATE UNIQUE INDEX IF NOT EXISTS idx_${name}_tenant_uuid '
+        'ON $name(tenant_id,uuid)',
+      );
+      await database.execute(
+        'CREATE INDEX IF NOT EXISTS idx_${name}_tenant_cached '
+        'ON $name(tenant_id,cached_at)',
+      );
+    }
+  }
+
+  Future<void> _createAttendanceTables(Database database) async {
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_work_sessions ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'offline_uuid TEXT NOT NULL UNIQUE, '
+      'server_id INTEGER, '
+      'date TEXT NOT NULL, '
+      'start_time TEXT NOT NULL, '
+      'end_time TEXT, '
+      'start_latitude REAL NOT NULL, '
+      'start_longitude REAL NOT NULL, '
+      'start_accuracy REAL NOT NULL, '
+      'end_latitude REAL, '
+      'end_longitude REAL, '
+      'end_accuracy REAL, '
+      'status TEXT NOT NULL, '
+      'sync_status TEXT NOT NULL, '
+      'start_source TEXT NOT NULL DEFAULT "manual", '
+      'privacy_ack_at TEXT, '
+      'created_at TEXT NOT NULL, '
+      'updated_at TEXT NOT NULL'
+      ')',
+    );
+    await database.execute(
+      'CREATE UNIQUE INDEX IF NOT EXISTS one_active_session '
+      'ON local_work_sessions(status) WHERE status="active"',
+    );
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_gps_points ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'client_uuid TEXT NOT NULL UNIQUE, '
+      'latitude REAL NOT NULL, '
+      'longitude REAL NOT NULL, '
+      'altitude REAL, '
+      'accuracy REAL NOT NULL, '
+      'speed REAL, '
+      'heading REAL, '
+      'battery_level INTEGER, '
+      'is_charging INTEGER NOT NULL DEFAULT 0, '
+      'network_status TEXT, '
+      'is_mock_location INTEGER NOT NULL DEFAULT 0, '
+      'provider TEXT, '
+      'recorded_at TEXT NOT NULL, '
+      'sequence_number INTEGER NOT NULL, '
+      'batch_uuid TEXT, '
+      'sync_status TEXT NOT NULL DEFAULT "pending", '
+      'last_error TEXT, '
+      'uploaded_at TEXT, '
+      'created_at TEXT NOT NULL'
+      ')',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_gps_pending '
+      'ON local_gps_points(sync_status,id)',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_gps_recorded '
+      'ON local_gps_points(recorded_at)',
+    );
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS privacy_acknowledgements ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'policy_version TEXT NOT NULL, '
+      'acknowledged_at TEXT NOT NULL, '
+      'user_id TEXT, '
+      'tenant_id TEXT, '
+      'device_id TEXT, '
+      'app_version TEXT NOT NULL, '
+      'sync_status TEXT NOT NULL DEFAULT "pending", '
+      'server_id INTEGER, '
+      'server_uuid TEXT, '
+      'UNIQUE(policy_version,user_id,tenant_id,device_id)'
+      ')',
+    );
+  }
+
+  Future<void> _upgrade(Database database, int oldVersion, int newVersion) async {
+    await _createSyncTables(database);
+    await _createAttendanceTables(database);
+
+    if (oldVersion < 4 &&
+        !await _hasColumn(database, 'local_work_sessions', 'start_source')) {
+      await database.execute(
+        'ALTER TABLE local_work_sessions '
+        'ADD COLUMN start_source TEXT NOT NULL DEFAULT "manual"',
+      );
+    }
+
+    if (oldVersion < 5) {
+      await _upgradeMasterCacheToV5(database);
+    }
+
+    await _createMasterTables(database);
+  }
+
+  Future<void> _upgradeMasterCacheToV5(Database database) async {
+    final tables = (await database.rawQuery(
+      "SELECT name FROM sqlite_master WHERE type='table'",
+    ))
+        .map((row) => row['name'])
+        .whereType<String>()
+        .toSet();
+
+    for (final name in masterTables) {
+      if (!tables.contains(name)) {
+        continue;
+      }
+
+      if (!await _hasColumn(database, name, 'tenant_id')) {
+        await database.execute(
+          'ALTER TABLE $name ADD COLUMN tenant_id TEXT NOT NULL DEFAULT ""',
+        );
+      }
+      if (!await _hasColumn(database, name, 'source')) {
+        await database.execute(
+          'ALTER TABLE $name ADD COLUMN source TEXT NOT NULL DEFAULT "server"',
+        );
+      }
+      if (!await _hasColumn(database, name, 'sync_status')) {
+        await database.execute(
+          'ALTER TABLE $name '
+          'ADD COLUMN sync_status TEXT NOT NULL DEFAULT "synced"',
+        );
+      }
+
+      // Pre-v5 master rows had no tenant identity. They are cache only, so
+      // discard them rather than risk exposing one tenant's data to another.
+      await database.delete(name, where: 'tenant_id = ?', whereArgs: ['']);
+    }
+
+    if (tables.contains('sync_queue') &&
+        !await _hasColumn(database, 'sync_queue', 'tenant_id')) {
+      await database.execute(
+        'ALTER TABLE sync_queue '
+        'ADD COLUMN tenant_id TEXT NOT NULL DEFAULT ""',
+      );
+    }
+
+    if (tables.contains('local_products')) {
+      await database.execute('DROP TABLE IF EXISTS local_products');
+    }
+  }
+
+  Future<bool> _hasColumn(
+    Database database,
+    String table,
+    String column,
+  ) async {
+    final rows = await database.rawQuery('PRAGMA table_info($table)');
+
+    return rows.any((row) => row['name'] == column);
+  }
+
+  Future<void> setting(String key, Object value) => db.insert(
+        'local_settings',
+        {
+          'key': key,
+          'value': jsonEncode(value),
+        },
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+
+  Future<dynamic> readSetting(String key) async {
+    final rows = await db.query(
+      'local_settings',
+      where: 'key=?',
+      whereArgs: [key],
+      limit: 1,
+    );
+
+    return rows.isEmpty ? null : jsonDecode(rows.first['value'] as String);
+  }
+
+  static const masterTables = [
+    'customers',
+    'territories',
+    'routes',
+    'route_customers',
+    'products',
+    'price_lists',
+    'price_list_items',
+  ];
 }
