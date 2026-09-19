@@ -46,6 +46,7 @@ class TrackingService {
     );
     _sub = Geolocator.getPositionStream(locationSettings: settings).listen(
       (p) => gpsRepository.store(
+        tenantId: tenantId,
         latitude: p.latitude,
         longitude: p.longitude,
         accuracy: p.accuracy,
