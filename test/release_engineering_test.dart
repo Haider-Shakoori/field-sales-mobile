@@ -16,6 +16,7 @@ void main() {
         productionManifest,
         contains('android:usesCleartextTraffic="false"'),
       );
+      expect(productionManifest, contains('android:allowBackup="false"'));
       expect(debugManifest, contains('android:usesCleartextTraffic="true"'));
     },
   );
