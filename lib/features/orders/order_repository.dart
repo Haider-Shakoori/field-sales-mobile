@@ -2,6 +2,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../core/api/api_client.dart';
 import '../../core/db/app_database.dart';
+import '../../core/sync/sync_retry_store.dart';
 import '../master_data/master_data_repository.dart';
 
 class OrderRepository {
@@ -9,11 +10,12 @@ class OrderRepository {
     required this.api,
     required this.db,
     required this.masterData,
-  });
+  }) : retry = SyncRetryStore(db);
 
   final ApiClient api;
   final AppDatabase db;
   final MasterDataRepository masterData;
+  final SyncRetryStore retry;
 
   Future<List<Map<String, dynamic>>> list(String tenantId) async {
     final rows = await db.db.query(
@@ -231,8 +233,8 @@ class OrderRepository {
   Future<OrderSyncResult> syncPending(String tenantId) async {
     final rows = await db.db.query(
       'local_orders',
-      where: 'tenant_id=? AND sync_status IN (?,?)',
-      whereArgs: [tenantId, 'pending', 'failed'],
+      where: 'tenant_id=? AND sync_status IN (?,?,?)',
+      whereArgs: [tenantId, 'pending', 'failed', 'blocked'],
       orderBy: 'ordered_at ASC',
     );
 
@@ -241,6 +243,15 @@ class OrderRepository {
 
     for (final order in rows) {
       final offlineUuid = order['offline_uuid'].toString();
+
+      if (!await retry.shouldAttempt(
+        tenantId: tenantId,
+        entityType: 'order',
+        entityUuid: offlineUuid,
+      )) {
+        continue;
+      }
+
       final orderItems = await items(tenantId, offlineUuid);
 
       try {
@@ -269,13 +280,24 @@ class OrderRepository {
         );
 
         await _applyServerOrder(tenantId, response);
+        await retry.clear(
+          tenantId: tenantId,
+          entityType: 'order',
+          entityUuid: offlineUuid,
+        );
         synced++;
       } catch (error) {
+        final failure = await retry.recordFailure(
+          tenantId: tenantId,
+          entityType: 'order',
+          entityUuid: offlineUuid,
+          error: error,
+        );
         await db.db.update(
           'local_orders',
           {
-            'sync_status': 'failed',
-            'last_error': error.toString(),
+            'sync_status': failure.blocked ? 'blocked' : 'failed',
+            'last_error': failure.message,
             'updated_at': DateTime.now().toUtc().toIso8601String(),
           },
           where: 'tenant_id=? AND offline_uuid=?',
@@ -387,6 +409,12 @@ class OrderRepository {
         }
       }
     });
+
+    await retry.clear(
+      tenantId: tenantId,
+      entityType: 'order',
+      entityUuid: uuid,
+    );
   }
 
   double _number(dynamic value) {
