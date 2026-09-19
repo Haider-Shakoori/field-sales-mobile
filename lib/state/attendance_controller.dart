@@ -170,7 +170,9 @@ class AttendanceController extends ChangeNotifier {
     try {
       final tenantId = appState.session?.tenantId;
       final date = tenantDate;
-      if (tenantId == null) throw StateError('Signed-in tenant is unavailable.');
+      if (tenantId == null) {
+        throw StateError('Signed-in tenant is unavailable.');
+      }
       if (date == null) throw StateError('Company timezone is unavailable.');
       if (await attendance.forDate(tenantId, date) != null) {
         throw StateError('Day completed or already started.');
@@ -219,7 +221,9 @@ class AttendanceController extends ChangeNotifier {
     notifyListeners();
     try {
       final tenantId = appState.session?.tenantId;
-      if (tenantId == null) throw StateError('Signed-in tenant is unavailable.');
+      if (tenantId == null) {
+        throw StateError('Signed-in tenant is unavailable.');
+      }
       final fix = await tracking.oneShot(timeout: const Duration(seconds: 10));
       late final double latitude;
       late final double longitude;
@@ -306,8 +310,7 @@ class AttendanceController extends ChangeNotifier {
         inside &&
         policy.gpsTrackingEnabled) {
       final date = tenantDate;
-      if (date != null &&
-          await attendance.forDate(tenantId, date) == null) {
+      if (date != null && await attendance.forDate(tenantId, date) == null) {
         if (!await hasPrivacyAck()) {
           message = 'Review tracking policy before automatic Start Day.';
         } else {

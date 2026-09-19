@@ -1,14 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../state/call_activity_controller.dart';
 import '../state/master_data_controller.dart';
+import '../state/visit_controller.dart';
 
 class SyncScreen extends StatelessWidget {
   const SyncScreen({super.key});
 
+  Future<void> _syncAll(BuildContext context) async {
+    await context.read<MasterDataController>().sync();
+    if (context.mounted) {
+      await context.read<VisitController>().sync();
+      if (context.mounted) {
+        await context.read<CallActivityController>().sync();
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = context.watch<MasterDataController>();
+    final visits = context.watch<VisitController>();
+    final calls = context.watch<CallActivityController>();
+    final pending = state.pending + visits.pending + calls.pending;
+    final busy = state.busy || visits.busy || calls.busy;
 
     return ListView(
       padding: const EdgeInsets.all(20),
@@ -24,7 +40,7 @@ class SyncScreen extends StatelessWidget {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                 ),
                 const SizedBox(height: 12),
-                Text('Pending local changes: ${state.pending}'),
+                Text('Pending local changes: $pending'),
                 const SizedBox(height: 6),
                 Text(
                   state.lastSyncedAt == null
@@ -33,18 +49,26 @@ class SyncScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 FilledButton.icon(
-                  onPressed: state.busy ? null : () => state.sync(),
-                  icon: state.busy
+                  onPressed: busy ? null : () => _syncAll(context),
+                  icon: busy
                       ? const SizedBox.square(
                           dimension: 18,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : const Icon(Icons.sync),
-                  label: Text(state.busy ? 'Syncing…' : 'Sync now'),
+                  label: Text(busy ? 'Syncing…' : 'Sync now'),
                 ),
                 if (state.message != null) ...[
                   const SizedBox(height: 12),
                   Text(state.message!),
+                ],
+                if (visits.message != null) ...[
+                  const SizedBox(height: 8),
+                  Text(visits.message!),
+                ],
+                if (calls.message != null) ...[
+                  const SizedBox(height: 8),
+                  Text(calls.message!),
                 ],
               ],
             ),
@@ -57,7 +81,7 @@ class SyncScreen extends StatelessWidget {
             title: Text('Local-first by design'),
             subtitle: Text(
               'Cached master data stays available without internet. '
-              'New customers are saved locally before any upload attempt.',
+              'Customers, visits, photos and optional call activities are saved locally before upload.',
             ),
           ),
         ),

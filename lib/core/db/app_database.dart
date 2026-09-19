@@ -4,7 +4,7 @@ import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
 class AppDatabase {
-  static const version = 6;
+  static const version = 7;
 
   Database? _db;
 
@@ -16,15 +16,16 @@ class AppDatabase {
     _db = await openDatabase(
       p.join(dir, 'field_sales.db'),
       version: version,
-      onCreate: (database, _) => _createV6(database),
+      onCreate: (database, _) => _createV7(database),
       onUpgrade: _upgrade,
     );
   }
 
-  Future<void> _createV6(Database database) async {
+  Future<void> _createV7(Database database) async {
     await _createSyncTables(database);
     await _createMasterTables(database);
     await _createAttendanceTables(database);
+    await _createVisitTables(database);
   }
 
   Future<void> _createSyncTables(Database database) async {
@@ -180,6 +181,102 @@ class AppDatabase {
     );
   }
 
+  Future<void> _createVisitTables(Database database) async {
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_visits ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL, '
+      'offline_uuid TEXT NOT NULL, '
+      'server_uuid TEXT, '
+      'customer_uuid TEXT NOT NULL, '
+      'customer_name TEXT NOT NULL, '
+      'route_uuid TEXT, '
+      'is_planned INTEGER, '
+      'status TEXT NOT NULL DEFAULT "active", '
+      'outcome TEXT, '
+      'notes TEXT, '
+      'checked_in_at TEXT NOT NULL, '
+      'checked_out_at TEXT, '
+      'checkin_latitude REAL NOT NULL, '
+      'checkin_longitude REAL NOT NULL, '
+      'checkin_accuracy REAL NOT NULL, '
+      'checkout_latitude REAL, '
+      'checkout_longitude REAL, '
+      'checkout_accuracy REAL, '
+      'checkin_distance_meters REAL, '
+      'checkout_distance_meters REAL, '
+      'checkin_within_geofence INTEGER, '
+      'checkout_within_geofence INTEGER, '
+      'duration_seconds INTEGER, '
+      'sync_status TEXT NOT NULL DEFAULT "pending_checkin", '
+      'last_error TEXT, '
+      'created_at TEXT NOT NULL, '
+      'updated_at TEXT NOT NULL'
+      ')',
+    );
+    await database.execute(
+      'CREATE UNIQUE INDEX IF NOT EXISTS idx_visits_tenant_uuid '
+      'ON local_visits(tenant_id,offline_uuid)',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_visits_tenant_status '
+      'ON local_visits(tenant_id,status,checked_in_at)',
+    );
+
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_visit_photos ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL, '
+      'client_uuid TEXT NOT NULL, '
+      'visit_offline_uuid TEXT NOT NULL, '
+      'server_uuid TEXT, '
+      'local_path TEXT NOT NULL, '
+      'captured_at TEXT NOT NULL, '
+      'latitude REAL, '
+      'longitude REAL, '
+      'accuracy REAL, '
+      'sync_status TEXT NOT NULL DEFAULT "pending", '
+      'last_error TEXT, '
+      'created_at TEXT NOT NULL'
+      ')',
+    );
+    await database.execute(
+      'CREATE UNIQUE INDEX IF NOT EXISTS idx_visit_photos_tenant_uuid '
+      'ON local_visit_photos(tenant_id,client_uuid)',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_visit_photos_visit '
+      'ON local_visit_photos(tenant_id,visit_offline_uuid,sync_status)',
+    );
+
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_call_activities ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL, '
+      'offline_uuid TEXT NOT NULL, '
+      'server_uuid TEXT, '
+      'customer_uuid TEXT NOT NULL, '
+      'customer_name TEXT NOT NULL, '
+      'phone_number TEXT NOT NULL, '
+      'called_at TEXT NOT NULL, '
+      'outcome TEXT, '
+      'notes TEXT, '
+      'sync_status TEXT NOT NULL DEFAULT "pending", '
+      'last_error TEXT, '
+      'created_at TEXT NOT NULL, '
+      'updated_at TEXT NOT NULL'
+      ')',
+    );
+    await database.execute(
+      'CREATE UNIQUE INDEX IF NOT EXISTS idx_calls_tenant_uuid '
+      'ON local_call_activities(tenant_id,offline_uuid)',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_calls_customer '
+      'ON local_call_activities(tenant_id,customer_uuid,called_at)',
+    );
+  }
+
   Future<void> _upgrade(
     Database database,
     int oldVersion,
@@ -221,6 +318,7 @@ class AppDatabase {
     }
 
     await _createAttendanceTables(database);
+    await _createVisitTables(database);
 
     if (oldVersion < 4 &&
         !await _hasColumn(database, 'local_work_sessions', 'start_source')) {

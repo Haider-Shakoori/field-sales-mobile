@@ -73,6 +73,21 @@ class ApiClient {
     ),
   );
 
+  Future<dynamic> postMultipart(
+    String p, {
+    required String filePath,
+    String field = 'photo',
+    Map<String, dynamic> fields = const {},
+  }) => _send(() async {
+    final filename = filePath.split(Platform.pathSeparator).last;
+    final form = FormData.fromMap({
+      ...fields,
+      field: await MultipartFile.fromFile(filePath, filename: filename),
+    });
+
+    return dio.postUri(Uri.parse(path(p)), data: form);
+  });
+
   Uri _uri(String p, Map<String, dynamic>? query) {
     final values = <String, String>{};
 
