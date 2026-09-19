@@ -35,44 +35,37 @@ class CollectionDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    collection['amount'].toString() +
-                        ' ' +
-                        collection['currency'].toString(),
+"${collection['amount']} ${collection['currency']}",
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'Customer: ' +
-                        (collection['customer_name'] ?? 'Customer').toString(),
+"Customer: ${collection['customer_name'] ?? 'Customer'}",
                   ),
                   Text(
-                    'Payment: ' +
-                        (collection['payment_method'] ?? 'cash')
-                            .toString()
-                            .replaceAll('_', ' '),
+"Payment: ${(collection['payment_method'] ?? 'cash').toString().replaceAll('_', ' ')}",
                   ),
                   Text(
-                    'Status: ' + (collection['status'] ?? 'pending').toString(),
+"Status: ${collection['status'] ?? 'pending'}",
                   ),
                   Text(
-                    'Collected: ' +
-                        (collection['collected_at'] ?? '—').toString(),
+"Collected: ${collection['collected_at'] ?? '—'}",
                   ),
                   if (collection['reference_number'] != null)
                     Text(
-                      'Reference: ' + collection['reference_number'].toString(),
+"Reference: ${collection['reference_number']}",
                     ),
                   if (collection['visit_uuid'] != null)
-                    Text('Visit: ' + collection['visit_uuid'].toString()),
+                    Text("Visit: ${collection['visit_uuid']}"),
                   if (collection['notes'] != null)
-                    Text('Notes: ' + collection['notes'].toString()),
+                    Text("Notes: ${collection['notes']}"),
                   if (collection['status_note'] != null)
                     Text(
-                      'Status note: ' + collection['status_note'].toString(),
+"Status note: ${collection['status_note']}",
                     ),
                   if (collection['sync_status'] != 'synced')
                     Text(
-                      'Sync: ' + collection['sync_status'].toString(),
+"Sync: ${collection['sync_status']}",
                       style: TextStyle(color: Colors.orange.shade700),
                     ),
                   if (collection['last_error'] != null)
@@ -90,9 +83,7 @@ class CollectionDetailScreen extends StatelessWidget {
               leading: const Icon(Icons.account_balance_wallet_outlined),
               title: const Text('Balance at capture'),
               subtitle: Text(
-                collection['balance_before'].toString() +
-                    ' ' +
-                    collection['currency'].toString(),
+"${collection['balance_before']} ${collection['currency']}",
               ),
             ),
           ),
@@ -115,7 +106,7 @@ class CollectionDetailScreen extends StatelessWidget {
               title: const Text('GPS evidence'),
               subtitle: Text(
                 "${collection['latitude']}, ${collection['longitude']} · ±${collection['accuracy']} m"
-                "${collection['distance_meters'] == null ? '' : ' · customer ' + collection['distance_meters'].toString() + ' m'}"
+                "${collection['distance_meters'] == null ? '' : ' · customer ${collection['distance_meters']} m'}"
                 "${collection['within_geofence'] == null
                     ? ''
                     : collection['within_geofence'] == 1
