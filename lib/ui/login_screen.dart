@@ -16,14 +16,22 @@ class _LoginScreenState extends State<LoginScreen> {
   bool busy = false;
   String? error;
   Future<void> submit() async {
+    final appState = context.read<AppState>();
+    final attendance = context.read<AttendanceController>();
+
     setState(() => busy = true);
+
     try {
-      await context.read<AppState>().login(email.text.trim(), password.text);
-      await context.read<AttendanceController>().restore();
+      await appState.login(email.text.trim(), password.text);
+      await attendance.restore();
     } catch (e) {
-      setState(() => error = '$e');
+      if (mounted) {
+        setState(() => error = '$e');
+      }
     } finally {
-      if (mounted) setState(() => busy = false);
+      if (mounted) {
+        setState(() => busy = false);
+      }
     }
   }
 
