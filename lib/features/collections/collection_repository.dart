@@ -7,11 +7,13 @@ import '../../core/sync/sync_retry_store.dart';
 
 class CollectionRepository {
   CollectionRepository({required this.api, required this.db})
-    : retry = SyncRetryStore(db);
+    : retry = SyncRetryStore(db),
+      dependencies = LocalDependencyGuard(db);
 
   final ApiClient api;
   final AppDatabase db;
   final SyncRetryStore retry;
+  final LocalDependencyGuard dependencies;
 
   Future<List<Map<String, dynamic>>> list(String tenantId) async {
     final rows = await db.db.query(
