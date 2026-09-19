@@ -308,3 +308,10 @@ class CollectionRepository {
 
   double _round4(double value) => (value * 10000).round() / 10000;
 }
+
+class CollectionSyncResult {
+  const CollectionSyncResult({required this.synced, required this.failed});
+
+  final int synced;
+  final int failed;
+}
