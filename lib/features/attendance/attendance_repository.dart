@@ -7,26 +7,30 @@ import '../../core/db/app_database.dart';
 
 class AttendanceRepository {
   AttendanceRepository({required this.api, required this.db});
+
   final ApiClient api;
   final AppDatabase db;
+
   Future<Map<String, dynamic>?> active(String tenantId) async {
-    final r = await db.db.query(
+    final rows = await db.db.query(
       'local_work_sessions',
-      where: 'status=?',
-      whereArgs: ['active'],
+      where: 'tenant_id=? AND status=?',
+      whereArgs: [tenantId, 'active'],
       limit: 1,
     );
-    return r.isEmpty ? null : r.first;
+
+    return rows.isEmpty ? null : rows.first;
   }
 
   Future<Map<String, dynamic>?> forDate(String tenantId, String date) async {
-    final r = await db.db.query(
+    final rows = await db.db.query(
       'local_work_sessions',
-      where: 'date=?',
-      whereArgs: [date],
+      where: 'tenant_id=? AND date=?',
+      whereArgs: [tenantId, date],
       limit: 1,
     );
-    return r.isEmpty ? null : r.first;
+
+    return rows.isEmpty ? null : rows.first;
   }
 
   Future<String> start({
@@ -40,9 +44,12 @@ class AttendanceRepository {
     String? privacyAckAt,
   }) async {
     final uuid = const Uuid().v4();
+
     await db.db.transaction((txn) async {
       final now = DateTime.now().toUtc().toIso8601String();
+
       await txn.insert('local_work_sessions', {
+        'tenant_id': tenantId,
         'offline_uuid': uuid,
         'date': date,
         'start_time': at.toUtc().toIso8601String(),
@@ -56,7 +63,9 @@ class AttendanceRepository {
         'created_at': now,
         'updated_at': now,
       });
+
       await txn.insert('sync_queue', {
+        'tenant_id': tenantId,
         'entity_type': 'attendance',
         'entity_uuid': uuid,
         'action': 'start',
@@ -73,6 +82,7 @@ class AttendanceRepository {
         'updated_at': now,
       });
     });
+
     return uuid;
   }
 
@@ -83,8 +93,14 @@ class AttendanceRepository {
     required double lng,
     required double accuracy,
   }) async {
+    final tenantId = '${session['tenant_id']}';
+    if (tenantId.isEmpty || tenantId == 'null') {
+      throw StateError('Work session tenant is unavailable.');
+    }
+
     await db.db.transaction((txn) async {
       final now = DateTime.now().toUtc().toIso8601String();
+
       await txn.update(
         'local_work_sessions',
         {
@@ -96,10 +112,12 @@ class AttendanceRepository {
           'sync_status': 'pending',
           'updated_at': now,
         },
-        where: 'id=?',
-        whereArgs: [session['id']],
+        where: 'tenant_id=? AND id=?',
+        whereArgs: [tenantId, session['id']],
       );
+
       await txn.insert('sync_queue', {
+        'tenant_id': tenantId,
         'entity_type': 'attendance',
         'entity_uuid': session['offline_uuid'],
         'action': 'end',
@@ -120,10 +138,11 @@ class AttendanceRepository {
   Future<void> drain(String tenantId) async {
     final rows = await db.db.query(
       'sync_queue',
-      where: 'entity_type=? AND status IN (?,?)',
-      whereArgs: ['attendance', 'pending', 'failed'],
+      where: 'tenant_id=? AND entity_type=? AND status IN (?,?)',
+      whereArgs: [tenantId, 'attendance', 'pending', 'failed'],
       orderBy: 'priority ASC, id ASC',
     );
+
     for (final row in rows) {
       try {
         final action = '${row['action']}';
@@ -131,6 +150,7 @@ class AttendanceRepository {
         final result = Map<String, dynamic>.from(
           await api.post('attendance/$action', data: data),
         );
+
         await db.db.transaction((txn) async {
           await txn.update(
             'sync_queue',
@@ -140,9 +160,10 @@ class AttendanceRepository {
               'server_uuid': result['uuid'],
               'updated_at': DateTime.now().toUtc().toIso8601String(),
             },
-            where: 'id=?',
-            whereArgs: [row['id']],
+            where: 'tenant_id=? AND id=?',
+            whereArgs: [tenantId, row['id']],
           );
+
           await txn.update(
             'local_work_sessions',
             {
@@ -150,22 +171,23 @@ class AttendanceRepository {
               'sync_status': 'synced',
               'updated_at': DateTime.now().toUtc().toIso8601String(),
             },
-            where: 'offline_uuid=?',
-            whereArgs: [row['entity_uuid']],
+            where: 'tenant_id=? AND offline_uuid=?',
+            whereArgs: [tenantId, row['entity_uuid']],
           );
         });
-      } catch (e) {
+      } catch (error) {
         await db.db.update(
           'sync_queue',
           {
             'status': 'failed',
             'attempts': (row['attempts'] as int) + 1,
-            'error_message': '$e',
+            'error_message': '$error',
             'updated_at': DateTime.now().toUtc().toIso8601String(),
           },
-          where: 'id=?',
-          whereArgs: [row['id']],
+          where: 'tenant_id=? AND id=?',
+          whereArgs: [tenantId, row['id']],
         );
+
         break;
       }
     }
