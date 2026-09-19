@@ -117,12 +117,9 @@ class CollectionDetailScreen extends StatelessWidget {
               leading: const Icon(Icons.location_on_outlined),
               title: const Text('GPS evidence'),
               subtitle: Text(
-                collection['latitude'].toString() +
-                    ', ' +
-                    collection['longitude'].toString() +
-                    ' · ±' +
-                    collection['accuracy'].toString() +
-                    ' m',
+                "${collection['latitude']}, ${collection['longitude']} · ±${collection['accuracy']} m"
+                "${collection['distance_meters'] == null ? '' : ' · customer ' + collection['distance_meters'].toString() + ' m'}"
+                "${collection['within_geofence'] == null ? '' : collection['within_geofence'] == 1 ? ' · inside geofence' : ' · outside geofence'}",
               ),
             ),
           ),
