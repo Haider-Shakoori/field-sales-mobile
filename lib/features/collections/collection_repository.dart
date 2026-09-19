@@ -2,6 +2,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../core/api/api_client.dart';
 import '../../core/db/app_database.dart';
+import '../../core/sync/local_dependency_guard.dart';
 import '../../core/sync/sync_retry_store.dart';
 
 class CollectionRepository {
@@ -154,6 +155,18 @@ class CollectionRepository {
 
     for (final row in rows) {
       final offlineUuid = row['offline_uuid'].toString();
+      final customerUuid = row['customer_uuid'].toString();
+
+      if (!await dependencies.customerReady(tenantId, customerUuid)) {
+        continue;
+      }
+
+      final visitUuid = row['visit_uuid']?.toString();
+      if (visitUuid != null &&
+          visitUuid.isNotEmpty &&
+          !await dependencies.visitReady(tenantId, visitUuid)) {
+        continue;
+      }
 
       if (!await retry.shouldAttempt(
         tenantId: tenantId,
