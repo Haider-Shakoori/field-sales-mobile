@@ -114,6 +114,25 @@ class SyncRetryStore {
     return rows.map(Map<String, dynamic>.from).toList();
   }
 
+  Future<int> issueCount(String tenantId) async {
+    final rows = await db.db.rawQuery(
+      'SELECT COUNT(*) AS total FROM local_sync_failures WHERE tenant_id=?',
+      [tenantId],
+    );
+
+    return rows.first['total'] as int? ?? 0;
+  }
+
+  Future<int> waitingCount(String tenantId) async {
+    final rows = await db.db.rawQuery(
+      'SELECT COUNT(*) AS total FROM local_sync_failures '
+      'WHERE tenant_id=? AND status=?',
+      [tenantId, 'retry_wait'],
+    );
+
+    return rows.first['total'] as int? ?? 0;
+  }
+
   Future<int> blockedCount(String tenantId) async {
     final rows = await db.db.rawQuery(
       'SELECT COUNT(*) AS total FROM local_sync_failures '
