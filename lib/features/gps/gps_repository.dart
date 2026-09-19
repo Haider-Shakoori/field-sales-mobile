@@ -10,10 +10,13 @@ import '../../core/db/app_database.dart';
 
 class GpsRepository {
   GpsRepository({required this.api, required this.db});
+
   final ApiClient api;
   final AppDatabase db;
   final _battery = Battery();
+
   Future<void> store({
+    required String tenantId,
     required double latitude,
     required double longitude,
     required double accuracy,
@@ -23,54 +26,71 @@ class GpsRepository {
     bool isMock = false,
     DateTime? recordedAt,
   }) async {
-    if (!latitude.isFinite ||
+    if (tenantId.isEmpty ||
+        !latitude.isFinite ||
         !longitude.isFinite ||
         latitude.abs() > 90 ||
         longitude.abs() > 180 ||
         (latitude == 0 && longitude == 0) ||
-        accuracy > 100 ||
-        accuracy < 0) {
+        !accuracy.isFinite ||
+        accuracy > 200 ||
+        accuracy < 0 ||
+        (speed != null && (!speed.isFinite || speed < 0 || speed > 55)) ||
+        (heading != null &&
+            (!heading.isFinite || heading < 0 || heading > 360))) {
       return;
     }
+
     final at = (recordedAt ?? DateTime.now()).toUtc();
     if (at.isAfter(DateTime.now().toUtc().add(const Duration(minutes: 5)))) {
       return;
     }
+
     final last = await db.db.query(
       'local_gps_points',
+      where: 'tenant_id=?',
+      whereArgs: [tenantId],
       orderBy: 'id DESC',
       limit: 1,
     );
+
     if (last.isNotEmpty) {
-      final l = last.first;
-      final lt = DateTime.parse(l['recorded_at'] as String);
-      if (at.difference(lt).abs() < const Duration(seconds: 5) &&
+      final previous = last.first;
+      final previousAt = DateTime.parse(previous['recorded_at'] as String);
+
+      if (at.difference(previousAt).abs() < const Duration(seconds: 5) &&
           _distance(
                 latitude,
                 longitude,
-                l['latitude'] as double,
-                l['longitude'] as double,
+                previous['latitude'] as double,
+                previous['longitude'] as double,
               ) <
               5) {
         return;
       }
     }
+
     final battery = await _battery.batteryLevel;
     final charging = (await _battery.batteryState) == BatteryState.charging;
-    final conn = await Connectivity().checkConnectivity();
-    final net = conn.contains(ConnectivityResult.wifi)
+    final connectivity = await Connectivity().checkConnectivity();
+    final network = connectivity.contains(ConnectivityResult.wifi)
         ? 'wifi'
-        : conn.any((x) => x == ConnectivityResult.mobile)
+        : connectivity.any((item) => item == ConnectivityResult.mobile)
         ? 'cellular'
         : 'offline';
-    final max =
+
+    final maxSequence =
         Sqflite.firstIntValue(
           await db.db.rawQuery(
-            'SELECT MAX(sequence_number) FROM local_gps_points',
+            'SELECT MAX(sequence_number) FROM local_gps_points '
+            'WHERE tenant_id=?',
+            [tenantId],
           ),
         ) ??
         0;
+
     await db.db.insert('local_gps_points', {
+      'tenant_id': tenantId,
       'client_uuid': const Uuid().v4(),
       'latitude': latitude,
       'longitude': longitude,
@@ -80,53 +100,61 @@ class GpsRepository {
       'heading': heading,
       'battery_level': battery,
       'is_charging': charging ? 1 : 0,
-      'network_status': net,
+      'network_status': network,
       'is_mock_location': isMock ? 1 : 0,
       'provider': 'fused',
       'recorded_at': at.toIso8601String(),
-      'sequence_number': max + 1,
+      'sequence_number': maxSequence + 1,
       'sync_status': 'pending',
       'created_at': DateTime.now().toUtc().toIso8601String(),
     });
   }
 
-  Future<int> pendingCount() async =>
+  Future<int> pendingCount(String tenantId) =>
       Sqflite.firstIntValue(
         await db.db.rawQuery(
-          'SELECT COUNT(*) FROM local_gps_points WHERE sync_status="pending"',
+          'SELECT COUNT(*) FROM local_gps_points '
+          'WHERE tenant_id=? AND sync_status="pending"',
+          [tenantId],
         ),
       ) ??
       0;
-  Future<void> upload() async {
+
+  Future<void> upload(String tenantId) async {
+    if (tenantId.isEmpty) return;
+
     final rows = await db.db.query(
       'local_gps_points',
-      where: 'sync_status=?',
-      whereArgs: ['pending'],
+      where: 'tenant_id=? AND sync_status=?',
+      whereArgs: [tenantId, 'pending'],
       orderBy: 'sequence_number ASC',
       limit: 100,
     );
+
     if (rows.isEmpty) return;
+
     final batch = const Uuid().v4();
     final locations = rows
         .map(
-          (r) => {
-            'client_uuid': r['client_uuid'],
-            'latitude': r['latitude'],
-            'longitude': r['longitude'],
-            'accuracy': r['accuracy'],
-            'altitude': r['altitude'],
-            'speed': r['speed'],
-            'heading': r['heading'],
-            'battery_level': r['battery_level'],
-            'is_charging': r['is_charging'] == 1,
-            'network_status': r['network_status'],
-            'is_mock_location': r['is_mock_location'] == 1,
-            'provider': r['provider'],
-            'recorded_at': r['recorded_at'],
-            'sequence_number': r['sequence_number'],
+          (row) => {
+            'client_uuid': row['client_uuid'],
+            'latitude': row['latitude'],
+            'longitude': row['longitude'],
+            'accuracy': row['accuracy'],
+            'altitude': row['altitude'],
+            'speed': row['speed'],
+            'heading': row['heading'],
+            'battery_level': row['battery_level'],
+            'is_charging': row['is_charging'] == 1,
+            'network_status': row['network_status'],
+            'is_mock_location': row['is_mock_location'] == 1,
+            'provider': row['provider'],
+            'recorded_at': row['recorded_at'],
+            'sequence_number': row['sequence_number'],
           },
         )
         .toList();
+
     final data = Map<String, dynamic>.from(
       await api.post(
         'gps/locations',
@@ -134,57 +162,120 @@ class GpsRepository {
         headers: {'X-Idempotency-Key': batch},
       ),
     );
-    final accepted = {
-      ...List<String>.from((data['accepted_uuids'] ?? []).map((x) => '$x')),
-      ...List<String>.from((data['duplicate_uuids'] ?? []).map((x) => '$x')),
+
+    final uploaded = <String>{
+      ...List<String>.from(
+        (data['accepted_uuids'] ?? []).map((value) => '$value'),
+      ),
+      ...List<String>.from(
+        (data['duplicate_uuids'] ?? []).map((value) => '$value'),
+      ),
     };
-    final rejected = List<Map<String, dynamic>>.from(
-      (data['rejected_details'] ?? []).map((x) => Map<String, dynamic>.from(x)),
+
+    final rejectedDetails = List<Map<String, dynamic>>.from(
+      (data['rejected_details'] ?? []).map(
+        (value) => Map<String, dynamic>.from(value),
+      ),
     );
-    for (final id in accepted) {
-      await db.db.update(
-        'local_gps_points',
-        {
-          'sync_status': 'uploaded',
-          'uploaded_at': DateTime.now().toUtc().toIso8601String(),
-          'batch_uuid': batch,
+    final rejectedByUuid = <String, Map<String, dynamic>>{};
+
+    for (final detail in rejectedDetails) {
+      final uuid = '${detail['client_uuid']}';
+      if (uuid != 'null' && uuid.isNotEmpty) {
+        rejectedByUuid[uuid] = detail;
+      }
+    }
+
+    for (final value in (data['rejected_uuids'] ?? [])) {
+      final uuid = '$value';
+      rejectedByUuid.putIfAbsent(
+        uuid,
+        () => {
+          'client_uuid': uuid,
+          'code': 'rejected',
+          'reason': 'Server rejected this GPS point.',
         },
-        where: 'client_uuid=?',
-        whereArgs: [id],
       );
     }
-    for (final item in rejected) {
-      final id = '${item['client_uuid']}';
-      if (id != 'null') {
-        await db.db.update(
+
+    await db.db.transaction((txn) async {
+      final uploadedAt = DateTime.now().toUtc().toIso8601String();
+
+      for (final uuid in uploaded) {
+        await txn.update(
+          'local_gps_points',
+          {
+            'sync_status': 'uploaded',
+            'uploaded_at': uploadedAt,
+            'batch_uuid': batch,
+            'last_error': null,
+          },
+          where: 'tenant_id=? AND client_uuid=?',
+          whereArgs: [tenantId, uuid],
+        );
+      }
+
+      for (final entry in rejectedByUuid.entries) {
+        final detail = entry.value;
+        final code = '${detail['code'] ?? 'rejected'}';
+        final reason =
+            '${detail['reason'] ?? 'Server rejected this GPS point.'}';
+
+        await txn.update(
           'local_gps_points',
           {
             'sync_status': 'rejected',
-            'last_error': '${item['code']}: ${item['reason']}',
+            'last_error': 'rejected: $code ($reason)',
             'batch_uuid': batch,
           },
-          where: 'client_uuid=?',
-          whereArgs: [id],
+          where: 'tenant_id=? AND client_uuid=?',
+          whereArgs: [tenantId, entry.key],
         );
       }
-    }
+    });
+  }
+
+  Future<Map<String, dynamic>?> current({String? userId}) async {
+    final data = await api.get(
+      'gps/current',
+      query: userId == null ? null : {'user_id': userId},
+    );
+
+    return data == null ? null : Map<String, dynamic>.from(data as Map);
+  }
+
+  Future<Map<String, dynamic>> history({
+    String? date,
+    String? userId,
+  }) async {
+    final query = <String, dynamic>{};
+    if (date != null) query['date'] = date;
+    if (userId != null) query['user_id'] = userId;
+
+    return Map<String, dynamic>.from(
+      await api.get('gps/history', query: query.isEmpty ? null : query),
+    );
   }
 
   double _distance(double a, double b, double c, double d) {
-    const k = 111139.0;
-    final dx = (a - c) * k, dy = (b - d) * k;
+    const metresPerDegree = 111139.0;
+    final dx = (a - c) * metresPerDegree;
+    final dy = (b - d) * metresPerDegree;
+
     return (dx * dx + dy * dy).sqrt();
   }
 }
 
 extension on double {
   double sqrt() {
-    var x = this;
-    if (x <= 0) return 0;
-    var z = x;
-    for (var i = 0; i < 10; i++) {
-      z = (z + x / z) / 2;
+    var value = this;
+    if (value <= 0) return 0;
+
+    var estimate = value;
+    for (var index = 0; index < 10; index++) {
+      estimate = (estimate + value / estimate) / 2;
     }
-    return z;
+
+    return estimate;
   }
 }
