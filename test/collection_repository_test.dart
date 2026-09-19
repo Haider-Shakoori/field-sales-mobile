@@ -37,6 +37,7 @@ void main() {
         'verified_collections': 0,
         'pending_collections': 0,
         'outstanding_balance': 500,
+        'available_to_collect': 500,
         'updated_at': '2026-09-19T07:00:00Z',
       });
 
@@ -93,6 +94,7 @@ void main() {
       'verified_collections': 0,
       'pending_collections': 0,
       'outstanding_balance': 100,
+      'available_to_collect': 100,
       'updated_at': '2026-09-19T07:00:00Z',
     });
 
