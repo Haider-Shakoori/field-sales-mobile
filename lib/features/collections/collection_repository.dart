@@ -2,12 +2,15 @@ import 'package:uuid/uuid.dart';
 
 import '../../core/api/api_client.dart';
 import '../../core/db/app_database.dart';
+import '../../core/sync/sync_retry_store.dart';
 
 class CollectionRepository {
-  CollectionRepository({required this.api, required this.db});
+  CollectionRepository({required this.api, required this.db})
+      : retry = SyncRetryStore(db);
 
   final ApiClient api;
   final AppDatabase db;
+  final SyncRetryStore retry;
 
   Future<List<Map<String, dynamic>>> list(String tenantId) async {
     final rows = await db.db.query(
@@ -141,8 +144,8 @@ class CollectionRepository {
   Future<CollectionSyncResult> syncPending(String tenantId) async {
     final rows = await db.db.query(
       'local_collections',
-      where: 'tenant_id=? AND sync_status IN (?,?)',
-      whereArgs: [tenantId, 'pending', 'failed'],
+      where: 'tenant_id=? AND sync_status IN (?,?,?)',
+      whereArgs: [tenantId, 'pending', 'failed', 'blocked'],
       orderBy: 'collected_at ASC',
     );
 
@@ -150,6 +153,16 @@ class CollectionRepository {
     var failed = 0;
 
     for (final row in rows) {
+      final offlineUuid = row['offline_uuid'].toString();
+
+      if (!await retry.shouldAttempt(
+        tenantId: tenantId,
+        entityType: 'collection',
+        entityUuid: offlineUuid,
+      )) {
+        continue;
+      }
+
       try {
         final server = Map<String, dynamic>.from(
           await api.post(
@@ -173,13 +186,24 @@ class CollectionRepository {
         );
 
         await _applyServerCollection(tenantId, server);
+        await retry.clear(
+          tenantId: tenantId,
+          entityType: 'collection',
+          entityUuid: offlineUuid,
+        );
         synced++;
       } catch (error) {
+        final failure = await retry.recordFailure(
+          tenantId: tenantId,
+          entityType: 'collection',
+          entityUuid: offlineUuid,
+          error: error,
+        );
         await db.db.update(
           'local_collections',
           {
-            'sync_status': 'failed',
-            'last_error': error.toString(),
+            'sync_status': failure.blocked ? 'blocked' : 'failed',
+            'last_error': failure.message,
             'updated_at': DateTime.now().toUtc().toIso8601String(),
           },
           where: 'tenant_id=? AND offline_uuid=?',
@@ -299,6 +323,12 @@ class CollectionRepository {
         whereArgs: [tenantId, uuid],
       );
     }
+
+    await retry.clear(
+      tenantId: tenantId,
+      entityType: 'collection',
+      entityUuid: uuid,
+    );
   }
 
   double _number(dynamic value) {
