@@ -4,8 +4,10 @@ import 'package:provider/provider.dart';
 import '../state/attendance_controller.dart';
 import '../state/call_activity_controller.dart';
 import '../state/collection_controller.dart';
+import '../state/expense_controller.dart';
 import '../state/master_data_controller.dart';
 import '../state/order_controller.dart';
+import '../state/target_controller.dart';
 import '../state/visit_controller.dart';
 import 'customers_screen.dart';
 import 'home_tab.dart';
@@ -51,6 +53,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         context.read<CallActivityController>().initialize();
         context.read<OrderController>().initialize();
         context.read<CollectionController>().initialize();
+        context.read<ExpenseController>().initialize();
+        context.read<TargetController>().initialize();
       }
     });
   }
@@ -62,12 +66,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final calls = context.watch<CallActivityController>();
     final orders = context.watch<OrderController>();
     final collections = context.watch<CollectionController>();
+    final expenses = context.watch<ExpenseController>();
     final pending =
         master.pending +
         visits.pending +
         calls.pending +
         orders.pending +
-        collections.pending;
+        collections.pending +
+        expenses.pending;
 
     return Scaffold(
       appBar: AppBar(
