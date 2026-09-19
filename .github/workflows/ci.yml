@@ -62,4 +62,5 @@ jobs:
         shell: bash
         run: |
           test -s build/app/outputs/bundle/release/app-release.aab
+          jarsigner -verify -strict build/app/outputs/bundle/release/app-release.aab
           sha256sum build/app/outputs/bundle/release/app-release.aab
