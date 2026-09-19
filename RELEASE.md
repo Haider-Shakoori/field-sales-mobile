@@ -1,6 +1,6 @@
 # Android Production Release
 
-Stage 2 Batch 18 establishes a repeatable, secret-backed Android release path for Field Sales.
+Stage 2 Batch 18 establishes a repeatable, secret-backed Android release path for FieldPulse.
 
 ## Release invariants
 
@@ -135,9 +135,11 @@ Before promoting an Android artifact:
 9. Run Batch 19 release-candidate/UAT golden paths, especially offline sync and background GPS.
 10. Do not publish/promote until the approved production icon/splash/branding is present.
 
-## Branding blocker
+## Production branding
 
-The repository currently has no approved Field Sales icon/splash asset and the Android manifest still references the platform default icon. The release pipeline is production-capable, but Batch 19 must treat approved branding as a launch blocker rather than shipping the default system icon.
+Approved FieldPulse launcher and startup branding is committed to the mobile release candidate. The Android manifest uses the FieldPulse launcher resource, Android 12+ uses the FieldPulse native splash mark, and Flutter presents the approved portrait "FieldPulse by BusinessOS" startup artwork.
+
+This resolves the repository-side branding blocker. Batch 19 still requires physical-device verification of launcher masks, splash behavior, and the final signed release-candidate APK before production promotion.
 
 
 ## Release Candidate UAT
