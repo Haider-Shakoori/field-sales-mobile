@@ -47,7 +47,7 @@ jobs:
             -keyalg RSA \
             -keysize 2048 \
             -validity 1 \
-            -dname "CN=Field Sales CI, OU=CI, O=WeSoft, L=CI, ST=CI, C=AF"
+            -dname "CN=FieldPulse CI, OU=CI, O=WeSoft, L=CI, ST=CI, C=AF"
 
       - name: Build signed release AAB
         shell: bash
