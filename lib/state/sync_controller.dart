@@ -97,8 +97,8 @@ class SyncController extends ChangeNotifier {
   Future<int> _infrastructurePending(String tenantId) async {
     final queue = await db.db.rawQuery(
       'SELECT COUNT(*) AS total FROM sync_queue '
-      'WHERE tenant_id=? AND status NOT IN (?,?)',
-      [tenantId, 'done', 'synced'],
+      'WHERE tenant_id=? AND status IN (?,?)',
+      [tenantId, 'failed', 'blocked'],
     );
     final gps = await db.db.rawQuery(
       'SELECT COUNT(*) AS total FROM local_gps_points '
