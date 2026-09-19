@@ -1,2 +1,113 @@
-import 'package:flutter/material.dart'; import 'package:provider/provider.dart'; import '../state/app_state.dart'; import '../state/attendance_controller.dart'; import 'history_screen.dart'; import 'privacy_dialog.dart';
-class DashboardScreen extends StatelessWidget {const DashboardScreen({super.key});Future<void> start(BuildContext context,AttendanceController c)async{if(!await c.hasPrivacyAck()){final ok=await showDialog<bool>(context:context,builder:(_)=>const PrivacyDialog())??false;if(!ok)return;await c.acknowledgePrivacy();}await c.startDay();} @override Widget build(BuildContext context){final app=context.watch<AppState>();final c=context.watch<AttendanceController>();final p=app.policy;return Scaffold(appBar:AppBar(title:const Text('Field Sales'),actions:[IconButton(onPressed:()=>c.logout(),icon:const Icon(Icons.logout))]),body:RefreshIndicator(onRefresh:c.refreshPolicyAndEvaluate,child:ListView(padding:const EdgeInsets.all(20),children:[Text('Good day, ${app.session?.name ?? ''}',style:Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight:FontWeight.bold)),const SizedBox(height:6),Text(p?.trusted==true?'Company policy synced':'Using safe offline policy',style:TextStyle(color:Colors.grey.shade600)),const SizedBox(height:20),Card(child:Padding(padding:const EdgeInsets.all(22),child:Column(crossAxisAlignment:CrossAxisAlignment.stretch,children:[Row(children:[Icon(c.working?Icons.location_on:Icons.schedule,color:c.working?Colors.green:Colors.indigo),const SizedBox(width:10),Text(c.working?'Working':'Work day',style:Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight:FontWeight.bold)),const Spacer(),Chip(label:Text(c.working?(c.tracking.active?'Tracking active':'Tracking paused'):(p?.startMode=='automatic'?'Automatic':'Manual')))]),const SizedBox(height:14),if(c.working)...[Text('Started ${c.session?['start_time'] ?? ''}'),const SizedBox(height:8),const Text('Location is stored locally first and syncs when connectivity is available.'),const SizedBox(height:18),FilledButton.tonal(onPressed:c.busy?null:c.endDay,child:const Padding(padding:EdgeInsets.all(12),child:Text('End Day')))]else...[Text(p?.startMode=='automatic'?'Automatic work day · ${p?.workdayStartTime}–${p?.workdayEndTime}':'Start when you are ready. Attendance works offline.'),const SizedBox(height:18),FilledButton(onPressed:c.busy?null:()=>start(context,c),child:Padding(padding:const EdgeInsets.all(12),child:Text(c.busy?'Starting…':'Start Day')))],if(c.message!=null)Padding(padding:const EdgeInsets.only(top:12),child:Text(c.message!,style:const TextStyle(color:Colors.red)))]))),const SizedBox(height:16),Card(child:ListTile(leading:const Icon(Icons.history),title:const Text('Attendance history'),subtitle:const Text('Local records remain available offline'),trailing:const Icon(Icons.chevron_right),onTap:()=>Navigator.push(context,MaterialPageRoute(builder:(_)=>const HistoryScreen())))),const SizedBox(height:16),Card(child:Padding(padding:const EdgeInsets.all(18),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[const Text('Company tracking policy',style:TextStyle(fontWeight:FontWeight.bold)),const SizedBox(height:10),Text('Timezone: ${p?.timezone.isNotEmpty==true?p!.timezone:'Unavailable'}'),Text('GPS: ${p?.gpsTrackingEnabled==true?'Enabled during work':'Disabled'}'),Text('Intervals: ${p?.movingSeconds ?? 15}s moving / ${p?.stationarySeconds ?? 60}s stationary')])))])) ;}}
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../state/attendance_controller.dart';
+import '../state/master_data_controller.dart';
+import 'customers_screen.dart';
+import 'home_tab.dart';
+import 'products_screen.dart';
+import 'routes_screen.dart';
+import 'sync_screen.dart';
+
+class DashboardScreen extends StatefulWidget {
+  const DashboardScreen({super.key});
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  var _index = 0;
+
+  static const _pages = [
+    HomeTab(),
+    CustomersScreen(),
+    RoutesScreen(),
+    ProductsScreen(),
+    SyncScreen(),
+  ];
+
+  static const _titles = [
+    'Field Sales',
+    'Customers',
+    'Routes',
+    'Products',
+    'Sync',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<MasterDataController>().initialize();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final master = context.watch<MasterDataController>();
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(_titles[_index]),
+        actions: [
+          if (master.pending > 0)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Badge(
+                label: Text('${master.pending}'),
+                child: IconButton(
+                  tooltip: 'Pending sync',
+                  onPressed: () => setState(() => _index = 4),
+                  icon: const Icon(Icons.cloud_upload_outlined),
+                ),
+              ),
+            ),
+          IconButton(
+            tooltip: 'Sign out',
+            onPressed: () => context.read<AttendanceController>().logout(),
+            icon: const Icon(Icons.logout),
+          ),
+        ],
+      ),
+      body: IndexedStack(
+        index: _index,
+        children: _pages,
+      ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _index,
+        onDestinationSelected: (value) => setState(() => _index = value),
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.storefront_outlined),
+            selectedIcon: Icon(Icons.storefront),
+            label: 'Customers',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.route_outlined),
+            selectedIcon: Icon(Icons.route),
+            label: 'Routes',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.inventory_2_outlined),
+            selectedIcon: Icon(Icons.inventory_2),
+            label: 'Products',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.sync_outlined),
+            selectedIcon: Icon(Icons.sync),
+            label: 'Sync',
+          ),
+        ],
+      ),
+    );
+  }
+}
