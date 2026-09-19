@@ -175,7 +175,7 @@ class _CollectionCreateScreenState extends State<CollectionCreateScreen> {
           ),
           const SizedBox(height: 12),
           DropdownButtonFormField<String>(
-            value: _currency,
+            initialValue: _currency,
             decoration: const InputDecoration(labelText: 'Currency'),
             items: availableCurrencies
                 .map(
@@ -233,7 +233,7 @@ class _CollectionCreateScreenState extends State<CollectionCreateScreen> {
           ),
           const SizedBox(height: 12),
           DropdownButtonFormField<String>(
-            value: _paymentMethod,
+            initialValue: _paymentMethod,
             decoration: const InputDecoration(labelText: 'Payment method'),
             items: _methods.entries
                 .map(
