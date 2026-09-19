@@ -1,14 +1,56 @@
 name: mobile-ci
+
 on: [push, pull_request]
+
 jobs:
   test:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: subosito/flutter-action@v2
-        with: {flutter-version: '3.47.0', channel: stable, cache: true}
+        with:
+          flutter-version: '3.47.0'
+          channel: stable
+          cache: true
+
       - run: flutter pub get
       - run: dart format --output=none --set-exit-if-changed lib test
       - run: flutter analyze
       - run: flutter test
-      - run: flutter build apk --debug --dart-define=API_BASE_URL=http://10.0.2.2:8001/api/v1
+
+      - name: Build debug APK
+        run: flutter build apk --debug --dart-define=API_BASE_URL=http://10.0.2.2:8001/api/v1
+
+      - name: Create ephemeral CI release keystore
+        shell: bash
+        run: |
+          keytool -genkeypair -noprompt \
+            -keystore android/ci-release.jks \
+            -storepass ci-release-password \
+            -keypass ci-release-password \
+            -alias ci-release \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 1 \
+            -dname "CN=Field Sales CI, OU=CI, O=WeSoft, L=CI, ST=CI, C=AF"
+
+      - name: Build signed release AAB
+        shell: bash
+        env:
+          FIELD_SALES_KEYSTORE_FILE: ${{ github.workspace }}/android/ci-release.jks
+          FIELD_SALES_KEYSTORE_PASSWORD: ci-release-password
+          FIELD_SALES_KEY_ALIAS: ci-release
+          FIELD_SALES_KEY_PASSWORD: ci-release-password
+        run: |
+          APP_VERSION="$(awk '/^version:/ {split($2, v, "+"); print v[1]}' pubspec.yaml)"
+          flutter build appbundle --release \
+            --dart-define=API_BASE_URL=https://release-ci.invalid/api/v1 \
+            --dart-define=APP_VERSION="${APP_VERSION}"
+
+      - name: Verify release artifact
+        shell: bash
+        run: |
+          test -s build/app/outputs/bundle/release/app-release.aab
+          sha256sum build/app/outputs/bundle/release/app-release.aab
