@@ -84,14 +84,10 @@ class _OrderCreateScreenState extends State<OrderCreateScreen> {
               leading: const Icon(Icons.inventory_2_outlined),
               title: Text(product['name']?.toString() ?? 'Product'),
               subtitle: Text(
-                (product['sku'] ?? '').toString() +
-                    ' · ' +
-                    (product['unit'] ?? '').toString(),
+                "${product['sku'] ?? ''} · ${product['unit'] ?? ''}",
               ),
               trailing: Text(
-                (product['base_price'] ?? 0).toString() +
-                    ' ' +
-                    (product['currency'] ?? '').toString(),
+                "${product['base_price'] ?? 0} ${product['currency'] ?? ''}",
               ),
               onTap: () => Navigator.pop(sheetContext, product),
             );
@@ -112,9 +108,7 @@ class _OrderCreateScreenState extends State<OrderCreateScreen> {
 
       if (quantity == null || quantity <= 0) {
         throw StateError(
-          'Enter a valid quantity for ' +
-              (row.product['name'] ?? 'product').toString() +
-              '.',
+          "Enter a valid quantity for ${row.product['name'] ?? 'product'}.",
         );
       }
 
@@ -176,8 +170,8 @@ class _OrderCreateScreenState extends State<OrderCreateScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Customer: ' + customer['name'].toString()),
-                  Text('Payment: ' + _paymentType),
+                  Text("Customer: ${customer['name']}"),
+                  Text('Payment: $_paymentType'),
                   if (widget.visitUuid != null)
                     const Text('Linked to customer visit'),
                   const Divider(height: 24),
@@ -188,9 +182,7 @@ class _OrderCreateScreenState extends State<OrderCreateScreen> {
                         children: [
                           Expanded(
                             child: Text(
-                              line.product['name'].toString() +
-                                  ' × ' +
-                                  line.quantity.toString(),
+                              "${line.product['name']} × ${line.quantity}",
                             ),
                           ),
                           Text(line.lineTotal.toString()),
@@ -270,7 +262,7 @@ class _OrderCreateScreenState extends State<OrderCreateScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label, style: style),
-          Text(value.toStringAsFixed(2) + ' ' + currency, style: style),
+          Text('${value.toStringAsFixed(2)} $currency', style: style),
         ],
       ),
     );
