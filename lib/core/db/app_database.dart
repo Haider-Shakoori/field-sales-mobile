@@ -248,6 +248,33 @@ class AppDatabase {
       'CREATE INDEX IF NOT EXISTS idx_visit_photos_visit '
       'ON local_visit_photos(tenant_id,visit_offline_uuid,sync_status)',
     );
+
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_call_activities ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL, '
+      'offline_uuid TEXT NOT NULL, '
+      'server_uuid TEXT, '
+      'customer_uuid TEXT NOT NULL, '
+      'customer_name TEXT NOT NULL, '
+      'phone_number TEXT NOT NULL, '
+      'called_at TEXT NOT NULL, '
+      'outcome TEXT, '
+      'notes TEXT, '
+      'sync_status TEXT NOT NULL DEFAULT "pending", '
+      'last_error TEXT, '
+      'created_at TEXT NOT NULL, '
+      'updated_at TEXT NOT NULL'
+      ')',
+    );
+    await database.execute(
+      'CREATE UNIQUE INDEX IF NOT EXISTS idx_calls_tenant_uuid '
+      'ON local_call_activities(tenant_id,offline_uuid)',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_calls_customer '
+      'ON local_call_activities(tenant_id,customer_uuid,called_at)',
+    );
   }
 
   Future<void> _upgrade(
