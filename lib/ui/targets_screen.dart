@@ -42,7 +42,7 @@ class TargetsScreen extends StatelessWidget {
     final percent = rawPercent is num
         ? rawPercent.toDouble()
         : double.tryParse(rawPercent?.toString() ?? '') ?? 0;
-    final bar = (percent / 100).clamp(0.0, 1.0);
+    final bar = (percent / 100).clamp(0.0, 1.0).toDouble();
 
     return Card(
       child: Padding(
