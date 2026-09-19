@@ -93,12 +93,8 @@ class CallActivityController extends ChangeNotifier {
 
       if (!silent) {
         message = result.failed == 0
-            ? 'Call activity sync complete. ' +
-                  result.synced.toString() +
-                  ' records processed.'
-            : 'Call activity sync completed with ' +
-                  result.failed.toString() +
-                  ' pending failures.';
+            ? 'Call activity sync complete. ${result.synced} records processed.'
+            : 'Call activity sync completed with ${result.failed} pending failures.';
       }
     } catch (_) {
       await reloadLocal();
