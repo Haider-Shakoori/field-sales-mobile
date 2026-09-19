@@ -10,6 +10,7 @@ import 'core/storage/secret_store.dart';
 import 'features/attendance/attendance_repository.dart';
 import 'features/auth/auth_repository.dart';
 import 'features/customers/customer_repository.dart';
+import 'features/calls/call_activity_repository.dart';
 import 'features/gps/gps_repository.dart';
 import 'features/gps/tracking_service.dart';
 import 'features/master_data/master_data_repository.dart';
@@ -17,6 +18,7 @@ import 'features/master_data/master_data_source.dart';
 import 'features/settings/settings_repository.dart';
 import 'features/visits/visit_repository.dart';
 import 'state/app_state.dart';
+import 'state/call_activity_controller.dart';
 import 'state/attendance_controller.dart';
 import 'state/master_data_controller.dart';
 import 'state/visit_controller.dart';
@@ -36,6 +38,7 @@ Future<void> main() async {
   final gps = GpsRepository(api: api, db: db);
   final tracking = TrackingService(db: db, gpsRepository: gps);
   final visits = VisitRepository(api: api, db: db);
+  final calls = CallActivityRepository(api: api, db: db);
 
   final masterSource = ApiMasterDataSource(api);
   final masterData = MasterDataRepository(database: db, source: masterSource);
@@ -54,6 +57,11 @@ Future<void> main() async {
     appState: appState,
     masterData: masterData,
     customersRepository: customers,
+  );
+
+  final callActivityController = CallActivityController(
+    appState: appState,
+    repository: calls,
   );
 
   final visitController = VisitController(
@@ -80,9 +88,11 @@ Future<void> main() async {
         ChangeNotifierProvider.value(value: attendanceController),
         ChangeNotifierProvider.value(value: masterDataController),
         ChangeNotifierProvider.value(value: visitController),
+        ChangeNotifierProvider.value(value: callActivityController),
         Provider.value(value: masterData),
         Provider.value(value: customers),
         Provider.value(value: visits),
+        Provider.value(value: calls),
       ],
       child: const FieldSalesApp(),
     ),
