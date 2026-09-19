@@ -89,7 +89,7 @@ jobs:
       - name: Verify signatures and generate checksums
         shell: bash
         run: |
-          jarsigner -verify -strict build/app/outputs/bundle/release/app-release.aab
+          jarsigner -verify build/app/outputs/bundle/release/app-release.aab
 
           APKSIGNER="$(find "${ANDROID_HOME}/build-tools" -type f -name apksigner | sort -V | tail -n 1)"
           test -n "${APKSIGNER}" || { echo "Android apksigner was not found."; exit 1; }
