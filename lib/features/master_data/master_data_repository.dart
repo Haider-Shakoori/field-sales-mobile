@@ -6,10 +6,7 @@ import '../../core/db/app_database.dart';
 import 'master_data_source.dart';
 
 class MasterDataRepository {
-  MasterDataRepository({
-    required this.database,
-    required this.source,
-  });
+  MasterDataRepository({required this.database, required this.source});
 
   final AppDatabase database;
   final MasterDataSource source;
@@ -43,10 +40,7 @@ class MasterDataRepository {
         table: 'route_customers',
         path: 'routes/$routeId/customers',
         syntheticUuid: (row) => '$routeId:${row['id']}',
-        decorate: (row) => {
-          ...row,
-          'route_id': routeId,
-        },
+        decorate: (row) => {...row, 'route_id': routeId},
       );
     }
 
@@ -65,10 +59,7 @@ class MasterDataRepository {
     }
   }
 
-  Future<List<Map<String, dynamic>>> list(
-    String table,
-    String tenantId,
-  ) async {
+  Future<List<Map<String, dynamic>>> list(String table, String tenantId) async {
     _assertMasterTable(table);
 
     final rows = await database.db.query(
@@ -113,18 +104,14 @@ class MasterDataRepository {
     final target = executor ?? database.db;
     final now = DateTime.now().toUtc().toIso8601String();
 
-    await target.insert(
-      table,
-      {
-        'tenant_id': tenantId,
-        'uuid': uuid,
-        'payload': jsonEncode(row),
-        'cached_at': now,
-        'source': 'server',
-        'sync_status': 'synced',
-      },
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    await target.insert(table, {
+      'tenant_id': tenantId,
+      'uuid': uuid,
+      'payload': jsonEncode(row),
+      'cached_at': now,
+      'source': 'server',
+      'sync_status': 'synced',
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<void> _refreshCollection({
@@ -151,7 +138,8 @@ class MasterDataRepository {
       await database.db.transaction((transaction) async {
         for (final original in page.rows) {
           final row = decorate?.call(original) ?? original;
-          final uuid = syntheticUuid?.call(row) ??
+          final uuid =
+              syntheticUuid?.call(row) ??
               row['id']?.toString() ??
               row['uuid']?.toString();
 
@@ -159,18 +147,14 @@ class MasterDataRepository {
             continue;
           }
 
-          await transaction.insert(
-            table,
-            {
-              'tenant_id': tenantId,
-              'uuid': uuid,
-              'payload': jsonEncode(row),
-              'cached_at': syncStartedAt,
-              'source': 'server',
-              'sync_status': 'synced',
-            },
-            conflictAlgorithm: ConflictAlgorithm.replace,
-          );
+          await transaction.insert(table, {
+            'tenant_id': tenantId,
+            'uuid': uuid,
+            'payload': jsonEncode(row),
+            'cached_at': syncStartedAt,
+            'source': 'server',
+            'sync_status': 'synced',
+          }, conflictAlgorithm: ConflictAlgorithm.replace);
         }
       });
 

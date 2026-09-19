@@ -21,10 +21,7 @@ class SyncScreen extends StatelessWidget {
               children: [
                 const Text(
                   'Offline sync',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                 ),
                 const SizedBox(height: 12),
                 Text('Pending local changes: ${state.pending}'),

@@ -178,7 +178,11 @@ class AppDatabase {
     );
   }
 
-  Future<void> _upgrade(Database database, int oldVersion, int newVersion) async {
+  Future<void> _upgrade(
+    Database database,
+    int oldVersion,
+    int newVersion,
+  ) async {
     if (oldVersion < 5 &&
         await _tableExists(database, 'sync_queue') &&
         !await _hasColumn(database, 'sync_queue', 'tenant_id')) {
@@ -209,10 +213,7 @@ class AppDatabase {
   Future<void> _upgradeMasterCacheToV5(Database database) async {
     final tables = (await database.rawQuery(
       "SELECT name FROM sqlite_master WHERE type='table'",
-    ))
-        .map((row) => row['name'])
-        .whereType<String>()
-        .toSet();
+    )).map((row) => row['name']).whereType<String>().toSet();
 
     for (final name in masterTables) {
       if (!tables.contains(name)) {
@@ -266,13 +267,10 @@ class AppDatabase {
   }
 
   Future<void> setting(String key, Object value) => db.insert(
-        'local_settings',
-        {
-          'key': key,
-          'value': jsonEncode(value),
-        },
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
+    'local_settings',
+    {'key': key, 'value': jsonEncode(value)},
+    conflictAlgorithm: ConflictAlgorithm.replace,
+  );
 
   Future<dynamic> readSetting(String key) async {
     final rows = await db.query(

@@ -85,10 +85,7 @@ class FakeMasterDataSource implements MasterDataSource {
     if (path == 'routes/route-uuid/customers') {
       return const MasterPage(
         rows: [
-          {
-            'id': 'customer-1',
-            'name': 'Shop',
-          },
+          {'id': 'customer-1', 'name': 'Shop'},
         ],
         hasMore: false,
         nextPage: null,
@@ -111,11 +108,7 @@ class FakeMasterDataSource implements MasterDataSource {
       );
     }
 
-    return const MasterPage(
-      rows: [],
-      hasMore: false,
-      nextPage: null,
-    );
+    return const MasterPage(rows: [], hasMore: false, nextPage: null);
   }
 
   @override
@@ -125,11 +118,7 @@ class FakeMasterDataSource implements MasterDataSource {
   ) async {
     posts.add({'path': path, ...payload});
 
-    return {
-      'id': payload['offline_uuid'],
-      ...payload,
-      'is_active': true,
-    };
+    return {'id': payload['offline_uuid'], ...payload, 'is_active': true};
   }
 }
 
@@ -150,10 +139,7 @@ void main() {
     database = AppDatabase();
     await database.open();
     source = FakeMasterDataSource();
-    masterData = MasterDataRepository(
-      database: database,
-      source: source,
-    );
+    masterData = MasterDataRepository(database: database, source: source);
   });
 
   tearDown(() async {
@@ -164,14 +150,8 @@ void main() {
     await masterData.refreshAll('tenant-a');
 
     final products = await masterData.list('products', 'tenant-a');
-    final routeCustomers = await masterData.list(
-      'route_customers',
-      'tenant-a',
-    );
-    final priceItems = await masterData.list(
-      'price_list_items',
-      'tenant-a',
-    );
+    final routeCustomers = await masterData.list('route_customers', 'tenant-a');
+    final priceItems = await masterData.list('price_list_items', 'tenant-a');
 
     expect(products.map((row) => row['id']), ['product-1', 'product-2']);
     expect(routeCustomers.single['route_id'], 'route-uuid');
@@ -213,56 +193,61 @@ void main() {
     );
   });
 
-  test('offline customer and outbox are committed atomically then sync', () async {
-    final customers = CustomerRepository(
-      database: database,
-      transactions: LocalFirstTransaction(database),
-      masterData: masterData,
-      source: source,
-    );
+  test(
+    'offline customer and outbox are committed atomically then sync',
+    () async {
+      final customers = CustomerRepository(
+        database: database,
+        transactions: LocalFirstTransaction(database),
+        masterData: masterData,
+        source: source,
+      );
 
-    final local = await customers.createOffline(
-      tenantId: 'tenant-a',
-      name: 'Offline Shop',
-      phone: '0700000000',
-    );
+      final local = await customers.createOffline(
+        tenantId: 'tenant-a',
+        name: 'Offline Shop',
+        phone: '0700000000',
+      );
 
-    final cached = await masterData.list('customers', 'tenant-a');
-    final queue = await database.db.query(
-      'sync_queue',
-      where: 'tenant_id = ?',
-      whereArgs: ['tenant-a'],
-    );
+      final cached = await masterData.list('customers', 'tenant-a');
+      final queue = await database.db.query(
+        'sync_queue',
+        where: 'tenant_id = ?',
+        whereArgs: ['tenant-a'],
+      );
 
-    expect(cached.single['id'], local['id']);
-    expect(queue.single['status'], 'pending');
+      expect(cached.single['id'], local['id']);
+      expect(queue.single['status'], 'pending');
 
-    final result = await customers.syncPending('tenant-a');
+      final result = await customers.syncPending('tenant-a');
 
-    expect(result.synced, 1);
-    expect(result.failed, 0);
-    expect(source.posts.single['path'], 'customers');
+      expect(result.synced, 1);
+      expect(result.failed, 0);
+      expect(source.posts.single['path'], 'customers');
 
-    final syncedQueue = await database.db.query(
-      'sync_queue',
-      where: 'tenant_id = ?',
-      whereArgs: ['tenant-a'],
-    );
-    expect(syncedQueue.single['status'], 'done');
-    expect(await masterData.pendingCount('tenant-a'), 0);
-  });
+      final syncedQueue = await database.db.query(
+        'sync_queue',
+        where: 'tenant_id = ?',
+        whereArgs: ['tenant-a'],
+      );
+      expect(syncedQueue.single['status'], 'done');
+      expect(await masterData.pendingCount('tenant-a'), 0);
+    },
+  );
 
   test('delta refresh records a tenant-specific sync cursor', () async {
     await masterData.refreshAll('tenant-a');
-    final firstProductCall =
-        source.calls.firstWhere((call) => call.startsWith('products?'));
+    final firstProductCall = source.calls.firstWhere(
+      (call) => call.startsWith('products?'),
+    );
     expect(firstProductCall, contains('since='));
 
     source.calls.clear();
     await masterData.refreshAll('tenant-a');
 
-    final secondProductCall =
-        source.calls.firstWhere((call) => call.startsWith('products?'));
+    final secondProductCall = source.calls.firstWhere(
+      (call) => call.startsWith('products?'),
+    );
     expect(secondProductCall, isNot(endsWith('since=')));
   });
 }

@@ -9,13 +9,13 @@ import 'api_exception.dart';
 
 class ApiClient {
   ApiClient(this.secrets)
-      : dio = Dio(
-          BaseOptions(
-            baseUrl: AppConfig.apiBaseUrl,
-            connectTimeout: const Duration(seconds: 15),
-            receiveTimeout: const Duration(seconds: 20),
-          ),
-        ) {
+    : dio = Dio(
+        BaseOptions(
+          baseUrl: AppConfig.apiBaseUrl,
+          connectTimeout: const Duration(seconds: 15),
+          receiveTimeout: const Duration(seconds: 20),
+        ),
+      ) {
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
@@ -55,34 +55,23 @@ class ApiClient {
     return '$base/$clean';
   }
 
-  Future<dynamic> get(
-    String p, {
-    Map<String, dynamic>? query,
-  }) =>
-      _send(
-        () => dio.getUri(_uri(p, query)),
-      );
+  Future<dynamic> get(String p, {Map<String, dynamic>? query}) =>
+      _send(() => dio.getUri(_uri(p, query)));
 
-  Future<ApiEnvelope> getEnvelope(
-    String p, {
-    Map<String, dynamic>? query,
-  }) =>
-      _sendEnvelope(
-        () => dio.getUri(_uri(p, query)),
-      );
+  Future<ApiEnvelope> getEnvelope(String p, {Map<String, dynamic>? query}) =>
+      _sendEnvelope(() => dio.getUri(_uri(p, query)));
 
   Future<dynamic> post(
     String p, {
     Object? data,
     Map<String, String>? headers,
-  }) =>
-      _send(
-        () => dio.postUri(
-          Uri.parse(path(p)),
-          data: data,
-          options: Options(headers: headers),
-        ),
-      );
+  }) => _send(
+    () => dio.postUri(
+      Uri.parse(path(p)),
+      data: data,
+      options: Options(headers: headers),
+    ),
+  );
 
   Uri _uri(String p, Map<String, dynamic>? query) {
     final values = <String, String>{};
@@ -95,14 +84,11 @@ class ApiClient {
       values[entry.key] = '${entry.value}';
     }
 
-    return Uri.parse(path(p)).replace(
-      queryParameters: values.isEmpty ? null : values,
-    );
+    return Uri.parse(path(p))
+        .replace(queryParameters: values.isEmpty ? null : values);
   }
 
-  Future<dynamic> _send(
-    Future<Response<dynamic>> Function() call,
-  ) async {
+  Future<dynamic> _send(Future<Response<dynamic>> Function() call) async {
     final envelope = await _request(call);
 
     return envelope.data;
@@ -110,8 +96,7 @@ class ApiClient {
 
   Future<ApiEnvelope> _sendEnvelope(
     Future<Response<dynamic>> Function() call,
-  ) =>
-      _request(call);
+  ) => _request(call);
 
   Future<ApiEnvelope> _request(
     Future<Response<dynamic>> Function() call,
@@ -152,8 +137,8 @@ class ApiClient {
       final message = rawError is Map
           ? rawError['message']?.toString()
           : (error.error is SocketException
-              ? 'No internet connection.'
-              : 'Request failed.');
+                ? 'No internet connection.'
+                : 'Request failed.');
       final status = error.response?.statusCode;
 
       if (status == 401 || code == 'DEVICE_REVOKED') {
@@ -172,10 +157,7 @@ class ApiClient {
 }
 
 class ApiEnvelope {
-  const ApiEnvelope({
-    required this.data,
-    required this.meta,
-  });
+  const ApiEnvelope({required this.data, required this.meta});
 
   final dynamic data;
   final Map<String, dynamic> meta;

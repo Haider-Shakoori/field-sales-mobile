@@ -11,9 +11,9 @@ class ProductsScreen extends StatelessWidget {
     final state = context.watch<MasterDataController>();
     final rows = [...state.products]
       ..sort(
-        (a, b) => (a['name'] ?? '')
-            .toString()
-            .compareTo((b['name'] ?? '').toString()),
+        (a, b) => (a['name'] ?? '').toString().compareTo(
+          (b['name'] ?? '').toString(),
+        ),
       );
 
     return RefreshIndicator(

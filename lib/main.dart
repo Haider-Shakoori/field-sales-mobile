@@ -35,10 +35,7 @@ Future<void> main() async {
   final tracking = TrackingService(db: db, gpsRepository: gps);
 
   final masterSource = ApiMasterDataSource(api);
-  final masterData = MasterDataRepository(
-    database: db,
-    source: masterSource,
-  );
+  final masterData = MasterDataRepository(database: db, source: masterSource);
   final localTransactions = LocalFirstTransaction(db);
   final customers = CustomerRepository(
     database: db,

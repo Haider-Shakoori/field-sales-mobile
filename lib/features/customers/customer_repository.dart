@@ -49,17 +49,14 @@ class CustomerRepository {
     };
 
     await transactions.run((transaction) async {
-      await transaction.insert(
-        'customers',
-        {
-          'tenant_id': tenantId,
-          'uuid': uuid,
-          'payload': jsonEncode(payload),
-          'cached_at': now,
-          'source': 'local',
-          'sync_status': 'pending',
-        },
-      );
+      await transaction.insert('customers', {
+        'tenant_id': tenantId,
+        'uuid': uuid,
+        'payload': jsonEncode(payload),
+        'cached_at': now,
+        'source': 'local',
+        'sync_status': 'pending',
+      });
 
       await transactions.enqueue(
         transaction,
@@ -87,8 +84,7 @@ class CustomerRepository {
   Future<CustomerSyncResult> syncPending(String tenantId) async {
     final rows = await database.db.query(
       'sync_queue',
-      where:
-          'tenant_id = ? AND entity_type = ? AND action = ? AND status = ?',
+      where: 'tenant_id = ? AND entity_type = ? AND action = ? AND status = ?',
       whereArgs: [tenantId, 'customer', 'create', 'pending'],
       orderBy: 'priority ASC, created_at ASC',
     );
@@ -136,10 +132,7 @@ class CustomerRepository {
       }
     }
 
-    return CustomerSyncResult(
-      synced: synced,
-      failed: failed,
-    );
+    return CustomerSyncResult(synced: synced, failed: failed);
   }
 
   Future<void> _markFailure(int id, String message) async {
@@ -147,20 +140,13 @@ class CustomerRepository {
       'UPDATE sync_queue '
       'SET attempts = attempts + 1, error_message = ?, updated_at = ? '
       'WHERE id = ?',
-      [
-        message,
-        DateTime.now().toUtc().toIso8601String(),
-        id,
-      ],
+      [message, DateTime.now().toUtc().toIso8601String(), id],
     );
   }
 }
 
 class CustomerSyncResult {
-  const CustomerSyncResult({
-    required this.synced,
-    required this.failed,
-  });
+  const CustomerSyncResult({required this.synced, required this.failed});
 
   final int synced;
   final int failed;

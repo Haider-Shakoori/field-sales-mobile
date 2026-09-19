@@ -11,9 +11,9 @@ class RoutesScreen extends StatelessWidget {
     final state = context.watch<MasterDataController>();
     final rows = [...state.routes]
       ..sort(
-        (a, b) => (a['name'] ?? '')
-            .toString()
-            .compareTo((b['name'] ?? '').toString()),
+        (a, b) => (a['name'] ?? '').toString().compareTo(
+          (b['name'] ?? '').toString(),
+        ),
       );
 
     return RefreshIndicator(
@@ -33,8 +33,9 @@ class RoutesScreen extends StatelessWidget {
               separatorBuilder: (_, __) => const SizedBox(height: 8),
               itemBuilder: (_, index) {
                 final route = rows[index];
-                final weekdays =
-                    (route['weekdays'] as List? ?? const []).join(', ');
+                final weekdays = (route['weekdays'] as List? ?? const []).join(
+                  ', ',
+                );
 
                 return Card(
                   child: ListTile(
@@ -42,10 +43,10 @@ class RoutesScreen extends StatelessWidget {
                     title: Text(route['name']?.toString() ?? 'Route'),
                     subtitle: Text(
                       [
-                        route['code'],
-                        if (weekdays.isNotEmpty) weekdays,
-                        route['is_active'] == false ? 'Inactive' : null,
-                      ]
+                            route['code'],
+                            if (weekdays.isNotEmpty) weekdays,
+                            route['is_active'] == false ? 'Inactive' : null,
+                          ]
                           .where(
                             (value) =>
                                 value != null &&

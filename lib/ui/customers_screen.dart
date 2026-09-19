@@ -12,7 +12,8 @@ class CustomersScreen extends StatelessWidget {
     final phone = TextEditingController();
     final address = TextEditingController();
 
-    final save = await showDialog<bool>(
+    final save =
+        await showDialog<bool>(
           context: context,
           builder: (dialogContext) => AlertDialog(
             title: const Text('New customer'),
@@ -36,15 +37,11 @@ class CustomersScreen extends StatelessWidget {
                   TextField(
                     controller: phone,
                     keyboardType: TextInputType.phone,
-                    decoration: const InputDecoration(
-                      labelText: 'Phone',
-                    ),
+                    decoration: const InputDecoration(labelText: 'Phone'),
                   ),
                   TextField(
                     controller: address,
-                    decoration: const InputDecoration(
-                      labelText: 'Address',
-                    ),
+                    decoration: const InputDecoration(labelText: 'Address'),
                   ),
                 ],
               ),
@@ -72,11 +69,11 @@ class CustomersScreen extends StatelessWidget {
     }
 
     await context.read<MasterDataController>().createCustomer(
-          name: name.text,
-          code: code.text,
-          phone: phone.text,
-          address: address.text,
-        );
+      name: name.text,
+      code: code.text,
+      phone: phone.text,
+      address: address.text,
+    );
   }
 
   @override
@@ -84,9 +81,9 @@ class CustomersScreen extends StatelessWidget {
     final state = context.watch<MasterDataController>();
     final rows = [...state.customers]
       ..sort(
-        (a, b) => (a['name'] ?? '')
-            .toString()
-            .compareTo((b['name'] ?? '').toString()),
+        (a, b) => (a['name'] ?? '').toString().compareTo(
+          (b['name'] ?? '').toString(),
+        ),
       );
 
     return Scaffold(
@@ -99,9 +96,7 @@ class CustomersScreen extends StatelessWidget {
                   Icon(Icons.storefront_outlined, size: 48),
                   SizedBox(height: 12),
                   Center(
-                    child: Text(
-                      'No customers cached yet. Pull down to sync.',
-                    ),
+                    child: Text('No customers cached yet. Pull down to sync.'),
                   ),
                 ],
               )
@@ -127,10 +122,10 @@ class CustomersScreen extends StatelessWidget {
                       title: Text(customer['name']?.toString() ?? 'Customer'),
                       subtitle: Text(
                         [
-                          customer['code'],
-                          customer['phone'],
-                          if (offline) 'Offline-created',
-                        ]
+                              customer['code'],
+                              customer['phone'],
+                              if (offline) 'Offline-created',
+                            ]
                             .where(
                               (value) =>
                                   value != null &&

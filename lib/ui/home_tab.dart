@@ -14,7 +14,8 @@ class HomeTab extends StatelessWidget {
     AttendanceController controller,
   ) async {
     if (!await controller.hasPrivacyAck()) {
-      final accepted = await showDialog<bool>(
+      final accepted =
+          await showDialog<bool>(
             context: context,
             builder: (_) => const PrivacyDialog(),
           ) ??
@@ -43,9 +44,8 @@ class HomeTab extends StatelessWidget {
         children: [
           Text(
             'Good day, ${app.session?.name ?? ''}',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(context).textTheme.headlineSmall
+                ?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 6),
           Text(
@@ -64,9 +64,7 @@ class HomeTab extends StatelessWidget {
                   Row(
                     children: [
                       Icon(
-                        controller.working
-                            ? Icons.location_on
-                            : Icons.schedule,
+                        controller.working ? Icons.location_on : Icons.schedule,
                         color: controller.working
                             ? Colors.green
                             : Colors.indigo,
@@ -74,29 +72,26 @@ class HomeTab extends StatelessWidget {
                       const SizedBox(width: 10),
                       Text(
                         controller.working ? 'Working' : 'Work day',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                        style: Theme.of(context).textTheme.titleLarge
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const Spacer(),
                       Chip(
                         label: Text(
                           controller.working
                               ? (controller.tracking.active
-                                  ? 'Tracking active'
-                                  : 'Tracking paused')
+                                    ? 'Tracking active'
+                                    : 'Tracking paused')
                               : (policy?.startMode == 'automatic'
-                                  ? 'Automatic'
-                                  : 'Manual'),
+                                    ? 'Automatic'
+                                    : 'Manual'),
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 14),
                   if (controller.working) ...[
-                    Text(
-                      'Started ${controller.session?['start_time'] ?? ''}',
-                    ),
+                    Text('Started ${controller.session?['start_time'] ?? ''}'),
                     const SizedBox(height: 8),
                     const Text(
                       'Location is stored locally first and syncs when connectivity is available.',
@@ -149,9 +144,7 @@ class HomeTab extends StatelessWidget {
               trailing: const Icon(Icons.chevron_right),
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => const HistoryScreen(),
-                ),
+                MaterialPageRoute(builder: (_) => const HistoryScreen()),
               ),
             ),
           ),

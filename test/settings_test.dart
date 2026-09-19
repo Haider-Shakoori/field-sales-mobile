@@ -1,2 +1,31 @@
-import 'package:field_sales_mobile/features/settings/attendance_tracking_settings.dart'; import 'package:flutter_test/flutter_test.dart';
-void main(){test('safe defaults are manual',(){final s=AttendanceTrackingSettings.defaults(tenantId:'t');expect(s.startMode,'manual');expect(s.gpsTrackingEnabled,true);expect(s.trusted,false);});test('invalid settings are sanitized',(){final s=AttendanceTrackingSettings.fromJson({'work_session_start_mode':'weird','workday_start_time':'99:99','workday_end_time':'17:00','gps_moving_interval_seconds':1,'gps_stationary_interval_seconds':2,'gps_stale_after_minutes':0,'timezone':'UTC'},tenantId:'t',trusted:true);expect(s.startMode,'manual');expect(s.workdayStartTime,'08:00');expect(s.movingSeconds,15);expect(s.stationarySeconds,60);expect(s.staleMinutes,15);});}
+import 'package:field_sales_mobile/features/settings/attendance_tracking_settings.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  test('safe defaults are manual', () {
+    final s = AttendanceTrackingSettings.defaults(tenantId: 't');
+    expect(s.startMode, 'manual');
+    expect(s.gpsTrackingEnabled, true);
+    expect(s.trusted, false);
+  });
+  test('invalid settings are sanitized', () {
+    final s = AttendanceTrackingSettings.fromJson(
+      {
+        'work_session_start_mode': 'weird',
+        'workday_start_time': '99:99',
+        'workday_end_time': '17:00',
+        'gps_moving_interval_seconds': 1,
+        'gps_stationary_interval_seconds': 2,
+        'gps_stale_after_minutes': 0,
+        'timezone': 'UTC',
+      },
+      tenantId: 't',
+      trusted: true,
+    );
+    expect(s.startMode, 'manual');
+    expect(s.workdayStartTime, '08:00');
+    expect(s.movingSeconds, 15);
+    expect(s.stationarySeconds, 60);
+    expect(s.staleMinutes, 15);
+  });
+}

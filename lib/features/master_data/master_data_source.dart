@@ -20,10 +20,7 @@ abstract class MasterDataSource {
     String? updatedSince,
   });
 
-  Future<Map<String, dynamic>> post(
-    String path,
-    Map<String, dynamic> payload,
-  );
+  Future<Map<String, dynamic>> post(String path, Map<String, dynamic> payload);
 }
 
 class ApiMasterDataSource implements MasterDataSource {

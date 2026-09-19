@@ -24,13 +24,7 @@ void main() {
       expect(url, isNot(contains('/api/v1products')));
     }
 
-    expect(
-      client.path('customers'),
-      endsWith('/api/v1/customers'),
-    );
-    expect(
-      client.path('/customers'),
-      endsWith('/api/v1/customers'),
-    );
+    expect(client.path('customers'), endsWith('/api/v1/customers'));
+    expect(client.path('/customers'), endsWith('/api/v1/customers'));
   });
 }

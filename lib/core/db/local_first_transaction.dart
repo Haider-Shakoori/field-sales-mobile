@@ -7,9 +7,7 @@ class LocalFirstTransaction {
 
   final AppDatabase database;
 
-  Future<T> run<T>(
-    Future<T> Function(Transaction transaction) operation,
-  ) =>
+  Future<T> run<T>(Future<T> Function(Transaction transaction) operation) =>
       database.db.transaction(operation);
 
   Future<void> enqueue(
