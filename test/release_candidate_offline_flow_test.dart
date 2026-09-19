@@ -25,10 +25,7 @@ class _OfflineSource implements MasterDataSource {
   }
 
   @override
-  Future<Map<String, dynamic>> post(
-    String path,
-    Map<String, dynamic> payload,
-  ) {
+  Future<Map<String, dynamic>> post(String path, Map<String, dynamic> payload) {
     throw StateError('RC offline golden path must not use the network.');
   }
 }
@@ -299,7 +296,10 @@ void main() {
     expect(collectionRows.single['balance_before'], 760.0);
     expect(expenseRows.single['sync_status'], 'pending');
 
-    expect(await LocalDependencyGuard(reopened).hasPendingAttendance(tenantId), isTrue);
+    expect(
+      await LocalDependencyGuard(reopened).hasPendingAttendance(tenantId),
+      isTrue,
+    );
 
     await reopened.db.close();
   });
