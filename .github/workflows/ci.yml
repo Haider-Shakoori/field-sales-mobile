@@ -16,6 +16,13 @@ jobs:
           cache: true
 
       - run: flutter pub get
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: resolved-pubspec-lock
+          path: pubspec.lock
+          if-no-files-found: error
+          retention-days: 1
       - name: Verify Dart formatting
         shell: bash
         run: |
