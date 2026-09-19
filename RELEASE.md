@@ -138,3 +138,10 @@ Before promoting an Android artifact:
 ## Branding blocker
 
 The repository currently has no approved Field Sales icon/splash asset and the Android manifest still references the platform default icon. The release pipeline is production-capable, but Batch 19 must treat approved branding as a launch blocker rather than shipping the default system icon.
+
+
+## Release Candidate UAT
+
+Stage 2 Batch 19 physical-device acceptance steps are documented in [UAT.md](UAT.md).
+
+A green CI release build is necessary but not sufficient for production promotion. The signed release candidate must still be installed on a physical Android device and the documented offline, reconnect, background GPS, device revocation and admin round-trip scenarios must be executed with real evidence before Batch 19 can be marked complete.
