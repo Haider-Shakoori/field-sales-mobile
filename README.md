@@ -1,6 +1,6 @@
-# Field Sales Mobile
+# FieldPulse Mobile
 
-Flutter 3.47 Android client for Field Sales. The app is local-first: attendance, GPS points, privacy acknowledgement and sync intent are persisted before network operations.
+Flutter 3.47 Android client for FieldPulse. The app is local-first: attendance, GPS points, privacy acknowledgement and sync intent are persisted before network operations.
 
 ## Implemented foundation
 
