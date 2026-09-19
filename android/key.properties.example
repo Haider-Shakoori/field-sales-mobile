@@ -1,0 +1,6 @@
+# Copy to android/key.properties for local release builds.
+# Never commit android/key.properties or the keystore.
+storeFile=/absolute/path/to/field-sales-upload.jks
+storePassword=replace-with-secret
+keyAlias=field-sales-upload
+keyPassword=replace-with-secret
