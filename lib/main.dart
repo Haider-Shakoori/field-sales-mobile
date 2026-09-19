@@ -10,6 +10,7 @@ import 'core/storage/secret_store.dart';
 import 'features/attendance/attendance_repository.dart';
 import 'features/auth/auth_repository.dart';
 import 'features/customers/customer_repository.dart';
+import 'features/collections/collection_repository.dart';
 import 'features/calls/call_activity_repository.dart';
 import 'features/collections/collection_repository.dart';
 import 'features/gps/gps_repository.dart';
@@ -21,6 +22,7 @@ import 'features/settings/settings_repository.dart';
 import 'features/visits/visit_repository.dart';
 import 'state/app_state.dart';
 import 'state/call_activity_controller.dart';
+import 'state/collection_controller.dart';
 import 'state/collection_controller.dart';
 import 'state/attendance_controller.dart';
 import 'state/master_data_controller.dart';
@@ -43,6 +45,7 @@ Future<void> main() async {
   final tracking = TrackingService(db: db, gpsRepository: gps);
   final visits = VisitRepository(api: api, db: db);
   final calls = CallActivityRepository(api: api, db: db);
+  final collections = CollectionRepository(api: api, db: db);
   final collections = CollectionRepository(api: api, db: db);
 
   final masterSource = ApiMasterDataSource(api);
@@ -68,6 +71,11 @@ Future<void> main() async {
   final callActivityController = CallActivityController(
     appState: appState,
     repository: calls,
+  );
+
+  final collectionController = CollectionController(
+    appState: appState,
+    repository: collections,
   );
 
   final collectionController = CollectionController(
@@ -107,11 +115,13 @@ Future<void> main() async {
         ChangeNotifierProvider.value(value: callActivityController),
         ChangeNotifierProvider.value(value: orderController),
         ChangeNotifierProvider.value(value: collectionController),
+        ChangeNotifierProvider.value(value: collectionController),
         Provider.value(value: masterData),
         Provider.value(value: customers),
         Provider.value(value: visits),
         Provider.value(value: calls),
         Provider.value(value: orders),
+        Provider.value(value: collections),
         Provider.value(value: collections),
       ],
       child: const FieldSalesApp(),
