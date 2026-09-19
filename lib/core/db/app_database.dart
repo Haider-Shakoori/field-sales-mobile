@@ -4,7 +4,7 @@ import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
 class AppDatabase {
-  static const version = 5;
+  static const version = 6;
 
   Database? _db;
 
@@ -16,12 +16,12 @@ class AppDatabase {
     _db = await openDatabase(
       p.join(dir, 'field_sales.db'),
       version: version,
-      onCreate: (database, _) => _createV5(database),
+      onCreate: (database, _) => _createV6(database),
       onUpgrade: _upgrade,
     );
   }
 
-  Future<void> _createV5(Database database) async {
+  Future<void> _createV6(Database database) async {
     await _createSyncTables(database);
     await _createMasterTables(database);
     await _createAttendanceTables(database);
@@ -106,6 +106,7 @@ class AppDatabase {
     await database.execute(
       'CREATE TABLE IF NOT EXISTS local_work_sessions ('
       'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL, '
       'offline_uuid TEXT NOT NULL UNIQUE, '
       'server_id INTEGER, '
       'date TEXT NOT NULL, '
@@ -127,11 +128,12 @@ class AppDatabase {
     );
     await database.execute(
       'CREATE UNIQUE INDEX IF NOT EXISTS one_active_session '
-      "ON local_work_sessions(status) WHERE status='active'",
+      "ON local_work_sessions(tenant_id,status) WHERE status='active'",
     );
     await database.execute(
       'CREATE TABLE IF NOT EXISTS local_gps_points ('
       'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL, '
       'client_uuid TEXT NOT NULL UNIQUE, '
       'latitude REAL NOT NULL, '
       'longitude REAL NOT NULL, '
@@ -155,11 +157,11 @@ class AppDatabase {
     );
     await database.execute(
       'CREATE INDEX IF NOT EXISTS idx_gps_pending '
-      'ON local_gps_points(sync_status,id)',
+      'ON local_gps_points(tenant_id,sync_status,id)',
     );
     await database.execute(
       'CREATE INDEX IF NOT EXISTS idx_gps_recorded '
-      'ON local_gps_points(recorded_at)',
+      'ON local_gps_points(tenant_id,recorded_at)',
     );
     await database.execute(
       'CREATE TABLE IF NOT EXISTS privacy_acknowledgements ('
@@ -193,6 +195,31 @@ class AppDatabase {
     }
 
     await _createSyncTables(database);
+
+    if (oldVersion < 6) {
+      if (await _tableExists(database, 'local_work_sessions') &&
+          !await _hasColumn(database, 'local_work_sessions', 'tenant_id')) {
+        await database.execute(
+          'ALTER TABLE local_work_sessions '
+          'ADD COLUMN tenant_id TEXT NOT NULL DEFAULT ""',
+        );
+      }
+      if (await _tableExists(database, 'local_gps_points') &&
+          !await _hasColumn(database, 'local_gps_points', 'tenant_id')) {
+        await database.execute(
+          'ALTER TABLE local_gps_points '
+          'ADD COLUMN tenant_id TEXT NOT NULL DEFAULT ""',
+        );
+      }
+
+      // Legacy attendance/GPS rows have no trustworthy tenant identity. Keep
+      // them locally but quarantine them under the empty tenant so they can
+      // never upload into a newly signed-in tenant.
+      await database.execute('DROP INDEX IF EXISTS one_active_session');
+      await database.execute('DROP INDEX IF EXISTS idx_gps_pending');
+      await database.execute('DROP INDEX IF EXISTS idx_gps_recorded');
+    }
+
     await _createAttendanceTables(database);
 
     if (oldVersion < 4 &&

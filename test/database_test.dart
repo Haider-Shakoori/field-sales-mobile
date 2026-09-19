@@ -19,7 +19,7 @@ void main() {
   });
 
   test(
-    'database v5 creates tenant-safe master and attendance tables',
+    'database v6 creates tenant-safe master attendance and GPS tables',
     () async {
       final database = AppDatabase();
       await database.open();
@@ -53,6 +53,16 @@ void main() {
         customerColumns,
         containsAll(['tenant_id', 'uuid', 'source', 'sync_status']),
       );
+
+      final sessionColumns = (await database.db.rawQuery(
+        'PRAGMA table_info(local_work_sessions)',
+      )).map((row) => row['name']).toSet();
+      final gpsColumns = (await database.db.rawQuery(
+        'PRAGMA table_info(local_gps_points)',
+      )).map((row) => row['name']).toSet();
+
+      expect(sessionColumns, contains('tenant_id'));
+      expect(gpsColumns, contains('tenant_id'));
 
       final indexes = (await database.db.rawQuery(
         "SELECT name FROM sqlite_master WHERE type='index'",
@@ -153,4 +163,130 @@ void main() {
       await database.db.close();
     },
   );
+  test('v5 attendance and GPS rows are quarantined during v6 upgrade', () async {
+    final path = await databasePath();
+
+    final old = await openDatabase(
+      path,
+      version: 5,
+      onCreate: (db, _) async {
+        await db.execute(
+          'CREATE TABLE local_work_sessions ('
+          'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+          'offline_uuid TEXT NOT NULL UNIQUE, '
+          'server_id INTEGER, '
+          'date TEXT NOT NULL, '
+          'start_time TEXT NOT NULL, '
+          'end_time TEXT, '
+          'start_latitude REAL NOT NULL, '
+          'start_longitude REAL NOT NULL, '
+          'start_accuracy REAL NOT NULL, '
+          'end_latitude REAL, '
+          'end_longitude REAL, '
+          'end_accuracy REAL, '
+          'status TEXT NOT NULL, '
+          'sync_status TEXT NOT NULL, '
+          'start_source TEXT NOT NULL DEFAULT "manual", '
+          'privacy_ack_at TEXT, '
+          'created_at TEXT NOT NULL, '
+          'updated_at TEXT NOT NULL'
+          ')',
+        );
+        await db.execute(
+          'CREATE UNIQUE INDEX one_active_session '
+          "ON local_work_sessions(status) WHERE status='active'",
+        );
+        await db.execute(
+          'CREATE TABLE local_gps_points ('
+          'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+          'client_uuid TEXT NOT NULL UNIQUE, '
+          'latitude REAL NOT NULL, '
+          'longitude REAL NOT NULL, '
+          'altitude REAL, '
+          'accuracy REAL NOT NULL, '
+          'speed REAL, '
+          'heading REAL, '
+          'battery_level INTEGER, '
+          'is_charging INTEGER NOT NULL DEFAULT 0, '
+          'network_status TEXT, '
+          'is_mock_location INTEGER NOT NULL DEFAULT 0, '
+          'provider TEXT, '
+          'recorded_at TEXT NOT NULL, '
+          'sequence_number INTEGER NOT NULL, '
+          'batch_uuid TEXT, '
+          'sync_status TEXT NOT NULL DEFAULT "pending", '
+          'last_error TEXT, '
+          'uploaded_at TEXT, '
+          'created_at TEXT NOT NULL'
+          ')',
+        );
+        await db.execute(
+          'CREATE INDEX idx_gps_pending ON local_gps_points(sync_status,id)',
+        );
+        await db.execute(
+          'CREATE INDEX idx_gps_recorded ON local_gps_points(recorded_at)',
+        );
+
+        await db.insert('local_work_sessions', {
+          'offline_uuid': 'legacy-session',
+          'date': '2026-09-18',
+          'start_time': '2026-09-18T04:00:00Z',
+          'start_latitude': 34.5,
+          'start_longitude': 69.1,
+          'start_accuracy': 8,
+          'status': 'active',
+          'sync_status': 'pending',
+          'created_at': '2026-09-18T04:00:00Z',
+          'updated_at': '2026-09-18T04:00:00Z',
+        });
+        await db.insert('local_gps_points', {
+          'client_uuid': 'legacy-point',
+          'latitude': 34.5,
+          'longitude': 69.1,
+          'accuracy': 8,
+          'recorded_at': '2026-09-18T04:01:00Z',
+          'sequence_number': 1,
+          'sync_status': 'pending',
+          'created_at': '2026-09-18T04:01:00Z',
+        });
+      },
+    );
+    await old.close();
+
+    final database = AppDatabase();
+    await database.open();
+
+    final session = (await database.db.query(
+      'local_work_sessions',
+      where: 'offline_uuid=?',
+      whereArgs: ['legacy-session'],
+    )).single;
+    final point = (await database.db.query(
+      'local_gps_points',
+      where: 'client_uuid=?',
+      whereArgs: ['legacy-point'],
+    )).single;
+
+    expect(session['tenant_id'], '');
+    expect(point['tenant_id'], '');
+
+    final activeIndex = (await database.db.query(
+      'sqlite_master',
+      columns: ['sql'],
+      where: 'type=? AND name=?',
+      whereArgs: ['index', 'one_active_session'],
+    )).single['sql'] as String;
+    final pendingIndex = (await database.db.query(
+      'sqlite_master',
+      columns: ['sql'],
+      where: 'type=? AND name=?',
+      whereArgs: ['index', 'idx_gps_pending'],
+    )).single['sql'] as String;
+
+    expect(activeIndex, contains('tenant_id'));
+    expect(pendingIndex, contains('tenant_id'));
+
+    await database.db.close();
+  });
+
 }

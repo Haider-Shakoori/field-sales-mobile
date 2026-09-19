@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../state/app_state.dart';
 import '../state/attendance_controller.dart';
 
 class HistoryScreen extends StatelessWidget {
@@ -8,10 +9,18 @@ class HistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final db = context.read<AttendanceController>().db.db;
+    final tenantId = context.read<AppState>().session?.tenantId;
     return Scaffold(
       appBar: AppBar(title: const Text('Attendance history')),
       body: FutureBuilder(
-        future: db.query('local_work_sessions', orderBy: 'date DESC'),
+        future: tenantId == null
+            ? Future.value(<Map<String, Object?>>[])
+            : db.query(
+                'local_work_sessions',
+                where: 'tenant_id=?',
+                whereArgs: [tenantId],
+                orderBy: 'date DESC',
+              ),
         builder: (context, snap) {
           if (!snap.hasData) {
             return const Center(child: CircularProgressIndicator());
