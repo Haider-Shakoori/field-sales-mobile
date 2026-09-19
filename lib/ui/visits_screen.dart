@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../state/attendance_controller.dart';
 import '../state/master_data_controller.dart';
 import '../state/visit_controller.dart';
+import 'order_create_screen.dart';
 
 class VisitsScreen extends StatelessWidget {
   const VisitsScreen({super.key});
@@ -150,6 +151,34 @@ class VisitsScreen extends StatelessWidget {
     }
   }
 
+  Future<void> _createOrderFromVisit(
+    BuildContext context,
+    Map<String, dynamic> visit,
+  ) async {
+    final master = context.read<MasterDataController>();
+    final customerId = visit['customer_uuid']?.toString();
+
+    if (customerId == null || customerId.isEmpty || master.products.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Customer or product data is not available offline yet.'),
+        ),
+      );
+      return;
+    }
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => OrderCreateScreen(
+          customers: master.customers,
+          products: master.products,
+          initialCustomerId: customerId,
+          visitUuid: visit['offline_uuid']?.toString(),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = context.watch<VisitController>();
@@ -262,6 +291,13 @@ class VisitsScreen extends StatelessWidget {
                                     : () => state.capturePhoto(visit),
                                 icon: const Icon(Icons.camera_alt_outlined),
                                 label: const Text('Photo'),
+                              ),
+                              OutlinedButton.icon(
+                                onPressed: state.busy
+                                    ? null
+                                    : () => _createOrderFromVisit(context, visit),
+                                icon: const Icon(Icons.add_shopping_cart),
+                                label: const Text('Order'),
                               ),
                               if (active)
                                 FilledButton.icon(
