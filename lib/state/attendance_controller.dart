@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 import '../core/config.dart';
@@ -100,7 +99,11 @@ class AttendanceController extends ChangeNotifier {
     final rows = await db.db.query(
       'privacy_acknowledgements',
       where: 'policy_version=? AND user_id=? AND tenant_id=?',
-      whereArgs: [policy.privacyPolicyVersion, signedIn.userId, signedIn.tenantId],
+      whereArgs: [
+        policy.privacyPolicyVersion,
+        signedIn.userId,
+        signedIn.tenantId,
+      ],
       limit: 1,
     );
     return rows.isNotEmpty;
@@ -122,11 +125,14 @@ class AttendanceController extends ChangeNotifier {
     });
     try {
       final data = Map<String, dynamic>.from(
-        await settings.api.post('gps/privacy-acknowledgement', data: {
-          'policy_version': policy.privacyPolicyVersion,
-          'acknowledged_at': at,
-          'app_version': AppConfig.appVersion,
-        }),
+        await settings.api.post(
+          'gps/privacy-acknowledgement',
+          data: {
+            'policy_version': policy.privacyPolicyVersion,
+            'acknowledged_at': at,
+            'app_version': AppConfig.appVersion,
+          },
+        ),
       );
       await db.db.update(
         'privacy_acknowledgements',
@@ -136,7 +142,11 @@ class AttendanceController extends ChangeNotifier {
           'server_uuid': data['uuid'],
         },
         where: 'policy_version=? AND user_id=? AND tenant_id=?',
-        whereArgs: [policy.privacyPolicyVersion, signedIn.userId, signedIn.tenantId],
+        whereArgs: [
+          policy.privacyPolicyVersion,
+          signedIn.userId,
+          signedIn.tenantId,
+        ],
       );
     } catch (_) {}
     notifyListeners();
@@ -150,13 +160,34 @@ class AttendanceController extends ChangeNotifier {
     try {
       final date = tenantDate;
       if (date == null) throw StateError('Company timezone is unavailable.');
-      if (await attendance.forDate(date) != null) throw StateError('Day completed or already started.');
-      if (!await hasPrivacyAck()) throw StateError('Review tracking policy before starting.');
+      if (await attendance.forDate(date) != null) {
+        throw StateError('Day completed or already started.');
+      }
+      if (!await hasPrivacyAck()) {
+        throw StateError('Review tracking policy before starting.');
+      }
       if (source == 'manual') await _requestNotificationPermission();
       final fix = await tracking.oneShot();
       if (fix == null) throw StateError('A usable GPS location is required.');
-      await gps.store(latitude: fix.latitude, longitude: fix.longitude, accuracy: fix.accuracy, altitude: fix.altitude, speed: fix.speed, heading: fix.heading, isMock: fix.isMocked, recordedAt: fix.timestamp);
-      await attendance.start(date: date, at: DateTime.now(), lat: fix.latitude, lng: fix.longitude, accuracy: fix.accuracy, source: source, privacyAckAt: DateTime.now().toUtc().toIso8601String());
+      await gps.store(
+        latitude: fix.latitude,
+        longitude: fix.longitude,
+        accuracy: fix.accuracy,
+        altitude: fix.altitude,
+        speed: fix.speed,
+        heading: fix.heading,
+        isMock: fix.isMocked,
+        recordedAt: fix.timestamp,
+      );
+      await attendance.start(
+        date: date,
+        at: DateTime.now(),
+        lat: fix.latitude,
+        lng: fix.longitude,
+        accuracy: fix.accuracy,
+        source: source,
+        privacyAckAt: DateTime.now().toUtc().toIso8601String(),
+      );
       session = await attendance.active();
       await reconcile();
       unawaited(attendance.drain().then((_) => gps.upload()));
@@ -178,17 +209,38 @@ class AttendanceController extends ChangeNotifier {
       late final double longitude;
       late final double accuracy;
       if (fix != null) {
-        latitude = fix.latitude; longitude = fix.longitude; accuracy = fix.accuracy;
+        latitude = fix.latitude;
+        longitude = fix.longitude;
+        accuracy = fix.accuracy;
       } else {
-        final points = await db.db.query('local_gps_points', orderBy: 'recorded_at DESC', limit: 1);
-        if (points.isNotEmpty && DateTime.now().difference(DateTime.parse(points.first['recorded_at'] as String)) <= const Duration(minutes: 10)) {
-          latitude = points.first['latitude'] as double; longitude = points.first['longitude'] as double; accuracy = points.first['accuracy'] as double;
+        final points = await db.db.query(
+          'local_gps_points',
+          orderBy: 'recorded_at DESC',
+          limit: 1,
+        );
+        if (points.isNotEmpty &&
+            DateTime.now().difference(
+                  DateTime.parse(points.first['recorded_at'] as String),
+                ) <=
+                const Duration(minutes: 10)) {
+          latitude = points.first['latitude'] as double;
+          longitude = points.first['longitude'] as double;
+          accuracy = points.first['accuracy'] as double;
         } else {
-          latitude = session!['start_latitude'] as double; longitude = session!['start_longitude'] as double; accuracy = session!['start_accuracy'] as double;
+          latitude = session!['start_latitude'] as double;
+          longitude = session!['start_longitude'] as double;
+          accuracy = session!['start_accuracy'] as double;
         }
       }
-      tracking.stop(); _stopUploader();
-      await attendance.end(session: session!, at: DateTime.now(), lat: latitude, lng: longitude, accuracy: accuracy);
+      tracking.stop();
+      _stopUploader();
+      await attendance.end(
+        session: session!,
+        at: DateTime.now(),
+        lat: latitude,
+        lng: longitude,
+        accuracy: accuracy,
+      );
       session = null;
       unawaited(attendance.drain().then((_) => gps.upload()));
       _scheduleBoundary();
@@ -201,53 +253,150 @@ class AttendanceController extends ChangeNotifier {
   }
 
   Future<void> evaluateAutomaticPolicy() async {
-    final policy = appState.policy; final now = _tenantNow();
-    if (!appState.signedIn || policy == null || !policy.trusted || now == null) { _scheduleBoundary(); return; }
+    final policy = appState.policy;
+    final now = _tenantNow();
+    if (!appState.signedIn ||
+        policy == null ||
+        !policy.trusted ||
+        now == null) {
+      _scheduleBoundary();
+      return;
+    }
     final inside = _insideWindow(now, policy);
     if (working) {
-      if (!policy.gpsTrackingEnabled) { tracking.stop(); _stopUploader(); }
-      else if (!tracking.active) { await tracking.start(movingSeconds: policy.movingSeconds); _startUploader(); }
-      if (policy.autoEndSession && !inside && _sessionStartedInsideWindow(policy)) await endDay();
-      _scheduleBoundary(); return;
+      if (!policy.gpsTrackingEnabled) {
+        tracking.stop();
+        _stopUploader();
+      } else if (!tracking.active) {
+        await tracking.start(movingSeconds: policy.movingSeconds);
+        _startUploader();
+      }
+      if (policy.autoEndSession &&
+          !inside &&
+          _sessionStartedInsideWindow(policy)) {
+        await endDay();
+      }
+      _scheduleBoundary();
+      return;
     }
-    if (policy.startMode == 'automatic' && inside && policy.gpsTrackingEnabled) {
+    if (policy.startMode == 'automatic' &&
+        inside &&
+        policy.gpsTrackingEnabled) {
       final date = tenantDate;
       if (date != null && await attendance.forDate(date) == null) {
-        if (!await hasPrivacyAck()) message = 'Review tracking policy before automatic Start Day.';
-        else await startDay(source: 'automatic');
+        if (!await hasPrivacyAck()) {
+          message = 'Review tracking policy before automatic Start Day.';
+        } else {
+          await startDay(source: 'automatic');
+        }
       }
     }
-    _scheduleBoundary(); notifyListeners();
+    _scheduleBoundary();
+    notifyListeners();
   }
 
   bool _sessionStartedInsideWindow(AttendanceTrackingSettings policy) {
     final raw = session?['start_time'] as String?;
     if (raw == null || policy.timezone.isEmpty) return false;
-    try { final location = tz.getLocation(policy.timezone); final instant = DateTime.parse(raw).toUtc(); return _insideWindow(tz.TZDateTime.from(instant, location), policy); } catch (_) { return false; }
+    try {
+      final location = tz.getLocation(policy.timezone);
+      final instant = DateTime.parse(raw).toUtc();
+      return _insideWindow(tz.TZDateTime.from(instant, location), policy);
+    } catch (_) {
+      return false;
+    }
   }
 
   void _scheduleBoundary() {
-    _boundary?.cancel(); _boundary = null;
-    final policy = appState.policy; final now = _tenantNow();
-    if (!appState.signedIn || policy == null || !policy.trusted || now == null) return;
-    tz.TZDateTime at(String hm, int dayOffset) { final parts=hm.split(':'); final base=now.add(Duration(days:dayOffset)); return tz.TZDateTime(base.location,base.year,base.month,base.day,int.parse(parts[0]),int.parse(parts[1])); }
-    final candidates=<tz.TZDateTime>[at(policy.workdayStartTime,0),at(policy.workdayEndTime,0),at(policy.workdayStartTime,1),at(policy.workdayEndTime,1)].where((v)=>v.isAfter(now)).toList()..sort();
-    if(candidates.isEmpty)return; _boundary=Timer(candidates.first.difference(now),()=>unawaited(evaluateAutomaticPolicy()));
+    _boundary?.cancel();
+    _boundary = null;
+    final policy = appState.policy;
+    final now = _tenantNow();
+    if (!appState.signedIn ||
+        policy == null ||
+        !policy.trusted ||
+        now == null) {
+      return;
+    }
+    tz.TZDateTime at(String hm, int dayOffset) {
+      final parts = hm.split(':');
+      final base = now.add(Duration(days: dayOffset));
+      return tz.TZDateTime(
+        base.location,
+        base.year,
+        base.month,
+        base.day,
+        int.parse(parts[0]),
+        int.parse(parts[1]),
+      );
+    }
+
+    final candidates = <tz.TZDateTime>[
+      at(policy.workdayStartTime, 0),
+      at(policy.workdayEndTime, 0),
+      at(policy.workdayStartTime, 1),
+      at(policy.workdayEndTime, 1),
+    ].where((v) => v.isAfter(now)).toList()..sort();
+    if (candidates.isEmpty) return;
+    _boundary = Timer(
+      candidates.first.difference(now),
+      () => unawaited(evaluateAutomaticPolicy()),
+    );
   }
 
-  Future<void> refreshPolicyAndEvaluate() async { await appState.refreshPolicy(); await reconcile(); await evaluateAutomaticPolicy(); }
-  Future<void> _requestNotificationPermission() async { try { await const MethodChannel('field_sales/notifications').invokeMethod<bool>('requestNotificationPermission'); } catch (_) {} }
-  void _startUploader() { _uploader ??= Timer.periodic(const Duration(minutes: 5), (_) => unawaited(attendance.drain().then((_) => gps.upload()))); }
-  void _stopUploader() { _uploader?.cancel(); _uploader = null; }
+  Future<void> refreshPolicyAndEvaluate() async {
+    await appState.refreshPolicy();
+    await reconcile();
+    await evaluateAutomaticPolicy();
+  }
+
+  Future<void> _requestNotificationPermission() async {
+    try {
+      await const MethodChannel('field_sales/notifications')
+          .invokeMethod<bool>('requestNotificationPermission');
+    } catch (_) {}
+  }
+
+  void _startUploader() {
+    _uploader ??= Timer.periodic(
+      const Duration(minutes: 5),
+      (_) => unawaited(attendance.drain().then((_) => gps.upload())),
+    );
+  }
+
+  void _stopUploader() {
+    _uploader?.cancel();
+    _uploader = null;
+  }
 
   Future<void> handleRevocation() async {
-    if (_revoking) return; _revoking = true; tracking.stop(); _stopUploader(); _boundary?.cancel(); _boundary=null;
-    message='This device is no longer authorized. Local unsynced data has been preserved.';
-    await appState.revokeLocal(); _revoking=false; notifyListeners();
+    if (_revoking) return;
+    _revoking = true;
+    tracking.stop();
+    _stopUploader();
+    _boundary?.cancel();
+    _boundary = null;
+    message = 'This device is no longer authorized. Local unsynced data has been preserved.';
+    await appState.revokeLocal();
+    _revoking = false;
+    notifyListeners();
   }
 
-  Future<void> logout() async { tracking.stop(); _stopUploader(); _boundary?.cancel(); _boundary=null; await appState.logout(); session=null; notifyListeners(); }
+  Future<void> logout() async {
+    tracking.stop();
+    _stopUploader();
+    _boundary?.cancel();
+    _boundary = null;
+    await appState.logout();
+    session = null;
+    notifyListeners();
+  }
 
   @override
-  void dispose() { tracking.stop(); _stopUploader(); _boundary?.cancel(); super.dispose(); }
+  void dispose() {
+    tracking.stop();
+    _stopUploader();
+    _boundary?.cancel();
+    super.dispose();
+  }
 }
