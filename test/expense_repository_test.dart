@@ -71,8 +71,8 @@ void main() {
       db: db,
     );
 
-    expect(
-      () => repository.createOffline(
+    await expectLater(
+      repository.createOffline(
         tenantId: 'tenant-expense-test',
         spentAt: DateTime.utc(2026, 9, 19, 8, 15),
         category: 'invalid',
@@ -85,8 +85,8 @@ void main() {
       throwsA(isA<StateError>()),
     );
 
-    expect(
-      () => repository.createOffline(
+    await expectLater(
+      repository.createOffline(
         tenantId: 'tenant-expense-test',
         spentAt: DateTime.utc(2026, 9, 19, 8, 15),
         category: 'fuel',
