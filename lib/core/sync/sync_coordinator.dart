@@ -101,6 +101,11 @@ class SyncCoordinator {
       return const SyncStageReport.success('master_data');
     });
 
+    await stage('privacy', () async {
+      await gps.uploadPrivacyAcknowledgements(tenantId);
+      return const SyncStageReport.success('privacy');
+    });
+
     await stage('attendance', () async {
       await attendance.drain(tenantId);
       return const SyncStageReport.success('attendance');
