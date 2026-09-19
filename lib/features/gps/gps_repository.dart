@@ -7,12 +7,15 @@ import 'package:uuid/uuid.dart';
 
 import '../../core/api/api_client.dart';
 import '../../core/db/app_database.dart';
+import '../../core/sync/sync_retry_store.dart';
 
 class GpsRepository {
-  GpsRepository({required this.api, required this.db});
+  GpsRepository({required this.api, required this.db})
+      : retry = SyncRetryStore(db);
 
   final ApiClient api;
   final AppDatabase db;
+  final SyncRetryStore retry;
   final _battery = Battery();
 
   Future<void> store({
@@ -123,7 +126,16 @@ class GpsRepository {
   Future<void> upload(String tenantId) async {
     if (tenantId.isEmpty) return;
 
-    final rows = await db.db.query(
+    if (!await retry.shouldAttempt(
+      tenantId: tenantId,
+      entityType: 'gps',
+      entityUuid: 'upload',
+    )) {
+      return;
+    }
+
+    try {
+      final rows = await db.db.query(
       'local_gps_points',
       where: 'tenant_id=? AND sync_status=?',
       whereArgs: [tenantId, 'pending'],
@@ -131,9 +143,16 @@ class GpsRepository {
       limit: 100,
     );
 
-    if (rows.isEmpty) return;
+      if (rows.isEmpty) {
+        await retry.clear(
+          tenantId: tenantId,
+          entityType: 'gps',
+          entityUuid: 'upload',
+        );
+        return;
+      }
 
-    final batch = const Uuid().v4();
+      final batch = const Uuid().v4();
     final locations = rows
         .map(
           (row) => {
@@ -198,7 +217,7 @@ class GpsRepository {
       );
     }
 
-    await db.db.transaction((txn) async {
+      await db.db.transaction((txn) async {
       final uploadedAt = DateTime.now().toUtc().toIso8601String();
 
       for (final uuid in uploaded) {
@@ -233,6 +252,21 @@ class GpsRepository {
         );
       }
     });
+
+      await retry.clear(
+        tenantId: tenantId,
+        entityType: 'gps',
+        entityUuid: 'upload',
+      );
+    } catch (error) {
+      await retry.recordFailure(
+        tenantId: tenantId,
+        entityType: 'gps',
+        entityUuid: 'upload',
+        error: error,
+      );
+      rethrow;
+    }
   }
 
   Future<Map<String, dynamic>?> current({String? userId}) async {
