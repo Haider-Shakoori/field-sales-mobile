@@ -64,7 +64,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final calls = context.watch<CallActivityController>();
     final orders = context.watch<OrderController>();
     final collections = context.watch<CollectionController>();
-    final pending = master.pending +
+    final pending =
+        master.pending +
         visits.pending +
         calls.pending +
         orders.pending +

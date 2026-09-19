@@ -31,7 +31,8 @@ class MoreScreen extends StatelessWidget {
             title: const Text('Collections'),
             subtitle: const Text('Customer balances, receipts and payments'),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () => _open(context, 'Collections', const CollectionsScreen()),
+            onTap: () =>
+                _open(context, 'Collections', const CollectionsScreen()),
           ),
         ),
         Card(

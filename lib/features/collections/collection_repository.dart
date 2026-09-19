@@ -193,16 +193,10 @@ class CollectionRepository {
   }
 
   Future<void> refreshServerHistory(String tenantId) async {
-    final data = await api.get(
-      'collections/history',
-      query: {'per_page': 100},
-    );
+    final data = await api.get('collections/history', query: {'per_page': 100});
 
     for (final raw in (data as List? ?? const []).whereType<Map>()) {
-      await _applyServerCollection(
-        tenantId,
-        Map<String, dynamic>.from(raw),
-      );
+      await _applyServerCollection(tenantId, Map<String, dynamic>.from(raw));
     }
   }
 
@@ -222,8 +216,8 @@ class CollectionRepository {
         final customerUuid = customer['customer_id']?.toString() ?? '';
         if (customerUuid.isEmpty) continue;
 
-        for (final rawBalance in
-            (customer['balances'] as List? ?? const []).whereType<Map>()) {
+        for (final rawBalance
+            in (customer['balances'] as List? ?? const []).whereType<Map>()) {
           final balance = Map<String, dynamic>.from(rawBalance);
           await txn.insert('local_customer_balances', {
             'tenant_id': tenantId,

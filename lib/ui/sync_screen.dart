@@ -34,12 +34,14 @@ class SyncScreen extends StatelessWidget {
     final calls = context.watch<CallActivityController>();
     final orders = context.watch<OrderController>();
     final collections = context.watch<CollectionController>();
-    final pending = state.pending +
+    final pending =
+        state.pending +
         visits.pending +
         calls.pending +
         orders.pending +
         collections.pending;
-    final busy = state.busy ||
+    final busy =
+        state.busy ||
         visits.busy ||
         calls.busy ||
         orders.busy ||

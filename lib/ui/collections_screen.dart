@@ -110,9 +110,8 @@ class CollectionsScreen extends StatelessWidget {
                     ),
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (_) => CollectionDetailScreen(
-                          collection: collection,
-                        ),
+                        builder: (_) =>
+                            CollectionDetailScreen(collection: collection),
                       ),
                     ),
                   ),

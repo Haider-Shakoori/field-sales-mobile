@@ -42,7 +42,9 @@ class _CollectionCreateScreenState extends State<CollectionCreateScreen> {
   void initState() {
     super.initState();
     _customerId = widget.initialCustomerId;
-    WidgetsBinding.instance.addPostFrameCallback((_) => _useFirstBalanceCurrency());
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _useFirstBalanceCurrency(),
+    );
   }
 
   @override
@@ -78,9 +80,8 @@ class _CollectionCreateScreenState extends State<CollectionCreateScreen> {
   Future<void> _save() async {
     final customer = _customer;
     if (customer == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Select a customer.')),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Select a customer.')));
       return;
     }
 
@@ -120,9 +121,8 @@ class _CollectionCreateScreenState extends State<CollectionCreateScreen> {
     if (controller.message == 'Collection saved locally.') {
       Navigator.pop(context);
     } else if (controller.message != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(controller.message!)),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(controller.message!)));
     }
   }
 
@@ -179,10 +179,8 @@ class _CollectionCreateScreenState extends State<CollectionCreateScreen> {
             decoration: const InputDecoration(labelText: 'Currency'),
             items: availableCurrencies
                 .map(
-                  (currency) => DropdownMenuItem(
-                    value: currency,
-                    child: Text(currency),
-                  ),
+                  (currency) =>
+                      DropdownMenuItem(value: currency, child: Text(currency)),
                 )
                 .toList(),
             onChanged: (value) {
@@ -253,9 +251,7 @@ class _CollectionCreateScreenState extends State<CollectionCreateScreen> {
             const SizedBox(height: 12),
             TextField(
               controller: _reference,
-              decoration: const InputDecoration(
-                labelText: 'Reference number',
-              ),
+              decoration: const InputDecoration(labelText: 'Reference number'),
             ),
           ],
           const SizedBox(height: 12),

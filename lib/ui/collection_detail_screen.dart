@@ -52,8 +52,7 @@ class CollectionDetailScreen extends StatelessWidget {
                             .replaceAll('_', ' '),
                   ),
                   Text(
-                    'Status: ' +
-                        (collection['status'] ?? 'pending').toString(),
+                    'Status: ' + (collection['status'] ?? 'pending').toString(),
                   ),
                   Text(
                     'Collected: ' +
@@ -61,8 +60,7 @@ class CollectionDetailScreen extends StatelessWidget {
                   ),
                   if (collection['reference_number'] != null)
                     Text(
-                      'Reference: ' +
-                          collection['reference_number'].toString(),
+                      'Reference: ' + collection['reference_number'].toString(),
                     ),
                   if (collection['visit_uuid'] != null)
                     Text('Visit: ' + collection['visit_uuid'].toString()),
@@ -70,8 +68,7 @@ class CollectionDetailScreen extends StatelessWidget {
                     Text('Notes: ' + collection['notes'].toString()),
                   if (collection['status_note'] != null)
                     Text(
-                      'Status note: ' +
-                          collection['status_note'].toString(),
+                      'Status note: ' + collection['status_note'].toString(),
                     ),
                   if (collection['sync_status'] != 'synced')
                     Text(
@@ -119,7 +116,11 @@ class CollectionDetailScreen extends StatelessWidget {
               subtitle: Text(
                 "${collection['latitude']}, ${collection['longitude']} · ±${collection['accuracy']} m"
                 "${collection['distance_meters'] == null ? '' : ' · customer ' + collection['distance_meters'].toString() + ' m'}"
-                "${collection['within_geofence'] == null ? '' : collection['within_geofence'] == 1 ? ' · inside geofence' : ' · outside geofence'}",
+                "${collection['within_geofence'] == null
+                    ? ''
+                    : collection['within_geofence'] == 1
+                    ? ' · inside geofence'
+                    : ' · outside geofence'}",
               ),
             ),
           ),

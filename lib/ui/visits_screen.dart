@@ -192,7 +192,9 @@ class VisitsScreen extends StatelessWidget {
 
     if (customerId == null || customerId.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Customer data is not available offline yet.')),
+        const SnackBar(
+          content: Text('Customer data is not available offline yet.'),
+        ),
       );
       return;
     }
@@ -360,9 +362,9 @@ class VisitsScreen extends StatelessWidget {
                                 onPressed: state.busy
                                     ? null
                                     : () => _createCollectionFromVisit(
-                                          context,
-                                          visit,
-                                        ),
+                                        context,
+                                        visit,
+                                      ),
                                 icon: const Icon(Icons.payments_outlined),
                                 label: const Text('Collect'),
                               ),

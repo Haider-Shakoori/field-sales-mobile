@@ -5,10 +5,7 @@ import '../features/collections/collection_repository.dart';
 import 'app_state.dart';
 
 class CollectionController extends ChangeNotifier {
-  CollectionController({
-    required this.appState,
-    required this.repository,
-  });
+  CollectionController({required this.appState, required this.repository});
 
   final AppState appState;
   final CollectionRepository repository;
@@ -115,11 +112,11 @@ class CollectionController extends ChangeNotifier {
       if (!silent) {
         message = result.failed == 0
             ? 'Collection sync complete. ' +
-                result.synced.toString() +
-                ' pending collections processed.'
+                  result.synced.toString() +
+                  ' pending collections processed.'
             : 'Collection sync completed with ' +
-                result.failed.toString() +
-                ' pending failures.';
+                  result.failed.toString() +
+                  ' pending failures.';
       }
     } catch (_) {
       await reloadLocal();
@@ -150,9 +147,7 @@ class CollectionController extends ChangeNotifier {
     }
 
     return Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
-      ),
+      locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
     );
   }
 }

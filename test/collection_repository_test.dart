@@ -19,64 +19,64 @@ void main() {
     await deleteDatabase(await _databasePath());
   });
 
-  test('offline collection captures cached balance and deterministic receipt', () async {
-    final db = AppDatabase();
-    await db.open();
+  test(
+    'offline collection captures cached balance and deterministic receipt',
+    () async {
+      final db = AppDatabase();
+      await db.open();
 
-    const tenantId = 'tenant-collection-test';
-    const customerUuid = 'customer-1';
+      const tenantId = 'tenant-collection-test';
+      const customerUuid = 'customer-1';
 
-    await db.db.insert('local_customer_balances', {
-      'tenant_id': tenantId,
-      'customer_uuid': customerUuid,
-      'customer_name': 'Customer One',
-      'currency': 'AFN',
-      'receivable_total': 500,
-      'verified_collections': 0,
-      'pending_collections': 0,
-      'outstanding_balance': 500,
-      'updated_at': '2026-09-19T07:00:00Z',
-    });
+      await db.db.insert('local_customer_balances', {
+        'tenant_id': tenantId,
+        'customer_uuid': customerUuid,
+        'customer_name': 'Customer One',
+        'currency': 'AFN',
+        'receivable_total': 500,
+        'verified_collections': 0,
+        'pending_collections': 0,
+        'outstanding_balance': 500,
+        'updated_at': '2026-09-19T07:00:00Z',
+      });
 
-    final repository = CollectionRepository(
-      api: ApiClient(SecretStore()),
-      db: db,
-    );
+      final repository = CollectionRepository(
+        api: ApiClient(SecretStore()),
+        db: db,
+      );
 
-    final uuid = await repository.createOffline(
-      tenantId: tenantId,
-      customer: const {
-        'id': customerUuid,
-        'name': 'Customer One',
-      },
-      collectedAt: DateTime.utc(2026, 9, 19, 7, 30),
-      currency: 'afn',
-      amount: 200,
-      paymentMethod: 'cash',
-      latitude: 34.5553,
-      longitude: 69.2075,
-      accuracy: 8,
-      visitUuid: 'visit-1',
-      notes: 'Offline cash collection',
-    );
+      final uuid = await repository.createOffline(
+        tenantId: tenantId,
+        customer: const {'id': customerUuid, 'name': 'Customer One'},
+        collectedAt: DateTime.utc(2026, 9, 19, 7, 30),
+        currency: 'afn',
+        amount: 200,
+        paymentMethod: 'cash',
+        latitude: 34.5553,
+        longitude: 69.2075,
+        accuracy: 8,
+        visitUuid: 'visit-1',
+        notes: 'Offline cash collection',
+      );
 
-    final rows = await db.db.query(
-      'local_collections',
-      where: 'tenant_id=? AND offline_uuid=?',
-      whereArgs: [tenantId, uuid],
-    );
+      final rows = await db.db.query(
+        'local_collections',
+        where: 'tenant_id=? AND offline_uuid=?',
+        whereArgs: [tenantId, uuid],
+      );
 
-    expect(rows, hasLength(1));
-    final row = rows.single;
-    expect(row['receipt_number'].toString(), startsWith('REC-20260919-'));
-    expect(row['currency'], 'AFN');
-    expect(row['amount'], 200.0);
-    expect(row['balance_before'], 500.0);
-    expect(row['overpayment_flag'], 0);
-    expect(row['sync_status'], 'pending');
+      expect(rows, hasLength(1));
+      final row = rows.single;
+      expect(row['receipt_number'].toString(), startsWith('REC-20260919-'));
+      expect(row['currency'], 'AFN');
+      expect(row['amount'], 200.0);
+      expect(row['balance_before'], 500.0);
+      expect(row['overpayment_flag'], 0);
+      expect(row['sync_status'], 'pending');
 
-    await db.db.close();
-  });
+      await db.db.close();
+    },
+  );
 
   test('offline collection flags cached overpayment for review', () async {
     final db = AppDatabase();
@@ -103,10 +103,7 @@ void main() {
 
     final uuid = await repository.createOffline(
       tenantId: tenantId,
-      customer: const {
-        'id': 'customer-2',
-        'name': 'Customer Two',
-      },
+      customer: const {'id': 'customer-2', 'name': 'Customer Two'},
       collectedAt: DateTime.utc(2026, 9, 19, 7, 45),
       currency: 'AFN',
       amount: 150,
