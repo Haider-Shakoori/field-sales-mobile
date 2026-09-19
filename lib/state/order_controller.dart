@@ -120,12 +120,8 @@ class OrderController extends ChangeNotifier {
 
       if (!silent) {
         message = result.failed == 0
-            ? 'Order sync complete. ' +
-                  result.synced.toString() +
-                  ' pending orders processed.'
-            : 'Order sync completed with ' +
-                  result.failed.toString() +
-                  ' pending failures.';
+            ? 'Order sync complete. ${result.synced} pending orders processed.'
+            : 'Order sync completed with ${result.failed} pending failures.';
       }
     } catch (_) {
       await reloadLocal();
