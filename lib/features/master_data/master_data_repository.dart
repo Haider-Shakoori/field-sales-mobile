@@ -81,8 +81,8 @@ class MasterDataRepository {
   Future<int> pendingCount(String tenantId) async {
     final rows = await database.db.rawQuery(
       'SELECT COUNT(*) AS total FROM sync_queue '
-      'WHERE tenant_id = ? AND status = "pending"',
-      [tenantId],
+      'WHERE tenant_id = ? AND status = ?',
+      [tenantId, 'pending'],
     );
 
     return (rows.first['total'] as int?) ?? 0;
