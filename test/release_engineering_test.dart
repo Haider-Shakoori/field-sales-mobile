@@ -40,5 +40,14 @@ void main() {
     expect(workflow, contains('flutter build appbundle --release'));
     expect(workflow, contains('flutter build apk --release'));
     expect(workflow, contains('SHA256SUMS.txt'));
+    expect(workflow, contains('flutter pub get --enforce-lockfile'));
+  });
+
+  test('Flutter dependency graph is committed for reproducible builds', () {
+    expect(File('pubspec.lock').existsSync(), isTrue);
+
+    final ci = File('.github/workflows/ci.yml').readAsStringSync();
+    expect(ci, contains('flutter pub get --enforce-lockfile'));
+    expect(ci, contains('permissions:\n  contents: read'));
   });
 }
