@@ -4,7 +4,7 @@ import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
 class AppDatabase {
-  static const version = 10;
+  static const version = 11;
 
   Database? _db;
 
@@ -16,12 +16,12 @@ class AppDatabase {
     _db = await openDatabase(
       p.join(dir, 'field_sales.db'),
       version: version,
-      onCreate: (database, _) => _createV10(database),
+      onCreate: (database, _) => _createV11(database),
       onUpgrade: _upgrade,
     );
   }
 
-  Future<void> _createV10(Database database) async {
+  Future<void> _createV11(Database database) async {
     await _createSyncTables(database);
     await _createMasterTables(database);
     await _createAttendanceTables(database);
@@ -59,6 +59,47 @@ class AppDatabase {
     await database.execute(
       'CREATE INDEX IF NOT EXISTS idx_sync_entity '
       'ON sync_queue(tenant_id,entity_type,entity_uuid)',
+    );
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_sync_failures ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL, '
+      'entity_type TEXT NOT NULL, '
+      'entity_uuid TEXT NOT NULL, '
+      'attempts INTEGER NOT NULL DEFAULT 0, '
+      'max_attempts INTEGER NOT NULL DEFAULT 8, '
+      'status TEXT NOT NULL DEFAULT "retry_wait", '
+      'error_code TEXT, '
+      'error_message TEXT NOT NULL, '
+      'next_retry_at TEXT, '
+      'first_failed_at TEXT NOT NULL, '
+      'last_failed_at TEXT NOT NULL, '
+      'UNIQUE(tenant_id,entity_type,entity_uuid)'
+      ')',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_sync_failures_status '
+      'ON local_sync_failures(tenant_id,status,next_retry_at)',
+    );
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_sync_cycles ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL, '
+      'cycle_uuid TEXT NOT NULL, '
+      'trigger_source TEXT NOT NULL, '
+      'status TEXT NOT NULL, '
+      'started_at TEXT NOT NULL, '
+      'completed_at TEXT, '
+      'synced_count INTEGER NOT NULL DEFAULT 0, '
+      'failed_count INTEGER NOT NULL DEFAULT 0, '
+      'blocked_count INTEGER NOT NULL DEFAULT 0, '
+      'stage_summary TEXT NOT NULL DEFAULT "[]", '
+      'UNIQUE(tenant_id,cycle_uuid)'
+      ')',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_sync_cycles_recent '
+      'ON local_sync_cycles(tenant_id,started_at)',
     );
     await database.execute(
       'CREATE TABLE IF NOT EXISTS local_settings ('
