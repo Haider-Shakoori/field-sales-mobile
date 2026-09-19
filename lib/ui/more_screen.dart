@@ -7,8 +7,15 @@ import 'sync_screen.dart';
 class MoreScreen extends StatelessWidget {
   const MoreScreen({super.key});
 
-  void _open(BuildContext context, Widget screen) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => screen));
+  void _open(BuildContext context, String title, Widget screen) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => Scaffold(
+          appBar: AppBar(title: Text(title)),
+          body: screen,
+        ),
+      ),
+    );
   }
 
   @override
@@ -22,7 +29,7 @@ class MoreScreen extends StatelessWidget {
             title: const Text('Routes'),
             subtitle: const Text('Assigned routes and customer sequence'),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () => _open(context, const RoutesScreen()),
+            onTap: () => _open(context, 'Routes', const RoutesScreen()),
           ),
         ),
         Card(
@@ -31,7 +38,7 @@ class MoreScreen extends StatelessWidget {
             title: const Text('Products'),
             subtitle: const Text('Cached product catalog and pricing'),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () => _open(context, const ProductsScreen()),
+            onTap: () => _open(context, 'Products', const ProductsScreen()),
           ),
         ),
         Card(
@@ -40,7 +47,7 @@ class MoreScreen extends StatelessWidget {
             title: const Text('Sync'),
             subtitle: const Text('Review and upload pending offline work'),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () => _open(context, const SyncScreen()),
+            onTap: () => _open(context, 'Sync', const SyncScreen()),
           ),
         ),
       ],
