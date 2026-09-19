@@ -1,4 +1,4 @@
-# Field Sales Android — Batch 19 UAT Evidence Record
+# FieldPulse Android — Batch 19 UAT Evidence Record
 
 Copy this file for each release-candidate execution. Do not overwrite the template.
 
