@@ -4,14 +4,12 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('release candidate uses approved FieldPulse branding', () {
-    final manifest = File(
-      'android/app/src/main/AndroidManifest.xml',
-    ).readAsStringSync();
+    final manifest = File('android/app/src/main/AndroidManifest.xml')
+        .readAsStringSync();
     final pubspec = File('pubspec.yaml').readAsStringSync();
     final app = File('lib/app.dart').readAsStringSync();
-    final splash = File(
-      'lib/ui/fieldpulse_splash_screen.dart',
-    ).readAsStringSync();
+    final splash = File('lib/ui/fieldpulse_splash_screen.dart')
+        .readAsStringSync();
 
     expect(manifest, contains('android:label="FieldPulse"'));
     expect(manifest, contains('android:icon="@mipmap/ic_launcher"'));
@@ -25,9 +23,8 @@ void main() {
 
     expect(File('assets/branding/fieldpulse_splash.webp').existsSync(), isTrue);
     expect(
-      File(
-        'android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp',
-      ).existsSync(),
+      File('android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp')
+          .existsSync(),
       isTrue,
     );
     expect(
@@ -37,9 +34,8 @@ void main() {
       isTrue,
     );
     expect(
-      File(
-        'android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml',
-      ).existsSync(),
+      File('android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml')
+          .existsSync(),
       isTrue,
     );
     expect(
