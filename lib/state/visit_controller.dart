@@ -187,12 +187,8 @@ class VisitController extends ChangeNotifier {
 
       if (!silent) {
         message = result.failed == 0
-            ? 'Visit sync complete. ' +
-                  result.synced.toString() +
-                  ' visits processed.'
-            : 'Visit sync completed with ' +
-                  result.failed.toString() +
-                  ' pending failures.';
+            ? 'Visit sync complete. ${result.synced} visits processed.'
+            : 'Visit sync completed with ${result.failed} pending failures.';
       }
     } catch (_) {
       await reloadLocal();
