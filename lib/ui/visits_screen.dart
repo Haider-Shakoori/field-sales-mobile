@@ -5,7 +5,6 @@ import '../state/attendance_controller.dart';
 import '../state/master_data_controller.dart';
 import '../state/visit_controller.dart';
 import 'collection_create_screen.dart';
-import 'collection_create_screen.dart';
 import 'order_create_screen.dart';
 
 class VisitsScreen extends StatelessWidget {
@@ -210,32 +209,6 @@ class VisitsScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _createCollectionFromVisit(
-    BuildContext context,
-    Map<String, dynamic> visit,
-  ) async {
-    final master = context.read<MasterDataController>();
-    final customerId = visit['customer_uuid']?.toString();
-
-    if (customerId == null || customerId.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Customer data is not available offline yet.'),
-        ),
-      );
-      return;
-    }
-
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => CollectionCreateScreen(
-          customers: master.customers,
-          initialCustomerId: customerId,
-          visitUuid: visit['offline_uuid']?.toString(),
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
