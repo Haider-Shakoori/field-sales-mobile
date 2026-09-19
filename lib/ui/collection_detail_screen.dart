@@ -35,37 +35,29 @@ class CollectionDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   Text(
-"${collection['amount']} ${collection['currency']}",
+                    "${collection['amount']} ${collection['currency']}",
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 12),
                   Text(
-"Customer: ${collection['customer_name'] ?? 'Customer'}",
+                    "Customer: ${collection['customer_name'] ?? 'Customer'}",
                   ),
                   Text(
-"Payment: ${(collection['payment_method'] ?? 'cash').toString().replaceAll('_', ' ')}",
+                    "Payment: ${(collection['payment_method'] ?? 'cash').toString().replaceAll('_', ' ')}",
                   ),
-                  Text(
-"Status: ${collection['status'] ?? 'pending'}",
-                  ),
-                  Text(
-"Collected: ${collection['collected_at'] ?? '—'}",
-                  ),
+                  Text("Status: ${collection['status'] ?? 'pending'}"),
+                  Text("Collected: ${collection['collected_at'] ?? '—'}"),
                   if (collection['reference_number'] != null)
-                    Text(
-"Reference: ${collection['reference_number']}",
-                    ),
+                    Text("Reference: ${collection['reference_number']}"),
                   if (collection['visit_uuid'] != null)
                     Text("Visit: ${collection['visit_uuid']}"),
                   if (collection['notes'] != null)
                     Text("Notes: ${collection['notes']}"),
                   if (collection['status_note'] != null)
-                    Text(
-"Status note: ${collection['status_note']}",
-                    ),
+                    Text("Status note: ${collection['status_note']}"),
                   if (collection['sync_status'] != 'synced')
                     Text(
-"Sync: ${collection['sync_status']}",
+                      "Sync: ${collection['sync_status']}",
                       style: TextStyle(color: Colors.orange.shade700),
                     ),
                   if (collection['last_error'] != null)
@@ -83,7 +75,7 @@ class CollectionDetailScreen extends StatelessWidget {
               leading: const Icon(Icons.account_balance_wallet_outlined),
               title: const Text('Balance at capture'),
               subtitle: Text(
-"${collection['balance_before']} ${collection['currency']}",
+                "${collection['balance_before']} ${collection['currency']}",
               ),
             ),
           ),

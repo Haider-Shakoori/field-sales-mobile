@@ -57,10 +57,10 @@ class CollectionsScreen extends StatelessWidget {
                       balance['customer_name']?.toString() ?? 'Customer',
                     ),
                     subtitle: Text(
-"Pending: ${balance['pending_collections']} ${balance['currency']}",
+                      "Pending: ${balance['pending_collections']} ${balance['currency']}",
                     ),
                     trailing: Text(
-"${balance['outstanding_balance']} ${balance['currency']}",
+                      "${balance['outstanding_balance']} ${balance['currency']}",
                       style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                   ),
@@ -98,7 +98,7 @@ class CollectionsScreen extends StatelessWidget {
                       ].where((value) => value != null).join(' · '),
                     ),
                     trailing: Text(
-"${collection['amount']} ${collection['currency']}",
+                      "${collection['amount']} ${collection['currency']}",
                       style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                     onTap: () => Navigator.of(context).push(

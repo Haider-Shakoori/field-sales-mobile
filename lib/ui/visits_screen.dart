@@ -209,7 +209,6 @@ class VisitsScreen extends StatelessWidget {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     final state = context.watch<VisitController>();
