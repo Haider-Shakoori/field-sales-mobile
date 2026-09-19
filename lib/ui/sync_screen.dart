@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../state/call_activity_controller.dart';
+import '../state/collection_controller.dart';
 import '../state/master_data_controller.dart';
 import '../state/order_controller.dart';
 import '../state/visit_controller.dart';
@@ -17,6 +18,9 @@ class SyncScreen extends StatelessWidget {
         await context.read<CallActivityController>().sync();
         if (context.mounted) {
           await context.read<OrderController>().sync();
+          if (context.mounted) {
+            await context.read<CollectionController>().sync();
+          }
         }
       }
     }
@@ -28,9 +32,17 @@ class SyncScreen extends StatelessWidget {
     final visits = context.watch<VisitController>();
     final calls = context.watch<CallActivityController>();
     final orders = context.watch<OrderController>();
-    final pending =
-        state.pending + visits.pending + calls.pending + orders.pending;
-    final busy = state.busy || visits.busy || calls.busy || orders.busy;
+    final collections = context.watch<CollectionController>();
+    final pending = state.pending +
+        visits.pending +
+        calls.pending +
+        orders.pending +
+        collections.pending;
+    final busy = state.busy ||
+        visits.busy ||
+        calls.busy ||
+        orders.busy ||
+        collections.busy;
 
     return ListView(
       padding: const EdgeInsets.all(20),
@@ -80,6 +92,10 @@ class SyncScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(orders.message!),
                 ],
+                if (collections.message != null) ...[
+                  const SizedBox(height: 8),
+                  Text(collections.message!),
+                ],
               ],
             ),
           ),
@@ -91,7 +107,7 @@ class SyncScreen extends StatelessWidget {
             title: Text('Local-first by design'),
             subtitle: Text(
               'Cached master data stays available without internet. '
-              'Customers, visits, photos, calls and orders are saved locally before upload.',
+              'Customers, visits, photos, calls, orders and collections are saved locally before upload.',
             ),
           ),
         ),
