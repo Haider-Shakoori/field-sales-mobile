@@ -128,10 +128,7 @@ class OrderDetailScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label, style: style),
-          Text(
-            "${value ?? 0} ${currency ?? ''}",
-            style: style,
-          ),
+          Text("${value ?? 0} ${currency ?? ''}", style: style),
         ],
       ),
     );

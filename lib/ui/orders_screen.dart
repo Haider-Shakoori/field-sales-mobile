@@ -76,8 +76,7 @@ class OrdersScreen extends StatelessWidget {
                           order['customer_name'],
                           order['payment_type'],
                           order['status'],
-                          if (!synced)
-                            "Sync: ${order['sync_status']}",
+                          if (!synced) "Sync: ${order['sync_status']}",
                         ].where((value) => value != null).join(' · '),
                       ),
                       trailing: Text(
