@@ -2,12 +2,15 @@ import 'package:uuid/uuid.dart';
 
 import '../../core/api/api_client.dart';
 import '../../core/db/app_database.dart';
+import '../../core/sync/sync_retry_store.dart';
 
 class CallActivityRepository {
-  CallActivityRepository({required this.api, required this.db});
+  CallActivityRepository({required this.api, required this.db})
+      : retry = SyncRetryStore(db);
 
   final ApiClient api;
   final AppDatabase db;
+  final SyncRetryStore retry;
 
   Future<List<Map<String, dynamic>>> list(String tenantId) async {
     final rows = await db.db.query(
@@ -61,8 +64,8 @@ class CallActivityRepository {
   Future<CallActivitySyncResult> syncPending(String tenantId) async {
     final rows = await db.db.query(
       'local_call_activities',
-      where: 'tenant_id=? AND sync_status IN (?,?)',
-      whereArgs: [tenantId, 'pending', 'failed'],
+      where: 'tenant_id=? AND sync_status IN (?,?,?)',
+      whereArgs: [tenantId, 'pending', 'failed', 'blocked'],
       orderBy: 'called_at ASC',
     );
 
@@ -70,6 +73,16 @@ class CallActivityRepository {
     var failed = 0;
 
     for (final row in rows) {
+      final offlineUuid = row['offline_uuid'].toString();
+
+      if (!await retry.shouldAttempt(
+        tenantId: tenantId,
+        entityType: 'call_activity',
+        entityUuid: offlineUuid,
+      )) {
+        continue;
+      }
+
       try {
         final result = Map<String, dynamic>.from(
           await api.post(
@@ -94,19 +107,30 @@ class CallActivityRepository {
             'updated_at': DateTime.now().toUtc().toIso8601String(),
           },
           where: 'tenant_id=? AND offline_uuid=?',
-          whereArgs: [tenantId, row['offline_uuid']],
+          whereArgs: [tenantId, offlineUuid],
+        );
+        await retry.clear(
+          tenantId: tenantId,
+          entityType: 'call_activity',
+          entityUuid: offlineUuid,
         );
         synced++;
       } catch (error) {
+        final failure = await retry.recordFailure(
+          tenantId: tenantId,
+          entityType: 'call_activity',
+          entityUuid: offlineUuid,
+          error: error,
+        );
         await db.db.update(
           'local_call_activities',
           {
-            'sync_status': 'failed',
-            'last_error': error.toString(),
+            'sync_status': failure.blocked ? 'blocked' : 'failed',
+            'last_error': failure.message,
             'updated_at': DateTime.now().toUtc().toIso8601String(),
           },
           where: 'tenant_id=? AND offline_uuid=?',
-          whereArgs: [tenantId, row['offline_uuid']],
+          whereArgs: [tenantId, offlineUuid],
         );
         failed++;
       }
