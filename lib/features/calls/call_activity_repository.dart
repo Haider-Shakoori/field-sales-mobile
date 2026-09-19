@@ -2,6 +2,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../core/api/api_client.dart';
 import '../../core/db/app_database.dart';
+import '../../core/sync/local_dependency_guard.dart';
 import '../../core/sync/sync_retry_store.dart';
 
 class CallActivityRepository {
@@ -74,6 +75,11 @@ class CallActivityRepository {
 
     for (final row in rows) {
       final offlineUuid = row['offline_uuid'].toString();
+      final customerUuid = row['customer_uuid'].toString();
+
+      if (!await dependencies.customerReady(tenantId, customerUuid)) {
+        continue;
+      }
 
       if (!await retry.shouldAttempt(
         tenantId: tenantId,
