@@ -7,6 +7,8 @@ import 'core/api/api_client.dart';
 import 'core/db/app_database.dart';
 import 'core/db/local_first_transaction.dart';
 import 'core/storage/secret_store.dart';
+import 'core/sync/sync_coordinator.dart';
+import 'core/sync/sync_retry_store.dart';
 import 'features/attendance/attendance_repository.dart';
 import 'features/auth/auth_repository.dart';
 import 'features/customers/customer_repository.dart';
@@ -28,6 +30,7 @@ import 'state/expense_controller.dart';
 import 'state/attendance_controller.dart';
 import 'state/master_data_controller.dart';
 import 'state/order_controller.dart';
+import 'state/sync_controller.dart';
 import 'state/target_controller.dart';
 import 'state/visit_controller.dart';
 
@@ -55,6 +58,7 @@ Future<void> main() async {
   final masterData = MasterDataRepository(database: db, source: masterSource);
   final orders = OrderRepository(api: api, db: db, masterData: masterData);
   final localTransactions = LocalFirstTransaction(db);
+  final retryStore = SyncRetryStore(db);
   final customers = CustomerRepository(
     database: db,
     transactions: localTransactions,
@@ -64,6 +68,21 @@ Future<void> main() async {
 
   final appState = AppState(auth: auth, settings: settings);
   api.onAuthRevoked = appState.revokeLocal;
+
+  final syncCoordinator = SyncCoordinator(
+    db: db,
+    retryStore: retryStore,
+    customers: customers,
+    masterData: masterData,
+    attendance: attendance,
+    gps: gps,
+    visits: visits,
+    calls: calls,
+    orders: orders,
+    collections: collections,
+    expenses: expenses,
+    targets: targets,
+  );
 
   final masterDataController = MasterDataController(
     appState: appState,
@@ -110,8 +129,16 @@ Future<void> main() async {
     db: db,
   );
 
+  final syncController = SyncController(
+    appState: appState,
+    db: db,
+    coordinator: syncCoordinator,
+    retryStore: retryStore,
+  );
+
   await appState.restore();
   await attendanceController.restore();
+  await syncController.initialize();
 
   runApp(
     MultiProvider(
@@ -125,6 +152,7 @@ Future<void> main() async {
         ChangeNotifierProvider.value(value: collectionController),
         ChangeNotifierProvider.value(value: expenseController),
         ChangeNotifierProvider.value(value: targetController),
+        ChangeNotifierProvider.value(value: syncController),
         Provider.value(value: masterData),
         Provider.value(value: customers),
         Provider.value(value: visits),
@@ -133,6 +161,8 @@ Future<void> main() async {
         Provider.value(value: collections),
         Provider.value(value: expenses),
         Provider.value(value: targets),
+        Provider.value(value: retryStore),
+        Provider.value(value: syncCoordinator),
       ],
       child: const FieldSalesApp(),
     ),
