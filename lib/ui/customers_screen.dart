@@ -1,10 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../state/call_activity_controller.dart';
 import '../state/master_data_controller.dart';
+import 'call_history_screen.dart';
 
 class CustomersScreen extends StatelessWidget {
   const CustomersScreen({super.key});
+
+  static const callOutcomes = <String, String>{
+    'answered': 'Answered',
+    'no_answer': 'No answer',
+    'busy': 'Busy',
+    'call_back_later': 'Call back later',
+    'order_discussion': 'Order discussion',
+    'payment_follow_up': 'Payment follow-up',
+    'other': 'Other',
+  };
 
   Future<void> _create(BuildContext context) async {
     final name = TextEditingController();
@@ -76,9 +89,118 @@ class CustomersScreen extends StatelessWidget {
     );
   }
 
+  Future<void> _callCustomer(
+    BuildContext context,
+    Map<String, dynamic> customer,
+  ) async {
+    final phone = customer['phone']?.toString().trim() ?? '';
+    if (phone.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('This customer has no phone number.')),
+      );
+      return;
+    }
+
+    final calledAt = DateTime.now().toUtc();
+    final launched = await launchUrl(
+      Uri(scheme: 'tel', path: phone),
+      mode: LaunchMode.externalApplication,
+    );
+
+    if (!launched || !context.mounted) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('The phone dialer could not be opened.')),
+        );
+      }
+      return;
+    }
+
+    String? outcome;
+    final notes = TextEditingController();
+
+    final save =
+        await showDialog<bool>(
+          context: context,
+          builder: (dialogContext) => StatefulBuilder(
+            builder: (context, setState) => AlertDialog(
+              title: const Text('Save call activity?'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    DropdownButtonFormField<String>(
+                      initialValue: outcome,
+                      hint: const Text('Outcome (optional)'),
+                      decoration: const InputDecoration(labelText: 'Outcome'),
+                      items: callOutcomes.entries
+                          .map(
+                            (entry) => DropdownMenuItem(
+                              value: entry.key,
+                              child: Text(entry.value),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (value) => setState(() => outcome = value),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: notes,
+                      maxLines: 4,
+                      decoration: const InputDecoration(
+                        labelText: 'Notes (optional)',
+                        alignLabelWithHint: true,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext, false),
+                  child: const Text('Skip'),
+                ),
+                FilledButton(
+                  onPressed: () => Navigator.pop(dialogContext, true),
+                  child: const Text('Save offline'),
+                ),
+              ],
+            ),
+          ),
+        ) ??
+        false;
+
+    if (!save || !context.mounted) {
+      return;
+    }
+
+    await context.read<CallActivityController>().record(
+      customer: customer,
+      phoneNumber: phone,
+      calledAt: calledAt,
+      outcome: outcome,
+      notes: notes.text,
+    );
+  }
+
+  void _showHistory(
+    BuildContext context,
+    Map<String, dynamic> customer,
+  ) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => CallHistoryScreen(
+          customerId: customer['id'].toString(),
+          customerName: (customer['name'] ?? 'Customer').toString(),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = context.watch<MasterDataController>();
+    final callState = context.watch<CallActivityController>();
     final rows = [...state.customers]
       ..sort(
         (a, b) => (a['name'] ?? '').toString().compareTo(
@@ -88,7 +210,12 @@ class CustomersScreen extends StatelessWidget {
 
     return Scaffold(
       body: RefreshIndicator(
-        onRefresh: () => state.sync(),
+        onRefresh: () async {
+          await state.sync();
+          if (context.mounted) {
+            await callState.sync(silent: true);
+          }
+        },
         child: rows.isEmpty
             ? ListView(
                 children: const [
@@ -107,6 +234,7 @@ class CustomersScreen extends StatelessWidget {
                 itemBuilder: (_, index) {
                   final customer = rows[index];
                   final offline = customer['offline_uuid'] != null;
+                  final phone = customer['phone']?.toString().trim() ?? '';
 
                   return Card(
                     child: ListTile(
@@ -132,6 +260,23 @@ class CustomersScreen extends StatelessWidget {
                                   value.toString().trim().isNotEmpty,
                             )
                             .join(' · '),
+                      ),
+                      trailing: Wrap(
+                        spacing: 0,
+                        children: [
+                          IconButton(
+                            tooltip: 'Call history',
+                            onPressed: () => _showHistory(context, customer),
+                            icon: const Icon(Icons.history),
+                          ),
+                          IconButton(
+                            tooltip: phone.isEmpty ? 'No phone' : 'Call',
+                            onPressed: phone.isEmpty || callState.busy
+                                ? null
+                                : () => _callCustomer(context, customer),
+                            icon: const Icon(Icons.call_outlined),
+                          ),
+                        ],
                       ),
                     ),
                   );
