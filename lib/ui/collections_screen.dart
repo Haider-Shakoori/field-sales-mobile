@@ -57,15 +57,10 @@ class CollectionsScreen extends StatelessWidget {
                       balance['customer_name']?.toString() ?? 'Customer',
                     ),
                     subtitle: Text(
-                      'Pending: ' +
-                          balance['pending_collections'].toString() +
-                          ' ' +
-                          balance['currency'].toString(),
+"Pending: ${balance['pending_collections']} ${balance['currency']}",
                     ),
                     trailing: Text(
-                      balance['outstanding_balance'].toString() +
-                          ' ' +
-                          balance['currency'].toString(),
+"${balance['outstanding_balance']} ${balance['currency']}",
                       style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                   ),
@@ -99,13 +94,11 @@ class CollectionsScreen extends StatelessWidget {
                         collection['payment_method'],
                         collection['status'],
                         if (collection['sync_status'] != 'synced')
-                          'Sync: ' + collection['sync_status'].toString(),
+                          "Sync: ${collection['sync_status']}",
                       ].where((value) => value != null).join(' · '),
                     ),
                     trailing: Text(
-                      collection['amount'].toString() +
-                          ' ' +
-                          collection['currency'].toString(),
+"${collection['amount']} ${collection['currency']}",
                       style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                     onTap: () => Navigator.of(context).push(
