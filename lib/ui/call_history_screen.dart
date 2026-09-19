@@ -31,7 +31,7 @@ class CallHistoryScreen extends StatelessWidget {
         .toList();
 
     return Scaffold(
-      appBar: AppBar(title: Text(customerName + ' · Calls')),
+      appBar: AppBar(title: Text('$customerName · Calls')),
       body: RefreshIndicator(
         onRefresh: () => state.sync(),
         child: rows.isEmpty
@@ -66,7 +66,7 @@ class CallHistoryScreen extends StatelessWidget {
                               row['phone_number']?.toString(),
                               row['notes']?.toString(),
                               if (row['sync_status'] != 'synced')
-                                'Sync: ' + row['sync_status'].toString(),
+                                "Sync: ${row['sync_status']}",
                             ]
                             .where(
                               (value) =>
