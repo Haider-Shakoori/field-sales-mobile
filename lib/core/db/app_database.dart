@@ -92,6 +92,8 @@ class AppDatabase {
       'completed_at TEXT, '
       'synced_count INTEGER NOT NULL DEFAULT 0, '
       'failed_count INTEGER NOT NULL DEFAULT 0, '
+      'issue_count INTEGER NOT NULL DEFAULT 0, '
+      'waiting_count INTEGER NOT NULL DEFAULT 0, '
       'blocked_count INTEGER NOT NULL DEFAULT 0, '
       'stage_summary TEXT NOT NULL DEFAULT "[]", '
       'UNIQUE(tenant_id,cycle_uuid)'
