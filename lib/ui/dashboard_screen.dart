@@ -59,7 +59,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final visits = context.watch<VisitController>();
     final calls = context.watch<CallActivityController>();
     final orders = context.watch<OrderController>();
-    final pending = master.pending + visits.pending + calls.pending + orders.pending;
+    final pending =
+        master.pending + visits.pending + calls.pending + orders.pending;
 
     return Scaffold(
       appBar: AppBar(
@@ -72,9 +73,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 label: Text('$pending'),
                 child: IconButton(
                   tooltip: 'Pending sync',
-                  onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const SyncScreen()),
-                  ),
+                  onPressed: () => Navigator.of(
+                    context,
+                  ).push(MaterialPageRoute(builder: (_) => const SyncScreen())),
                   icon: const Icon(Icons.cloud_upload_outlined),
                 ),
               ),

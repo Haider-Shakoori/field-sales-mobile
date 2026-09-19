@@ -12,9 +12,7 @@ class OrderDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          order['order_number']?.toString() ?? 'Offline order',
-        ),
+        title: Text(order['order_number']?.toString() ?? 'Offline order'),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: context.read<OrderController>().items(order),
@@ -35,9 +33,15 @@ class OrderDetailScreen extends StatelessWidget {
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 8),
-                      Text('Status: ' + (order['status'] ?? 'pending').toString()),
-                      Text('Payment: ' + (order['payment_type'] ?? '—').toString()),
-                      Text('Ordered: ' + (order['ordered_at'] ?? '—').toString()),
+                      Text(
+                        'Status: ' + (order['status'] ?? 'pending').toString(),
+                      ),
+                      Text(
+                        'Payment: ' + (order['payment_type'] ?? '—').toString(),
+                      ),
+                      Text(
+                        'Ordered: ' + (order['ordered_at'] ?? '—').toString(),
+                      ),
                       if (order['visit_uuid'] != null)
                         Text('Visit: ' + order['visit_uuid'].toString()),
                       if (order['notes'] != null)
@@ -90,7 +94,11 @@ class OrderDetailScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
-                      _moneyRow('Subtotal', order['subtotal'], order['currency']),
+                      _moneyRow(
+                        'Subtotal',
+                        order['subtotal'],
+                        order['currency'],
+                      ),
                       _moneyRow(
                         'Discount',
                         order['discount_total'],

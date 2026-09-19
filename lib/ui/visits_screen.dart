@@ -161,7 +161,9 @@ class VisitsScreen extends StatelessWidget {
     if (customerId == null || customerId.isEmpty || master.products.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Customer or product data is not available offline yet.'),
+          content: Text(
+            'Customer or product data is not available offline yet.',
+          ),
         ),
       );
       return;
@@ -295,7 +297,8 @@ class VisitsScreen extends StatelessWidget {
                               OutlinedButton.icon(
                                 onPressed: state.busy
                                     ? null
-                                    : () => _createOrderFromVisit(context, visit),
+                                    : () =>
+                                          _createOrderFromVisit(context, visit),
                                 icon: const Icon(Icons.add_shopping_cart),
                                 label: const Text('Order'),
                               ),

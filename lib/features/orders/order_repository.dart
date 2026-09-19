@@ -115,7 +115,8 @@ class OrderRepository {
         var bestQuantity = -1.0;
 
         for (final tier in priceItems) {
-          if (tier['price_list_id']?.toString() != priceList['id']?.toString()) {
+          if (tier['price_list_id']?.toString() !=
+              priceList['id']?.toString()) {
             continue;
           }
           if (tier['product_id']?.toString() != productId) continue;
@@ -288,14 +289,11 @@ class OrderRepository {
   }
 
   Future<void> refreshServerHistory(String tenantId) async {
-    final data = await api.get(
-      'orders/history',
-      query: {'per_page': 100},
-    );
+    final data = await api.get('orders/history', query: {'per_page': 100});
 
-    final rows = (data as List? ?? const [])
-        .whereType<Map>()
-        .map((row) => Map<String, dynamic>.from(row));
+    final rows = (data as List? ?? const []).whereType<Map>().map(
+      (row) => Map<String, dynamic>.from(row),
+    );
 
     for (final row in rows) {
       await _applyServerOrder(tenantId, row);

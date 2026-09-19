@@ -4,10 +4,7 @@ import '../features/orders/order_repository.dart';
 import 'app_state.dart';
 
 class OrderController extends ChangeNotifier {
-  OrderController({
-    required this.appState,
-    required this.repository,
-  });
+  OrderController({required this.appState, required this.repository});
 
   final AppState appState;
   final OrderRepository repository;
@@ -99,9 +96,7 @@ class OrderController extends ChangeNotifier {
     }
   }
 
-  Future<List<Map<String, dynamic>>> items(
-    Map<String, dynamic> order,
-  ) async {
+  Future<List<Map<String, dynamic>>> items(Map<String, dynamic> order) async {
     final tenantId = appState.session?.tenantId;
     if (tenantId == null) return const [];
 
@@ -126,11 +121,11 @@ class OrderController extends ChangeNotifier {
       if (!silent) {
         message = result.failed == 0
             ? 'Order sync complete. ' +
-                result.synced.toString() +
-                ' pending orders processed.'
+                  result.synced.toString() +
+                  ' pending orders processed.'
             : 'Order sync completed with ' +
-                result.failed.toString() +
-                ' pending failures.';
+                  result.failed.toString() +
+                  ' pending failures.';
       }
     } catch (_) {
       await reloadLocal();

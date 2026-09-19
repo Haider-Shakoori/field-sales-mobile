@@ -63,7 +63,9 @@ class _OrderCreateScreenState extends State<OrderCreateScreen> {
 
     if (available.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('All available products are already added.')),
+        const SnackBar(
+          content: Text('All available products are already added.'),
+        ),
       );
       return;
     }
@@ -131,9 +133,8 @@ class _OrderCreateScreenState extends State<OrderCreateScreen> {
   Future<void> _reviewAndSave() async {
     final customer = _customer;
     if (customer == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Select a customer.')),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Select a customer.')));
       return;
     }
 
@@ -150,9 +151,9 @@ class _OrderCreateScreenState extends State<OrderCreateScreen> {
     try {
       draftLines = _draftLines();
       preview = await context.read<OrderController>().preview(
-            customer: customer,
-            lines: draftLines,
-          );
+        customer: customer,
+        lines: draftLines,
+      );
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -251,9 +252,8 @@ class _OrderCreateScreenState extends State<OrderCreateScreen> {
     if (controller.message == 'Order saved locally.') {
       Navigator.pop(context);
     } else if (controller.message != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(controller.message!)),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(controller.message!)));
     }
   }
 

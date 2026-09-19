@@ -16,7 +16,9 @@ class OrdersScreen extends StatelessWidget {
     if (master.customers.isEmpty || master.products.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Sync customers and products before creating an order.'),
+          content: Text(
+            'Sync customers and products before creating an order.',
+          ),
         ),
       );
       return;
