@@ -118,30 +118,18 @@ class SyncCoordinator {
 
     await stage('visits', () async {
       final result = await visits.syncPending(tenantId);
-      return SyncStageReport.fromCounts(
-        'visits',
-        result.synced,
-        result.failed,
-      );
+      return SyncStageReport.fromCounts('visits', result.synced, result.failed);
     });
 
     await stage('calls', () async {
       final result = await calls.syncPending(tenantId);
-      return SyncStageReport.fromCounts(
-        'calls',
-        result.synced,
-        result.failed,
-      );
+      return SyncStageReport.fromCounts('calls', result.synced, result.failed);
     });
 
     await stage('orders', () async {
       final result = await orders.syncPending(tenantId);
       await orders.refreshServerHistory(tenantId);
-      return SyncStageReport.fromCounts(
-        'orders',
-        result.synced,
-        result.failed,
-      );
+      return SyncStageReport.fromCounts('orders', result.synced, result.failed);
     });
 
     await stage('collections', () async {
@@ -257,18 +245,9 @@ class SyncStageReport {
   });
 
   const SyncStageReport.success(String name)
-      : this(
-          name: name,
-          status: 'success',
-          synced: 0,
-          failed: 0,
-        );
+    : this(name: name, status: 'success', synced: 0, failed: 0);
 
-  factory SyncStageReport.fromCounts(
-    String name,
-    int synced,
-    int failed,
-  ) {
+  factory SyncStageReport.fromCounts(String name, int synced, int failed) {
     return SyncStageReport(
       name: name,
       status: failed > 0 ? 'partial' : 'success',
@@ -284,10 +263,10 @@ class SyncStageReport {
   final String? message;
 
   Map<String, dynamic> toJson() => {
-        'name': name,
-        'status': status,
-        'synced': synced,
-        'failed': failed,
-        if (message != null) 'message': message,
-      };
+    'name': name,
+    'status': status,
+    'synced': synced,
+    'failed': failed,
+    if (message != null) 'message': message,
+  };
 }

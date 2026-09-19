@@ -9,7 +9,7 @@ import '../../core/sync/sync_retry_store.dart';
 
 class VisitRepository {
   VisitRepository({required this.api, required this.db})
-      : retry = SyncRetryStore(db);
+    : retry = SyncRetryStore(db);
 
   final ApiClient api;
   final AppDatabase db;
@@ -306,15 +306,8 @@ class VisitRepository {
   ) async {
     final rows = await db.db.query(
       'local_visit_photos',
-      where:
-          'tenant_id=? AND visit_offline_uuid=? AND sync_status IN (?,?,?)',
-      whereArgs: [
-        tenantId,
-        visitOfflineUuid,
-        'pending',
-        'failed',
-        'blocked',
-      ],
+      where: 'tenant_id=? AND visit_offline_uuid=? AND sync_status IN (?,?,?)',
+      whereArgs: [tenantId, visitOfflineUuid, 'pending', 'failed', 'blocked'],
       orderBy: 'id ASC',
     );
 

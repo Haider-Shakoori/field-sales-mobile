@@ -11,7 +11,7 @@ import '../../core/sync/sync_retry_store.dart';
 
 class GpsRepository {
   GpsRepository({required this.api, required this.db})
-      : retry = SyncRetryStore(db);
+    : retry = SyncRetryStore(db);
 
   final ApiClient api;
   final AppDatabase db;
@@ -136,12 +136,12 @@ class GpsRepository {
 
     try {
       final rows = await db.db.query(
-      'local_gps_points',
-      where: 'tenant_id=? AND sync_status=?',
-      whereArgs: [tenantId, 'pending'],
-      orderBy: 'sequence_number ASC',
-      limit: 100,
-    );
+        'local_gps_points',
+        where: 'tenant_id=? AND sync_status=?',
+        whereArgs: [tenantId, 'pending'],
+        orderBy: 'sequence_number ASC',
+        limit: 100,
+      );
 
       if (rows.isEmpty) {
         await retry.clear(
@@ -153,105 +153,105 @@ class GpsRepository {
       }
 
       final batch = const Uuid().v4();
-    final locations = rows
-        .map(
-          (row) => {
-            'client_uuid': row['client_uuid'],
-            'latitude': row['latitude'],
-            'longitude': row['longitude'],
-            'accuracy': row['accuracy'],
-            'altitude': row['altitude'],
-            'speed': row['speed'],
-            'heading': row['heading'],
-            'battery_level': row['battery_level'],
-            'is_charging': row['is_charging'] == 1,
-            'network_status': row['network_status'],
-            'is_mock_location': row['is_mock_location'] == 1,
-            'provider': row['provider'],
-            'recorded_at': row['recorded_at'],
-            'sequence_number': row['sequence_number'],
-          },
-        )
-        .toList();
+      final locations = rows
+          .map(
+            (row) => {
+              'client_uuid': row['client_uuid'],
+              'latitude': row['latitude'],
+              'longitude': row['longitude'],
+              'accuracy': row['accuracy'],
+              'altitude': row['altitude'],
+              'speed': row['speed'],
+              'heading': row['heading'],
+              'battery_level': row['battery_level'],
+              'is_charging': row['is_charging'] == 1,
+              'network_status': row['network_status'],
+              'is_mock_location': row['is_mock_location'] == 1,
+              'provider': row['provider'],
+              'recorded_at': row['recorded_at'],
+              'sequence_number': row['sequence_number'],
+            },
+          )
+          .toList();
 
-    final data = Map<String, dynamic>.from(
-      await api.post(
-        'gps/locations',
-        data: {'batch_uuid': batch, 'locations': locations},
-        headers: {'X-Idempotency-Key': batch},
-      ),
-    );
-
-    final uploaded = <String>{
-      ...List<String>.from(
-        (data['accepted_uuids'] ?? []).map((value) => '$value'),
-      ),
-      ...List<String>.from(
-        (data['duplicate_uuids'] ?? []).map((value) => '$value'),
-      ),
-    };
-
-    final rejectedDetails = List<Map<String, dynamic>>.from(
-      (data['rejected_details'] ?? []).map(
-        (value) => Map<String, dynamic>.from(value),
-      ),
-    );
-    final rejectedByUuid = <String, Map<String, dynamic>>{};
-
-    for (final detail in rejectedDetails) {
-      final uuid = '${detail['client_uuid']}';
-      if (uuid != 'null' && uuid.isNotEmpty) {
-        rejectedByUuid[uuid] = detail;
-      }
-    }
-
-    for (final value in (data['rejected_uuids'] ?? [])) {
-      final uuid = '$value';
-      rejectedByUuid.putIfAbsent(
-        uuid,
-        () => {
-          'client_uuid': uuid,
-          'code': 'rejected',
-          'reason': 'Server rejected this GPS point.',
-        },
+      final data = Map<String, dynamic>.from(
+        await api.post(
+          'gps/locations',
+          data: {'batch_uuid': batch, 'locations': locations},
+          headers: {'X-Idempotency-Key': batch},
+        ),
       );
-    }
+
+      final uploaded = <String>{
+        ...List<String>.from(
+          (data['accepted_uuids'] ?? []).map((value) => '$value'),
+        ),
+        ...List<String>.from(
+          (data['duplicate_uuids'] ?? []).map((value) => '$value'),
+        ),
+      };
+
+      final rejectedDetails = List<Map<String, dynamic>>.from(
+        (data['rejected_details'] ?? []).map(
+          (value) => Map<String, dynamic>.from(value),
+        ),
+      );
+      final rejectedByUuid = <String, Map<String, dynamic>>{};
+
+      for (final detail in rejectedDetails) {
+        final uuid = '${detail['client_uuid']}';
+        if (uuid != 'null' && uuid.isNotEmpty) {
+          rejectedByUuid[uuid] = detail;
+        }
+      }
+
+      for (final value in (data['rejected_uuids'] ?? [])) {
+        final uuid = '$value';
+        rejectedByUuid.putIfAbsent(
+          uuid,
+          () => {
+            'client_uuid': uuid,
+            'code': 'rejected',
+            'reason': 'Server rejected this GPS point.',
+          },
+        );
+      }
 
       await db.db.transaction((txn) async {
-      final uploadedAt = DateTime.now().toUtc().toIso8601String();
+        final uploadedAt = DateTime.now().toUtc().toIso8601String();
 
-      for (final uuid in uploaded) {
-        await txn.update(
-          'local_gps_points',
-          {
-            'sync_status': 'uploaded',
-            'uploaded_at': uploadedAt,
-            'batch_uuid': batch,
-            'last_error': null,
-          },
-          where: 'tenant_id=? AND client_uuid=?',
-          whereArgs: [tenantId, uuid],
-        );
-      }
+        for (final uuid in uploaded) {
+          await txn.update(
+            'local_gps_points',
+            {
+              'sync_status': 'uploaded',
+              'uploaded_at': uploadedAt,
+              'batch_uuid': batch,
+              'last_error': null,
+            },
+            where: 'tenant_id=? AND client_uuid=?',
+            whereArgs: [tenantId, uuid],
+          );
+        }
 
-      for (final entry in rejectedByUuid.entries) {
-        final detail = entry.value;
-        final code = '${detail['code'] ?? 'rejected'}';
-        final reason =
-            '${detail['reason'] ?? 'Server rejected this GPS point.'}';
+        for (final entry in rejectedByUuid.entries) {
+          final detail = entry.value;
+          final code = '${detail['code'] ?? 'rejected'}';
+          final reason =
+              '${detail['reason'] ?? 'Server rejected this GPS point.'}';
 
-        await txn.update(
-          'local_gps_points',
-          {
-            'sync_status': 'rejected',
-            'last_error': 'rejected: $code ($reason)',
-            'batch_uuid': batch,
-          },
-          where: 'tenant_id=? AND client_uuid=?',
-          whereArgs: [tenantId, entry.key],
-        );
-      }
-    });
+          await txn.update(
+            'local_gps_points',
+            {
+              'sync_status': 'rejected',
+              'last_error': 'rejected: $code ($reason)',
+              'batch_uuid': batch,
+            },
+            where: 'tenant_id=? AND client_uuid=?',
+            whereArgs: [tenantId, entry.key],
+          );
+        }
+      });
 
       await retry.clear(
         tenantId: tenantId,

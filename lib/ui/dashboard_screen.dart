@@ -89,7 +89,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Badge(
                 label: Text('$pending'),
                 child: IconButton(
-                  tooltip: sync.blockedCount > 0 ? 'Sync issues need attention' : 'Pending sync',
+                  tooltip: sync.blockedCount > 0
+                      ? 'Sync issues need attention'
+                      : 'Pending sync',
                   onPressed: () => Navigator.of(
                     context,
                   ).push(MaterialPageRoute(builder: (_) => const SyncScreen())),

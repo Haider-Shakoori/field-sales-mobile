@@ -146,20 +146,13 @@ class SyncRetryStore {
   Future<void> retryAll(String tenantId) async {
     await db.db.update(
       'local_sync_failures',
-      {
-        'attempts': 0,
-        'status': 'retry_wait',
-        'next_retry_at': null,
-      },
+      {'attempts': 0, 'status': 'retry_wait', 'next_retry_at': null},
       where: 'tenant_id=?',
       whereArgs: [tenantId],
     );
   }
 
-  _FailureDecision _classify(
-    Object error, {
-    bool? retryableOverride,
-  }) {
+  _FailureDecision _classify(Object error, {bool? retryableOverride}) {
     if (error is ApiException) {
       final code = error.code;
       final dependencyCodes = {

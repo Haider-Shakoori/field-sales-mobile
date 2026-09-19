@@ -119,49 +119,52 @@ void main() {
     await db.db.close();
   });
 
-  test('missing photo blocks only after server confirms it is absent', () async {
-    final db = AppDatabase();
-    await db.open();
-    const tenantId = 'tenant-photo';
-    const visitUuid = '33333333-3333-4333-8333-333333333333';
-    const photoUuid = '44444444-4444-4444-8444-444444444444';
+  test(
+    'missing photo blocks only after server confirms it is absent',
+    () async {
+      final db = AppDatabase();
+      await db.open();
+      const tenantId = 'tenant-photo';
+      const visitUuid = '33333333-3333-4333-8333-333333333333';
+      const photoUuid = '44444444-4444-4444-8444-444444444444';
 
-    await _seedSyncedVisit(db, tenantId: tenantId, visitUuid: visitUuid);
+      await _seedSyncedVisit(db, tenantId: tenantId, visitUuid: visitUuid);
 
-    await db.db.insert('local_visit_photos', {
-      'tenant_id': tenantId,
-      'client_uuid': photoUuid,
-      'visit_offline_uuid': visitUuid,
-      'local_path': p.join(Directory.systemTemp.path, 'missing-photo.jpg'),
-      'captured_at': DateTime.utc(2026, 9, 19, 8).toIso8601String(),
-      'sync_status': 'pending',
-      'created_at': DateTime.utc(2026, 9, 19, 8).toIso8601String(),
-    });
+      await db.db.insert('local_visit_photos', {
+        'tenant_id': tenantId,
+        'client_uuid': photoUuid,
+        'visit_offline_uuid': visitUuid,
+        'local_path': p.join(Directory.systemTemp.path, 'missing-photo.jpg'),
+        'captured_at': DateTime.utc(2026, 9, 19, 8).toIso8601String(),
+        'sync_status': 'pending',
+        'created_at': DateTime.utc(2026, 9, 19, 8).toIso8601String(),
+      });
 
-    final api = _FakeApiClient()
-      ..postError = ApiException(
-        status: 422,
-        message: 'The photo field is required.',
-        code: 'VALIDATION_ERROR',
-        retryable: false,
-      );
-    final repository = VisitRepository(api: api, db: db);
+      final api = _FakeApiClient()
+        ..postError = ApiException(
+          status: 422,
+          message: 'The photo field is required.',
+          code: 'VALIDATION_ERROR',
+          retryable: false,
+        );
+      final repository = VisitRepository(api: api, db: db);
 
-    await repository.syncPending(tenantId);
+      await repository.syncPending(tenantId);
 
-    final photo = (await db.db.query(
-      'local_visit_photos',
-      where: 'tenant_id=? AND client_uuid=?',
-      whereArgs: [tenantId, photoUuid],
-    )).single;
+      final photo = (await db.db.query(
+        'local_visit_photos',
+        where: 'tenant_id=? AND client_uuid=?',
+        whereArgs: [tenantId, photoUuid],
+      )).single;
 
-    expect(photo['sync_status'], 'blocked');
+      expect(photo['sync_status'], 'blocked');
 
-    final issues = await SyncRetryStore(db).issues(tenantId);
-    expect(issues, hasLength(1));
-    expect(issues.single['entity_type'], 'visit_photo');
-    expect(issues.single['status'], 'blocked');
+      final issues = await SyncRetryStore(db).issues(tenantId);
+      expect(issues, hasLength(1));
+      expect(issues.single['entity_type'], 'visit_photo');
+      expect(issues.single['status'], 'blocked');
 
-    await db.db.close();
-  });
+      await db.db.close();
+    },
+  );
 }

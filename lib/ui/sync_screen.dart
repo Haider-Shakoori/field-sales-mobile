@@ -130,9 +130,7 @@ class SyncScreen extends StatelessWidget {
                     ),
                     if (sync.issueCount > 0)
                       OutlinedButton.icon(
-                        onPressed: busy
-                            ? null
-                            : () => _retryFailures(context),
+                        onPressed: busy ? null : () => _retryFailures(context),
                         icon: const Icon(Icons.restart_alt),
                         label: const Text('Retry failures now'),
                       ),

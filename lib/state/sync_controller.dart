@@ -52,9 +52,7 @@ class SyncController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<SyncCycleReport?> run({
-    String triggerSource = 'manual',
-  }) async {
+  Future<SyncCycleReport?> run({String triggerSource = 'manual'}) async {
     final tenantId = appState.session?.tenantId;
     if (tenantId == null || busy) return null;
 
