@@ -4,7 +4,7 @@ import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
 class AppDatabase {
-  static const version = 8;
+  static const version = 9;
 
   Database? _db;
 
@@ -16,17 +16,18 @@ class AppDatabase {
     _db = await openDatabase(
       p.join(dir, 'field_sales.db'),
       version: version,
-      onCreate: (database, _) => _createV8(database),
+      onCreate: (database, _) => _createV9(database),
       onUpgrade: _upgrade,
     );
   }
 
-  Future<void> _createV8(Database database) async {
+  Future<void> _createV9(Database database) async {
     await _createSyncTables(database);
     await _createMasterTables(database);
     await _createAttendanceTables(database);
     await _createVisitTables(database);
     await _createOrderTables(database);
+    await _createCollectionTables(database);
   }
 
   Future<void> _createSyncTables(Database database) async {
@@ -347,6 +348,70 @@ class AppDatabase {
     );
   }
 
+  Future<void> _createCollectionTables(Database database) async {
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_collections ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL, '
+      'offline_uuid TEXT NOT NULL, '
+      'server_uuid TEXT, '
+      'receipt_number TEXT NOT NULL, '
+      'customer_uuid TEXT NOT NULL, '
+      'customer_name TEXT NOT NULL, '
+      'visit_uuid TEXT, '
+      'collected_at TEXT NOT NULL, '
+      'currency TEXT NOT NULL, '
+      'amount REAL NOT NULL, '
+      'payment_method TEXT NOT NULL, '
+      'reference_number TEXT, '
+      'status TEXT NOT NULL DEFAULT "pending", '
+      'latitude REAL NOT NULL, '
+      'longitude REAL NOT NULL, '
+      'accuracy REAL NOT NULL, '
+      'balance_before REAL NOT NULL DEFAULT 0, '
+      'overpayment_flag INTEGER NOT NULL DEFAULT 0, '
+      'notes TEXT, '
+      'status_note TEXT, '
+      'status_changed_at TEXT, '
+      'sync_status TEXT NOT NULL DEFAULT "pending", '
+      'last_error TEXT, '
+      'created_at TEXT NOT NULL, '
+      'updated_at TEXT NOT NULL'
+      ')',
+    );
+    await database.execute(
+      'CREATE UNIQUE INDEX IF NOT EXISTS idx_collections_tenant_uuid '
+      'ON local_collections(tenant_id,offline_uuid)',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_collections_customer '
+      'ON local_collections(tenant_id,customer_uuid,collected_at)',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_collections_sync '
+      'ON local_collections(tenant_id,sync_status,collected_at)',
+    );
+
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_customer_balances ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL, '
+      'customer_uuid TEXT NOT NULL, '
+      'customer_name TEXT NOT NULL, '
+      'currency TEXT NOT NULL, '
+      'receivable_total REAL NOT NULL DEFAULT 0, '
+      'verified_collections REAL NOT NULL DEFAULT 0, '
+      'pending_collections REAL NOT NULL DEFAULT 0, '
+      'outstanding_balance REAL NOT NULL DEFAULT 0, '
+      'updated_at TEXT NOT NULL'
+      ')',
+    );
+    await database.execute(
+      'CREATE UNIQUE INDEX IF NOT EXISTS idx_customer_balances_unique '
+      'ON local_customer_balances(tenant_id,customer_uuid,currency)',
+    );
+  }
+
   Future<void> _upgrade(
     Database database,
     int oldVersion,
@@ -390,6 +455,7 @@ class AppDatabase {
     await _createAttendanceTables(database);
     await _createVisitTables(database);
     await _createOrderTables(database);
+    await _createCollectionTables(database);
 
     if (oldVersion < 4 &&
         !await _hasColumn(database, 'local_work_sessions', 'start_source')) {
