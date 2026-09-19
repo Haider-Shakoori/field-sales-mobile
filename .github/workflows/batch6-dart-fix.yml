@@ -1,0 +1,43 @@
+name: batch6-dart-fix
+
+on:
+  push:
+    branches:
+      - batch6-offline-first-foundation
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: batch6-offline-first-foundation
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.0'
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      - name: Apply Dart fixes
+        run: |
+          dart fix --apply
+          dart format lib test
+
+      - name: Commit fixes
+        shell: bash
+        run: |
+          if git diff --quiet -- lib test; then
+            echo "No Dart fixes required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lib test
+          git commit -m "style(batch6): apply analyzer fixes"
+          git push origin HEAD:batch6-offline-first-foundation
