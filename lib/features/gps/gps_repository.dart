@@ -110,7 +110,7 @@ class GpsRepository {
     });
   }
 
-  Future<int> pendingCount(String tenantId) =>
+  Future<int> pendingCount(String tenantId) async =>
       Sqflite.firstIntValue(
         await db.db.rawQuery(
           'SELECT COUNT(*) FROM local_gps_points '
