@@ -8,3 +8,11 @@ build/
 *.iml
 android/.gradle/
 android/local.properties
+
+
+# Android production signing secrets
+android/key.properties
+android/*.jks
+android/*.keystore
+android/app/*.jks
+android/app/*.keystore
