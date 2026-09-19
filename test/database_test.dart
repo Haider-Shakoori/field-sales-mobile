@@ -18,120 +18,128 @@ void main() {
     await deleteDatabase(await databasePath());
   });
 
-  test('database v10 creates tenant-safe operational and target tables', () async {
-    final database = AppDatabase();
-    await database.open();
+  test(
+    'database v10 creates tenant-safe operational and target tables',
+    () async {
+      final database = AppDatabase();
+      await database.open();
 
-    final tables = (await database.db.rawQuery(
-      "SELECT name FROM sqlite_master WHERE type='table'",
-    )).map((row) => row['name']).toSet();
+      final tables = (await database.db.rawQuery(
+        "SELECT name FROM sqlite_master WHERE type='table'",
+      )).map((row) => row['name']).toSet();
 
-    expect(
-      tables,
-      containsAll([
-        'sync_queue',
-        'customers',
-        'territories',
-        'routes',
-        'route_customers',
-        'products',
-        'price_lists',
-        'price_list_items',
-        'local_work_sessions',
-        'local_gps_points',
-        'privacy_acknowledgements',
-        'local_visits',
-        'local_visit_photos',
-        'local_call_activities',
-        'local_orders',
-        'local_order_items',
-        'local_collections',
-        'local_customer_balances',
-        'local_expenses',
-        'local_targets',
-      ]),
-    );
+      expect(
+        tables,
+        containsAll([
+          'sync_queue',
+          'customers',
+          'territories',
+          'routes',
+          'route_customers',
+          'products',
+          'price_lists',
+          'price_list_items',
+          'local_work_sessions',
+          'local_gps_points',
+          'privacy_acknowledgements',
+          'local_visits',
+          'local_visit_photos',
+          'local_call_activities',
+          'local_orders',
+          'local_order_items',
+          'local_collections',
+          'local_customer_balances',
+          'local_expenses',
+          'local_targets',
+        ]),
+      );
 
-    final customerColumns = (await database.db.rawQuery(
-      'PRAGMA table_info(customers)',
-    )).map((row) => row['name']).toSet();
+      final customerColumns = (await database.db.rawQuery(
+        'PRAGMA table_info(customers)',
+      )).map((row) => row['name']).toSet();
 
-    expect(
-      customerColumns,
-      containsAll(['tenant_id', 'uuid', 'source', 'sync_status']),
-    );
+      expect(
+        customerColumns,
+        containsAll(['tenant_id', 'uuid', 'source', 'sync_status']),
+      );
 
-    final sessionColumns = (await database.db.rawQuery(
-      'PRAGMA table_info(local_work_sessions)',
-    )).map((row) => row['name']).toSet();
-    final gpsColumns = (await database.db.rawQuery(
-      'PRAGMA table_info(local_gps_points)',
-    )).map((row) => row['name']).toSet();
+      final sessionColumns = (await database.db.rawQuery(
+        'PRAGMA table_info(local_work_sessions)',
+      )).map((row) => row['name']).toSet();
+      final gpsColumns = (await database.db.rawQuery(
+        'PRAGMA table_info(local_gps_points)',
+      )).map((row) => row['name']).toSet();
 
-    expect(sessionColumns, contains('tenant_id'));
-    expect(gpsColumns, contains('tenant_id'));
+      expect(sessionColumns, contains('tenant_id'));
+      expect(gpsColumns, contains('tenant_id'));
 
-    final collectionColumns = (await database.db.rawQuery(
-      'PRAGMA table_info(local_collections)',
-    )).map((row) => row['name']).toSet();
-    final balanceColumns = (await database.db.rawQuery(
-      'PRAGMA table_info(local_customer_balances)',
-    )).map((row) => row['name']).toSet();
+      final collectionColumns = (await database.db.rawQuery(
+        'PRAGMA table_info(local_collections)',
+      )).map((row) => row['name']).toSet();
+      final balanceColumns = (await database.db.rawQuery(
+        'PRAGMA table_info(local_customer_balances)',
+      )).map((row) => row['name']).toSet();
 
-    expect(
-      collectionColumns,
-      containsAll(['distance_meters', 'within_geofence']),
-    );
-    expect(balanceColumns, contains('available_to_collect'));
+      expect(
+        collectionColumns,
+        containsAll(['distance_meters', 'within_geofence']),
+      );
+      expect(balanceColumns, contains('available_to_collect'));
 
-    final expenseColumns = (await database.db.rawQuery(
-      'PRAGMA table_info(local_expenses)',
-    )).map((row) => row['name']).toSet();
-    final targetColumns = (await database.db.rawQuery(
-      'PRAGMA table_info(local_targets)',
-    )).map((row) => row['name']).toSet();
+      final expenseColumns = (await database.db.rawQuery(
+        'PRAGMA table_info(local_expenses)',
+      )).map((row) => row['name']).toSet();
+      final targetColumns = (await database.db.rawQuery(
+        'PRAGMA table_info(local_targets)',
+      )).map((row) => row['name']).toSet();
 
-    expect(
-      expenseColumns,
-      containsAll(['tenant_id', 'offline_uuid', 'sync_status', 'review_note']),
-    );
-    expect(
-      targetColumns,
-      containsAll([
-        'tenant_id',
-        'target_uuid',
-        'achieved_value',
-        'progress_percent',
-        'is_current',
-      ]),
-    );
+      expect(
+        expenseColumns,
+        containsAll([
+          'tenant_id',
+          'offline_uuid',
+          'sync_status',
+          'review_note',
+        ]),
+      );
+      expect(
+        targetColumns,
+        containsAll([
+          'tenant_id',
+          'target_uuid',
+          'achieved_value',
+          'progress_percent',
+          'is_current',
+        ]),
+      );
 
-    final indexes = (await database.db.rawQuery(
-      "SELECT name FROM sqlite_master WHERE type='index'",
-    )).map((row) => row['name']).toSet();
+      final indexes = (await database.db.rawQuery(
+        "SELECT name FROM sqlite_master WHERE type='index'",
+      )).map((row) => row['name']).toSet();
 
-    expect(
-      indexes,
-      containsAll([
-        'idx_customers_tenant_uuid',
-        'idx_products_tenant_uuid',
-        'one_active_session',
-        'idx_gps_pending',
-        'idx_gps_recorded',
-        'idx_visits_tenant_uuid',
-        'idx_visit_photos_tenant_uuid',
-        'idx_calls_tenant_uuid',
-        'idx_orders_tenant_uuid',
-        'idx_order_items_product',
-        'idx_collections_tenant_uuid',
-        'idx_customer_balances_unique',
-        'idx_expenses_tenant_uuid',
-        'idx_targets_tenant_uuid',
-      ]),
-    );
+      expect(
+        indexes,
+        containsAll([
+          'idx_customers_tenant_uuid',
+          'idx_products_tenant_uuid',
+          'one_active_session',
+          'idx_gps_pending',
+          'idx_gps_recorded',
+          'idx_visits_tenant_uuid',
+          'idx_visit_photos_tenant_uuid',
+          'idx_calls_tenant_uuid',
+          'idx_orders_tenant_uuid',
+          'idx_order_items_product',
+          'idx_collections_tenant_uuid',
+          'idx_customer_balances_unique',
+          'idx_expenses_tenant_uuid',
+          'idx_targets_tenant_uuid',
+        ]),
+      );
 
-    await database.db.close();
-  });
+      await database.db.close();
+    },
+  );
 
   test(
     'v4 master cache upgrades safely without losing attendance schema',

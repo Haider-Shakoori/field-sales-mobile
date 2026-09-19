@@ -23,10 +23,7 @@ void main() {
     final db = AppDatabase();
     await db.open();
 
-    final repository = ExpenseRepository(
-      api: ApiClient(SecretStore()),
-      db: db,
-    );
+    final repository = ExpenseRepository(api: ApiClient(SecretStore()), db: db);
 
     final uuid = await repository.createOffline(
       tenantId: 'tenant-expense-test',
@@ -66,10 +63,7 @@ void main() {
     final db = AppDatabase();
     await db.open();
 
-    final repository = ExpenseRepository(
-      api: ApiClient(SecretStore()),
-      db: db,
-    );
+    final repository = ExpenseRepository(api: ApiClient(SecretStore()), db: db);
 
     await expectLater(
       repository.createOffline(

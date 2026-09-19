@@ -40,15 +40,18 @@ class ExpensesScreen extends StatelessWidget {
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 12),
-              Text("Category: ${_label(expense['category']?.toString() ?? 'other')}"),
-              Text("Status: ${_label(expense['status']?.toString() ?? 'pending')}"),
+              Text(
+                "Category: ${_label(expense['category']?.toString() ?? 'other')}",
+              ),
+              Text(
+                "Status: ${_label(expense['status']?.toString() ?? 'pending')}",
+              ),
               Text("Spent: ${expense['spent_at'] ?? '—'}"),
               if (expense['merchant'] != null)
                 Text("Merchant: ${expense['merchant']}"),
               if (expense['reference_number'] != null)
                 Text("Reference: ${expense['reference_number']}"),
-              if (expense['notes'] != null)
-                Text("Notes: ${expense['notes']}"),
+              if (expense['notes'] != null) Text("Notes: ${expense['notes']}"),
               if (expense['review_note'] != null)
                 Text("Review note: ${expense['review_note']}"),
               const SizedBox(height: 12),
@@ -137,10 +140,8 @@ class ExpensesScreen extends StatelessWidget {
         onPressed: state.busy
             ? null
             : () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const ExpenseCreateScreen(),
-                  ),
-                ),
+                MaterialPageRoute(builder: (_) => const ExpenseCreateScreen()),
+              ),
         icon: const Icon(Icons.add),
         label: const Text('Expense'),
       ),

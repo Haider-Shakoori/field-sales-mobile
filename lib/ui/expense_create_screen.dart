@@ -58,18 +58,19 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
     if (controller.message == 'Expense saved locally.') {
       Navigator.pop(context);
     } else if (controller.message != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(controller.message!)),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(controller.message!)));
     }
   }
 
   String _label(String value) {
     return value
         .split('_')
-        .map((word) => word.isEmpty
-            ? word
-            : '${word[0].toUpperCase()}${word.substring(1)}')
+        .map(
+          (word) => word.isEmpty
+              ? word
+              : '${word[0].toUpperCase()}${word.substring(1)}',
+        )
         .join(' ');
   }
 

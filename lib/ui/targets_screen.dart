@@ -52,9 +52,8 @@ class TargetsScreen extends StatelessWidget {
           children: [
             Text(
               _label(type),
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
             Text(
@@ -134,19 +133,15 @@ class TargetsScreen extends StatelessWidget {
           else
             ...state.history
                 .where(
-                  (target) =>
-                      !state.currentTargets.any(
-                        (current) =>
-                            current['target_uuid'] == target['target_uuid'],
-                      ),
+                  (target) => !state.currentTargets.any(
+                    (current) =>
+                        current['target_uuid'] == target['target_uuid'],
+                  ),
                 )
                 .map((target) => _targetCard(context, target)),
           if (state.message != null) ...[
             const SizedBox(height: 12),
-            Text(
-              state.message!,
-              style: TextStyle(color: Colors.grey.shade600),
-            ),
+            Text(state.message!, style: TextStyle(color: Colors.grey.shade600)),
           ],
           const SizedBox(height: 40),
         ],
