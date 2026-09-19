@@ -21,11 +21,12 @@ class FieldSalesApp extends StatelessWidget {
       cardTheme: const CardThemeData(elevation: 0, margin: EdgeInsets.zero),
     ),
     home: Consumer<AppState>(
-      builder: (_, state, __) {
-        if (!state.restored)
+      builder: (_, state, _) {
+        if (!state.restored) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
+        }
         return state.signedIn ? const DashboardScreen() : const LoginScreen();
       },
     ),

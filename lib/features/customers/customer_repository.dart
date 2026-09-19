@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:sqflite/sqflite.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../core/api/api_exception.dart';
@@ -70,8 +69,8 @@ class CustomerRepository {
           'name': payload['name'],
           if (payload['phone'] != null) 'phone': payload['phone'],
           if (payload['address'] != null) 'address': payload['address'],
-          if (latitude != null) 'latitude': latitude,
-          if (longitude != null) 'longitude': longitude,
+          'latitude': ?latitude,
+          'longitude': ?longitude,
           'geofence_radius_meters': 100,
         }),
         priority: 20,

@@ -32,7 +32,7 @@ class ProductsScreen extends StatelessWidget {
           : ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: rows.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 8),
+              separatorBuilder: (_, _) => const SizedBox(height: 8),
               itemBuilder: (_, index) {
                 final product = rows[index];
                 final price = product['base_price'];

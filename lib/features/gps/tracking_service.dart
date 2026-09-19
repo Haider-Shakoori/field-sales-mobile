@@ -23,11 +23,13 @@ class TrackingService {
     final enabled = await Geolocator.isLocationServiceEnabled();
     if (!enabled) return;
     var permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied)
+    if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
+    }
     if (permission == LocationPermission.denied ||
-        permission == LocationPermission.deniedForever)
+        permission == LocationPermission.deniedForever) {
       return;
+    }
     final settings = AndroidSettings(
       accuracy: LocationAccuracy.high,
       distanceFilter: 5,
@@ -64,10 +66,13 @@ class TrackingService {
   }) async {
     if (!await Geolocator.isLocationServiceEnabled()) return null;
     var p = await Geolocator.checkPermission();
-    if (p == LocationPermission.denied)
+    if (p == LocationPermission.denied) {
       p = await Geolocator.requestPermission();
-    if (p == LocationPermission.denied || p == LocationPermission.deniedForever)
+    }
+    if (p == LocationPermission.denied ||
+        p == LocationPermission.deniedForever) {
       return null;
+    }
     try {
       final x = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(

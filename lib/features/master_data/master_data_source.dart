@@ -40,7 +40,7 @@ class ApiMasterDataSource implements MasterDataSource {
       query: {
         'page': page,
         'per_page': perPage,
-        if (updatedSince != null) 'updated_since': updatedSince,
+        'updated_since': ?updatedSince,
       },
     );
 

@@ -103,7 +103,7 @@ class CustomersScreen extends StatelessWidget {
             : ListView.separated(
                 padding: const EdgeInsets.all(16),
                 itemCount: rows.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 8),
+                separatorBuilder: (_, _) => const SizedBox(height: 8),
                 itemBuilder: (_, index) {
                   final customer = rows[index];
                   final offline = customer['offline_uuid'] != null;

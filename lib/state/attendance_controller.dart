@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 import '../core/config.dart';
@@ -161,10 +160,12 @@ class AttendanceController extends ChangeNotifier {
     try {
       final date = tenantDate;
       if (date == null) throw StateError('Company timezone is unavailable.');
-      if (await attendance.forDate(date) != null)
+      if (await attendance.forDate(date) != null) {
         throw StateError('Day completed or already started.');
-      if (!await hasPrivacyAck())
+      }
+      if (!await hasPrivacyAck()) {
         throw StateError('Review tracking policy before starting.');
+      }
       if (source == 'manual') await _requestNotificationPermission();
       final fix = await tracking.oneShot();
       if (fix == null) throw StateError('A usable GPS location is required.');
@@ -272,8 +273,9 @@ class AttendanceController extends ChangeNotifier {
       }
       if (policy.autoEndSession &&
           !inside &&
-          _sessionStartedInsideWindow(policy))
+          _sessionStartedInsideWindow(policy)) {
         await endDay();
+      }
       _scheduleBoundary();
       return;
     }
@@ -282,10 +284,11 @@ class AttendanceController extends ChangeNotifier {
         policy.gpsTrackingEnabled) {
       final date = tenantDate;
       if (date != null && await attendance.forDate(date) == null) {
-        if (!await hasPrivacyAck())
+        if (!await hasPrivacyAck()) {
           message = 'Review tracking policy before automatic Start Day.';
-        else
+        } else {
           await startDay(source: 'automatic');
+        }
       }
     }
     _scheduleBoundary();
@@ -309,8 +312,12 @@ class AttendanceController extends ChangeNotifier {
     _boundary = null;
     final policy = appState.policy;
     final now = _tenantNow();
-    if (!appState.signedIn || policy == null || !policy.trusted || now == null)
+    if (!appState.signedIn ||
+        policy == null ||
+        !policy.trusted ||
+        now == null) {
       return;
+    }
     tz.TZDateTime at(String hm, int dayOffset) {
       final parts = hm.split(':');
       final base = now.add(Duration(days: dayOffset));

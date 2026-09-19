@@ -13,15 +13,17 @@ class HistoryScreen extends StatelessWidget {
       body: FutureBuilder(
         future: db.query('local_work_sessions', orderBy: 'date DESC'),
         builder: (context, snap) {
-          if (!snap.hasData)
+          if (!snap.hasData) {
             return const Center(child: CircularProgressIndicator());
+          }
           final rows = snap.data!;
-          if (rows.isEmpty)
+          if (rows.isEmpty) {
             return const Center(child: Text('No work days yet.'));
+          }
           return ListView.separated(
             padding: const EdgeInsets.all(16),
             itemCount: rows.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 10),
+            separatorBuilder: (_, _) => const SizedBox(height: 10),
             itemBuilder: (_, i) {
               final r = rows[i];
               return Card(

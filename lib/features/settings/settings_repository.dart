@@ -10,12 +10,13 @@ class SettingsRepository {
     final cached = await db.readSetting('attendance_tracking_settings');
     if (cached is Map &&
         cached['tenant_id'] == tenantId &&
-        cached['trusted'] == true)
+        cached['trusted'] == true) {
       return AttendanceTrackingSettings.fromJson(
         Map<String, dynamic>.from(cached),
         tenantId: tenantId,
         trusted: true,
       );
+    }
     return AttendanceTrackingSettings.defaults(tenantId: tenantId);
   }
 

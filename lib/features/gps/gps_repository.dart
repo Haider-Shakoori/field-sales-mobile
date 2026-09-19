@@ -29,11 +29,13 @@ class GpsRepository {
         longitude.abs() > 180 ||
         (latitude == 0 && longitude == 0) ||
         accuracy > 100 ||
-        accuracy < 0)
+        accuracy < 0) {
       return;
+    }
     final at = (recordedAt ?? DateTime.now()).toUtc();
-    if (at.isAfter(DateTime.now().toUtc().add(const Duration(minutes: 5))))
+    if (at.isAfter(DateTime.now().toUtc().add(const Duration(minutes: 5)))) {
       return;
+    }
     final last = await db.db.query(
       'local_gps_points',
       orderBy: 'id DESC',
@@ -49,8 +51,9 @@ class GpsRepository {
                 l['latitude'] as double,
                 l['longitude'] as double,
               ) <
-              5)
+              5) {
         return;
+      }
     }
     final battery = await _battery.batteryLevel;
     final charging = (await _battery.batteryState) == BatteryState.charging;
@@ -138,7 +141,7 @@ class GpsRepository {
     final rejected = List<Map<String, dynamic>>.from(
       (data['rejected_details'] ?? []).map((x) => Map<String, dynamic>.from(x)),
     );
-    for (final id in accepted)
+    for (final id in accepted) {
       await db.db.update(
         'local_gps_points',
         {
@@ -149,9 +152,10 @@ class GpsRepository {
         where: 'client_uuid=?',
         whereArgs: [id],
       );
+    }
     for (final item in rejected) {
       final id = '${item['client_uuid']}';
-      if (id != 'null')
+      if (id != 'null') {
         await db.db.update(
           'local_gps_points',
           {
@@ -162,6 +166,7 @@ class GpsRepository {
           where: 'client_uuid=?',
           whereArgs: [id],
         );
+      }
     }
   }
 
@@ -177,7 +182,9 @@ extension on double {
     var x = this;
     if (x <= 0) return 0;
     var z = x;
-    for (var i = 0; i < 10; i++) z = (z + x / z) / 2;
+    for (var i = 0; i < 10; i++) {
+      z = (z + x / z) / 2;
+    }
     return z;
   }
 }
