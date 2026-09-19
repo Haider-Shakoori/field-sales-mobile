@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:uuid/uuid.dart';
 
 import '../../core/api/api_client.dart';
+import '../../core/api/api_exception.dart';
 import '../../core/db/app_database.dart';
 import '../../core/sync/sync_retry_store.dart';
 
@@ -331,23 +332,53 @@ class VisitRepository {
       final file = File(row['local_path'].toString());
 
       if (!await file.exists()) {
-        final failure = await retry.recordFailure(
-          tenantId: tenantId,
-          entityType: 'visit_photo',
-          entityUuid: clientUuid,
-          error: StateError('Local photo file is unavailable.'),
-          retryableOverride: false,
-        );
-        await db.db.update(
-          'local_visit_photos',
-          {
-            'sync_status': failure.blocked ? 'blocked' : 'failed',
-            'last_error': failure.message,
-          },
-          where: 'tenant_id=? AND id=?',
-          whereArgs: [tenantId, row['id']],
-        );
-        continue;
+        try {
+          final existing = Map<String, dynamic>.from(
+            await api.post(
+              'visits/$visitServerUuid/photos',
+              data: {'client_uuid': clientUuid},
+            ) as Map,
+          );
+
+          await db.db.update(
+            'local_visit_photos',
+            {
+              'server_uuid': existing['id']?.toString(),
+              'sync_status': 'synced',
+              'last_error': null,
+            },
+            where: 'tenant_id=? AND id=?',
+            whereArgs: [tenantId, row['id']],
+          );
+          await retry.clear(
+            tenantId: tenantId,
+            entityType: 'visit_photo',
+            entityUuid: clientUuid,
+          );
+          continue;
+        } on ApiException catch (error) {
+          final missingOnServer = error.status == 422;
+          final failure = await retry.recordFailure(
+            tenantId: tenantId,
+            entityType: 'visit_photo',
+            entityUuid: clientUuid,
+            error: missingOnServer
+                ? StateError('Local photo file is unavailable.')
+                : error,
+            retryableOverride: missingOnServer ? false : null,
+          );
+
+          await db.db.update(
+            'local_visit_photos',
+            {
+              'sync_status': failure.blocked ? 'blocked' : 'failed',
+              'last_error': failure.message,
+            },
+            where: 'tenant_id=? AND id=?',
+            whereArgs: [tenantId, row['id']],
+          );
+          continue;
+        }
       }
 
       try {
