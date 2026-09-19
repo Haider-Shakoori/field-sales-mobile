@@ -1,3 +1,5 @@
+import 'package:sqflite/sqflite.dart';
+
 import '../api/api_exception.dart';
 import '../db/app_database.dart';
 
@@ -147,8 +149,8 @@ class SyncRetryStore {
         'SESSION_NOT_FOUND',
       };
 
-      final retryable = retryableOverride ??
-          error.retryable ||
+      final retryable =
+          (retryableOverride ?? error.retryable) ||
           dependencyCodes.contains(code);
 
       return _FailureDecision(
