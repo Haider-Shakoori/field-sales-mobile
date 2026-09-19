@@ -2,6 +2,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../core/api/api_client.dart';
 import '../../core/db/app_database.dart';
+import '../../core/sync/local_dependency_guard.dart';
 import '../../core/sync/sync_retry_store.dart';
 import '../master_data/master_data_repository.dart';
 
@@ -10,12 +11,14 @@ class OrderRepository {
     required this.api,
     required this.db,
     required this.masterData,
-  }) : retry = SyncRetryStore(db);
+  }) : retry = SyncRetryStore(db),
+       dependencies = LocalDependencyGuard(db);
 
   final ApiClient api;
   final AppDatabase db;
   final MasterDataRepository masterData;
   final SyncRetryStore retry;
+  final LocalDependencyGuard dependencies;
 
   Future<List<Map<String, dynamic>>> list(String tenantId) async {
     final rows = await db.db.query(
@@ -243,6 +246,18 @@ class OrderRepository {
 
     for (final order in rows) {
       final offlineUuid = order['offline_uuid'].toString();
+      final customerUuid = order['customer_uuid'].toString();
+
+      if (!await dependencies.customerReady(tenantId, customerUuid)) {
+        continue;
+      }
+
+      final visitUuid = order['visit_uuid']?.toString();
+      if (visitUuid != null &&
+          visitUuid.isNotEmpty &&
+          !await dependencies.visitReady(tenantId, visitUuid)) {
+        continue;
+      }
 
       if (!await retry.shouldAttempt(
         tenantId: tenantId,
