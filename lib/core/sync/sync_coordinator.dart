@@ -165,9 +165,11 @@ class SyncCoordinator {
       return const SyncStageReport.success('targets');
     });
 
+    final issues = await retryStore.issueCount(tenantId);
+    final waiting = await retryStore.waitingCount(tenantId);
     final blocked = await retryStore.blockedCount(tenantId);
     final completedAt = DateTime.now().toUtc();
-    final status = failed > 0 || blocked > 0 ? 'partial' : 'success';
+    final status = failed > 0 || issues > 0 ? 'partial' : 'success';
 
     await db.db.update(
       'local_sync_cycles',
@@ -176,6 +178,8 @@ class SyncCoordinator {
         'completed_at': completedAt.toIso8601String(),
         'synced_count': synced,
         'failed_count': failed,
+        'issue_count': issues,
+        'waiting_count': waiting,
         'blocked_count': blocked,
         'stage_summary': jsonEncode(
           stages.map((stage) => stage.toJson()).toList(),
@@ -192,6 +196,8 @@ class SyncCoordinator {
       completedAt: completedAt,
       synced: synced,
       failed: failed,
+      issues: issues,
+      waiting: waiting,
       blocked: blocked,
       stages: stages,
     );
@@ -218,6 +224,8 @@ class SyncCycleReport {
     required this.completedAt,
     required this.synced,
     required this.failed,
+    required this.issues,
+    required this.waiting,
     required this.blocked,
     required this.stages,
   });
@@ -228,6 +236,8 @@ class SyncCycleReport {
   final DateTime completedAt;
   final int synced;
   final int failed;
+  final int issues;
+  final int waiting;
   final int blocked;
   final List<SyncStageReport> stages;
 }
