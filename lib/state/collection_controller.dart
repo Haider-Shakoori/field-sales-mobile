@@ -111,12 +111,8 @@ class CollectionController extends ChangeNotifier {
 
       if (!silent) {
         message = result.failed == 0
-            ? 'Collection sync complete. ' +
-                  result.synced.toString() +
-                  ' pending collections processed.'
-            : 'Collection sync completed with ' +
-                  result.failed.toString() +
-                  ' pending failures.';
+            ? 'Collection sync complete. ${result.synced} pending collections processed.'
+            : 'Collection sync completed with ${result.failed} pending failures.';
       }
     } catch (_) {
       await reloadLocal();
