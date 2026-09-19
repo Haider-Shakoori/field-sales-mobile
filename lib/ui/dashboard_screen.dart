@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -49,16 +51,37 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        context.read<MasterDataController>().initialize();
-        context.read<VisitController>().initialize();
-        context.read<CallActivityController>().initialize();
-        context.read<OrderController>().initialize();
-        context.read<CollectionController>().initialize();
-        context.read<ExpenseController>().initialize();
-        context.read<TargetController>().initialize();
-        context.read<SyncController>().initialize();
+        unawaited(_initializeData());
       }
     });
+  }
+
+  Future<void> _initializeData() async {
+    await Future.wait([
+      context.read<MasterDataController>().reloadLocal(),
+      context.read<VisitController>().reloadLocal(),
+      context.read<CallActivityController>().reloadLocal(),
+      context.read<OrderController>().reloadLocal(),
+      context.read<CollectionController>().reloadLocal(),
+      context.read<ExpenseController>().reloadLocal(),
+      context.read<TargetController>().reloadLocal(),
+    ]);
+
+    if (!mounted) return;
+
+    await context.read<SyncController>().run(triggerSource: 'startup');
+
+    if (!mounted) return;
+
+    await Future.wait([
+      context.read<MasterDataController>().reloadLocal(),
+      context.read<VisitController>().reloadLocal(),
+      context.read<CallActivityController>().reloadLocal(),
+      context.read<OrderController>().reloadLocal(),
+      context.read<CollectionController>().reloadLocal(),
+      context.read<ExpenseController>().reloadLocal(),
+      context.read<TargetController>().reloadLocal(),
+    ]);
   }
 
   @override
