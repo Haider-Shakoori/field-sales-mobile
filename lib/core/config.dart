@@ -24,7 +24,9 @@ class AppConfig {
     final normalizedPath = uri.path.replaceAll(RegExp(r'/+$'), '');
 
     if (!normalizedPath.endsWith('/api/v1')) {
-      throw StateError('API_BASE_URL must target the versioned /api/v1 endpoint.');
+      throw StateError(
+        'API_BASE_URL must target the versioned /api/v1 endpoint.',
+      );
     }
 
     if (productMode) {
