@@ -8,7 +8,15 @@ jobs:
       - uses: subosito/flutter-action@v2
         with: {flutter-version: '3.47.0', channel: stable, cache: true}
       - run: flutter pub get
-      - run: dart format --output=none --set-exit-if-changed lib test
+      - name: Format Batch 10 diff
+        shell: bash
+        run: |
+          dart format lib test
+          echo "=== DART FORMAT GENERATED DIFF ==="
+          git diff -- lib test
+          if ! git diff --quiet -- lib test; then
+            exit 1
+          fi
       - run: flutter analyze
       - run: flutter test
       - run: flutter build apk --debug --dart-define=API_BASE_URL=http://10.0.2.2:8001/api/v1
