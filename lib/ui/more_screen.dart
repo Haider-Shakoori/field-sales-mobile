@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'collections_screen.dart';
 import 'products_screen.dart';
 import 'routes_screen.dart';
 import 'sync_screen.dart';
@@ -23,6 +24,16 @@ class MoreScreen extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        Card(
+          child: ListTile(
+            leading: const Icon(Icons.payments_outlined),
+            title: const Text('Collections'),
+            subtitle: const Text('Customer balances, receipts and payments'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () =>
+                _open(context, 'Collections', const CollectionsScreen()),
+          ),
+        ),
         Card(
           child: ListTile(
             leading: const Icon(Icons.route_outlined),

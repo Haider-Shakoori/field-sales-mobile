@@ -18,7 +18,7 @@ void main() {
     await deleteDatabase(await databasePath());
   });
 
-  test('database v8 creates tenant-safe master attendance GPS visit and order tables', () async {
+  test('database v9 creates tenant-safe master attendance GPS visit order and collection tables', () async {
     final database = AppDatabase();
     await database.open();
 
@@ -45,6 +45,8 @@ void main() {
         'local_call_activities',
         'local_orders',
         'local_order_items',
+        'local_collections',
+        'local_customer_balances',
       ]),
     );
 
@@ -67,6 +69,19 @@ void main() {
     expect(sessionColumns, contains('tenant_id'));
     expect(gpsColumns, contains('tenant_id'));
 
+    final collectionColumns = (await database.db.rawQuery(
+      'PRAGMA table_info(local_collections)',
+    )).map((row) => row['name']).toSet();
+    final balanceColumns = (await database.db.rawQuery(
+      'PRAGMA table_info(local_customer_balances)',
+    )).map((row) => row['name']).toSet();
+
+    expect(
+      collectionColumns,
+      containsAll(['distance_meters', 'within_geofence']),
+    );
+    expect(balanceColumns, contains('available_to_collect'));
+
     final indexes = (await database.db.rawQuery(
       "SELECT name FROM sqlite_master WHERE type='index'",
     )).map((row) => row['name']).toSet();
@@ -84,6 +99,8 @@ void main() {
         'idx_calls_tenant_uuid',
         'idx_orders_tenant_uuid',
         'idx_order_items_product',
+        'idx_collections_tenant_uuid',
+        'idx_customer_balances_unique',
       ]),
     );
 
