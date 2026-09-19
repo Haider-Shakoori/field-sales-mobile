@@ -62,12 +62,12 @@ class CallHistoryScreen extends StatelessWidget {
                       ),
                       subtitle: Text(
                         [
-                          row['called_at']?.toString(),
-                          row['phone_number']?.toString(),
-                          row['notes']?.toString(),
-                          if (row['sync_status'] != 'synced')
-                            'Sync: ' + row['sync_status'].toString(),
-                        ]
+                              row['called_at']?.toString(),
+                              row['phone_number']?.toString(),
+                              row['notes']?.toString(),
+                              if (row['sync_status'] != 'synced')
+                                'Sync: ' + row['sync_status'].toString(),
+                            ]
                             .where(
                               (value) =>
                                   value != null &&

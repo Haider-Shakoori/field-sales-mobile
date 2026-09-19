@@ -4,10 +4,7 @@ import '../features/calls/call_activity_repository.dart';
 import 'app_state.dart';
 
 class CallActivityController extends ChangeNotifier {
-  CallActivityController({
-    required this.appState,
-    required this.repository,
-  });
+  CallActivityController({required this.appState, required this.repository});
 
   final AppState appState;
   final CallActivityRepository repository;
@@ -97,11 +94,11 @@ class CallActivityController extends ChangeNotifier {
       if (!silent) {
         message = result.failed == 0
             ? 'Call activity sync complete. ' +
-                result.synced.toString() +
-                ' records processed.'
+                  result.synced.toString() +
+                  ' records processed.'
             : 'Call activity sync completed with ' +
-                result.failed.toString() +
-                ' pending failures.';
+                  result.failed.toString() +
+                  ' pending failures.';
       }
     } catch (_) {
       await reloadLocal();

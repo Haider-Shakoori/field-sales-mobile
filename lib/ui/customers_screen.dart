@@ -110,7 +110,9 @@ class CustomersScreen extends StatelessWidget {
     if (!launched || !context.mounted) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('The phone dialer could not be opened.')),
+          const SnackBar(
+            content: Text('The phone dialer could not be opened.'),
+          ),
         );
       }
       return;
@@ -183,10 +185,7 @@ class CustomersScreen extends StatelessWidget {
     );
   }
 
-  void _showHistory(
-    BuildContext context,
-    Map<String, dynamic> customer,
-  ) {
+  void _showHistory(BuildContext context, Map<String, dynamic> customer) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => CallHistoryScreen(
