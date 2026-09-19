@@ -23,7 +23,9 @@ class VisitsScreen extends StatelessWidget {
 
     if (!attendance.working) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Start your work day before checking in.')),
+        const SnackBar(
+          content: Text('Start your work day before checking in.'),
+        ),
       );
       return;
     }
@@ -38,7 +40,9 @@ class VisitsScreen extends StatelessWidget {
     final customers = context.read<MasterDataController>().customers;
     if (customers.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No customers are available offline yet.')),
+        const SnackBar(
+          content: Text('No customers are available offline yet.'),
+        ),
       );
       return;
     }
@@ -58,8 +62,10 @@ class VisitsScreen extends StatelessWidget {
               title: Text((row['name'] ?? 'Customer').toString()),
               subtitle: Text(
                 [row['code'], row['address']]
-                    .where((value) =>
-                        value != null && value.toString().trim().isNotEmpty)
+                    .where(
+                      (value) =>
+                          value != null && value.toString().trim().isNotEmpty,
+                    )
                     .join(' · '),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -83,7 +89,8 @@ class VisitsScreen extends StatelessWidget {
     var outcome = outcomes.keys.first;
     final notes = TextEditingController();
 
-    final save = await showDialog<bool>(
+    final save =
+        await showDialog<bool>(
           context: context,
           builder: (dialogContext) => StatefulBuilder(
             builder: (context, setState) => AlertDialog(
@@ -136,10 +143,10 @@ class VisitsScreen extends StatelessWidget {
 
     if (save && context.mounted) {
       await context.read<VisitController>().checkOut(
-            visit,
-            outcome: outcome,
-            notes: notes.text,
-          );
+        visit,
+        outcome: outcome,
+        notes: notes.text,
+      );
     }
   }
 
@@ -208,13 +215,13 @@ class VisitsScreen extends StatelessWidget {
                                 child: Text(
                                   visit['customer_name']?.toString() ??
                                       'Customer',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
+                                  style: Theme.of(context).textTheme.titleMedium
                                       ?.copyWith(fontWeight: FontWeight.bold),
                                 ),
                               ),
-                              Chip(label: Text(active ? 'Active' : 'Completed')),
+                              Chip(
+                                label: Text(active ? 'Active' : 'Completed'),
+                              ),
                             ],
                           ),
                           const SizedBox(height: 6),

@@ -139,12 +139,7 @@ class VisitRepository {
     final rows = await db.db.query(
       'local_visits',
       where: 'tenant_id=? AND sync_status IN (?,?,?)',
-      whereArgs: [
-        tenantId,
-        'pending_checkin',
-        'pending_checkout',
-        'failed',
-      ],
+      whereArgs: [tenantId, 'pending_checkin', 'pending_checkout', 'failed'],
       orderBy: 'checked_in_at ASC',
     );
 
@@ -192,10 +187,7 @@ class VisitRepository {
     return VisitSyncResult(synced: synced, failed: failed);
   }
 
-  Future<void> _syncVisit(
-    String tenantId,
-    Map<String, dynamic> row,
-  ) async {
+  Future<void> _syncVisit(String tenantId, Map<String, dynamic> row) async {
     var serverUuid = row['server_uuid']?.toString();
 
     if (serverUuid == null || serverUuid.isEmpty) {
@@ -264,9 +256,7 @@ class VisitRepository {
           'is_planned': _boolInt(result['is_planned']),
           'duration_seconds': result['duration_seconds'],
           'checkout_distance_meters': checkout['distance_meters'],
-          'checkout_within_geofence': _boolInt(
-            checkout['within_geofence'],
-          ),
+          'checkout_within_geofence': _boolInt(checkout['within_geofence']),
           'sync_status': 'synced',
           'last_error': null,
           'updated_at': DateTime.now().toUtc().toIso8601String(),
@@ -286,8 +276,7 @@ class VisitRepository {
   ) async {
     final rows = await db.db.query(
       'local_visit_photos',
-      where:
-          'tenant_id=? AND visit_offline_uuid=? AND sync_status IN (?,?)',
+      where: 'tenant_id=? AND visit_offline_uuid=? AND sync_status IN (?,?)',
       whereArgs: [tenantId, visitOfflineUuid, 'pending', 'failed'],
       orderBy: 'id ASC',
     );
@@ -335,10 +324,7 @@ class VisitRepository {
       } catch (error) {
         await db.db.update(
           'local_visit_photos',
-          {
-            'sync_status': 'failed',
-            'last_error': error.toString(),
-          },
+          {'sync_status': 'failed', 'last_error': error.toString()},
           where: 'tenant_id=? AND id=?',
           whereArgs: [tenantId, row['id']],
         );

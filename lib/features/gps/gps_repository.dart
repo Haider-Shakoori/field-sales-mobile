@@ -244,10 +244,7 @@ class GpsRepository {
     return data == null ? null : Map<String, dynamic>.from(data as Map);
   }
 
-  Future<Map<String, dynamic>> history({
-    String? date,
-    String? userId,
-  }) async {
+  Future<Map<String, dynamic>> history({String? date, String? userId}) async {
     final query = <String, dynamic>{};
     if (date != null) query['date'] = date;
     if (userId != null) query['user_id'] = userId;

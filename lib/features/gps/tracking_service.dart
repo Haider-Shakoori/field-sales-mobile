@@ -11,7 +11,10 @@ class TrackingService {
   final GpsRepository gpsRepository;
   StreamSubscription<Position>? _sub;
   bool get active => _sub != null;
-  Future<void> start({required String tenantId, required int movingSeconds}) async {
+  Future<void> start({
+    required String tenantId,
+    required int movingSeconds,
+  }) async {
     if (_sub != null) return;
     final session = await db.db.query(
       'local_work_sessions',

@@ -10,10 +10,7 @@ import '../features/visits/visit_repository.dart';
 import 'app_state.dart';
 
 class VisitController extends ChangeNotifier {
-  VisitController({
-    required this.appState,
-    required this.repository,
-  });
+  VisitController({required this.appState, required this.repository});
 
   final AppState appState;
   final VisitRepository repository;
@@ -190,10 +187,12 @@ class VisitController extends ChangeNotifier {
 
       if (!silent) {
         message = result.failed == 0
-            ? 'Visit sync complete. ' + result.synced.toString() + ' visits processed.'
+            ? 'Visit sync complete. ' +
+                  result.synced.toString() +
+                  ' visits processed.'
             : 'Visit sync completed with ' +
-                result.failed.toString() +
-                ' pending failures.';
+                  result.failed.toString() +
+                  ' pending failures.';
       }
     } catch (_) {
       await reloadLocal();
@@ -226,9 +225,7 @@ class VisitController extends ChangeNotifier {
     }
 
     return Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
-      ),
+      locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
     );
   }
 }
