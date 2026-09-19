@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../state/call_activity_controller.dart';
 import '../state/master_data_controller.dart';
+import '../state/order_controller.dart';
 import '../state/visit_controller.dart';
 
 class SyncScreen extends StatelessWidget {
@@ -14,6 +15,9 @@ class SyncScreen extends StatelessWidget {
       await context.read<VisitController>().sync();
       if (context.mounted) {
         await context.read<CallActivityController>().sync();
+        if (context.mounted) {
+          await context.read<OrderController>().sync();
+        }
       }
     }
   }
@@ -23,8 +27,10 @@ class SyncScreen extends StatelessWidget {
     final state = context.watch<MasterDataController>();
     final visits = context.watch<VisitController>();
     final calls = context.watch<CallActivityController>();
-    final pending = state.pending + visits.pending + calls.pending;
-    final busy = state.busy || visits.busy || calls.busy;
+    final orders = context.watch<OrderController>();
+    final pending =
+        state.pending + visits.pending + calls.pending + orders.pending;
+    final busy = state.busy || visits.busy || calls.busy || orders.busy;
 
     return ListView(
       padding: const EdgeInsets.all(20),
@@ -70,6 +76,10 @@ class SyncScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(calls.message!),
                 ],
+                if (orders.message != null) ...[
+                  const SizedBox(height: 8),
+                  Text(orders.message!),
+                ],
               ],
             ),
           ),
@@ -81,7 +91,7 @@ class SyncScreen extends StatelessWidget {
             title: Text('Local-first by design'),
             subtitle: Text(
               'Cached master data stays available without internet. '
-              'Customers, visits, photos and optional call activities are saved locally before upload.',
+              'Customers, visits, photos, calls and orders are saved locally before upload.',
             ),
           ),
         ),

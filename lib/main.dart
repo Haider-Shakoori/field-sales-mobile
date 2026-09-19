@@ -15,12 +15,14 @@ import 'features/gps/gps_repository.dart';
 import 'features/gps/tracking_service.dart';
 import 'features/master_data/master_data_repository.dart';
 import 'features/master_data/master_data_source.dart';
+import 'features/orders/order_repository.dart';
 import 'features/settings/settings_repository.dart';
 import 'features/visits/visit_repository.dart';
 import 'state/app_state.dart';
 import 'state/call_activity_controller.dart';
 import 'state/attendance_controller.dart';
 import 'state/master_data_controller.dart';
+import 'state/order_controller.dart';
 import 'state/visit_controller.dart';
 
 Future<void> main() async {
@@ -42,6 +44,7 @@ Future<void> main() async {
 
   final masterSource = ApiMasterDataSource(api);
   final masterData = MasterDataRepository(database: db, source: masterSource);
+  final orders = OrderRepository(api: api, db: db, masterData: masterData);
   final localTransactions = LocalFirstTransaction(db);
   final customers = CustomerRepository(
     database: db,
@@ -62,6 +65,11 @@ Future<void> main() async {
   final callActivityController = CallActivityController(
     appState: appState,
     repository: calls,
+  );
+
+  final orderController = OrderController(
+    appState: appState,
+    repository: orders,
   );
 
   final visitController = VisitController(
@@ -89,10 +97,12 @@ Future<void> main() async {
         ChangeNotifierProvider.value(value: masterDataController),
         ChangeNotifierProvider.value(value: visitController),
         ChangeNotifierProvider.value(value: callActivityController),
+        ChangeNotifierProvider.value(value: orderController),
         Provider.value(value: masterData),
         Provider.value(value: customers),
         Provider.value(value: visits),
         Provider.value(value: calls),
+        Provider.value(value: orders),
       ],
       child: const FieldSalesApp(),
     ),

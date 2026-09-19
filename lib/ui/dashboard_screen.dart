@@ -4,11 +4,12 @@ import 'package:provider/provider.dart';
 import '../state/attendance_controller.dart';
 import '../state/call_activity_controller.dart';
 import '../state/master_data_controller.dart';
+import '../state/order_controller.dart';
 import '../state/visit_controller.dart';
 import 'customers_screen.dart';
 import 'home_tab.dart';
-import 'products_screen.dart';
-import 'routes_screen.dart';
+import 'more_screen.dart';
+import 'orders_screen.dart';
 import 'sync_screen.dart';
 import 'visits_screen.dart';
 
@@ -26,18 +27,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
     HomeTab(),
     CustomersScreen(),
     VisitsScreen(),
-    RoutesScreen(),
-    ProductsScreen(),
-    SyncScreen(),
+    OrdersScreen(),
+    MoreScreen(),
   ];
 
   static const _titles = [
     'Field Sales',
     'Customers',
     'Visits',
-    'Routes',
-    'Products',
-    'Sync',
+    'Orders',
+    'More',
   ];
 
   @override
@@ -49,6 +48,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         context.read<MasterDataController>().initialize();
         context.read<VisitController>().initialize();
         context.read<CallActivityController>().initialize();
+        context.read<OrderController>().initialize();
       }
     });
   }
@@ -58,7 +58,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final master = context.watch<MasterDataController>();
     final visits = context.watch<VisitController>();
     final calls = context.watch<CallActivityController>();
-    final pending = master.pending + visits.pending + calls.pending;
+    final orders = context.watch<OrderController>();
+    final pending =
+        master.pending + visits.pending + calls.pending + orders.pending;
 
     return Scaffold(
       appBar: AppBar(
@@ -71,7 +73,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 label: Text('$pending'),
                 child: IconButton(
                   tooltip: 'Pending sync',
-                  onPressed: () => setState(() => _index = 5),
+                  onPressed: () => Navigator.of(
+                    context,
+                  ).push(MaterialPageRoute(builder: (_) => const SyncScreen())),
                   icon: const Icon(Icons.cloud_upload_outlined),
                 ),
               ),
@@ -104,19 +108,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
             label: 'Visits',
           ),
           NavigationDestination(
-            icon: Icon(Icons.route_outlined),
-            selectedIcon: Icon(Icons.route),
-            label: 'Routes',
+            icon: Icon(Icons.receipt_long_outlined),
+            selectedIcon: Icon(Icons.receipt_long),
+            label: 'Orders',
           ),
           NavigationDestination(
-            icon: Icon(Icons.inventory_2_outlined),
-            selectedIcon: Icon(Icons.inventory_2),
-            label: 'Products',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.sync_outlined),
-            selectedIcon: Icon(Icons.sync),
-            label: 'Sync',
+            icon: Icon(Icons.more_horiz),
+            selectedIcon: Icon(Icons.more),
+            label: 'More',
           ),
         ],
       ),

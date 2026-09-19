@@ -4,7 +4,7 @@ import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
 class AppDatabase {
-  static const version = 7;
+  static const version = 8;
 
   Database? _db;
 
@@ -16,16 +16,17 @@ class AppDatabase {
     _db = await openDatabase(
       p.join(dir, 'field_sales.db'),
       version: version,
-      onCreate: (database, _) => _createV7(database),
+      onCreate: (database, _) => _createV8(database),
       onUpgrade: _upgrade,
     );
   }
 
-  Future<void> _createV7(Database database) async {
+  Future<void> _createV8(Database database) async {
     await _createSyncTables(database);
     await _createMasterTables(database);
     await _createAttendanceTables(database);
     await _createVisitTables(database);
+    await _createOrderTables(database);
   }
 
   Future<void> _createSyncTables(Database database) async {
@@ -277,6 +278,75 @@ class AppDatabase {
     );
   }
 
+  Future<void> _createOrderTables(Database database) async {
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_orders ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL, '
+      'offline_uuid TEXT NOT NULL, '
+      'server_uuid TEXT, '
+      'order_number TEXT, '
+      'customer_uuid TEXT NOT NULL, '
+      'customer_name TEXT NOT NULL, '
+      'visit_uuid TEXT, '
+      'ordered_at TEXT NOT NULL, '
+      'payment_type TEXT NOT NULL, '
+      'status TEXT NOT NULL DEFAULT "pending", '
+      'currency TEXT NOT NULL, '
+      'subtotal REAL NOT NULL DEFAULT 0, '
+      'discount_total REAL NOT NULL DEFAULT 0, '
+      'grand_total REAL NOT NULL DEFAULT 0, '
+      'client_estimated_total REAL NOT NULL DEFAULT 0, '
+      'pricing_adjusted INTEGER NOT NULL DEFAULT 0, '
+      'notes TEXT, '
+      'status_note TEXT, '
+      'status_changed_at TEXT, '
+      'sync_status TEXT NOT NULL DEFAULT "pending", '
+      'last_error TEXT, '
+      'created_at TEXT NOT NULL, '
+      'updated_at TEXT NOT NULL'
+      ')',
+    );
+    await database.execute(
+      'CREATE UNIQUE INDEX IF NOT EXISTS idx_orders_tenant_uuid '
+      'ON local_orders(tenant_id,offline_uuid)',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_orders_customer '
+      'ON local_orders(tenant_id,customer_uuid,ordered_at)',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_orders_sync '
+      'ON local_orders(tenant_id,sync_status,ordered_at)',
+    );
+
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_order_items ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL, '
+      'order_offline_uuid TEXT NOT NULL, '
+      'server_uuid TEXT, '
+      'product_uuid TEXT NOT NULL, '
+      'product_sku TEXT NOT NULL, '
+      'product_name TEXT NOT NULL, '
+      'unit TEXT NOT NULL, '
+      'quantity REAL NOT NULL, '
+      'unit_price REAL NOT NULL, '
+      'discount_percent REAL NOT NULL DEFAULT 0, '
+      'discount_amount REAL NOT NULL DEFAULT 0, '
+      'line_total REAL NOT NULL'
+      ')',
+    );
+    await database.execute(
+      'CREATE UNIQUE INDEX IF NOT EXISTS idx_order_items_product '
+      'ON local_order_items(tenant_id,order_offline_uuid,product_uuid)',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_order_items_order '
+      'ON local_order_items(tenant_id,order_offline_uuid)',
+    );
+  }
+
   Future<void> _upgrade(
     Database database,
     int oldVersion,
@@ -319,6 +389,7 @@ class AppDatabase {
 
     await _createAttendanceTables(database);
     await _createVisitTables(database);
+    await _createOrderTables(database);
 
     if (oldVersion < 4 &&
         !await _hasColumn(database, 'local_work_sessions', 'start_source')) {
