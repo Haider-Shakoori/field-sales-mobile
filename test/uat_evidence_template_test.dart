@@ -15,6 +15,9 @@ void main() {
       template,
       contains('Final decision: **NOT APPROVED / APPROVED FOR BATCH 20**'),
     );
-    expect(template, isNot(contains('Final decision: **APPROVED FOR BATCH 20**')));
+    expect(
+      template,
+      isNot(contains('Final decision: **APPROVED FOR BATCH 20**')),
+    );
   });
 }
