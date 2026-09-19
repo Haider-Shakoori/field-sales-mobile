@@ -33,24 +33,18 @@ class OrderDetailScreen extends StatelessWidget {
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        'Status: ' + (order['status'] ?? 'pending').toString(),
-                      ),
-                      Text(
-                        'Payment: ' + (order['payment_type'] ?? '—').toString(),
-                      ),
-                      Text(
-                        'Ordered: ' + (order['ordered_at'] ?? '—').toString(),
-                      ),
+                      Text("Status: ${order['status'] ?? 'pending'}"),
+                      Text("Payment: ${order['payment_type'] ?? '—'}"),
+                      Text("Ordered: ${order['ordered_at'] ?? '—'}"),
                       if (order['visit_uuid'] != null)
-                        Text('Visit: ' + order['visit_uuid'].toString()),
+                        Text("Visit: ${order['visit_uuid']}"),
                       if (order['notes'] != null)
-                        Text('Notes: ' + order['notes'].toString()),
+                        Text("Notes: ${order['notes']}"),
                       if (order['status_note'] != null)
-                        Text('Status note: ' + order['status_note'].toString()),
+                        Text("Status note: ${order['status_note']}"),
                       if (order['sync_status'] != 'synced')
                         Text(
-                          'Sync: ' + order['sync_status'].toString(),
+                          "Sync: ${order['sync_status']}",
                           style: TextStyle(color: Colors.orange.shade700),
                         ),
                       if (order['last_error'] != null)
@@ -70,19 +64,10 @@ class OrderDetailScreen extends StatelessWidget {
                   child: ListTile(
                     title: Text(item['product_name']?.toString() ?? 'Product'),
                     subtitle: Text(
-                      item['quantity'].toString() +
-                          ' ' +
-                          item['unit'].toString() +
-                          ' × ' +
-                          item['unit_price'].toString() +
-                          ' · Discount ' +
-                          item['discount_percent'].toString() +
-                          '%',
+                      "${item['quantity']} ${item['unit']} × ${item['unit_price']} · Discount ${item['discount_percent']}%",
                     ),
                     trailing: Text(
-                      item['line_total'].toString() +
-                          ' ' +
-                          (order['currency'] ?? '').toString(),
+                      "${item['line_total']} ${order['currency'] ?? ''}",
                       style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                   ),
@@ -144,7 +129,7 @@ class OrderDetailScreen extends StatelessWidget {
         children: [
           Text(label, style: style),
           Text(
-            (value ?? 0).toString() + ' ' + (currency ?? '').toString(),
+            "${value ?? 0} ${currency ?? ''}",
             style: style,
           ),
         ],
