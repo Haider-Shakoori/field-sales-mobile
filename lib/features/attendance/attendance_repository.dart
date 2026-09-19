@@ -4,12 +4,15 @@ import 'package:uuid/uuid.dart';
 
 import '../../core/api/api_client.dart';
 import '../../core/db/app_database.dart';
+import '../../core/sync/sync_retry_store.dart';
 
 class AttendanceRepository {
-  AttendanceRepository({required this.api, required this.db});
+  AttendanceRepository({required this.api, required this.db})
+      : retry = SyncRetryStore(db);
 
   final ApiClient api;
   final AppDatabase db;
+  final SyncRetryStore retry;
 
   Future<Map<String, dynamic>?> active(String tenantId) async {
     final rows = await db.db.query(
@@ -138,14 +141,25 @@ class AttendanceRepository {
   Future<void> drain(String tenantId) async {
     final rows = await db.db.query(
       'sync_queue',
-      where: 'tenant_id=? AND entity_type=? AND status IN (?,?)',
-      whereArgs: [tenantId, 'attendance', 'pending', 'failed'],
+      where: 'tenant_id=? AND entity_type=? AND status IN (?,?,?)',
+      whereArgs: [tenantId, 'attendance', 'pending', 'failed', 'blocked'],
       orderBy: 'priority ASC, id ASC',
     );
 
     for (final row in rows) {
+      final action = '${row['action']}';
+      final entityUuid = '${row['entity_uuid']}';
+      final retryUuid = '$entityUuid:$action';
+
+      if (!await retry.shouldAttempt(
+        tenantId: tenantId,
+        entityType: 'attendance',
+        entityUuid: retryUuid,
+      )) {
+        break;
+      }
+
       try {
-        final action = '${row['action']}';
         final data = jsonDecode(row['payload'] as String);
         final result = Map<String, dynamic>.from(
           await api.post('attendance/$action', data: data),
@@ -158,6 +172,8 @@ class AttendanceRepository {
               'status': 'synced',
               'server_id': result['id'],
               'server_uuid': result['uuid'],
+              'error_message': null,
+              'next_retry_at': null,
               'updated_at': DateTime.now().toUtc().toIso8601String(),
             },
             where: 'tenant_id=? AND id=?',
@@ -175,13 +191,27 @@ class AttendanceRepository {
             whereArgs: [tenantId, row['entity_uuid']],
           );
         });
+
+        await retry.clear(
+          tenantId: tenantId,
+          entityType: 'attendance',
+          entityUuid: retryUuid,
+        );
       } catch (error) {
+        final failure = await retry.recordFailure(
+          tenantId: tenantId,
+          entityType: 'attendance',
+          entityUuid: retryUuid,
+          error: error,
+        );
+
         await db.db.update(
           'sync_queue',
           {
-            'status': 'failed',
-            'attempts': (row['attempts'] as int) + 1,
-            'error_message': '$error',
+            'status': failure.blocked ? 'blocked' : 'failed',
+            'attempts': failure.attempts,
+            'error_message': failure.message,
+            'next_retry_at': failure.nextRetryAt?.toIso8601String(),
             'updated_at': DateTime.now().toUtc().toIso8601String(),
           },
           where: 'tenant_id=? AND id=?',
