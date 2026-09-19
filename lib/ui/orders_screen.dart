@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import '../state/master_data_controller.dart';
 import '../state/order_controller.dart';
-import '../state/visit_controller.dart';
 import 'order_create_screen.dart';
 import 'order_detail_screen.dart';
 
@@ -29,7 +28,6 @@ class OrdersScreen extends StatelessWidget {
         builder: (_) => OrderCreateScreen(
           customers: master.customers,
           products: master.products,
-          visits: context.read<VisitController>().visits,
         ),
       ),
     );
@@ -79,13 +77,11 @@ class OrdersScreen extends StatelessWidget {
                           order['payment_type'],
                           order['status'],
                           if (!synced)
-                            'Sync: ' + order['sync_status'].toString(),
+                            "Sync: ${order['sync_status']}",
                         ].where((value) => value != null).join(' · '),
                       ),
                       trailing: Text(
-                        (order['grand_total'] ?? 0).toString() +
-                            ' ' +
-                            (order['currency'] ?? '').toString(),
+                        "${order['grand_total'] ?? 0} ${order['currency'] ?? ''}",
                         style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
                       onTap: () => Navigator.of(context).push(
