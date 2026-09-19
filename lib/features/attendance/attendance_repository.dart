@@ -9,7 +9,7 @@ class AttendanceRepository {
   AttendanceRepository({required this.api, required this.db});
   final ApiClient api;
   final AppDatabase db;
-  Future<Map<String, dynamic>?> active() async {
+  Future<Map<String, dynamic>?> active(String tenantId) async {
     final r = await db.db.query(
       'local_work_sessions',
       where: 'status=?',
@@ -19,7 +19,7 @@ class AttendanceRepository {
     return r.isEmpty ? null : r.first;
   }
 
-  Future<Map<String, dynamic>?> forDate(String date) async {
+  Future<Map<String, dynamic>?> forDate(String tenantId, String date) async {
     final r = await db.db.query(
       'local_work_sessions',
       where: 'date=?',
@@ -30,6 +30,7 @@ class AttendanceRepository {
   }
 
   Future<String> start({
+    required String tenantId,
     required String date,
     required DateTime at,
     required double lat,
@@ -116,7 +117,7 @@ class AttendanceRepository {
     });
   }
 
-  Future<void> drain() async {
+  Future<void> drain(String tenantId) async {
     final rows = await db.db.query(
       'sync_queue',
       where: 'entity_type=? AND status IN (?,?)',
