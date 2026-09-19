@@ -1,4 +1,4 @@
-# Field Sales Android — Release Candidate UAT
+# FieldPulse Android — Release Candidate UAT
 
 Use this checklist only with a signed release-candidate APK built for the staging/UAT HTTPS API. Record actual evidence; do not mark an item passed from unit-test results alone. Copy `UAT_RESULTS_TEMPLATE.md` for each execution and keep the completed result record with the release evidence.
 
@@ -27,7 +27,7 @@ If the default Android application icon is still present, stop and mark UAT-01 *
 
 ## UAT-01 — Clean install and launch
 
-1. Remove any previous Field Sales install.
+1. Remove any previous FieldPulse install.
 2. Install the signed RC APK.
 3. Launch it from the Android launcher.
 4. Confirm the expected app name/icon/splash.
@@ -120,7 +120,7 @@ Expected: authoritative statuses/balance changes return to mobile and match admi
 
 With an active session and required permissions granted:
 
-1. Put Field Sales in background.
+1. Put FieldPulse in background.
 2. Lock the screen for a practical field interval.
 3. Walk/drive a safe short route.
 4. Reopen the app.

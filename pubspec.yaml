@@ -1,5 +1,5 @@
 name: field_sales_mobile
-description: Offline-first Android client for Field Sales SaaS.
+description: Offline-first Android client for FieldPulse.
 publish_to: none
 version: 1.0.0+1
 environment:
@@ -29,3 +29,5 @@ dev_dependencies:
   sqflite_common_ffi: ^2.3.6
 flutter:
   uses-material-design: true
+  assets:
+    - assets/branding/fieldpulse_splash.webp

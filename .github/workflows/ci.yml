@@ -31,7 +31,7 @@ jobs:
           git diff --exit-code -- lib test
 
       - run: flutter analyze
-      - run: flutter test
+      - run: flutter test --concurrency=1
 
       - name: Build debug APK
         run: flutter build apk --debug --dart-define=API_BASE_URL=http://10.0.2.2:8001/api/v1
@@ -47,7 +47,7 @@ jobs:
             -keyalg RSA \
             -keysize 2048 \
             -validity 1 \
-            -dname "CN=Field Sales CI, OU=CI, O=WeSoft, L=CI, ST=CI, C=AF"
+            -dname "CN=FieldPulse CI, OU=CI, O=WeSoft, L=CI, ST=CI, C=AF"
 
       - name: Build signed release AAB
         shell: bash

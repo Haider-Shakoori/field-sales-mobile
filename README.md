@@ -1,6 +1,6 @@
-# Field Sales Mobile
+# FieldPulse Mobile
 
-Flutter 3.47 Android client for Field Sales. The app is local-first: attendance, GPS points, privacy acknowledgement and sync intent are persisted before network operations.
+Flutter 3.47 Android client for FieldPulse. The app is local-first: attendance, GPS points, privacy acknowledgement and sync intent are persisted before network operations.
 
 ## Implemented foundation
 
@@ -36,7 +36,7 @@ Demo login after running the web seeder:
 ```bash
 dart format lib test
 flutter analyze
-flutter test
+flutter test --concurrency=1
 flutter build apk --debug --dart-define=API_BASE_URL=http://10.0.2.2:8001/api/v1
 git diff --check
 ```

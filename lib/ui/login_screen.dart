@@ -52,7 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     const Icon(Icons.route_rounded, size: 52),
                     const SizedBox(height: 20),
                     Text(
-                      'Field Sales',
+                      'FieldPulse',
                       style: Theme.of(context).textTheme.headlineMedium
                           ?.copyWith(fontWeight: FontWeight.bold),
                     ),
