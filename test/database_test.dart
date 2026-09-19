@@ -19,7 +19,7 @@ void main() {
   });
 
   test(
-    'database v10 creates tenant-safe operational and target tables',
+    'database v11 creates tenant-safe operational target and sync-health tables',
     () async {
       final database = AppDatabase();
       await database.open();
@@ -51,6 +51,8 @@ void main() {
           'local_customer_balances',
           'local_expenses',
           'local_targets',
+          'local_sync_failures',
+          'local_sync_cycles',
         ]),
       );
 
@@ -113,6 +115,36 @@ void main() {
         ]),
       );
 
+      final syncFailureColumns = (await database.db.rawQuery(
+        'PRAGMA table_info(local_sync_failures)',
+      )).map((row) => row['name']).toSet();
+      final syncCycleColumns = (await database.db.rawQuery(
+        'PRAGMA table_info(local_sync_cycles)',
+      )).map((row) => row['name']).toSet();
+
+      expect(
+        syncFailureColumns,
+        containsAll([
+          'tenant_id',
+          'entity_type',
+          'entity_uuid',
+          'attempts',
+          'status',
+          'next_retry_at',
+        ]),
+      );
+      expect(
+        syncCycleColumns,
+        containsAll([
+          'cycle_uuid',
+          'trigger_source',
+          'issue_count',
+          'waiting_count',
+          'blocked_count',
+          'stage_summary',
+        ]),
+      );
+
       final indexes = (await database.db.rawQuery(
         "SELECT name FROM sqlite_master WHERE type='index'",
       )).map((row) => row['name']).toSet();
@@ -134,6 +166,8 @@ void main() {
           'idx_customer_balances_unique',
           'idx_expenses_tenant_uuid',
           'idx_targets_tenant_uuid',
+          'idx_sync_failures_status',
+          'idx_sync_cycles_recent',
         ]),
       );
 
