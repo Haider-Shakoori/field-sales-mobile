@@ -13,7 +13,13 @@ class HomeTab extends StatelessWidget {
     BuildContext context,
     AttendanceController controller,
   ) async {
-    if (!await controller.hasPrivacyAck()) {
+    final hasPrivacyAck = await controller.hasPrivacyAck();
+
+    if (!context.mounted) {
+      return;
+    }
+
+    if (!hasPrivacyAck) {
       final accepted =
           await showDialog<bool>(
             context: context,
