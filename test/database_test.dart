@@ -19,7 +19,7 @@ void main() {
   });
 
   test(
-    'database v6 creates tenant-safe master attendance and GPS tables',
+    'database v7 creates tenant-safe master attendance GPS and visit tables',
     () async {
       final database = AppDatabase();
       await database.open();
@@ -42,6 +42,8 @@ void main() {
           'local_work_sessions',
           'local_gps_points',
           'privacy_acknowledgements',
+          'local_visits',
+          'local_visit_photos',
         ]),
       );
 
@@ -76,6 +78,8 @@ void main() {
           'one_active_session',
           'idx_gps_pending',
           'idx_gps_recorded',
+          'idx_visits_tenant_uuid',
+          'idx_visit_photos_tenant_uuid',
         ]),
       );
 
