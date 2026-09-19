@@ -112,8 +112,8 @@ class SyncCoordinator {
       return const SyncStageReport.success('attendance');
     });
 
-    final attendancePending =
-        await LocalDependencyGuard(db).hasPendingAttendance(tenantId);
+    final attendancePending = await LocalDependencyGuard(db)
+        .hasPendingAttendance(tenantId);
 
     if (attendancePending) {
       stages.add(
@@ -186,8 +186,9 @@ class SyncCoordinator {
     final blocked = await retryStore.blockedCount(tenantId);
     final completedAt = DateTime.now().toUtc();
     final hasDeferred = stages.any((stage) => stage.status == 'deferred');
-    final status =
-        failed > 0 || issues > 0 || hasDeferred ? 'partial' : 'success';
+    final status = failed > 0 || issues > 0 || hasDeferred
+        ? 'partial'
+        : 'success';
 
     await db.db.update(
       'local_sync_cycles',
