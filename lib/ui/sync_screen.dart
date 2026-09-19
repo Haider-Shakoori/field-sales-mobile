@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../state/call_activity_controller.dart';
 import '../state/collection_controller.dart';
+import '../state/collection_controller.dart';
 import '../state/master_data_controller.dart';
 import '../state/order_controller.dart';
 import '../state/visit_controller.dart';
@@ -91,6 +92,10 @@ class SyncScreen extends StatelessWidget {
                 if (orders.message != null) ...[
                   const SizedBox(height: 8),
                   Text(orders.message!),
+                ],
+                if (collections.message != null) ...[
+                  const SizedBox(height: 8),
+                  Text(collections.message!),
                 ],
                 if (collections.message != null) ...[
                   const SizedBox(height: 8),
