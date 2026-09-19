@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../state/call_activity_controller.dart';
 import '../state/master_data_controller.dart';
 import '../state/visit_controller.dart';
 
@@ -11,6 +12,9 @@ class SyncScreen extends StatelessWidget {
     await context.read<MasterDataController>().sync();
     if (context.mounted) {
       await context.read<VisitController>().sync();
+      if (context.mounted) {
+        await context.read<CallActivityController>().sync();
+      }
     }
   }
 
@@ -18,8 +22,9 @@ class SyncScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = context.watch<MasterDataController>();
     final visits = context.watch<VisitController>();
-    final pending = state.pending + visits.pending;
-    final busy = state.busy || visits.busy;
+    final calls = context.watch<CallActivityController>();
+    final pending = state.pending + visits.pending + calls.pending;
+    final busy = state.busy || visits.busy || calls.busy;
 
     return ListView(
       padding: const EdgeInsets.all(20),
@@ -61,6 +66,10 @@ class SyncScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(visits.message!),
                 ],
+                if (calls.message != null) ...[
+                  const SizedBox(height: 8),
+                  Text(calls.message!),
+                ],
               ],
             ),
           ),
@@ -72,7 +81,7 @@ class SyncScreen extends StatelessWidget {
             title: Text('Local-first by design'),
             subtitle: Text(
               'Cached master data stays available without internet. '
-              'Customers, visits and visit photos are saved locally before upload.',
+              'Customers, visits, photos and optional call activities are saved locally before upload.',
             ),
           ),
         ),
