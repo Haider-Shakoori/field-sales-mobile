@@ -17,6 +17,7 @@ import 'features/master_data/master_data_source.dart';
 import 'features/settings/settings_repository.dart';
 import 'state/app_state.dart';
 import 'state/attendance_controller.dart';
+import 'state/master_data_controller.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,6 +50,12 @@ Future<void> main() async {
   final appState = AppState(auth: auth, settings: settings);
   api.onAuthRevoked = appState.revokeLocal;
 
+  final masterDataController = MasterDataController(
+    appState: appState,
+    masterData: masterData,
+    customersRepository: customers,
+  );
+
   final attendanceController = AttendanceController(
     appState: appState,
     attendance: attendance,
@@ -66,6 +73,7 @@ Future<void> main() async {
       providers: [
         ChangeNotifierProvider.value(value: appState),
         ChangeNotifierProvider.value(value: attendanceController),
+        ChangeNotifierProvider.value(value: masterDataController),
         Provider.value(value: masterData),
         Provider.value(value: customers),
       ],
