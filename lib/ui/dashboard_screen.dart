@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../state/attendance_controller.dart';
 import '../state/call_activity_controller.dart';
 import '../state/collection_controller.dart';
-import '../state/collection_controller.dart';
 import '../state/master_data_controller.dart';
 import '../state/order_controller.dart';
 import '../state/visit_controller.dart';
@@ -51,7 +50,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
         context.read<VisitController>().initialize();
         context.read<CallActivityController>().initialize();
         context.read<OrderController>().initialize();
-        context.read<CollectionController>().initialize();
         context.read<CollectionController>().initialize();
       }
     });
