@@ -165,7 +165,7 @@ class ApiClient {
         message: message ?? 'Request failed.',
         code: code,
         fieldErrors: fields,
-        retryable: status == null || status >= 500,
+        retryable: status == null || status == 408 || status == 425 || status == 429 || status >= 500,
       );
     }
   }
