@@ -3,17 +3,22 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('production manifest disables cleartext and debug explicitly restores it', () {
-    final productionManifest = File(
-      'android/app/src/main/AndroidManifest.xml',
-    ).readAsStringSync();
-    final debugManifest = File(
-      'android/app/src/debug/AndroidManifest.xml',
-    ).readAsStringSync();
+  test(
+    'production manifest disables cleartext and debug explicitly restores it',
+    () {
+      final productionManifest = File(
+        'android/app/src/main/AndroidManifest.xml',
+      ).readAsStringSync();
+      final debugManifest = File('android/app/src/debug/AndroidManifest.xml')
+          .readAsStringSync();
 
-    expect(productionManifest, contains('android:usesCleartextTraffic="false"'));
-    expect(debugManifest, contains('android:usesCleartextTraffic="true"'));
-  });
+      expect(
+        productionManifest,
+        contains('android:usesCleartextTraffic="false"'),
+      );
+      expect(debugManifest, contains('android:usesCleartextTraffic="true"'));
+    },
+  );
 
   test('release signing is externalized and fails closed', () {
     final gradle = File('android/app/build.gradle.kts').readAsStringSync();
@@ -26,9 +31,8 @@ void main() {
   });
 
   test('production release workflow builds signed artifacts from secrets', () {
-    final workflow = File(
-      '.github/workflows/android-release.yml',
-    ).readAsStringSync();
+    final workflow = File('.github/workflows/android-release.yml')
+        .readAsStringSync();
 
     expect(workflow, contains('ANDROID_KEYSTORE_BASE64'));
     expect(workflow, contains('PRODUCTION_API_BASE_URL'));
