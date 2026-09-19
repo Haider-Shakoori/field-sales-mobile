@@ -3,11 +3,13 @@ import 'package:provider/provider.dart';
 
 import '../state/attendance_controller.dart';
 import '../state/master_data_controller.dart';
+import '../state/visit_controller.dart';
 import 'customers_screen.dart';
 import 'home_tab.dart';
 import 'products_screen.dart';
 import 'routes_screen.dart';
 import 'sync_screen.dart';
+import 'visits_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -22,6 +24,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   static const _pages = [
     HomeTab(),
     CustomersScreen(),
+    VisitsScreen(),
     RoutesScreen(),
     ProductsScreen(),
     SyncScreen(),
@@ -30,6 +33,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   static const _titles = [
     'Field Sales',
     'Customers',
+    'Visits',
     'Routes',
     'Products',
     'Sync',
@@ -42,6 +46,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         context.read<MasterDataController>().initialize();
+        context.read<VisitController>().initialize();
       }
     });
   }
@@ -49,19 +54,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final master = context.watch<MasterDataController>();
+    final visits = context.watch<VisitController>();
+    final pending = master.pending + visits.pending;
 
     return Scaffold(
       appBar: AppBar(
         title: Text(_titles[_index]),
         actions: [
-          if (master.pending > 0)
+          if (pending > 0)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Badge(
-                label: Text('${master.pending}'),
+                label: Text('$pending'),
                 child: IconButton(
                   tooltip: 'Pending sync',
-                  onPressed: () => setState(() => _index = 4),
+                  onPressed: () => setState(() => _index = 5),
                   icon: const Icon(Icons.cloud_upload_outlined),
                 ),
               ),
@@ -87,6 +94,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
             icon: Icon(Icons.storefront_outlined),
             selectedIcon: Icon(Icons.storefront),
             label: 'Customers',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.location_on_outlined),
+            selectedIcon: Icon(Icons.location_on),
+            label: 'Visits',
           ),
           NavigationDestination(
             icon: Icon(Icons.route_outlined),
