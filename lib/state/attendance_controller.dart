@@ -221,8 +221,9 @@ class AttendanceController extends ChangeNotifier {
     notifyListeners();
     try {
       final tenantId = appState.session?.tenantId;
-      if (tenantId == null)
+      if (tenantId == null) {
         throw StateError('Signed-in tenant is unavailable.');
+      }
       final fix = await tracking.oneShot(timeout: const Duration(seconds: 10));
       late final double latitude;
       late final double longitude;
