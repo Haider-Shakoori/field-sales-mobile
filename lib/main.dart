@@ -4,6 +4,7 @@ import 'package:timezone/data/latest_10y.dart' as tz;
 
 import 'app.dart';
 import 'core/api/api_client.dart';
+import 'core/config.dart';
 import 'core/db/app_database.dart';
 import 'core/db/local_first_transaction.dart';
 import 'core/storage/secret_store.dart';
@@ -36,6 +37,7 @@ import 'state/visit_controller.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  AppConfig.validateForStartup();
   tz.initializeTimeZones();
 
   final db = AppDatabase();

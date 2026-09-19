@@ -40,3 +40,9 @@ flutter test
 flutter build apk --debug --dart-define=API_BASE_URL=http://10.0.2.2:8001/api/v1
 git diff --check
 ```
+
+## Production Android releases
+
+Production builds are HTTPS-only, require external release signing credentials, and are verified in CI with a signed release AAB smoke build. Real release keys are never stored in the repository.
+
+See [RELEASE.md](RELEASE.md) for signing setup, GitHub Actions secrets/variables, versioning, artifact checksums, and the release checklist.
