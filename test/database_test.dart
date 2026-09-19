@@ -18,7 +18,7 @@ void main() {
     await deleteDatabase(await databasePath());
   });
 
-  test('database v9 creates tenant-safe master attendance GPS visit order and collection tables', () async {
+  test('database v10 creates tenant-safe operational and target tables', () async {
     final database = AppDatabase();
     await database.open();
 
@@ -47,6 +47,8 @@ void main() {
         'local_order_items',
         'local_collections',
         'local_customer_balances',
+        'local_expenses',
+        'local_targets',
       ]),
     );
 
@@ -82,6 +84,28 @@ void main() {
     );
     expect(balanceColumns, contains('available_to_collect'));
 
+    final expenseColumns = (await database.db.rawQuery(
+      'PRAGMA table_info(local_expenses)',
+    )).map((row) => row['name']).toSet();
+    final targetColumns = (await database.db.rawQuery(
+      'PRAGMA table_info(local_targets)',
+    )).map((row) => row['name']).toSet();
+
+    expect(
+      expenseColumns,
+      containsAll(['tenant_id', 'offline_uuid', 'sync_status', 'review_note']),
+    );
+    expect(
+      targetColumns,
+      containsAll([
+        'tenant_id',
+        'target_uuid',
+        'achieved_value',
+        'progress_percent',
+        'is_current',
+      ]),
+    );
+
     final indexes = (await database.db.rawQuery(
       "SELECT name FROM sqlite_master WHERE type='index'",
     )).map((row) => row['name']).toSet();
@@ -101,6 +125,8 @@ void main() {
         'idx_order_items_product',
         'idx_collections_tenant_uuid',
         'idx_customer_balances_unique',
+        'idx_expenses_tenant_uuid',
+        'idx_targets_tenant_uuid',
       ]),
     );
 
