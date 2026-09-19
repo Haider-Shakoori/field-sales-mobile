@@ -86,9 +86,15 @@ jobs:
             --dart-define=API_BASE_URL="${PRODUCTION_API_BASE_URL}" \
             --dart-define=APP_VERSION="${VERSION_NAME}"
 
-      - name: Generate checksums
+      - name: Verify signatures and generate checksums
         shell: bash
         run: |
+          jarsigner -verify -strict build/app/outputs/bundle/release/app-release.aab
+
+          APKSIGNER="$(find "${ANDROID_HOME}/build-tools" -type f -name apksigner | sort -V | tail -n 1)"
+          test -n "${APKSIGNER}" || { echo "Android apksigner was not found."; exit 1; }
+          "${APKSIGNER}" verify --verbose build/app/outputs/flutter-apk/app-release.apk
+
           mkdir -p release-artifacts
           cp build/app/outputs/bundle/release/app-release.aab release-artifacts/
           cp build/app/outputs/flutter-apk/app-release.apk release-artifacts/
