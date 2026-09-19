@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'collections_screen.dart';
+import 'collections_screen.dart';
 import 'products_screen.dart';
 import 'routes_screen.dart';
 import 'sync_screen.dart';
