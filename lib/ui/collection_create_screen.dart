@@ -203,16 +203,14 @@ class _CollectionCreateScreenState extends State<CollectionCreateScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Outstanding: ' +
-                          selectedBalance['outstanding_balance'].toString() +
-                          ' ' +
-                          _currency,
+                      "Outstanding: ${selectedBalance['outstanding_balance']} $_currency",
                     ),
                     Text(
-                      'Pending collections: ' +
-                          selectedBalance['pending_collections'].toString() +
-                          ' ' +
-                          _currency,
+                      "Pending collections: ${selectedBalance['pending_collections']} $_currency",
+                    ),
+                    Text(
+                      "Available to collect: ${selectedBalance['available_to_collect'] ?? selectedBalance['outstanding_balance']} $_currency",
+                      style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
