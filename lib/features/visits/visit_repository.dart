@@ -4,12 +4,15 @@ import 'package:uuid/uuid.dart';
 
 import '../../core/api/api_client.dart';
 import '../../core/db/app_database.dart';
+import '../../core/sync/sync_retry_store.dart';
 
 class VisitRepository {
-  VisitRepository({required this.api, required this.db});
+  VisitRepository({required this.api, required this.db})
+      : retry = SyncRetryStore(db);
 
   final ApiClient api;
   final AppDatabase db;
+  final SyncRetryStore retry;
 
   Future<List<Map<String, dynamic>>> list(String tenantId) async {
     final rows = await db.db.query(
@@ -138,8 +141,14 @@ class VisitRepository {
   Future<VisitSyncResult> syncPending(String tenantId) async {
     final rows = await db.db.query(
       'local_visits',
-      where: 'tenant_id=? AND sync_status IN (?,?,?)',
-      whereArgs: [tenantId, 'pending_checkin', 'pending_checkout', 'failed'],
+      where: 'tenant_id=? AND sync_status IN (?,?,?,?)',
+      whereArgs: [
+        tenantId,
+        'pending_checkin',
+        'pending_checkout',
+        'failed',
+        'blocked',
+      ],
       orderBy: 'checked_in_at ASC',
     );
 
@@ -148,20 +157,40 @@ class VisitRepository {
 
     for (final raw in rows) {
       final row = Map<String, dynamic>.from(raw);
+      final offlineUuid = row['offline_uuid'].toString();
+
+      if (!await retry.shouldAttempt(
+        tenantId: tenantId,
+        entityType: 'visit',
+        entityUuid: offlineUuid,
+      )) {
+        continue;
+      }
 
       try {
         await _syncVisit(tenantId, row);
+        await retry.clear(
+          tenantId: tenantId,
+          entityType: 'visit',
+          entityUuid: offlineUuid,
+        );
         synced++;
       } catch (error) {
+        final failure = await retry.recordFailure(
+          tenantId: tenantId,
+          entityType: 'visit',
+          entityUuid: offlineUuid,
+          error: error,
+        );
         await db.db.update(
           'local_visits',
           {
-            'sync_status': 'failed',
-            'last_error': error.toString(),
+            'sync_status': failure.blocked ? 'blocked' : 'failed',
+            'last_error': failure.message,
             'updated_at': DateTime.now().toUtc().toIso8601String(),
           },
           where: 'tenant_id=? AND offline_uuid=?',
-          whereArgs: [tenantId, row['offline_uuid']],
+          whereArgs: [tenantId, offlineUuid],
         );
         failed++;
       }
@@ -276,20 +305,44 @@ class VisitRepository {
   ) async {
     final rows = await db.db.query(
       'local_visit_photos',
-      where: 'tenant_id=? AND visit_offline_uuid=? AND sync_status IN (?,?)',
-      whereArgs: [tenantId, visitOfflineUuid, 'pending', 'failed'],
+      where:
+          'tenant_id=? AND visit_offline_uuid=? AND sync_status IN (?,?,?)',
+      whereArgs: [
+        tenantId,
+        visitOfflineUuid,
+        'pending',
+        'failed',
+        'blocked',
+      ],
       orderBy: 'id ASC',
     );
 
     for (final row in rows) {
+      final clientUuid = row['client_uuid'].toString();
+
+      if (!await retry.shouldAttempt(
+        tenantId: tenantId,
+        entityType: 'visit_photo',
+        entityUuid: clientUuid,
+      )) {
+        continue;
+      }
+
       final file = File(row['local_path'].toString());
 
       if (!await file.exists()) {
+        final failure = await retry.recordFailure(
+          tenantId: tenantId,
+          entityType: 'visit_photo',
+          entityUuid: clientUuid,
+          error: StateError('Local photo file is unavailable.'),
+          retryableOverride: false,
+        );
         await db.db.update(
           'local_visit_photos',
           {
-            'sync_status': 'failed',
-            'last_error': 'Local photo file is unavailable.',
+            'sync_status': failure.blocked ? 'blocked' : 'failed',
+            'last_error': failure.message,
           },
           where: 'tenant_id=? AND id=?',
           whereArgs: [tenantId, row['id']],
@@ -303,6 +356,7 @@ class VisitRepository {
             'visits/$visitServerUuid/photos',
             filePath: file.path,
             fields: {
+              'client_uuid': clientUuid,
               'captured_at': row['captured_at'],
               if (row['latitude'] != null) 'latitude': row['latitude'],
               if (row['longitude'] != null) 'longitude': row['longitude'],
@@ -321,10 +375,24 @@ class VisitRepository {
           where: 'tenant_id=? AND id=?',
           whereArgs: [tenantId, row['id']],
         );
+        await retry.clear(
+          tenantId: tenantId,
+          entityType: 'visit_photo',
+          entityUuid: clientUuid,
+        );
       } catch (error) {
+        final failure = await retry.recordFailure(
+          tenantId: tenantId,
+          entityType: 'visit_photo',
+          entityUuid: clientUuid,
+          error: error,
+        );
         await db.db.update(
           'local_visit_photos',
-          {'sync_status': 'failed', 'last_error': error.toString()},
+          {
+            'sync_status': failure.blocked ? 'blocked' : 'failed',
+            'last_error': failure.message,
+          },
           where: 'tenant_id=? AND id=?',
           whereArgs: [tenantId, row['id']],
         );
