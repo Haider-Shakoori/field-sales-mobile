@@ -106,6 +106,7 @@ class AppDatabase {
     await database.execute(
       'CREATE TABLE IF NOT EXISTS local_work_sessions ('
       'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL, '
       'offline_uuid TEXT NOT NULL UNIQUE, '
       'server_id INTEGER, '
       'date TEXT NOT NULL, '
@@ -127,11 +128,12 @@ class AppDatabase {
     );
     await database.execute(
       'CREATE UNIQUE INDEX IF NOT EXISTS one_active_session '
-      "ON local_work_sessions(status) WHERE status='active'",
+      "ON local_work_sessions(tenant_id,status) WHERE status='active'",
     );
     await database.execute(
       'CREATE TABLE IF NOT EXISTS local_gps_points ('
       'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL, '
       'client_uuid TEXT NOT NULL UNIQUE, '
       'latitude REAL NOT NULL, '
       'longitude REAL NOT NULL, '
@@ -155,11 +157,11 @@ class AppDatabase {
     );
     await database.execute(
       'CREATE INDEX IF NOT EXISTS idx_gps_pending '
-      'ON local_gps_points(sync_status,id)',
+      'ON local_gps_points(tenant_id,sync_status,id)',
     );
     await database.execute(
       'CREATE INDEX IF NOT EXISTS idx_gps_recorded '
-      'ON local_gps_points(recorded_at)',
+      'ON local_gps_points(tenant_id,recorded_at)',
     );
     await database.execute(
       'CREATE TABLE IF NOT EXISTS privacy_acknowledgements ('
