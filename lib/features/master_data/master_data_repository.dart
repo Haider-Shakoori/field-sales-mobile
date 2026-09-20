@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:sqflite/sqflite.dart';
 
 import '../../core/db/app_database.dart';
+import '../../core/sync/connectivity_gate.dart';
 import 'master_data_source.dart';
 
 class MasterDataRepository {
@@ -20,6 +21,10 @@ class MasterDataRepository {
   };
 
   Future<void> refreshAll(String tenantId) async {
+    if (!await ConnectivityGate.instance.isOnline()) {
+      return;
+    }
+
     for (final entry in _rootCollections.entries) {
       await _refreshCollection(
         tenantId: tenantId,

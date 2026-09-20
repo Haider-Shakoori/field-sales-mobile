@@ -13,6 +13,7 @@ import '../../features/orders/order_repository.dart';
 import '../../features/targets/target_repository.dart';
 import '../../features/visits/visit_repository.dart';
 import '../db/app_database.dart';
+import 'connectivity_gate.dart';
 import 'local_dependency_guard.dart';
 import 'sync_retry_store.dart';
 
@@ -64,6 +65,46 @@ class SyncCoordinator {
 
     var synced = 0;
     var failed = 0;
+
+    if (!await ConnectivityGate.instance.isOnline()) {
+      final issues = await retryStore.issueCount(tenantId);
+      final waiting = await retryStore.waitingCount(tenantId);
+      final blocked = await retryStore.blockedCount(tenantId);
+      final completedAt = DateTime.now().toUtc();
+      const offlineStage = SyncStageReport.deferred(
+        'network',
+        'Device is offline; changes stay queued locally.',
+      );
+
+      await db.db.update(
+        'local_sync_cycles',
+        {
+          'status': 'deferred',
+          'completed_at': completedAt.toIso8601String(),
+          'synced_count': 0,
+          'failed_count': 0,
+          'issue_count': issues,
+          'waiting_count': waiting,
+          'blocked_count': blocked,
+          'stage_summary': jsonEncode([offlineStage.toJson()]),
+        },
+        where: 'tenant_id=? AND cycle_uuid=?',
+        whereArgs: [tenantId, cycleUuid],
+      );
+
+      return SyncCycleReport(
+        cycleUuid: cycleUuid,
+        status: 'deferred',
+        startedAt: startedAt,
+        completedAt: completedAt,
+        synced: 0,
+        failed: 0,
+        issues: issues,
+        waiting: waiting,
+        blocked: blocked,
+        stages: const [offlineStage],
+      );
+    }
 
     Future<void> stage(
       String name,

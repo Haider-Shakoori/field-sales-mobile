@@ -5,6 +5,7 @@ import 'package:uuid/uuid.dart';
 import '../../core/api/api_client.dart';
 import '../../core/api/api_exception.dart';
 import '../../core/db/app_database.dart';
+import '../../core/sync/connectivity_gate.dart';
 import '../../core/sync/local_dependency_guard.dart';
 import '../../core/sync/sync_retry_store.dart';
 
@@ -143,6 +144,10 @@ class VisitRepository {
   }
 
   Future<VisitSyncResult> syncPending(String tenantId) async {
+    if (!await ConnectivityGate.instance.isOnline()) {
+      return const VisitSyncResult(synced: 0, failed: 0);
+    }
+
     final rows = await db.db.query(
       'local_visits',
       where: 'tenant_id=? AND sync_status IN (?,?,?,?)',

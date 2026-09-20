@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:timezone/data/latest_10y.dart' as tz;
@@ -8,6 +10,7 @@ import 'core/config.dart';
 import 'core/db/app_database.dart';
 import 'core/db/local_first_transaction.dart';
 import 'core/storage/secret_store.dart';
+import 'core/sync/connectivity_gate.dart';
 import 'core/sync/sync_coordinator.dart';
 import 'core/sync/sync_retry_store.dart';
 import 'features/attendance/attendance_repository.dart';
@@ -141,6 +144,14 @@ Future<void> main() async {
   await appState.restore();
   await attendanceController.restore();
   await syncController.initialize();
+
+  var wasOnline = true;
+  ConnectivityGate.instance.statusChanges.listen((online) {
+    if (online && !wasOnline) {
+      unawaited(syncController.run(triggerSource: 'connectivity'));
+    }
+    wasOnline = online;
+  });
 
   runApp(
     MultiProvider(

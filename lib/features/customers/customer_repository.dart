@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../core/db/app_database.dart';
 import '../../core/db/local_first_transaction.dart';
+import '../../core/sync/connectivity_gate.dart';
 import '../../core/sync/sync_retry_store.dart';
 import '../master_data/master_data_repository.dart';
 import '../master_data/master_data_source.dart';
@@ -82,6 +83,10 @@ class CustomerRepository {
   }
 
   Future<CustomerSyncResult> syncPending(String tenantId) async {
+    if (!await ConnectivityGate.instance.isOnline()) {
+      return const CustomerSyncResult(synced: 0, failed: 0);
+    }
+
     final rows = await database.db.query(
       'sync_queue',
       where:

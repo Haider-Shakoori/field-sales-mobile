@@ -1,5 +1,6 @@
 import '../../core/api/api_client.dart';
 import '../../core/db/app_database.dart';
+import '../../core/sync/connectivity_gate.dart';
 
 class TargetRepository {
   TargetRepository({required this.api, required this.db});
@@ -30,6 +31,10 @@ class TargetRepository {
   }
 
   Future<void> refresh(String tenantId) async {
+    if (!await ConnectivityGate.instance.isOnline()) {
+      return;
+    }
+
     final historyData = await api.get(
       'targets/history',
       query: {'per_page': 100},

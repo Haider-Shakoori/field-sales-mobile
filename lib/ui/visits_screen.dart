@@ -1,14 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../features/visits/visit_map_data.dart';
 import '../state/attendance_controller.dart';
 import '../state/master_data_controller.dart';
 import '../state/visit_controller.dart';
 import 'collection_create_screen.dart';
 import 'order_create_screen.dart';
+import 'visits_map_view.dart';
 
-class VisitsScreen extends StatelessWidget {
+class VisitsScreen extends StatefulWidget {
   const VisitsScreen({super.key});
+
+  @override
+  State<VisitsScreen> createState() => _VisitsScreenState();
+}
+
+class _VisitsScreenState extends State<VisitsScreen> {
+  bool _showMap = false;
 
   static const outcomes = <String, String>{
     'order_placed': 'Order placed',
@@ -209,153 +218,229 @@ class VisitsScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildList(BuildContext context, VisitController state) =>
+      state.visits.isEmpty
+      ? ListView(
+          padding: const EdgeInsets.all(20),
+          children: const [
+            SizedBox(height: 150),
+            Icon(Icons.location_on_outlined, size: 52),
+            SizedBox(height: 12),
+            Center(child: Text('No customer visits recorded yet.')),
+            SizedBox(height: 6),
+            Center(
+              child: Text(
+                'Check-ins are stored locally first and can sync later.',
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        )
+      : ListView.separated(
+          padding: const EdgeInsets.all(16),
+          itemCount: state.visits.length,
+          separatorBuilder: (_, _) => const SizedBox(height: 10),
+          itemBuilder: (_, index) {
+            final visit = state.visits[index];
+            final active = visit['status'] == 'active';
+            final planned = visit['is_planned'];
+            final within = visit['checkin_within_geofence'];
+            final syncStatus = visit['sync_status']?.toString() ?? '';
+
+            String geofence;
+            if (within == 1) {
+              geofence = 'Inside geofence';
+            } else if (within == 0) {
+              geofence = 'Outside geofence';
+            } else {
+              geofence = 'Geofence pending sync';
+            }
+
+            String type;
+            if (planned == 1) {
+              type = 'Planned';
+            } else if (planned == 0) {
+              type = 'Unplanned';
+            } else {
+              type = 'Plan status pending';
+            }
+
+            return Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            visit['customer_name']?.toString() ?? 'Customer',
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Chip(label: Text(active ? 'Active' : 'Completed')),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text('$type · $geofence'),
+                    const SizedBox(height: 4),
+                    Text(
+                      "Check-in: ${visit['checked_in_at'] ?? '—'}",
+                      style: TextStyle(color: Colors.grey.shade600),
+                    ),
+                    if (!active && visit['outcome'] != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        "Outcome: ${outcomes[visit['outcome']] ?? visit['outcome']}",
+                      ),
+                    ],
+                    if (syncStatus != 'synced') ...[
+                      const SizedBox(height: 6),
+                      Text(
+                        'Sync: $syncStatus',
+                        style: TextStyle(color: Colors.orange.shade700),
+                      ),
+                    ],
+                    if (visit['last_error'] != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        visit['last_error'].toString(),
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ],
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: state.busy
+                              ? null
+                              : () => state.capturePhoto(visit),
+                          icon: const Icon(Icons.camera_alt_outlined),
+                          label: const Text('Photo'),
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: state.busy
+                              ? null
+                              : () => _createOrderFromVisit(context, visit),
+                          icon: const Icon(Icons.add_shopping_cart),
+                          label: const Text('Order'),
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: state.busy
+                              ? null
+                              : () =>
+                                    _createCollectionFromVisit(context, visit),
+                          icon: const Icon(Icons.payments_outlined),
+                          label: const Text('Collect'),
+                        ),
+                        if (active)
+                          FilledButton.icon(
+                            onPressed: state.busy
+                                ? null
+                                : () => _checkOut(context, visit),
+                            icon: const Icon(Icons.logout),
+                            label: const Text('Check out'),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+
+  Widget _buildMap(BuildContext context, VisitController state) {
+    final master = context.watch<MasterDataController>();
+    final customers = buildMapCustomers(
+      customers: master.customers,
+      routes: master.routes,
+      routeCustomers: master.routeCustomers,
+    );
+
+    if (customers.isEmpty) {
+      return ListView(
+        padding: const EdgeInsets.all(20),
+        children: const [
+          SizedBox(height: 120),
+          Icon(Icons.map_outlined, size: 52),
+          SizedBox(height: 12),
+          Center(child: Text('No customers with map coordinates yet.')),
+          SizedBox(height: 6),
+          Center(
+            child: Text(
+              'Sync master data or add coordinates to customers to see them on the map.',
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      );
+    }
+
+    final visited = <String>{};
+    String? activeId;
+
+    for (final visit in state.visits) {
+      final id = visit['customer_uuid']?.toString();
+      if (id == null || id.isEmpty) {
+        continue;
+      }
+
+      if (visit['status'] == 'active') {
+        activeId = id;
+      } else {
+        visited.add(id);
+      }
+    }
+
+    return VisitsMapView(
+      customers: customers,
+      visitedCustomerIds: visited,
+      activeCustomerId: activeId,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = context.watch<VisitController>();
 
     return Scaffold(
-      body: RefreshIndicator(
-        onRefresh: () => state.sync(),
-        child: state.visits.isEmpty
-            ? ListView(
-                padding: const EdgeInsets.all(20),
-                children: const [
-                  SizedBox(height: 150),
-                  Icon(Icons.location_on_outlined, size: 52),
-                  SizedBox(height: 12),
-                  Center(child: Text('No customer visits recorded yet.')),
-                  SizedBox(height: 6),
-                  Center(
-                    child: Text(
-                      'Check-ins are stored locally first and can sync later.',
-                      textAlign: TextAlign.center,
-                    ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+            child: SegmentedButton<bool>(
+              segments: const [
+                ButtonSegment(
+                  value: false,
+                  icon: Icon(Icons.list_alt_outlined),
+                  label: Text('List'),
+                ),
+                ButtonSegment(
+                  value: true,
+                  icon: Icon(Icons.map_outlined),
+                  label: Text('Map'),
+                ),
+              ],
+              selected: {_showMap},
+              showSelectedIcon: false,
+              onSelectionChanged: (selection) =>
+                  setState(() => _showMap = selection.first),
+            ),
+          ),
+          Expanded(
+            child: _showMap
+                ? _buildMap(context, state)
+                : RefreshIndicator(
+                    onRefresh: () => state.sync(),
+                    child: _buildList(context, state),
                   ),
-                ],
-              )
-            : ListView.separated(
-                padding: const EdgeInsets.all(16),
-                itemCount: state.visits.length,
-                separatorBuilder: (_, _) => const SizedBox(height: 10),
-                itemBuilder: (_, index) {
-                  final visit = state.visits[index];
-                  final active = visit['status'] == 'active';
-                  final planned = visit['is_planned'];
-                  final within = visit['checkin_within_geofence'];
-                  final syncStatus = visit['sync_status']?.toString() ?? '';
-
-                  String geofence;
-                  if (within == 1) {
-                    geofence = 'Inside geofence';
-                  } else if (within == 0) {
-                    geofence = 'Outside geofence';
-                  } else {
-                    geofence = 'Geofence pending sync';
-                  }
-
-                  String type;
-                  if (planned == 1) {
-                    type = 'Planned';
-                  } else if (planned == 0) {
-                    type = 'Unplanned';
-                  } else {
-                    type = 'Plan status pending';
-                  }
-
-                  return Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  visit['customer_name']?.toString() ??
-                                      'Customer',
-                                  style: Theme.of(context).textTheme.titleMedium
-                                      ?.copyWith(fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              Chip(
-                                label: Text(active ? 'Active' : 'Completed'),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 6),
-                          Text('$type · $geofence'),
-                          const SizedBox(height: 4),
-                          Text(
-                            "Check-in: ${visit['checked_in_at'] ?? '—'}",
-                            style: TextStyle(color: Colors.grey.shade600),
-                          ),
-                          if (!active && visit['outcome'] != null) ...[
-                            const SizedBox(height: 4),
-                            Text(
-                              "Outcome: ${outcomes[visit['outcome']] ?? visit['outcome']}",
-                            ),
-                          ],
-                          if (syncStatus != 'synced') ...[
-                            const SizedBox(height: 6),
-                            Text(
-                              'Sync: $syncStatus',
-                              style: TextStyle(color: Colors.orange.shade700),
-                            ),
-                          ],
-                          if (visit['last_error'] != null) ...[
-                            const SizedBox(height: 4),
-                            Text(
-                              visit['last_error'].toString(),
-                              style: const TextStyle(color: Colors.red),
-                            ),
-                          ],
-                          const SizedBox(height: 12),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: [
-                              OutlinedButton.icon(
-                                onPressed: state.busy
-                                    ? null
-                                    : () => state.capturePhoto(visit),
-                                icon: const Icon(Icons.camera_alt_outlined),
-                                label: const Text('Photo'),
-                              ),
-                              OutlinedButton.icon(
-                                onPressed: state.busy
-                                    ? null
-                                    : () =>
-                                          _createOrderFromVisit(context, visit),
-                                icon: const Icon(Icons.add_shopping_cart),
-                                label: const Text('Order'),
-                              ),
-                              OutlinedButton.icon(
-                                onPressed: state.busy
-                                    ? null
-                                    : () => _createCollectionFromVisit(
-                                        context,
-                                        visit,
-                                      ),
-                                icon: const Icon(Icons.payments_outlined),
-                                label: const Text('Collect'),
-                              ),
-                              if (active)
-                                FilledButton.icon(
-                                  onPressed: state.busy
-                                      ? null
-                                      : () => _checkOut(context, visit),
-                                  icon: const Icon(Icons.logout),
-                                  label: const Text('Check out'),
-                                ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: state.busy ? null : () => _startVisit(context),

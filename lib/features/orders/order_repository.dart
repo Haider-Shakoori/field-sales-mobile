@@ -2,6 +2,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../core/api/api_client.dart';
 import '../../core/db/app_database.dart';
+import '../../core/sync/connectivity_gate.dart';
 import '../../core/sync/local_dependency_guard.dart';
 import '../../core/sync/sync_retry_store.dart';
 import '../master_data/master_data_repository.dart';
@@ -234,6 +235,10 @@ class OrderRepository {
   }
 
   Future<OrderSyncResult> syncPending(String tenantId) async {
+    if (!await ConnectivityGate.instance.isOnline()) {
+      return const OrderSyncResult(synced: 0, failed: 0);
+    }
+
     final rows = await db.db.query(
       'local_orders',
       where: 'tenant_id=? AND sync_status IN (?,?,?)',
@@ -326,6 +331,10 @@ class OrderRepository {
   }
 
   Future<void> refreshServerHistory(String tenantId) async {
+    if (!await ConnectivityGate.instance.isOnline()) {
+      return;
+    }
+
     final data = await api.get('orders/history', query: {'per_page': 100});
 
     final rows = (data as List? ?? const []).whereType<Map>().map(

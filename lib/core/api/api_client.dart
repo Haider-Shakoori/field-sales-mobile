@@ -141,15 +141,19 @@ class ApiClient {
     } on DioException catch (error) {
       final body = error.response?.data;
       final rawError = body is Map ? body['error'] : null;
-      final details = rawError is Map ? rawError['details'] : null;
+      final rawDetails = rawError is Map ? rawError['details'] : null;
+      final details = rawDetails is Map
+          ? Map<String, dynamic>.from(rawDetails)
+          : const <String, dynamic>{};
       final fields = <String, List<String>>{};
 
-      if (details is Map) {
-        for (final entry in details.entries) {
-          fields['${entry.key}'] =
-              (entry.value is List ? entry.value : ['${entry.value}'])
-                  .map((value) => '$value')
-                  .toList();
+      if (rawDetails is Map) {
+        for (final entry in rawDetails.entries) {
+          final value = entry.value;
+
+          fields['${entry.key}'] = value is List
+              ? value.map((item) => '$item').toList()
+              : ['$value'];
         }
       }
 
@@ -169,6 +173,7 @@ class ApiClient {
         status: status,
         message: message ?? 'Request failed.',
         code: code,
+        details: details,
         fieldErrors: fields,
         retryable:
             status == null ||

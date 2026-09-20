@@ -14,6 +14,7 @@ Flutter 3.47 Android client for FieldPulse. The app is local-first: attendance, 
 - Tenant tracking policy cache with safe manual fallback
 - Tenant timezone database initialized at startup
 - Session restore, logout stop, local history and modern Material 3 UI
+- Visits map with customer pins, live position, planned route order, nearest-first suggestions and navigate/check-in actions
 
 ## Run against the local web project
 

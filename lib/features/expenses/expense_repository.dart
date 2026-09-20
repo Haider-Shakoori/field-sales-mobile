@@ -2,6 +2,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../core/api/api_client.dart';
 import '../../core/db/app_database.dart';
+import '../../core/sync/connectivity_gate.dart';
 import '../../core/sync/sync_retry_store.dart';
 
 class ExpenseRepository {
@@ -101,6 +102,10 @@ class ExpenseRepository {
   }
 
   Future<ExpenseSyncResult> syncPending(String tenantId) async {
+    if (!await ConnectivityGate.instance.isOnline()) {
+      return const ExpenseSyncResult(synced: 0, failed: 0);
+    }
+
     final rows = await db.db.query(
       'local_expenses',
       where: 'tenant_id=? AND sync_status IN (?,?,?)',
@@ -175,6 +180,10 @@ class ExpenseRepository {
   }
 
   Future<void> refreshHistory(String tenantId) async {
+    if (!await ConnectivityGate.instance.isOnline()) {
+      return;
+    }
+
     final data = await api.get('expenses/history', query: {'per_page': 100});
 
     for (final raw in (data as List? ?? const []).whereType<Map>()) {

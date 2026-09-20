@@ -7,6 +7,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../core/api/api_client.dart';
 import '../../core/db/app_database.dart';
+import '../../core/sync/connectivity_gate.dart';
 import '../../core/sync/sync_retry_store.dart';
 
 class GpsRepository {
@@ -125,6 +126,10 @@ class GpsRepository {
 
   Future<void> upload(String tenantId) async {
     if (tenantId.isEmpty) return;
+
+    if (!await ConnectivityGate.instance.isOnline()) {
+      return;
+    }
 
     if (!await retry.shouldAttempt(
       tenantId: tenantId,
@@ -271,6 +276,10 @@ class GpsRepository {
 
   Future<void> uploadPrivacyAcknowledgements(String tenantId) async {
     if (tenantId.isEmpty) return;
+
+    if (!await ConnectivityGate.instance.isOnline()) {
+      return;
+    }
 
     final rows = await db.db.query(
       'privacy_acknowledgements',

@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:uuid/uuid.dart';
 
 import '../../core/api/api_client.dart';
+import '../../core/api/api_exception.dart';
 import '../../core/db/app_database.dart';
+import '../../core/sync/connectivity_gate.dart';
 import '../../core/sync/sync_retry_store.dart';
 
 class AttendanceRepository {
@@ -139,6 +141,10 @@ class AttendanceRepository {
   }
 
   Future<void> drain(String tenantId) async {
+    if (!await ConnectivityGate.instance.isOnline()) {
+      return;
+    }
+
     final rows = await db.db.query(
       'sync_queue',
       where: 'tenant_id=? AND entity_type=? AND status IN (?,?,?)',
@@ -198,6 +204,17 @@ class AttendanceRepository {
           entityUuid: retryUuid,
         );
       } catch (error) {
+        if (error is ApiException &&
+            action == 'start' &&
+            error.code == 'SESSION_ALREADY_EXISTS') {
+          await _reconcileServerSession(
+            tenantId: tenantId,
+            queueRow: row,
+            details: error.details,
+          );
+          continue;
+        }
+
         final failure = await retry.recordFailure(
           tenantId: tenantId,
           entityType: 'attendance',
@@ -221,5 +238,43 @@ class AttendanceRepository {
         break;
       }
     }
+  }
+
+  Future<void> _reconcileServerSession({
+    required String tenantId,
+    required Map<String, dynamic> queueRow,
+    required Map<String, dynamic> details,
+  }) async {
+    final rawSession = details['session'];
+    final serverId = rawSession is Map ? rawSession['id']?.toString() : null;
+    final now = DateTime.now().toUtc().toIso8601String();
+
+    await db.db.transaction((txn) async {
+      await txn.update(
+        'sync_queue',
+        {
+          'status': 'synced',
+          'server_id': serverId,
+          'error_message': null,
+          'next_retry_at': null,
+          'updated_at': now,
+        },
+        where: 'tenant_id=? AND id=?',
+        whereArgs: [tenantId, queueRow['id']],
+      );
+
+      await txn.update(
+        'local_work_sessions',
+        {'server_id': serverId, 'sync_status': 'synced', 'updated_at': now},
+        where: 'tenant_id=? AND offline_uuid=?',
+        whereArgs: [tenantId, queueRow['entity_uuid']],
+      );
+    });
+
+    await retry.clear(
+      tenantId: tenantId,
+      entityType: 'attendance',
+      entityUuid: '${queueRow['entity_uuid']}:start',
+    );
   }
 }

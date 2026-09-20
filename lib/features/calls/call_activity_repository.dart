@@ -2,6 +2,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../core/api/api_client.dart';
 import '../../core/db/app_database.dart';
+import '../../core/sync/connectivity_gate.dart';
 import '../../core/sync/local_dependency_guard.dart';
 import '../../core/sync/sync_retry_store.dart';
 
@@ -65,6 +66,10 @@ class CallActivityRepository {
   }
 
   Future<CallActivitySyncResult> syncPending(String tenantId) async {
+    if (!await ConnectivityGate.instance.isOnline()) {
+      return const CallActivitySyncResult(synced: 0, failed: 0);
+    }
+
     final rows = await db.db.query(
       'local_call_activities',
       where: 'tenant_id=? AND sync_status IN (?,?,?)',

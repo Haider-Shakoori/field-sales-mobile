@@ -67,9 +67,13 @@ class SyncController extends ChangeNotifier {
       );
 
       final report = lastReport!;
-      message = report.status == 'success'
-          ? 'Sync completed successfully.'
-          : 'Sync completed with ${report.issues} items needing retry or attention.';
+      message = switch (report.status) {
+        'success' => 'Sync completed successfully.',
+        'deferred' =>
+          'Offline mode: changes are saved locally and will sync when online.',
+        _ =>
+          'Sync completed with ${report.issues} items needing retry or attention.',
+      };
 
       return report;
     } catch (error) {

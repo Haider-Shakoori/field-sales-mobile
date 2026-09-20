@@ -23,6 +23,7 @@ class MasterDataController extends ChangeNotifier {
 
   List<Map<String, dynamic>> customers = const [];
   List<Map<String, dynamic>> routes = const [];
+  List<Map<String, dynamic>> routeCustomers = const [];
   List<Map<String, dynamic>> products = const [];
   List<Map<String, dynamic>> priceLists = const [];
 
@@ -49,6 +50,7 @@ class MasterDataController extends ChangeNotifier {
 
     customers = await masterData.list('customers', tenantId);
     routes = await masterData.list('routes', tenantId);
+    routeCustomers = await masterData.list('route_customers', tenantId);
     products = await masterData.list('products', tenantId);
     priceLists = await masterData.list('price_lists', tenantId);
     pending = await masterData.pendingCount(tenantId);
@@ -124,6 +126,7 @@ class MasterDataController extends ChangeNotifier {
     loadedTenantId = null;
     customers = const [];
     routes = const [];
+    routeCustomers = const [];
     products = const [];
     priceLists = const [];
     pending = 0;

@@ -2,6 +2,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../core/api/api_client.dart';
 import '../../core/db/app_database.dart';
+import '../../core/sync/connectivity_gate.dart';
 import '../../core/sync/local_dependency_guard.dart';
 import '../../core/sync/sync_retry_store.dart';
 
@@ -145,6 +146,10 @@ class CollectionRepository {
   }
 
   Future<CollectionSyncResult> syncPending(String tenantId) async {
+    if (!await ConnectivityGate.instance.isOnline()) {
+      return const CollectionSyncResult(synced: 0, failed: 0);
+    }
+
     final rows = await db.db.query(
       'local_collections',
       where: 'tenant_id=? AND sync_status IN (?,?,?)',
@@ -232,6 +237,10 @@ class CollectionRepository {
   }
 
   Future<void> refreshServerHistory(String tenantId) async {
+    if (!await ConnectivityGate.instance.isOnline()) {
+      return;
+    }
+
     final data = await api.get('collections/history', query: {'per_page': 100});
 
     for (final raw in (data as List? ?? const []).whereType<Map>()) {
@@ -240,6 +249,10 @@ class CollectionRepository {
   }
 
   Future<void> refreshBalances(String tenantId) async {
+    if (!await ConnectivityGate.instance.isOnline()) {
+      return;
+    }
+
     final data = await api.get('collections/balances');
     final now = DateTime.now().toUtc().toIso8601String();
 

@@ -3,12 +3,14 @@ class ApiException implements Exception {
     required this.status,
     required this.message,
     this.code,
+    this.details = const {},
     this.fieldErrors = const {},
     this.retryable = false,
   });
   final int? status;
   final String message;
   final String? code;
+  final Map<String, dynamic> details;
   final Map<String, List<String>> fieldErrors;
   final bool retryable;
   @override
