@@ -33,7 +33,19 @@ class AuthRepository {
   Future<AuthSession> login(String email, String password) async {
     await secrets.installationUuid();
     final deviceUuid = await secrets.deviceUuid();
-    final info = await DeviceInfoPlugin().androidInfo;
+    var deviceModel = 'unknown';
+    var manufacturer = 'unknown';
+    var androidVersion = 'unknown';
+
+    try {
+      final info = await DeviceInfoPlugin().androidInfo;
+      deviceModel = info.model;
+      manufacturer = info.manufacturer;
+      androidVersion = info.version.release;
+    } catch (_) {
+      // Device metadata is best-effort and must never block authentication.
+    }
+
     final data = Map<String, dynamic>.from(
       await api.post(
         'auth/login',
@@ -41,9 +53,9 @@ class AuthRepository {
           'email': email,
           'password': password,
           'device_uuid': deviceUuid,
-          'device_model': info.model,
-          'manufacturer': info.manufacturer,
-          'android_version': info.version.release,
+          'device_model': deviceModel,
+          'manufacturer': manufacturer,
+          'android_version': androidVersion,
           'app_version': AppConfig.appVersion,
           'push_token': null,
         },

@@ -22,7 +22,12 @@ class ApiClient {
           final token = await secrets.token;
           final install = await secrets.installationUuid();
           final device = await secrets.deviceUuid();
-          final info = await DeviceInfoPlugin().androidInfo;
+          var osVersion = 'unknown';
+          try {
+            osVersion = (await DeviceInfoPlugin().androidInfo).version.release;
+          } catch (_) {
+            // Device metadata is best-effort and must never block API calls.
+          }
 
           if (token != null) {
             options.headers['Authorization'] = 'Bearer $token';
@@ -34,7 +39,7 @@ class ApiClient {
             'X-Device-UUID': device,
             'X-App-Version': AppConfig.appVersion,
             'X-Platform': 'android',
-            'X-OS-Version': info.version.release,
+            'X-OS-Version': osVersion,
           });
 
           handler.next(options);
