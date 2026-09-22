@@ -171,8 +171,9 @@ class VisitRepository {
           'code': (template['code'] ?? '').toString(),
           'name': (template['name'] ?? 'Visit form').toString(),
           'version': (template['version'] as num?)?.toInt() ?? 1,
-          'required_on_checkout':
-              template['required_on_checkout'] == true ? 1 : 0,
+          'required_on_checkout': template['required_on_checkout'] == true
+              ? 1
+              : 0,
           'scope_type': (scope['type'] ?? 'all').toString(),
           'scope_uuid': scope['id']?.toString(),
           'payload': jsonEncode(template),
@@ -200,7 +201,9 @@ class VisitRepository {
       jsonDecode(customerRows.first['payload'].toString()) as Map,
     );
     final routeIds = customer['route_ids'] is List
-        ? (customer['route_ids'] as List).map((value) => value.toString()).toSet()
+        ? (customer['route_ids'] as List)
+              .map((value) => value.toString())
+              .toSet()
         : <String>{};
 
     final rows = await db.db.query(
@@ -226,10 +229,13 @@ class VisitRepository {
     for (final row in rows) {
       final scopeType = row['scope_type'].toString();
       final scopeUuid = row['scope_uuid']?.toString();
-      final applies = scopeType == 'all' ||
+      final applies =
+          scopeType == 'all' ||
           (scopeType == 'branch' && scopeUuid == customer['branch_id']) ||
           (scopeType == 'territory' && scopeUuid == customer['territory_id']) ||
-          (scopeType == 'route' && scopeUuid != null && routeIds.contains(scopeUuid));
+          (scopeType == 'route' &&
+              scopeUuid != null &&
+              routeIds.contains(scopeUuid));
 
       if (!applies) continue;
 
@@ -511,7 +517,8 @@ class VisitRepository {
           'local_visits',
           {
             'sync_status': 'pending_checkout',
-            'last_error': 'Required visit forms are waiting for completion or sync.',
+            'last_error':
+                'Required visit forms are waiting for completion or sync.',
             'updated_at': DateTime.now().toUtc().toIso8601String(),
           },
           where: 'tenant_id=? AND offline_uuid=?',
@@ -586,7 +593,8 @@ class VisitRepository {
   ) async {
     final rows = await db.db.query(
       'local_visit_form_submissions',
-      where: 'tenant_id=? AND visit_offline_uuid=? '
+      where:
+          'tenant_id=? AND visit_offline_uuid=? '
           'AND sync_status IN (?,?,?)',
       whereArgs: [tenantId, visitOfflineUuid, 'pending', 'failed', 'blocked'],
       orderBy: 'id ASC',
