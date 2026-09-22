@@ -176,6 +176,7 @@ class SyncCoordinator {
       });
 
       await stage('visits', () async {
+        await visits.refreshForms(tenantId);
         final result = await visits.syncPending(tenantId);
         return SyncStageReport.fromCounts(
           'visits',
