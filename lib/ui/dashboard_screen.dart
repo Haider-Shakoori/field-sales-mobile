@@ -16,6 +16,7 @@ import 'customers_screen.dart';
 import 'home_tab.dart';
 import 'more_screen.dart';
 import 'orders_screen.dart';
+import 'sync_refresh.dart';
 import 'sync_screen.dart';
 import 'visits_screen.dart';
 
@@ -132,7 +133,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
       body: IndexedStack(index: _index, children: _pages),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
-        onDestinationSelected: (value) => setState(() => _index = value),
+        onDestinationSelected: (value) {
+          setState(() => _index = value);
+          unawaited(syncAndReload(context, triggerSource: 'tab'));
+        },
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../state/master_data_controller.dart';
+import 'sync_refresh.dart';
 
 class ProductsScreen extends StatelessWidget {
   const ProductsScreen({super.key});
@@ -17,7 +18,7 @@ class ProductsScreen extends StatelessWidget {
       );
 
     return RefreshIndicator(
-      onRefresh: () => state.sync(),
+      onRefresh: () => syncAndReload(context, triggerSource: 'pull:products'),
       child: rows.isEmpty
           ? ListView(
               children: const [

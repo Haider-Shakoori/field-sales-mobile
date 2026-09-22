@@ -215,7 +215,7 @@ class AttendanceController extends ChangeNotifier {
     }
   }
 
-  Future<void> endDay() async {
+  Future<void> endDay({bool sync = true}) async {
     if (busy || !working) return;
     busy = true;
     notifyListeners();
@@ -264,7 +264,7 @@ class AttendanceController extends ChangeNotifier {
         accuracy: accuracy,
       );
       session = null;
-      unawaited(_flushPending());
+      if (sync) unawaited(_flushPending());
       _scheduleBoundary();
     } catch (error) {
       message = '$error';
@@ -430,6 +430,16 @@ class AttendanceController extends ChangeNotifier {
   }
 
   Future<void> logout() async {
+    if (working && !busy) {
+      try {
+        await endDay();
+      } catch (_) {}
+      if (appState.signedIn) {
+        try {
+          await _flushPending();
+        } catch (_) {}
+      }
+    }
     tracking.stop();
     _stopUploader();
     _boundary?.cancel();

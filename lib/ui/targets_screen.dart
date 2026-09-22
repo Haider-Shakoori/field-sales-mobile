@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../state/target_controller.dart';
+import 'sync_refresh.dart';
 
 class TargetsScreen extends StatelessWidget {
   const TargetsScreen({super.key});
@@ -95,7 +96,7 @@ class TargetsScreen extends StatelessWidget {
     final state = context.watch<TargetController>();
 
     return RefreshIndicator(
-      onRefresh: () => state.sync(),
+      onRefresh: () => syncAndReload(context, triggerSource: 'pull:targets'),
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [

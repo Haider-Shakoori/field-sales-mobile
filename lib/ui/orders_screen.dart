@@ -5,6 +5,7 @@ import '../state/master_data_controller.dart';
 import '../state/order_controller.dart';
 import 'order_create_screen.dart';
 import 'order_detail_screen.dart';
+import 'sync_refresh.dart';
 
 class OrdersScreen extends StatelessWidget {
   const OrdersScreen({super.key});
@@ -39,7 +40,7 @@ class OrdersScreen extends StatelessWidget {
 
     return Scaffold(
       body: RefreshIndicator(
-        onRefresh: () => state.sync(),
+        onRefresh: () => syncAndReload(context, triggerSource: 'pull:orders'),
         child: state.orders.isEmpty
             ? ListView(
                 padding: const EdgeInsets.all(20),

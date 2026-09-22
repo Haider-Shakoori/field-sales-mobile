@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../state/call_activity_controller.dart';
+import 'sync_refresh.dart';
 
 class CallHistoryScreen extends StatelessWidget {
   const CallHistoryScreen({
@@ -33,7 +34,7 @@ class CallHistoryScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text('$customerName · Calls')),
       body: RefreshIndicator(
-        onRefresh: () => state.sync(),
+        onRefresh: () => syncAndReload(context, triggerSource: 'pull:calls'),
         child: rows.isEmpty
             ? ListView(
                 padding: const EdgeInsets.all(24),

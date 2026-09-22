@@ -5,6 +5,7 @@ import '../state/collection_controller.dart';
 import '../state/master_data_controller.dart';
 import 'collection_create_screen.dart';
 import 'collection_detail_screen.dart';
+import 'sync_refresh.dart';
 
 class CollectionsScreen extends StatelessWidget {
   const CollectionsScreen({super.key});
@@ -32,7 +33,8 @@ class CollectionsScreen extends StatelessWidget {
 
     return Scaffold(
       body: RefreshIndicator(
-        onRefresh: () => state.sync(),
+        onRefresh: () =>
+            syncAndReload(context, triggerSource: 'pull:collections'),
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [

@@ -5,6 +5,7 @@ import '../state/app_state.dart';
 import '../state/attendance_controller.dart';
 import 'history_screen.dart';
 import 'privacy_dialog.dart';
+import 'sync_refresh.dart';
 
 class HomeTab extends StatelessWidget {
   const HomeTab({super.key});
@@ -37,6 +38,60 @@ class HomeTab extends StatelessWidget {
     await controller.startDay();
   }
 
+  Future<void> _end(
+    BuildContext context,
+    AttendanceController controller,
+  ) async {
+    var syncBeforeEnd = true;
+
+    final confirmed =
+        await showDialog<bool>(
+          context: context,
+          builder: (dialogContext) => StatefulBuilder(
+            builder: (dialogContext, setDialogState) => AlertDialog(
+              title: const Text('End Day'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Do you want to end the day?'),
+                  const SizedBox(height: 12),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Sync data'),
+                    subtitle: Text(
+                      syncBeforeEnd
+                          ? 'Pending data will be uploaded before ending.'
+                          : 'Work day will end without syncing pending data.',
+                    ),
+                    value: syncBeforeEnd,
+                    onChanged: (value) =>
+                        setDialogState(() => syncBeforeEnd = value),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext, false),
+                  child: const Text('Cancel'),
+                ),
+                FilledButton(
+                  onPressed: () => Navigator.pop(dialogContext, true),
+                  child: const Text('End Day'),
+                ),
+              ],
+            ),
+          ),
+        ) ??
+        false;
+
+    if (!confirmed || !context.mounted) {
+      return;
+    }
+
+    await controller.endDay(sync: syncBeforeEnd);
+  }
+
   @override
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
@@ -44,7 +99,13 @@ class HomeTab extends StatelessWidget {
     final policy = app.policy;
 
     return RefreshIndicator(
-      onRefresh: controller.refreshPolicyAndEvaluate,
+      onRefresh: () async {
+        await controller.refreshPolicyAndEvaluate();
+
+        if (!context.mounted) return;
+
+        await syncAndReload(context, triggerSource: 'pull:home');
+      },
       child: ListView(
         padding: const EdgeInsets.all(20),
         children: [
@@ -104,7 +165,9 @@ class HomeTab extends StatelessWidget {
                     ),
                     const SizedBox(height: 18),
                     FilledButton.tonal(
-                      onPressed: controller.busy ? null : controller.endDay,
+                      onPressed: controller.busy
+                          ? null
+                          : () => _end(context, controller),
                       child: const Padding(
                         padding: EdgeInsets.all(12),
                         child: Text('End Day'),

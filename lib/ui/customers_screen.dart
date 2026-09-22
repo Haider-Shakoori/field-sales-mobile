@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../state/call_activity_controller.dart';
 import '../state/master_data_controller.dart';
+import 'sync_refresh.dart';
 import 'call_history_screen.dart';
 
 class CustomersScreen extends StatelessWidget {
@@ -209,12 +210,8 @@ class CustomersScreen extends StatelessWidget {
 
     return Scaffold(
       body: RefreshIndicator(
-        onRefresh: () async {
-          await state.sync();
-          if (context.mounted) {
-            await callState.sync(silent: true);
-          }
-        },
+        onRefresh: () =>
+            syncAndReload(context, triggerSource: 'pull:customers'),
         child: rows.isEmpty
             ? ListView(
                 children: const [

@@ -10,6 +10,12 @@ class AppConfig {
   static String get appVersion =>
       _configuredAppVersion.isNotEmpty ? _configuredAppVersion : '1.0.0';
 
+  static String get tileUrlTemplate {
+    final base = apiBaseUrl.replaceFirst(RegExp(r'/api/v1/?$'), '');
+
+    return '$base/tiles/{z}/{x}/{y}.png';
+  }
+
   static const privacyPolicyVersionFallback = '1';
 
   static void validateForStartup({

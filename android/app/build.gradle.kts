@@ -32,12 +32,12 @@ val releaseSigningConfigured = listOf(
 ).all { !it.isNullOrBlank() }
 
 android {
-    namespace = "com.wesoft.fieldsales"
+    namespace = "com.businessos.fieldpulse"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
     defaultConfig {
-        applicationId = "com.wesoft.fieldsales"
+        applicationId = "com.businessos.fieldpulse"
         minSdk = 24
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

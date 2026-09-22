@@ -7,6 +7,7 @@ import '../state/master_data_controller.dart';
 import '../state/visit_controller.dart';
 import 'collection_create_screen.dart';
 import 'order_create_screen.dart';
+import 'sync_refresh.dart';
 import 'visits_map_view.dart';
 
 class VisitsScreen extends StatefulWidget {
@@ -436,7 +437,8 @@ class _VisitsScreenState extends State<VisitsScreen> {
             child: _showMap
                 ? _buildMap(context, state)
                 : RefreshIndicator(
-                    onRefresh: () => state.sync(),
+                    onRefresh: () =>
+                        syncAndReload(context, triggerSource: 'pull:visits'),
                     child: _buildList(context, state),
                   ),
           ),

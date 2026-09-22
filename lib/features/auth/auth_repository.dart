@@ -93,6 +93,13 @@ class AuthRepository {
           );
   }
 
+  Future<void> me() async {
+    try {
+      await api.get('auth/me');
+    } catch (_) {
+    }
+  }
+
   Future<void> logout() async {
     try {
       await api.post('auth/logout');

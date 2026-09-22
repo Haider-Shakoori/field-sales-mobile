@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../state/expense_controller.dart';
 import 'expense_create_screen.dart';
+import 'sync_refresh.dart';
 
 class ExpensesScreen extends StatelessWidget {
   const ExpensesScreen({super.key});
@@ -85,7 +86,7 @@ class ExpensesScreen extends StatelessWidget {
 
     return Scaffold(
       body: RefreshIndicator(
-        onRefresh: () => state.sync(),
+        onRefresh: () => syncAndReload(context, triggerSource: 'pull:expenses'),
         child: state.expenses.isEmpty
             ? ListView(
                 padding: const EdgeInsets.all(20),

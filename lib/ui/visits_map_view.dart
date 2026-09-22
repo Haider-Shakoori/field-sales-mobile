@@ -1,18 +1,93 @@
 import 'dart:async';
+import 'dart:collection';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/retry.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../core/config.dart';
 import '../features/visits/visit_map_data.dart';
 import '../state/attendance_controller.dart';
 import '../state/visit_controller.dart';
+import 'sync_refresh.dart';
 
 const _kabul = LatLng(34.5553, 69.2075);
-const _tileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+
+/// Limits the number of in-flight tile requests so an initial map fill does
+/// not burst several simultaneous TLS handshakes through the device/emulator
+/// NAT, which has been observed to reset such bursts as a group.
+class _ThrottledHttpClient extends http.BaseClient {
+  _ThrottledHttpClient(this._inner, this._maxConcurrent)
+    : assert(_maxConcurrent > 0);
+
+  final http.Client _inner;
+  final int _maxConcurrent;
+
+  final _waiters = Queue<Completer<void>>();
+  int _active = 0;
+
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) async {
+    if (_active >= _maxConcurrent) {
+      final completer = Completer<void>();
+      _waiters.add(completer);
+      await completer.future;
+    }
+    _active++;
+    try {
+      return await _inner.send(request);
+    } finally {
+      _active--;
+      if (_waiters.isNotEmpty) _waiters.removeFirst().complete();
+    }
+  }
+
+  @override
+  void close() => _inner.close();
+}
+
+bool _retryableStatus(http.BaseResponse response) {
+  const statuses = {408, 429, 500, 502, 503, 504};
+  return statuses.contains(response.statusCode);
+}
+
+bool _retryableError(Object error, StackTrace stackTrace) {
+  if (error is SocketException ||
+      error is TlsException ||
+      error is TimeoutException) {
+    return true;
+  }
+  if (error is http.ClientException) {
+    final message = error.message.toLowerCase();
+    return message.contains('socketexception') ||
+        message.contains('connection reset') ||
+        message.contains('connection terminated') ||
+        message.contains('handshake') ||
+        message.contains('failed host lookup') ||
+        message.contains('timeout');
+  }
+  return false;
+}
+
+Duration _retryDelay(int attempt) =>
+    const Duration(milliseconds: 400) * (attempt + 1);
+
+/// Process-lifetime HTTP client used for all map tiles. Shared so tile
+/// requests stay throttled across map instances and avoid re-bursting after
+/// the map widget is rebuilt.
+final http.Client _tileHttpClient = RetryClient(
+  _ThrottledHttpClient(http.Client(), 6),
+  retries: 3,
+  when: _retryableStatus,
+  whenError: _retryableError,
+  delay: _retryDelay,
+);
 
 class VisitsMapView extends StatefulWidget {
   const VisitsMapView({
@@ -38,6 +113,29 @@ class _VisitsMapViewState extends State<VisitsMapView> {
   bool _locating = false;
   bool _centered = false;
 
+  final Map<TileCoordinates, int> _tileRetries = {};
+  final Map<TileCoordinates, Timer> _tileRetryTimers = {};
+
+  static const _maxTileRetries = 5;
+
+  void _onTileError(TileImage tile, Object error, StackTrace? stackTrace) {
+    final coordinates = tile.coordinates;
+    final attempts = _tileRetries[coordinates] ?? 0;
+
+    if (attempts >= _maxTileRetries) return;
+
+    _tileRetries[coordinates] = attempts + 1;
+    _tileRetryTimers[coordinates]?.cancel();
+    _tileRetryTimers[coordinates] = Timer(
+      Duration(seconds: 2 + attempts * 3),
+      () {
+        _tileRetryTimers.remove(coordinates);
+        if (!mounted) return;
+        tile.load();
+      },
+    );
+  }
+
   List<MapCustomer> get _ordered => sortByDistance(widget.customers, _position);
 
   @override
@@ -55,6 +153,10 @@ class _VisitsMapViewState extends State<VisitsMapView> {
   @override
   void dispose() {
     _refreshTimer?.cancel();
+    for (final timer in _tileRetryTimers.values) {
+      timer.cancel();
+    }
+    _tileRetryTimers.clear();
     _mapController.dispose();
     super.dispose();
   }
@@ -304,8 +406,20 @@ class _VisitsMapViewState extends State<VisitsMapView> {
           ),
           children: [
             TileLayer(
-              urlTemplate: _tileUrl,
-              userAgentPackageName: 'com.wesoft.fieldsales',
+              urlTemplate: AppConfig.tileUrlTemplate,
+              fallbackUrl: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              userAgentPackageName: 'com.businessos.fieldpulse',
+              errorTileCallback: _onTileError,
+              evictErrorTileStrategy:
+                  EvictErrorTileStrategy.notVisibleRespectMargin,
+              tileProvider: NetworkTileProvider(
+                httpClient: _tileHttpClient,
+                headers: {
+                  'User-Agent':
+                      'FieldPulse Sales Mobile/1.0 (field-sales-mobile; '
+                      'https://fieldpulse.businessos.af)',
+                },
+              ),
               maxZoom: 19,
             ),
             if (planned.length > 1)
@@ -363,6 +477,16 @@ class _VisitsMapViewState extends State<VisitsMapView> {
             heroTag: 'visits-map-locate',
             onPressed: () => unawaited(_locate(moveCamera: true)),
             child: const Icon(Icons.my_location),
+          ),
+        ),
+        Positioned(
+          right: 12,
+          top: 72,
+          child: FloatingActionButton.small(
+            heroTag: 'visits-map-sync',
+            onPressed: () =>
+                unawaited(syncAndReload(context, triggerSource: 'map:visits')),
+            child: const Icon(Icons.sync),
           ),
         ),
         Positioned(

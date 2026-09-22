@@ -1,4 +1,4 @@
-package com.wesoft.fieldsales
+package com.businessos.fieldpulse
 import android.Manifest
 import android.os.Build
 import io.flutter.embedding.android.FlutterActivity

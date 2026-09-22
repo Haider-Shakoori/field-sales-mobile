@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 import '../features/auth/auth_repository.dart';
@@ -12,16 +14,48 @@ class AppState extends ChangeNotifier {
   AuthSession? session;
   AttendanceTrackingSettings? policy;
   bool get signedIn => session != null;
+
+  Timer? _heartbeat;
+  bool _beatInFlight = false;
+
+  void _syncHeartbeat() {
+    if (session == null) {
+      _heartbeat?.cancel();
+      _heartbeat = null;
+      return;
+    }
+
+    _heartbeat ??= Timer.periodic(
+      const Duration(minutes: 3),
+      (_) => _beat(),
+    );
+    _beat();
+  }
+
+  Future<void> _beat() async {
+    if (_beatInFlight) return;
+    _beatInFlight = true;
+
+    try {
+      await auth.me();
+    } catch (_) {
+    } finally {
+      _beatInFlight = false;
+    }
+  }
+
   Future<void> restore() async {
     session = await auth.restore();
     if (session != null) policy = await settings.load(session!.tenantId);
     restored = true;
+    _syncHeartbeat();
     notifyListeners();
   }
 
   Future<void> login(String email, String password) async {
     session = await auth.login(email, password);
     policy = await settings.refresh(session!.tenantId);
+    _syncHeartbeat();
     notifyListeners();
   }
 
@@ -32,6 +66,7 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> logout() async {
+    _syncHeartbeat();
     await auth.logout();
     session = null;
     policy = null;
@@ -39,9 +74,16 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> revokeLocal() async {
+    _syncHeartbeat();
     await auth.clearLocalAuth();
     session = null;
     policy = null;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _heartbeat?.cancel();
+    super.dispose();
   }
 }
