@@ -96,8 +96,7 @@ class AuthRepository {
   Future<void> me() async {
     try {
       await api.get('auth/me');
-    } catch (_) {
-    }
+    } catch (_) {}
   }
 
   Future<void> logout() async {

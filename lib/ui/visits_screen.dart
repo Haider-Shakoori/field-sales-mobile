@@ -7,6 +7,7 @@ import '../state/master_data_controller.dart';
 import '../state/visit_controller.dart';
 import 'collection_create_screen.dart';
 import 'order_create_screen.dart';
+import 'visit_forms_screen.dart';
 import 'sync_refresh.dart';
 import 'visits_map_view.dart';
 
@@ -338,6 +339,24 @@ class _VisitsScreenState extends State<VisitsScreen> {
                           icon: const Icon(Icons.payments_outlined),
                           label: const Text('Collect'),
                         ),
+                        if (active)
+                          OutlinedButton.icon(
+                            onPressed: state.busy
+                                ? null
+                                : () async {
+                                    await Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) =>
+                                            VisitFormsScreen(visit: visit),
+                                      ),
+                                    );
+                                    if (context.mounted) {
+                                      await state.reloadLocal();
+                                    }
+                                  },
+                            icon: const Icon(Icons.fact_check_outlined),
+                            label: const Text('Forms'),
+                          ),
                         if (active)
                           FilledButton.icon(
                             onPressed: state.busy

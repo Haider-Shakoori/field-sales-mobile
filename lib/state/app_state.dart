@@ -25,10 +25,7 @@ class AppState extends ChangeNotifier {
       return;
     }
 
-    _heartbeat ??= Timer.periodic(
-      const Duration(minutes: 3),
-      (_) => _beat(),
-    );
+    _heartbeat ??= Timer.periodic(const Duration(minutes: 3), (_) => _beat());
     _beat();
   }
 

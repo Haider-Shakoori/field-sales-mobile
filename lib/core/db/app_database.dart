@@ -4,7 +4,7 @@ import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
 class AppDatabase {
-  static const version = 11;
+  static const version = 12;
 
   Database? _db;
 
@@ -16,12 +16,12 @@ class AppDatabase {
     _db = await openDatabase(
       p.join(dir, 'field_sales.db'),
       version: version,
-      onCreate: (database, _) => _createV11(database),
+      onCreate: (database, _) => _createV12(database),
       onUpgrade: _upgrade,
     );
   }
 
-  Future<void> _createV11(Database database) async {
+  Future<void> _createV12(Database database) async {
     await _createSyncTables(database);
     await _createMasterTables(database);
     await _createAttendanceTables(database);
@@ -293,6 +293,63 @@ class AppDatabase {
     await database.execute(
       'CREATE INDEX IF NOT EXISTS idx_visit_photos_visit '
       'ON local_visit_photos(tenant_id,visit_offline_uuid,sync_status)',
+    );
+
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_visit_form_templates ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL, '
+      'uuid TEXT NOT NULL, '
+      'code TEXT NOT NULL, '
+      'name TEXT NOT NULL, '
+      'version INTEGER NOT NULL, '
+      'required_on_checkout INTEGER NOT NULL DEFAULT 0, '
+      'scope_type TEXT NOT NULL, '
+      'scope_uuid TEXT, '
+      'payload TEXT NOT NULL, '
+      'cached_at TEXT NOT NULL'
+      ')',
+    );
+    await database.execute(
+      'CREATE UNIQUE INDEX IF NOT EXISTS idx_visit_forms_tenant_uuid '
+      'ON local_visit_form_templates(tenant_id,uuid)',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_visit_forms_scope '
+      'ON local_visit_form_templates(tenant_id,scope_type,scope_uuid)',
+    );
+
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_visit_form_submissions ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL, '
+      'offline_uuid TEXT NOT NULL, '
+      'server_uuid TEXT, '
+      'visit_offline_uuid TEXT NOT NULL, '
+      'template_uuid TEXT NOT NULL, '
+      'template_version INTEGER NOT NULL, '
+      'template_name TEXT NOT NULL, '
+      'answers_json TEXT NOT NULL, '
+      'submitted_at TEXT NOT NULL, '
+      'sync_status TEXT NOT NULL DEFAULT "pending", '
+      'last_error TEXT, '
+      'created_at TEXT NOT NULL, '
+      'updated_at TEXT NOT NULL'
+      ')',
+    );
+    await database.execute(
+      'CREATE UNIQUE INDEX IF NOT EXISTS idx_visit_form_sub_uuid '
+      'ON local_visit_form_submissions(tenant_id,offline_uuid)',
+    );
+    await database.execute(
+      'CREATE UNIQUE INDEX IF NOT EXISTS idx_visit_form_sub_template '
+      'ON local_visit_form_submissions('
+      'tenant_id,visit_offline_uuid,template_uuid'
+      ')',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_visit_form_sub_sync '
+      'ON local_visit_form_submissions(tenant_id,sync_status,created_at)',
     );
 
     await database.execute(
