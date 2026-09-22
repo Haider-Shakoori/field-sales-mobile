@@ -54,10 +54,8 @@ class _VisitFormsScreenState extends State<VisitFormsScreen> {
 
     final saved = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
-        builder: (_) => VisitFormEntryScreen(
-          visit: widget.visit,
-          template: form,
-        ),
+        builder: (_) =>
+            VisitFormEntryScreen(visit: widget.visit, template: form),
       ),
     );
 
@@ -168,10 +166,7 @@ class _VisitFormEntryScreenState extends State<VisitFormEntryScreen> {
     final raw = widget.template['questions'];
     if (raw is! List) return const [];
 
-    return raw
-        .whereType<Map>()
-        .map(Map<String, dynamic>.from)
-        .toList();
+    return raw.whereType<Map>().map(Map<String, dynamic>.from).toList();
   }
 
   @override
@@ -345,10 +340,8 @@ class _VisitFormEntryScreenState extends State<VisitFormEntryScreen> {
           decoration: InputDecoration(labelText: label),
           items: options
               .map(
-                (option) => DropdownMenuItem(
-                  value: option,
-                  child: Text(option),
-                ),
+                (option) =>
+                    DropdownMenuItem(value: option, child: Text(option)),
               )
               .toList(),
           onChanged: (value) => setState(() => _answers[id] = value),
@@ -455,10 +448,7 @@ class _VisitFormEntryScreenState extends State<VisitFormEntryScreen> {
           if (help != null && help.trim().isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 6),
-              child: Text(
-                help,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
+              child: Text(help, style: Theme.of(context).textTheme.bodySmall),
             ),
         ],
       ),
