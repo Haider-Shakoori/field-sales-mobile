@@ -308,15 +308,12 @@ void main() {
     final result = await repository.syncPending(tenantId);
 
     expect(result.failed, 0);
-    expect(
-      api.calls,
-      [
-        'visits/check-in',
-        'visits/visit-1/photos',
-        'visits/visit-1/form-submissions',
-        'visits/visit-1/check-out',
-      ],
-    );
+    expect(api.calls, [
+      'visits/check-in',
+      'visits/visit-1/photos',
+      'visits/visit-1/form-submissions',
+      'visits/visit-1/check-out',
+    ]);
 
     final visit = (await db.db.query(
       'local_visits',
