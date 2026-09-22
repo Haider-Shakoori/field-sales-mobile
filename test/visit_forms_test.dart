@@ -91,6 +91,37 @@ void main() {
     await deleteDatabase(await _databasePath());
   });
 
+  test('database v12 creates visit form tables and indexes', () async {
+    final db = AppDatabase();
+    await db.open();
+
+    final tables = (await db.db.rawQuery(
+      "SELECT name FROM sqlite_master WHERE type='table'",
+    )).map((row) => row['name']).toSet();
+    final indexes = (await db.db.rawQuery(
+      "SELECT name FROM sqlite_master WHERE type='index'",
+    )).map((row) => row['name']).toSet();
+
+    expect(
+      tables,
+      containsAll([
+        'local_visit_form_templates',
+        'local_visit_form_submissions',
+      ]),
+    );
+    expect(
+      indexes,
+      containsAll([
+        'idx_visit_forms_tenant_uuid',
+        'idx_visit_form_sub_uuid',
+        'idx_visit_form_sub_template',
+        'idx_visit_form_sub_sync',
+      ]),
+    );
+
+    await db.db.close();
+  });
+
   test('required cached form blocks local checkout until saved', () async {
     final db = AppDatabase();
     await db.open();
@@ -140,10 +171,7 @@ void main() {
       'updated_at': now.toIso8601String(),
     });
 
-    final repository = VisitRepository(
-      api: _VisitFormApi(),
-      db: db,
-    );
+    final repository = VisitRepository(api: _VisitFormApi(), db: db);
     final visit = (await repository.list(tenantId)).single;
 
     await expectLater(
@@ -188,7 +216,7 @@ void main() {
     await db.db.close();
   });
 
-  test('offline sync uploads photo and form before required checkout', () async {
+  test('sync uploads photo and form before checkout', () async {
     final db = AppDatabase();
     await db.open();
     const tenantId = 'visit-form-sync';

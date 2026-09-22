@@ -18,7 +18,7 @@ void main() {
     await deleteDatabase(await databasePath());
   });
 
-  test('database v12 creates tenant-safe operational and visit-form tables', () async {
+  test('database v11 creates tenant-safe operational target and sync-health tables', () async {
     final database = AppDatabase();
     await database.open();
 
@@ -42,8 +42,6 @@ void main() {
         'privacy_acknowledgements',
         'local_visits',
         'local_visit_photos',
-        'local_visit_form_templates',
-        'local_visit_form_submissions',
         'local_call_activities',
         'local_orders',
         'local_order_items',
@@ -154,10 +152,6 @@ void main() {
         'idx_gps_recorded',
         'idx_visits_tenant_uuid',
         'idx_visit_photos_tenant_uuid',
-        'idx_visit_forms_tenant_uuid',
-        'idx_visit_form_sub_uuid',
-        'idx_visit_form_sub_template',
-        'idx_visit_form_sub_sync',
         'idx_calls_tenant_uuid',
         'idx_orders_tenant_uuid',
         'idx_order_items_product',
