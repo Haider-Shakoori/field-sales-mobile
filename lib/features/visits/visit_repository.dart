@@ -448,6 +448,11 @@ class VisitRepository {
           row['offline_uuid'].toString(),
           row['server_uuid'].toString(),
         );
+        await _syncFormSubmissions(
+          tenantId,
+          row['offline_uuid'].toString(),
+          row['server_uuid'].toString(),
+        );
       } catch (_) {
         failed++;
       }
