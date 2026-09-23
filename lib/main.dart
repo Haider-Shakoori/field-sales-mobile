@@ -21,6 +21,7 @@ import 'features/collections/collection_repository.dart';
 import 'features/expenses/expense_repository.dart';
 import 'features/gps/gps_repository.dart';
 import 'features/gps/tracking_service.dart';
+import 'features/inventory/inventory_repository.dart';
 import 'features/master_data/master_data_repository.dart';
 import 'features/master_data/master_data_source.dart';
 import 'features/orders/order_repository.dart';
@@ -58,10 +59,16 @@ Future<void> main() async {
   final collections = CollectionRepository(api: api, db: db);
   final expenses = ExpenseRepository(api: api, db: db);
   final targets = TargetRepository(api: api, db: db);
+  final inventory = InventoryRepository(api: api, db: db);
 
   final masterSource = ApiMasterDataSource(api);
   final masterData = MasterDataRepository(database: db, source: masterSource);
-  final orders = OrderRepository(api: api, db: db, masterData: masterData);
+  final orders = OrderRepository(
+    api: api,
+    db: db,
+    masterData: masterData,
+    inventory: inventory,
+  );
   final localTransactions = LocalFirstTransaction(db);
   final retryStore = SyncRetryStore(db);
   final customers = CustomerRepository(
@@ -84,6 +91,7 @@ Future<void> main() async {
     visits: visits,
     calls: calls,
     orders: orders,
+    inventory: inventory,
     collections: collections,
     expenses: expenses,
     targets: targets,
@@ -171,6 +179,7 @@ Future<void> main() async {
         Provider.value(value: visits),
         Provider.value(value: calls),
         Provider.value(value: orders),
+        Provider.value(value: inventory),
         Provider.value(value: collections),
         Provider.value(value: expenses),
         Provider.value(value: targets),

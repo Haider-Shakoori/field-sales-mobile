@@ -5,6 +5,7 @@ import '../../core/db/app_database.dart';
 import '../../core/sync/connectivity_gate.dart';
 import '../../core/sync/local_dependency_guard.dart';
 import '../../core/sync/sync_retry_store.dart';
+import '../inventory/inventory_repository.dart';
 import '../master_data/master_data_repository.dart';
 
 class OrderRepository {
@@ -12,12 +13,14 @@ class OrderRepository {
     required this.api,
     required this.db,
     required this.masterData,
+    this.inventory,
   }) : retry = SyncRetryStore(db),
        dependencies = LocalDependencyGuard(db);
 
   final ApiClient api;
   final AppDatabase db;
   final MasterDataRepository masterData;
+  final InventoryRepository? inventory;
   final SyncRetryStore retry;
   final LocalDependencyGuard dependencies;
 
@@ -189,6 +192,18 @@ class OrderRepository {
       lines: lines,
     );
 
+    await inventory?.ensureOrderAvailability(
+      tenantId,
+      lines
+          .map(
+            (line) => <String, dynamic>{
+              'product': line.product,
+              'quantity': line.quantity,
+            },
+          )
+          .toList(),
+    );
+
     final uuid = const Uuid().v4();
     final now = DateTime.now().toUtc().toIso8601String();
 
@@ -324,6 +339,15 @@ class OrderRepository {
           whereArgs: [tenantId, offlineUuid],
         );
         failed++;
+      }
+    }
+
+    if (synced > 0 && inventory != null) {
+      try {
+        await inventory!.refreshStock(tenantId);
+      } catch (_) {
+        // The order is already authoritative on the server. A later full
+        // sync can refresh the stock snapshot without replaying the order.
       }
     }
 

@@ -8,6 +8,7 @@ import '../../features/collections/collection_repository.dart';
 import '../../features/customers/customer_repository.dart';
 import '../../features/expenses/expense_repository.dart';
 import '../../features/gps/gps_repository.dart';
+import '../../features/inventory/inventory_repository.dart';
 import '../../features/master_data/master_data_repository.dart';
 import '../../features/orders/order_repository.dart';
 import '../../features/targets/target_repository.dart';
@@ -28,6 +29,7 @@ class SyncCoordinator {
     required this.visits,
     required this.calls,
     required this.orders,
+    required this.inventory,
     required this.collections,
     required this.expenses,
     required this.targets,
@@ -42,6 +44,7 @@ class SyncCoordinator {
   final VisitRepository visits;
   final CallActivityRepository calls;
   final OrderRepository orders;
+  final InventoryRepository inventory;
   final CollectionRepository collections;
   final ExpenseRepository expenses;
   final TargetRepository targets;
@@ -195,6 +198,17 @@ class SyncCoordinator {
       final result = await orders.syncPending(tenantId);
       await orders.refreshServerHistory(tenantId);
       return SyncStageReport.fromCounts('orders', result.synced, result.failed);
+    });
+
+    await stage('inventory', () async {
+      final result = await inventory.syncPendingReturns(tenantId);
+      await inventory.refreshReturnHistory(tenantId);
+      await inventory.refreshStock(tenantId);
+      return SyncStageReport.fromCounts(
+        'inventory',
+        result.synced,
+        result.failed,
+      );
     });
 
     await stage('collections', () async {
