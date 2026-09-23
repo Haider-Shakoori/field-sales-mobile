@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:uuid/uuid.dart';
 
 import '../../core/api/api_client.dart';
@@ -138,7 +136,7 @@ class StockReturnRepository {
       }
 
       final productUuid = item.product['id']?.toString() ?? '';
-      final key = productUuid + '|' + item.condition;
+      final key = '$productUuid|${item.condition}';
       if (productUuid.isEmpty || !seen.add(key)) {
         throw StateError(
           'Each product and condition combination can appear only once.',
