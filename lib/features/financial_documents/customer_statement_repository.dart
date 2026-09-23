@@ -31,9 +31,9 @@ class CustomerStatementRepository {
       final response = await api.get(
         'customers/$customerUuid/statement',
         query: {
-          if (from != null) 'from': from,
-          if (to != null) 'to': to,
-          if (currency != null) 'currency': currency,
+          'from': ?from,
+          'to': ?to,
+          'currency': ?currency,
         },
       );
 
