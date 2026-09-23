@@ -34,7 +34,7 @@ void main() {
       activity,
       contains('pendingNotificationPermissionResult?.success(granted)'),
     );
-    expect(attendance, contains(".timeout(const Duration(seconds: 15))"));
+    expect(attendance, contains('.timeout(const Duration(seconds: 15))'));
   });
 
   test('release signing is externalized and fails closed', () {
