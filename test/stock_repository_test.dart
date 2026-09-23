@@ -99,10 +99,7 @@ void main() {
       'line_total': 200,
     });
 
-    final repository = StockRepository(
-      api: ApiClient(SecretStore()),
-      db: db,
-    );
+    final repository = StockRepository(api: ApiClient(SecretStore()), db: db);
 
     expect(await repository.availableForProduct(tenantId, 'product-1'), 3);
 
@@ -136,68 +133,72 @@ void main() {
     );
 
     await repository.validateOrderLines(tenantId, [
-      {'product_id': 'missing-product', 'name': 'Legacy Product', 'quantity': 99},
+      {
+        'product_id': 'missing-product',
+        'name': 'Legacy Product',
+        'quantity': 99,
+      },
     ]);
 
     await db.db.close();
   });
 
-  test('customer return is stored offline with resalable and damaged items', () async {
-    final db = AppDatabase();
-    await db.open();
-    const tenantId = 'return-tenant';
+  test(
+    'customer return is stored offline with resalable and damaged items',
+    () async {
+      final db = AppDatabase();
+      await db.open();
+      const tenantId = 'return-tenant';
 
-    final repository = StockRepository(
-      api: ApiClient(SecretStore()),
-      db: db,
-    );
+      final repository = StockRepository(api: ApiClient(SecretStore()), db: db);
 
-    final uuid = await repository.createReturnOffline(
-      tenantId: tenantId,
-      customer: {'id': 'customer-1', 'name': 'Customer One'},
-      notes: 'Mixed return',
-      items: [
-        {
-          'product_id': 'product-1',
-          'sku': 'SKU-1',
-          'name': 'Product One',
-          'unit': 'pcs',
-          'quantity': 2,
-          'condition': 'resalable',
-          'reason': 'Wrong item',
-        },
-        {
-          'product_id': 'product-1',
-          'sku': 'SKU-1',
-          'name': 'Product One',
-          'unit': 'pcs',
-          'quantity': 1,
-          'condition': 'damaged',
-          'reason': 'Crushed',
-        },
-      ],
-    );
+      final uuid = await repository.createReturnOffline(
+        tenantId: tenantId,
+        customer: {'id': 'customer-1', 'name': 'Customer One'},
+        notes: 'Mixed return',
+        items: [
+          {
+            'product_id': 'product-1',
+            'sku': 'SKU-1',
+            'name': 'Product One',
+            'unit': 'pcs',
+            'quantity': 2,
+            'condition': 'resalable',
+            'reason': 'Wrong item',
+          },
+          {
+            'product_id': 'product-1',
+            'sku': 'SKU-1',
+            'name': 'Product One',
+            'unit': 'pcs',
+            'quantity': 1,
+            'condition': 'damaged',
+            'reason': 'Crushed',
+          },
+        ],
+      );
 
-    final returns = await db.db.query(
-      'local_sales_returns',
-      where: 'tenant_id=? AND offline_uuid=?',
-      whereArgs: [tenantId, uuid],
-    );
-    final items = await db.db.query(
-      'local_sales_return_items',
-      where: 'tenant_id=? AND return_offline_uuid=?',
-      whereArgs: [tenantId, uuid],
-      orderBy: 'id ASC',
-    );
+      final returns = await db.db.query(
+        'local_sales_returns',
+        where: 'tenant_id=? AND offline_uuid=?',
+        whereArgs: [tenantId, uuid],
+      );
+      final items = await db.db.query(
+        'local_sales_return_items',
+        where: 'tenant_id=? AND return_offline_uuid=?',
+        whereArgs: [tenantId, uuid],
+        orderBy: 'id ASC',
+      );
 
-    expect(returns, hasLength(1));
-    expect(returns.single['sync_status'], 'pending');
-    expect(items, hasLength(2));
-    expect(items.map((row) => row['condition']).toSet(), {
-      'resalable',
-      'damaged',
-    });
+      expect(returns, hasLength(1));
+      expect(returns.single['sync_status'], 'pending');
+      expect(items, hasLength(2));
+      expect(items.map((row) => row['condition']).toSet(), {
+        'resalable',
+        'damaged',
+      });
 
-    await db.db.close();
-  });
+      await db.db.close();
+    },
+  );
 }
