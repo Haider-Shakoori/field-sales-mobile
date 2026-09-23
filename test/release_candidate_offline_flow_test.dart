@@ -8,6 +8,7 @@ import 'package:field_sales_mobile/features/expenses/expense_repository.dart';
 import 'package:field_sales_mobile/features/master_data/master_data_repository.dart';
 import 'package:field_sales_mobile/features/master_data/master_data_source.dart';
 import 'package:field_sales_mobile/features/orders/order_repository.dart';
+import 'package:field_sales_mobile/features/stock/stock_repository.dart';
 import 'package:field_sales_mobile/features/visits/visit_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
@@ -55,7 +56,13 @@ void main() {
     final master = MasterDataRepository(database: db, source: _OfflineSource());
     final attendance = AttendanceRepository(api: api, db: db);
     final visits = VisitRepository(api: api, db: db);
-    final orders = OrderRepository(api: api, db: db, masterData: master);
+    final stock = StockRepository(api: api, db: db);
+    final orders = OrderRepository(
+      api: api,
+      db: db,
+      masterData: master,
+      stock: stock,
+    );
     final collections = CollectionRepository(api: api, db: db);
     final expenses = ExpenseRepository(api: api, db: db);
 

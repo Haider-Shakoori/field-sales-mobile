@@ -10,6 +10,7 @@ import '../../features/expenses/expense_repository.dart';
 import '../../features/gps/gps_repository.dart';
 import '../../features/master_data/master_data_repository.dart';
 import '../../features/orders/order_repository.dart';
+import '../../features/stock/stock_repository.dart';
 import '../../features/targets/target_repository.dart';
 import '../../features/visits/visit_repository.dart';
 import '../db/app_database.dart';
@@ -28,6 +29,7 @@ class SyncCoordinator {
     required this.visits,
     required this.calls,
     required this.orders,
+    required this.stock,
     required this.collections,
     required this.expenses,
     required this.targets,
@@ -42,6 +44,7 @@ class SyncCoordinator {
   final VisitRepository visits;
   final CallActivityRepository calls;
   final OrderRepository orders;
+  final StockRepository stock;
   final CollectionRepository collections;
   final ExpenseRepository expenses;
   final TargetRepository targets;
@@ -191,9 +194,17 @@ class SyncCoordinator {
       return SyncStageReport.fromCounts('calls', result.synced, result.failed);
     });
 
+    await stage('stock', () async {
+      await stock.refresh(tenantId);
+      final syncedReturns = await stock.syncPending(tenantId);
+      await stock.refreshReturns(tenantId);
+      return SyncStageReport.fromCounts('stock', syncedReturns, 0);
+    });
+
     await stage('orders', () async {
       final result = await orders.syncPending(tenantId);
       await orders.refreshServerHistory(tenantId);
+      await stock.refresh(tenantId);
       return SyncStageReport.fromCounts('orders', result.synced, result.failed);
     });
 
