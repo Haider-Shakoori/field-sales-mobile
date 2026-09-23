@@ -4,10 +4,7 @@ import 'package:provider/provider.dart';
 import '../state/order_controller.dart';
 
 class InvoiceScreen extends StatelessWidget {
-  const InvoiceScreen({
-    required this.order,
-    super.key,
-  });
+  const InvoiceScreen({required this.order, super.key});
 
   final Map<String, dynamic> order;
 
@@ -22,9 +19,7 @@ class InvoiceScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Invoice ${order['order_number'] ?? ''}'),
-      ),
+      appBar: AppBar(title: Text('Invoice ${order['order_number'] ?? ''}')),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: context.read<OrderController>().items(order),
         builder: (context, snapshot) {
@@ -35,9 +30,8 @@ class InvoiceScreen extends StatelessWidget {
             children: [
               Text(
                 'INVOICE',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
+                style: Theme.of(context).textTheme.headlineMedium
+                    ?.copyWith(fontWeight: FontWeight.w800),
               ),
               Text(order['order_number']?.toString() ?? ''),
               const Divider(height: 32),
@@ -83,13 +77,13 @@ class InvoiceScreen extends StatelessWidget {
                       _row(
                         'Discount',
                         '${order['discount_total'] ?? 0} '
-                        '${order['currency'] ?? ''}',
+                            '${order['currency'] ?? ''}',
                       ),
                       const Divider(),
                       _row(
                         'Total',
                         '${order['grand_total'] ?? 0} '
-                        '${order['currency'] ?? ''}',
+                            '${order['currency'] ?? ''}',
                         bold: true,
                       ),
                     ],

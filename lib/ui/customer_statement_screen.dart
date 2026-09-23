@@ -5,10 +5,7 @@ import '../features/financial_documents/customer_statement_repository.dart';
 import '../state/app_state.dart';
 
 class CustomerStatementScreen extends StatefulWidget {
-  const CustomerStatementScreen({
-    required this.customer,
-    super.key,
-  });
+  const CustomerStatementScreen({required this.customer, super.key});
 
   final Map<String, dynamic> customer;
 
@@ -110,9 +107,7 @@ class _CustomerStatementScreenState extends State<CustomerStatementScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Statement · ${widget.customer['name'] ?? 'Customer'}',
-        ),
+        title: Text('Statement · ${widget.customer['name'] ?? 'Customer'}'),
       ),
       body: _loading && statement == null
           ? const Center(child: CircularProgressIndicator())
@@ -258,8 +253,7 @@ class _CustomerStatementScreenState extends State<CustomerStatementScreen> {
                     ...entries.whereType<Map>().map((raw) {
                       final entry = Map<String, dynamic>.from(raw);
                       final debit = (entry['debit'] as num?)?.toDouble() ?? 0;
-                      final credit =
-                          (entry['credit'] as num?)?.toDouble() ?? 0;
+                      final credit = (entry['credit'] as num?)?.toDouble() ?? 0;
 
                       return Card(
                         child: ListTile(

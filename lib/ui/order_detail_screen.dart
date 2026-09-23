@@ -19,9 +19,7 @@ class OrderDetailScreen extends StatelessWidget {
             IconButton(
               tooltip: 'Invoice',
               onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => InvoiceScreen(order: order),
-                ),
+                MaterialPageRoute(builder: (_) => InvoiceScreen(order: order)),
               ),
               icon: const Icon(Icons.receipt_long_outlined),
             ),

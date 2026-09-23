@@ -2,13 +2,12 @@ import 'dart:convert';
 
 import '../../core/api/api_client.dart';
 import '../../core/db/app_database.dart';
+import 'package:sqflite/sqflite.dart';
+
 import '../../core/sync/connectivity_gate.dart';
 
 class CustomerStatementRepository {
-  CustomerStatementRepository({
-    required this.api,
-    required this.db,
-  });
+  CustomerStatementRepository({required this.api, required this.db});
 
   final ApiClient api;
   final AppDatabase db;
@@ -21,7 +20,11 @@ class CustomerStatementRepository {
     String? currency,
     bool refresh = true,
   }) async {
-    final online = await ConnectivityGate.instance.isOnline();
+    var online = false;
+
+    if (refresh) {
+      online = await ConnectivityGate.instance.isOnline();
+    }
 
     if (refresh && online) {
       final response = await api.get(
@@ -39,10 +42,7 @@ class CustomerStatementRepository {
 
       await _cache(tenantId, customerUuid, statement);
 
-      return {
-        ...statement,
-        '_cached': false,
-      };
+      return {...statement, '_cached': false};
     }
 
     final cached = await _cached(
@@ -54,10 +54,7 @@ class CustomerStatementRepository {
     );
 
     if (cached != null) {
-      return {
-        ...cached,
-        '_cached': true,
-      };
+      return {...cached, '_cached': true};
     }
 
     throw StateError(
@@ -82,19 +79,15 @@ class CustomerStatementRepository {
 
     final now = DateTime.now().toUtc().toIso8601String();
 
-    await db.db.insert(
-      'local_customer_statements',
-      {
-        'tenant_id': tenantId,
-        'customer_uuid': customerUuid,
-        'currency': currency,
-        'from_date': from,
-        'to_date': to,
-        'payload': jsonEncode(statement),
-        'cached_at': now,
-      },
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    await db.db.insert('local_customer_statements', {
+      'tenant_id': tenantId,
+      'customer_uuid': customerUuid,
+      'currency': currency,
+      'from_date': from,
+      'to_date': to,
+      'payload': jsonEncode(statement),
+      'cached_at': now,
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<Map<String, dynamic>?> _cached({
@@ -110,7 +103,7 @@ class CustomerStatementRepository {
       'local_customer_statements',
       where: exact
           ? 'tenant_id=? AND customer_uuid=? AND currency=? '
-              'AND from_date=? AND to_date=?'
+                'AND from_date=? AND to_date=?'
           : 'tenant_id=? AND customer_uuid=?',
       whereArgs: exact
           ? [tenantId, customerUuid, currency, from, to]

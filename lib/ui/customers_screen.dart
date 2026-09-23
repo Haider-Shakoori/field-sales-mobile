@@ -265,12 +265,13 @@ class CustomersScreen extends StatelessWidget {
                             tooltip: 'Statement',
                             onPressed: () => Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (_) => CustomerStatementScreen(
-                                  customer: customer,
-                                ),
+                                builder: (_) =>
+                                    CustomerStatementScreen(customer: customer),
                               ),
                             ),
-                            icon: const Icon(Icons.account_balance_wallet_outlined),
+                            icon: const Icon(
+                              Icons.account_balance_wallet_outlined,
+                            ),
                           ),
                           IconButton(
                             tooltip: 'Call history',
