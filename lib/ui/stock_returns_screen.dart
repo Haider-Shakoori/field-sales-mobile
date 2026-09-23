@@ -73,10 +73,8 @@ class _StockReturnsScreenState extends State<StockReturnsScreen> {
 
     final saved = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
-        builder: (_) => ReturnCreateScreen(
-          customers: customers,
-          products: products,
-        ),
+        builder: (_) =>
+            ReturnCreateScreen(customers: customers, products: products),
       ),
     );
 
@@ -111,7 +109,9 @@ class _StockReturnsScreenState extends State<StockReturnsScreen> {
                 _enabled ? Icons.inventory_2 : Icons.inventory_2_outlined,
               ),
               title: Text(
-                _enabled ? 'Salesman stock control enabled' : 'Stock control disabled',
+                _enabled
+                    ? 'Salesman stock control enabled'
+                    : 'Stock control disabled',
               ),
               subtitle: Text(
                 _enabled
@@ -234,10 +234,7 @@ class _ReturnCreateScreenState extends State<ReturnCreateScreen> {
   final _items = <Map<String, dynamic>>[];
   bool _saving = false;
 
-  Map<String, dynamic>? _find(
-    List<Map<String, dynamic>> rows,
-    String? id,
-  ) {
+  Map<String, dynamic>? _find(List<Map<String, dynamic>> rows, String? id) {
     if (id == null) return null;
     for (final row in rows) {
       if (row['id']?.toString() == id) return row;
@@ -382,10 +379,7 @@ class _ReturnCreateScreenState extends State<ReturnCreateScreen> {
                       value: 'resalable',
                       child: Text('Resalable'),
                     ),
-                    DropdownMenuItem(
-                      value: 'damaged',
-                      child: Text('Damaged'),
-                    ),
+                    DropdownMenuItem(value: 'damaged', child: Text('Damaged')),
                   ],
                   onChanged: (value) {
                     if (value != null) setState(() => _condition = value);

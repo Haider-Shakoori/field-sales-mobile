@@ -71,13 +71,12 @@ class MoreScreen extends StatelessWidget {
             child: ListTile(
               leading: const Icon(Icons.local_shipping_outlined),
               title: const Text('Stock & Returns'),
-              subtitle: const Text('Van stock, damaged goods and customer returns'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => _open(
-                context,
-                'Stock & Returns',
-                const StockReturnsScreen(),
+              subtitle: const Text(
+                'Van stock, damaged goods and customer returns',
               ),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () =>
+                  _open(context, 'Stock & Returns', const StockReturnsScreen()),
             ),
           ),
           Card(

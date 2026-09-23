@@ -7,7 +7,7 @@ import '../../core/sync/sync_retry_store.dart';
 
 class StockRepository {
   StockRepository({required this.api, required this.db})
-      : retry = SyncRetryStore(db);
+    : retry = SyncRetryStore(db);
 
   final ApiClient api;
   final AppDatabase db;
