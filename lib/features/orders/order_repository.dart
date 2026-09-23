@@ -456,10 +456,7 @@ class OrderRepository {
     );
   }
 
-  Future<double> _availableStock(
-    String tenantId,
-    String productUuid,
-  ) async {
+  Future<double> _availableStock(String tenantId, String productUuid) async {
     final balanceRows = await db.db.query(
       'local_stock_balances',
       columns: ['sellable_qty'],
