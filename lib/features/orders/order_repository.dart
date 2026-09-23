@@ -120,10 +120,8 @@ class OrderRepository {
         if (line.quantity > available + 0.0001) {
           final name = (line.product['name'] ?? 'Product').toString();
           throw StateError(
-            name +
-                ' exceeds available van stock. Available: ' +
-                available.toStringAsFixed(2) +
-                '.',
+            '$name exceeds available van stock. '
+            'Available: ${available.toStringAsFixed(2)}.',
           );
         }
       }
