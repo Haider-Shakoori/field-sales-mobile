@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../state/order_controller.dart';
+import 'invoice_screen.dart';
 
 class OrderDetailScreen extends StatelessWidget {
   const OrderDetailScreen({required this.order, super.key});
@@ -13,6 +14,18 @@ class OrderDetailScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(order['order_number']?.toString() ?? 'Offline order'),
+        actions: [
+          if (order['status'] == 'approved')
+            IconButton(
+              tooltip: 'Invoice',
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => InvoiceScreen(order: order),
+                ),
+              ),
+              icon: const Icon(Icons.receipt_long_outlined),
+            ),
+        ],
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: context.read<OrderController>().items(order),
