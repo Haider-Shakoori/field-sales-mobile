@@ -32,6 +32,7 @@ import 'state/app_state.dart';
 import 'state/call_activity_controller.dart';
 import 'state/collection_controller.dart';
 import 'state/expense_controller.dart';
+import 'state/inventory_controller.dart';
 import 'state/attendance_controller.dart';
 import 'state/master_data_controller.dart';
 import 'state/order_controller.dart';
@@ -128,6 +129,11 @@ Future<void> main() async {
     repository: orders,
   );
 
+  final inventoryController = InventoryController(
+    appState: appState,
+    repository: inventory,
+  );
+
   final visitController = VisitController(
     appState: appState,
     repository: visits,
@@ -170,6 +176,7 @@ Future<void> main() async {
         ChangeNotifierProvider.value(value: visitController),
         ChangeNotifierProvider.value(value: callActivityController),
         ChangeNotifierProvider.value(value: orderController),
+        ChangeNotifierProvider.value(value: inventoryController),
         ChangeNotifierProvider.value(value: collectionController),
         ChangeNotifierProvider.value(value: expenseController),
         ChangeNotifierProvider.value(value: targetController),

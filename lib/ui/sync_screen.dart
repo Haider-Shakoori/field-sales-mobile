@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../state/call_activity_controller.dart';
 import '../state/collection_controller.dart';
 import '../state/expense_controller.dart';
+import '../state/inventory_controller.dart';
 import '../state/master_data_controller.dart';
 import '../state/order_controller.dart';
 import '../state/sync_controller.dart';
@@ -21,6 +22,8 @@ class SyncScreen extends StatelessWidget {
     await context.read<CallActivityController>().reloadLocal();
     if (!context.mounted) return;
     await context.read<OrderController>().reloadLocal();
+    if (!context.mounted) return;
+    await context.read<InventoryController>().reloadLocal();
     if (!context.mounted) return;
     await context.read<CollectionController>().reloadLocal();
     if (!context.mounted) return;
@@ -62,6 +65,7 @@ class SyncScreen extends StatelessWidget {
     final visits = context.watch<VisitController>();
     final calls = context.watch<CallActivityController>();
     final orders = context.watch<OrderController>();
+    final inventory = context.watch<InventoryController>();
     final collections = context.watch<CollectionController>();
     final expenses = context.watch<ExpenseController>();
     final targets = context.watch<TargetController>();
@@ -72,6 +76,7 @@ class SyncScreen extends StatelessWidget {
         visits.pending +
         calls.pending +
         orders.pending +
+        inventory.pending +
         collections.pending +
         expenses.pending +
         sync.infrastructurePending;
@@ -82,6 +87,7 @@ class SyncScreen extends StatelessWidget {
         visits.busy ||
         calls.busy ||
         orders.busy ||
+        inventory.busy ||
         collections.busy ||
         expenses.busy ||
         targets.busy;
