@@ -54,9 +54,9 @@ class _ReturnsScreenState extends State<ReturnsScreen> {
       return;
     }
 
-    final saved = await Navigator.of(context).push<bool>(
-      MaterialPageRoute(builder: (_) => const ReturnCreateScreen()),
-    );
+    final saved = await Navigator.of(
+      context,
+    ).push<bool>(MaterialPageRoute(builder: (_) => const ReturnCreateScreen()));
 
     if (saved == true && mounted) await _load();
   }
