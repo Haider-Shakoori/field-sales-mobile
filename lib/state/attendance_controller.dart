@@ -385,7 +385,8 @@ class AttendanceController extends ChangeNotifier {
   Future<void> _requestNotificationPermission() async {
     try {
       await const MethodChannel('field_sales/notifications')
-          .invokeMethod<bool>('requestNotificationPermission');
+          .invokeMethod<bool>('requestNotificationPermission')
+          .timeout(const Duration(seconds: 15));
     } catch (_) {}
   }
 
