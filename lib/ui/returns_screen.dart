@@ -48,7 +48,9 @@ class _ReturnsScreenState extends State<ReturnsScreen> {
     if (master.customers.isEmpty || master.products.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Sync customers and products before creating a return.'),
+          content: Text(
+            'Sync customers and products before creating a return.',
+          ),
         ),
       );
       return;
