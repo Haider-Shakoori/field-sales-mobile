@@ -473,8 +473,8 @@ class OrderRepository {
       'ON o.tenant_id=i.tenant_id '
       'AND o.offline_uuid=i.order_offline_uuid '
       'WHERE i.tenant_id=? AND i.product_uuid=? '
-      'AND o.status NOT IN ('rejected','cancelled') '
-      'AND o.sync_status<>'synced'',
+      "AND o.status NOT IN ('rejected','cancelled') "
+      "AND o.sync_status<>'synced'",
       [tenantId, productUuid],
     );
     available -= _number(reservedRows.first['total']);
