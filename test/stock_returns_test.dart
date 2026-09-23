@@ -125,7 +125,7 @@ void main() {
     await db.open();
 
     const tenantId = 'stock-order-tenant';
-    await db.setting('salesman_stock_enabled:' + tenantId, true);
+    await db.setting('salesman_stock_enabled:$tenantId', true);
     await db.db.insert('local_stock_balances', {
       'tenant_id': tenantId,
       'product_uuid': 'product-1',
