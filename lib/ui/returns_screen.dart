@@ -119,22 +119,18 @@ class _ReturnsScreenState extends State<ReturnsScreen> {
                                     (raw['name'] ?? 'Product').toString(),
                                   ),
                                   subtitle: Text(
-                                    (raw['condition'] ?? '').toString() +
-                                        (raw['reason'] == null
-                                            ? ''
-                                            : ' · ' + raw['reason'].toString()),
+                                    "${raw['condition'] ?? ''}"
+                                    "${raw['reason'] == null ? '' : ' · ${raw['reason']}'}",
                                   ),
                                   trailing: Text(
-                                    raw['quantity'].toString() +
-                                        ' ' +
-                                        (raw['unit'] ?? '').toString(),
+                                    "${raw['quantity']} ${raw['unit'] ?? ''}",
                                   ),
                                 ),
                               if (row['status_note'] != null)
                                 Padding(
                                   padding: const EdgeInsets.all(12),
                                   child: Text(
-                                    'Review: ' + row['status_note'].toString(),
+                                    "Review: ${row['status_note']}",
                                     style: TextStyle(
                                       color: Colors.orange.shade700,
                                     ),
