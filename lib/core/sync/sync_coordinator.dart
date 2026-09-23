@@ -10,6 +10,7 @@ import '../../features/expenses/expense_repository.dart';
 import '../../features/gps/gps_repository.dart';
 import '../../features/master_data/master_data_repository.dart';
 import '../../features/orders/order_repository.dart';
+import '../../features/stock/stock_return_repository.dart';
 import '../../features/targets/target_repository.dart';
 import '../../features/visits/visit_repository.dart';
 import '../db/app_database.dart';
@@ -31,6 +32,7 @@ class SyncCoordinator {
     required this.collections,
     required this.expenses,
     required this.targets,
+    required this.stockReturns,
   });
 
   final AppDatabase db;
@@ -45,6 +47,7 @@ class SyncCoordinator {
   final CollectionRepository collections;
   final ExpenseRepository expenses;
   final TargetRepository targets;
+  final StockReturnRepository stockReturns;
 
   Future<SyncCycleReport> run(
     String tenantId, {
@@ -213,6 +216,17 @@ class SyncCoordinator {
       await expenses.refreshHistory(tenantId);
       return SyncStageReport.fromCounts(
         'expenses',
+        result.synced,
+        result.failed,
+      );
+    });
+
+    await stage('stock_returns', () async {
+      final result = await stockReturns.syncPending(tenantId);
+      await stockReturns.refreshHistory(tenantId);
+      await stockReturns.refreshStock(tenantId);
+      return SyncStageReport.fromCounts(
+        'stock_returns',
         result.synced,
         result.failed,
       );
