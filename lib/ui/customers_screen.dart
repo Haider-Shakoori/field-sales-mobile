@@ -6,6 +6,7 @@ import '../state/call_activity_controller.dart';
 import '../state/master_data_controller.dart';
 import 'sync_refresh.dart';
 import 'call_history_screen.dart';
+import 'customer_statement_screen.dart';
 
 class CustomersScreen extends StatelessWidget {
   const CustomersScreen({super.key});
@@ -260,6 +261,18 @@ class CustomersScreen extends StatelessWidget {
                       trailing: Wrap(
                         spacing: 0,
                         children: [
+                          IconButton(
+                            tooltip: 'Statement',
+                            onPressed: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    CustomerStatementScreen(customer: customer),
+                              ),
+                            ),
+                            icon: const Icon(
+                              Icons.account_balance_wallet_outlined,
+                            ),
+                          ),
                           IconButton(
                             tooltip: 'Call history',
                             onPressed: () => _showHistory(context, customer),

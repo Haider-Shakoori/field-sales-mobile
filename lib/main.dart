@@ -19,6 +19,7 @@ import 'features/customers/customer_repository.dart';
 import 'features/calls/call_activity_repository.dart';
 import 'features/collections/collection_repository.dart';
 import 'features/expenses/expense_repository.dart';
+import 'features/financial_documents/customer_statement_repository.dart';
 import 'features/gps/gps_repository.dart';
 import 'features/gps/tracking_service.dart';
 import 'features/master_data/master_data_repository.dart';
@@ -60,6 +61,7 @@ Future<void> main() async {
   final expenses = ExpenseRepository(api: api, db: db);
   final targets = TargetRepository(api: api, db: db);
   final stock = StockRepository(api: api, db: db);
+  final statements = CustomerStatementRepository(api: api, db: db);
 
   final masterSource = ApiMasterDataSource(api);
   final masterData = MasterDataRepository(database: db, source: masterSource);
@@ -180,6 +182,7 @@ Future<void> main() async {
         Provider.value(value: calls),
         Provider.value(value: orders),
         Provider.value(value: stock),
+        Provider.value(value: statements),
         Provider.value(value: collections),
         Provider.value(value: expenses),
         Provider.value(value: targets),

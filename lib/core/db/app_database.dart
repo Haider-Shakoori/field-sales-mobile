@@ -4,7 +4,7 @@ import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
 class AppDatabase {
-  static const version = 13;
+  static const version = 14;
 
   Database? _db;
 
@@ -16,12 +16,12 @@ class AppDatabase {
     _db = await openDatabase(
       p.join(dir, 'field_sales.db'),
       version: version,
-      onCreate: (database, _) => _createV13(database),
+      onCreate: (database, _) => _createV14(database),
       onUpgrade: _upgrade,
     );
   }
 
-  Future<void> _createV13(Database database) async {
+  Future<void> _createV14(Database database) async {
     await _createSyncTables(database);
     await _createMasterTables(database);
     await _createAttendanceTables(database);
@@ -30,6 +30,7 @@ class AppDatabase {
     await _createCollectionTables(database);
     await _createExpenseTargetTables(database);
     await _createStockTables(database);
+    await _createStatementTables(database);
   }
 
   Future<void> _createSyncTables(Database database) async {
@@ -658,6 +659,31 @@ class AppDatabase {
     );
   }
 
+  Future<void> _createStatementTables(Database database) async {
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_customer_statements ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL, '
+      'customer_uuid TEXT NOT NULL, '
+      'currency TEXT NOT NULL, '
+      'from_date TEXT NOT NULL, '
+      'to_date TEXT NOT NULL, '
+      'payload TEXT NOT NULL, '
+      'cached_at TEXT NOT NULL'
+      ')',
+    );
+    await database.execute(
+      'CREATE UNIQUE INDEX IF NOT EXISTS idx_statement_range '
+      'ON local_customer_statements('
+      'tenant_id,customer_uuid,currency,from_date,to_date'
+      ')',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_statement_customer '
+      'ON local_customer_statements(tenant_id,customer_uuid,cached_at)',
+    );
+  }
+
   Future<void> _upgrade(
     Database database,
     int oldVersion,
@@ -704,6 +730,7 @@ class AppDatabase {
     await _createCollectionTables(database);
     await _createExpenseTargetTables(database);
     await _createStockTables(database);
+    await _createStatementTables(database);
 
     if (oldVersion < 4 &&
         !await _hasColumn(database, 'local_work_sessions', 'start_source')) {
