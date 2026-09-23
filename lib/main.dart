@@ -25,6 +25,7 @@ import 'features/master_data/master_data_repository.dart';
 import 'features/master_data/master_data_source.dart';
 import 'features/orders/order_repository.dart';
 import 'features/settings/settings_repository.dart';
+import 'features/stock/stock_repository.dart';
 import 'features/targets/target_repository.dart';
 import 'features/visits/visit_repository.dart';
 import 'state/app_state.dart';
@@ -58,10 +59,16 @@ Future<void> main() async {
   final collections = CollectionRepository(api: api, db: db);
   final expenses = ExpenseRepository(api: api, db: db);
   final targets = TargetRepository(api: api, db: db);
+  final stock = StockRepository(api: api, db: db);
 
   final masterSource = ApiMasterDataSource(api);
   final masterData = MasterDataRepository(database: db, source: masterSource);
-  final orders = OrderRepository(api: api, db: db, masterData: masterData);
+  final orders = OrderRepository(
+    api: api,
+    db: db,
+    masterData: masterData,
+    stock: stock,
+  );
   final localTransactions = LocalFirstTransaction(db);
   final retryStore = SyncRetryStore(db);
   final customers = CustomerRepository(
@@ -84,6 +91,7 @@ Future<void> main() async {
     visits: visits,
     calls: calls,
     orders: orders,
+    stock: stock,
     collections: collections,
     expenses: expenses,
     targets: targets,
@@ -171,6 +179,7 @@ Future<void> main() async {
         Provider.value(value: visits),
         Provider.value(value: calls),
         Provider.value(value: orders),
+        Provider.value(value: stock),
         Provider.value(value: collections),
         Provider.value(value: expenses),
         Provider.value(value: targets),

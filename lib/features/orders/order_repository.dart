@@ -6,18 +6,21 @@ import '../../core/sync/connectivity_gate.dart';
 import '../../core/sync/local_dependency_guard.dart';
 import '../../core/sync/sync_retry_store.dart';
 import '../master_data/master_data_repository.dart';
+import '../stock/stock_repository.dart';
 
 class OrderRepository {
   OrderRepository({
     required this.api,
     required this.db,
     required this.masterData,
+    required this.stock,
   }) : retry = SyncRetryStore(db),
        dependencies = LocalDependencyGuard(db);
 
   final ApiClient api;
   final AppDatabase db;
   final MasterDataRepository masterData;
+  final StockRepository stock;
   final SyncRetryStore retry;
   final LocalDependencyGuard dependencies;
 
@@ -187,6 +190,19 @@ class OrderRepository {
       customer: customer,
       orderedAt: orderedAt,
       lines: lines,
+    );
+
+    await stock.validateOrderLines(
+      tenantId,
+      previewResult.lines
+          .map(
+            (line) => {
+              'product_id': line.product['id'],
+              'name': line.product['name'],
+              'quantity': line.quantity,
+            },
+          )
+          .toList(),
     );
 
     final uuid = const Uuid().v4();

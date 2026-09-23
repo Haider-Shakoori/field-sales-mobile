@@ -4,7 +4,7 @@ import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
 class AppDatabase {
-  static const version = 12;
+  static const version = 13;
 
   Database? _db;
 
@@ -16,12 +16,12 @@ class AppDatabase {
     _db = await openDatabase(
       p.join(dir, 'field_sales.db'),
       version: version,
-      onCreate: (database, _) => _createV12(database),
+      onCreate: (database, _) => _createV13(database),
       onUpgrade: _upgrade,
     );
   }
 
-  Future<void> _createV12(Database database) async {
+  Future<void> _createV13(Database database) async {
     await _createSyncTables(database);
     await _createMasterTables(database);
     await _createAttendanceTables(database);
@@ -29,6 +29,7 @@ class AppDatabase {
     await _createOrderTables(database);
     await _createCollectionTables(database);
     await _createExpenseTargetTables(database);
+    await _createStockTables(database);
   }
 
   Future<void> _createSyncTables(Database database) async {
@@ -585,6 +586,78 @@ class AppDatabase {
     );
   }
 
+  Future<void> _createStockTables(Database database) async {
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_salesman_stock ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL, '
+      'product_uuid TEXT NOT NULL, '
+      'sku TEXT NOT NULL, '
+      'name TEXT NOT NULL, '
+      'unit TEXT NOT NULL, '
+      'sellable_qty REAL NOT NULL DEFAULT 0, '
+      'damaged_qty REAL NOT NULL DEFAULT 0, '
+      'updated_at TEXT NOT NULL'
+      ')',
+    );
+    await database.execute(
+      'CREATE UNIQUE INDEX IF NOT EXISTS idx_stock_tenant_product '
+      'ON local_salesman_stock(tenant_id,product_uuid)',
+    );
+
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_sales_returns ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL, '
+      'offline_uuid TEXT NOT NULL, '
+      'server_uuid TEXT, '
+      'return_number TEXT, '
+      'customer_uuid TEXT NOT NULL, '
+      'customer_name TEXT NOT NULL, '
+      'visit_uuid TEXT, '
+      'order_uuid TEXT, '
+      'returned_at TEXT NOT NULL, '
+      'status TEXT NOT NULL DEFAULT "pending", '
+      'notes TEXT, '
+      'status_note TEXT, '
+      'sync_status TEXT NOT NULL DEFAULT "pending", '
+      'last_error TEXT, '
+      'created_at TEXT NOT NULL, '
+      'updated_at TEXT NOT NULL'
+      ')',
+    );
+    await database.execute(
+      'CREATE UNIQUE INDEX IF NOT EXISTS idx_returns_tenant_uuid '
+      'ON local_sales_returns(tenant_id,offline_uuid)',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_returns_sync '
+      'ON local_sales_returns(tenant_id,sync_status,returned_at)',
+    );
+
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_sales_return_items ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL, '
+      'return_offline_uuid TEXT NOT NULL, '
+      'server_uuid TEXT, '
+      'product_uuid TEXT NOT NULL, '
+      'product_sku TEXT NOT NULL, '
+      'product_name TEXT NOT NULL, '
+      'unit TEXT NOT NULL, '
+      'quantity REAL NOT NULL, '
+      'condition TEXT NOT NULL, '
+      'reason TEXT'
+      ')',
+    );
+    await database.execute(
+      'CREATE UNIQUE INDEX IF NOT EXISTS idx_return_items_unique '
+      'ON local_sales_return_items('
+      'tenant_id,return_offline_uuid,product_uuid,condition'
+      ')',
+    );
+  }
+
   Future<void> _upgrade(
     Database database,
     int oldVersion,
@@ -630,6 +703,7 @@ class AppDatabase {
     await _createOrderTables(database);
     await _createCollectionTables(database);
     await _createExpenseTargetTables(database);
+    await _createStockTables(database);
 
     if (oldVersion < 4 &&
         !await _hasColumn(database, 'local_work_sessions', 'start_source')) {
