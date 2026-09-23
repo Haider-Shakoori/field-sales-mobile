@@ -90,7 +90,9 @@ class MoreScreen extends StatelessWidget {
             child: ListTile(
               leading: const Icon(Icons.assignment_return_outlined),
               title: const Text('Returns'),
-              subtitle: const Text('Offline customer returns and review status'),
+              subtitle: const Text(
+                'Offline customer returns and review status',
+              ),
               trailing: const Icon(Icons.chevron_right),
               onTap: () => _open(context, 'Returns', const ReturnsScreen()),
             ),
