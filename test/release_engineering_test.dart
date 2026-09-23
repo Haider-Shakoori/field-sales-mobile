@@ -21,6 +21,22 @@ void main() {
     },
   );
 
+  test('Android permission bridge serializes notification permission', () {
+    final activity = File(
+      'android/app/src/main/kotlin/com/businessos/fieldpulse/MainActivity.kt',
+    ).readAsStringSync();
+    final attendance = File('lib/state/attendance_controller.dart')
+        .readAsStringSync();
+
+    expect(activity, contains('pendingNotificationPermissionResult = result'));
+    expect(activity, contains('onRequestPermissionsResult'));
+    expect(
+      activity,
+      contains('pendingNotificationPermissionResult?.success(granted)'),
+    );
+    expect(attendance, contains('.timeout(const Duration(seconds: 15))'));
+  });
+
   test('release signing is externalized and fails closed', () {
     final gradle = File('android/app/build.gradle.kts').readAsStringSync();
 
