@@ -112,9 +112,15 @@ class SyncController extends ChangeNotifier {
       'WHERE tenant_id=? AND sync_status<>?',
       [tenantId, 'synced'],
     );
+    final returns = await db.db.rawQuery(
+      'SELECT COUNT(*) AS total FROM local_sales_returns '
+      'WHERE tenant_id=? AND sync_status<>?',
+      [tenantId, 'synced'],
+    );
 
     return (queue.first['total'] as int? ?? 0) +
         (gps.first['total'] as int? ?? 0) +
-        (privacy.first['total'] as int? ?? 0);
+        (privacy.first['total'] as int? ?? 0) +
+        (returns.first['total'] as int? ?? 0);
   }
 }
