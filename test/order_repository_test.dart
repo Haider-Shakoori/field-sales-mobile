@@ -4,6 +4,7 @@ import 'package:field_sales_mobile/core/storage/secret_store.dart';
 import 'package:field_sales_mobile/features/master_data/master_data_repository.dart';
 import 'package:field_sales_mobile/features/master_data/master_data_source.dart';
 import 'package:field_sales_mobile/features/orders/order_repository.dart';
+import 'package:field_sales_mobile/features/stock/stock_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -116,10 +117,13 @@ void main() {
         'currency': 'AFN',
       };
 
+      final api = ApiClient(SecretStore());
+      final stock = StockRepository(api: api, db: db);
       final repository = OrderRepository(
-        api: ApiClient(SecretStore()),
+        api: api,
         db: db,
         masterData: master,
+        stock: stock,
       );
 
       final preview = await repository.preview(
