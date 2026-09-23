@@ -4,7 +4,7 @@ import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
 class AppDatabase {
-  static const version = 12;
+  static const version = 13;
 
   Database? _db;
 
@@ -16,17 +16,18 @@ class AppDatabase {
     _db = await openDatabase(
       p.join(dir, 'field_sales.db'),
       version: version,
-      onCreate: (database, _) => _createV12(database),
+      onCreate: (database, _) => _createV13(database),
       onUpgrade: _upgrade,
     );
   }
 
-  Future<void> _createV12(Database database) async {
+  Future<void> _createV13(Database database) async {
     await _createSyncTables(database);
     await _createMasterTables(database);
     await _createAttendanceTables(database);
     await _createVisitTables(database);
     await _createOrderTables(database);
+    await _createInventoryTables(database);
     await _createCollectionTables(database);
     await _createExpenseTargetTables(database);
   }
@@ -449,6 +450,99 @@ class AppDatabase {
     );
   }
 
+  Future<void> _createInventoryTables(Database database) async {
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_van_stock_meta ('
+      'tenant_id TEXT PRIMARY KEY, '
+      'enabled INTEGER NOT NULL DEFAULT 0, '
+      'updated_at TEXT NOT NULL'
+      ')',
+    );
+
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_van_stock ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL, '
+      'product_uuid TEXT NOT NULL, '
+      'sku TEXT NOT NULL, '
+      'name TEXT NOT NULL, '
+      'unit TEXT NOT NULL, '
+      'sellable_quantity REAL NOT NULL DEFAULT 0, '
+      'reserved_quantity REAL NOT NULL DEFAULT 0, '
+      'available_quantity REAL NOT NULL DEFAULT 0, '
+      'damaged_quantity REAL NOT NULL DEFAULT 0, '
+      'server_updated_at TEXT, '
+      'cached_at TEXT NOT NULL'
+      ')',
+    );
+    await database.execute(
+      'CREATE UNIQUE INDEX IF NOT EXISTS idx_van_stock_product '
+      'ON local_van_stock(tenant_id,product_uuid)',
+    );
+
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_customer_returns ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL, '
+      'offline_uuid TEXT NOT NULL, '
+      'server_uuid TEXT, '
+      'return_number TEXT, '
+      'customer_uuid TEXT NOT NULL, '
+      'customer_name TEXT NOT NULL, '
+      'visit_uuid TEXT, '
+      'order_uuid TEXT, '
+      'order_number TEXT, '
+      'returned_at TEXT NOT NULL, '
+      'status TEXT NOT NULL DEFAULT "pending", '
+      'reason TEXT NOT NULL, '
+      'notes TEXT, '
+      'status_note TEXT, '
+      'sync_status TEXT NOT NULL DEFAULT "pending", '
+      'last_error TEXT, '
+      'created_at TEXT NOT NULL, '
+      'updated_at TEXT NOT NULL'
+      ')',
+    );
+    await database.execute(
+      'CREATE UNIQUE INDEX IF NOT EXISTS idx_returns_tenant_uuid '
+      'ON local_customer_returns(tenant_id,offline_uuid)',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_returns_sync '
+      'ON local_customer_returns(tenant_id,sync_status,returned_at)',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_returns_customer '
+      'ON local_customer_returns(tenant_id,customer_uuid,returned_at)',
+    );
+
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_customer_return_items ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL, '
+      'return_offline_uuid TEXT NOT NULL, '
+      'server_uuid TEXT, '
+      'product_uuid TEXT NOT NULL, '
+      'product_sku TEXT NOT NULL, '
+      'product_name TEXT NOT NULL, '
+      'unit TEXT NOT NULL, '
+      'quantity REAL NOT NULL, '
+      'condition TEXT NOT NULL, '
+      'reason TEXT'
+      ')',
+    );
+    await database.execute(
+      'CREATE UNIQUE INDEX IF NOT EXISTS idx_return_items_condition '
+      'ON local_customer_return_items('
+      'tenant_id,return_offline_uuid,product_uuid,condition'
+      ')',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_return_items_return '
+      'ON local_customer_return_items(tenant_id,return_offline_uuid)',
+    );
+  }
+
   Future<void> _createCollectionTables(Database database) async {
     await database.execute(
       'CREATE TABLE IF NOT EXISTS local_collections ('
@@ -628,6 +722,7 @@ class AppDatabase {
     await _createAttendanceTables(database);
     await _createVisitTables(database);
     await _createOrderTables(database);
+    await _createInventoryTables(database);
     await _createCollectionTables(database);
     await _createExpenseTargetTables(database);
 
