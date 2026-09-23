@@ -30,11 +30,7 @@ class CustomerStatementRepository {
     if (refresh && online) {
       final response = await api.get(
         'customers/$customerUuid/statement',
-        query: {
-          'from': ?from,
-          'to': ?to,
-          'currency': ?currency,
-        },
+        query: {'from': ?from, 'to': ?to, 'currency': ?currency},
       );
 
       final statement = response is Map<String, dynamic>
