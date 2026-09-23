@@ -325,9 +325,9 @@ class StockReturnRepository {
     final data = response is Map<String, dynamic>
         ? response
         : Map<String, dynamic>.from(response as Map);
-    final rows = (data['returns'] as List? ?? const [])
-        .whereType<Map>()
-        .map(Map<String, dynamic>.from);
+    final rows = (data['returns'] as List? ?? const []).whereType<Map>().map(
+      Map<String, dynamic>.from,
+    );
 
     for (final row in rows) {
       await _applyServerReturn(tenantId, row);
