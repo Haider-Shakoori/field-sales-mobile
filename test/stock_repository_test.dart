@@ -122,10 +122,7 @@ void main() {
     await db.open();
     const tenantId = 'legacy-tenant';
 
-    final repository = StockRepository(
-      api: ApiClient(SecretStore()),
-      db: db,
-    );
+    final repository = StockRepository(api: ApiClient(SecretStore()), db: db);
 
     expect(
       await repository.availableForProduct(tenantId, 'missing-product'),
