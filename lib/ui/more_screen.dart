@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'collections_screen.dart';
 import 'expenses_screen.dart';
 import 'products_screen.dart';
+import 'returns_screen.dart';
 import 'routes_screen.dart';
 import 'sync_refresh.dart';
 import 'sync_screen.dart';
 import 'targets_screen.dart';
+import 'van_stock_screen.dart';
 
 class MoreScreen extends StatelessWidget {
   const MoreScreen({super.key});
@@ -73,6 +75,24 @@ class MoreScreen extends StatelessWidget {
               subtitle: const Text('Cached product catalog and pricing'),
               trailing: const Icon(Icons.chevron_right),
               onTap: () => _open(context, 'Products', const ProductsScreen()),
+            ),
+          ),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.local_shipping_outlined),
+              title: const Text('Van stock'),
+              subtitle: const Text('Available, reserved and damaged stock'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => _open(context, 'Van stock', const VanStockScreen()),
+            ),
+          ),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.assignment_return_outlined),
+              title: const Text('Returns'),
+              subtitle: const Text('Offline customer returns and review status'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => _open(context, 'Returns', const ReturnsScreen()),
             ),
           ),
           Card(

@@ -7,6 +7,7 @@ import '../state/master_data_controller.dart';
 import '../state/visit_controller.dart';
 import 'collection_create_screen.dart';
 import 'order_create_screen.dart';
+import 'return_create_screen.dart';
 import 'visit_forms_screen.dart';
 import 'sync_refresh.dart';
 import 'visits_map_view.dart';
@@ -193,6 +194,31 @@ class _VisitsScreenState extends State<VisitsScreen> {
     );
   }
 
+  Future<void> _createReturnFromVisit(
+    BuildContext context,
+    Map<String, dynamic> visit,
+  ) async {
+    final customerId = visit['customer_uuid']?.toString();
+
+    if (customerId == null || customerId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Customer data is not available offline yet.'),
+        ),
+      );
+      return;
+    }
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ReturnCreateScreen(
+          initialCustomerId: customerId,
+          visitUuid: visit['offline_uuid']?.toString(),
+        ),
+      ),
+    );
+  }
+
   Future<void> _createCollectionFromVisit(
     BuildContext context,
     Map<String, dynamic> visit,
@@ -339,6 +365,14 @@ class _VisitsScreenState extends State<VisitsScreen> {
                           icon: const Icon(Icons.payments_outlined),
                           label: const Text('Collect'),
                         ),
+                        if (active)
+                          OutlinedButton.icon(
+                            onPressed: state.busy
+                                ? null
+                                : () => _createReturnFromVisit(context, visit),
+                            icon: const Icon(Icons.assignment_return_outlined),
+                            label: const Text('Return'),
+                          ),
                         if (active)
                           OutlinedButton.icon(
                             onPressed: state.busy
