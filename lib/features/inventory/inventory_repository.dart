@@ -118,15 +118,11 @@ class InventoryRepository {
     final now = DateTime.now().toUtc().toIso8601String();
 
     await db.db.transaction((txn) async {
-      await txn.insert(
-        'local_van_stock_meta',
-        {
-          'tenant_id': tenantId,
-          'enabled': enabled ? 1 : 0,
-          'updated_at': now,
-        },
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
+      await txn.insert('local_van_stock_meta', {
+        'tenant_id': tenantId,
+        'enabled': enabled ? 1 : 0,
+        'updated_at': now,
+      }, conflictAlgorithm: ConflictAlgorithm.replace);
 
       await txn.delete(
         'local_van_stock',
@@ -226,10 +222,9 @@ class InventoryRepository {
           product: existing.product,
           quantity: _round4(existing.quantity + line.quantity),
           condition: existing.condition,
-          reason: [
-            existing.reason,
-            line.reason,
-          ].where((value) => value != null && value!.trim().isNotEmpty).join('; '),
+          reason: [existing.reason, line.reason]
+              .where((value) => value != null && value!.trim().isNotEmpty)
+              .join('; '),
         );
       }
     }
@@ -466,9 +461,9 @@ class InventoryRepository {
     if (!await ConnectivityGate.instance.isOnline()) return;
 
     final data = await api.get('returns/history', query: {'per_page': 100});
-    final rows = (data as List? ?? const [])
-        .whereType<Map>()
-        .map(Map<String, dynamic>.from);
+    final rows = (data as List? ?? const []).whereType<Map>().map(
+      Map<String, dynamic>.from,
+    );
 
     for (final row in rows) {
       await _applyServerReturn(tenantId, row);

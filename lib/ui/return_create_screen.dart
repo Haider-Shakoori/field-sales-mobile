@@ -7,11 +7,7 @@ import '../state/master_data_controller.dart';
 import '../state/order_controller.dart';
 
 class ReturnCreateScreen extends StatefulWidget {
-  const ReturnCreateScreen({
-    this.initialCustomerId,
-    this.visitUuid,
-    super.key,
-  });
+  const ReturnCreateScreen({this.initialCustomerId, this.visitUuid, super.key});
 
   final String? initialCustomerId;
   final String? visitUuid;
@@ -71,10 +67,7 @@ class _ReturnCreateScreenState extends State<ReturnCreateScreen> {
     return null;
   }
 
-  Future<void> _selectOrder(
-    String? value,
-    OrderController orders,
-  ) async {
+  Future<void> _selectOrder(String? value, OrderController orders) async {
     setState(() {
       _orderUuid = value;
       _orderProductIds = null;
@@ -168,9 +161,7 @@ class _ReturnCreateScreenState extends State<ReturnCreateScreen> {
         product: row.product,
         quantity: quantity,
         condition: row.condition,
-        reason: row.reason.text.trim().isEmpty
-            ? null
-            : row.reason.text.trim(),
+        reason: row.reason.text.trim().isEmpty ? null : row.reason.text.trim(),
       );
     }).toList();
   }
@@ -181,16 +172,15 @@ class _ReturnCreateScreenState extends State<ReturnCreateScreen> {
     final customer = _customer(master.customers);
 
     if (customer == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Select a customer.')),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Select a customer.')));
       return;
     }
 
     if (_reason.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enter a return reason.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Enter a return reason.')));
       return;
     }
 
@@ -231,9 +221,8 @@ class _ReturnCreateScreenState extends State<ReturnCreateScreen> {
     if (inventory.message == 'Return saved locally.') {
       Navigator.pop(context, true);
     } else if (inventory.message != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(inventory.message!)),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(inventory.message!)));
     }
   }
 
@@ -317,9 +306,7 @@ class _ReturnCreateScreenState extends State<ReturnCreateScreen> {
                 ),
               ),
               OutlinedButton.icon(
-                onPressed: _saving
-                    ? null
-                    : () => _addProduct(master.products),
+                onPressed: _saving ? null : () => _addProduct(master.products),
                 icon: const Icon(Icons.add),
                 label: const Text('Add product'),
               ),
