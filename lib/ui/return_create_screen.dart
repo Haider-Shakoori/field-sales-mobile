@@ -7,11 +7,7 @@ import '../state/master_data_controller.dart';
 import 'sync_refresh.dart';
 
 class ReturnCreateScreen extends StatefulWidget {
-  const ReturnCreateScreen({
-    this.initialCustomerId,
-    this.visitUuid,
-    super.key,
-  });
+  const ReturnCreateScreen({this.initialCustomerId, this.visitUuid, super.key});
 
   final String? initialCustomerId;
   final String? visitUuid;
@@ -95,7 +91,8 @@ class _ReturnCreateScreenState extends State<ReturnCreateScreen> {
 
       if (product == null || quantity == null || quantity <= 0) {
         setState(
-          () => _error = 'Every return line needs a valid product and quantity.',
+          () =>
+              _error = 'Every return line needs a valid product and quantity.',
         );
         return;
       }
@@ -194,7 +191,9 @@ class _ReturnCreateScreenState extends State<ReturnCreateScreen> {
                           .map(
                             (row) => DropdownMenuItem(
                               value: row['id'].toString(),
-                              child: Text((row['name'] ?? 'Product').toString()),
+                              child: Text(
+                                (row['name'] ?? 'Product').toString(),
+                              ),
                             ),
                           )
                           .toList(),
