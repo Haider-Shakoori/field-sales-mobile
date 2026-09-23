@@ -137,10 +137,7 @@ void main() {
       'cached_at': DateTime.now().toUtc().toIso8601String(),
     });
 
-    final master = MasterDataRepository(
-      database: db,
-      source: _UnusedSource(),
-    );
+    final master = MasterDataRepository(database: db, source: _UnusedSource());
 
     await master.cacheServerRow(
       table: 'products',
@@ -177,11 +174,7 @@ void main() {
         customer: customer,
         orderedAt: DateTime(2026, 9, 23),
         lines: [
-          OrderDraftLine(
-            product: product,
-            quantity: 6,
-            discountPercent: 0,
-          ),
+          OrderDraftLine(product: product, quantity: 6, discountPercent: 0),
         ],
       ),
       throwsA(
@@ -199,11 +192,7 @@ void main() {
       orderedAt: DateTime.utc(2026, 9, 23, 12),
       paymentType: 'cash',
       lines: [
-        OrderDraftLine(
-          product: product,
-          quantity: 3,
-          discountPercent: 0,
-        ),
+        OrderDraftLine(product: product, quantity: 3, discountPercent: 0),
       ],
     );
 
@@ -215,11 +204,7 @@ void main() {
         customer: customer,
         orderedAt: DateTime(2026, 9, 23),
         lines: [
-          OrderDraftLine(
-            product: product,
-            quantity: 3,
-            discountPercent: 0,
-          ),
+          OrderDraftLine(product: product, quantity: 3, discountPercent: 0),
         ],
       ),
       throwsA(isA<StateError>()),
