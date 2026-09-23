@@ -66,6 +66,8 @@ class OrderRepository {
       throw StateError('Add at least one product.');
     }
 
+    final stockEnabled =
+        await db.readSetting('salesman_stock_enabled:$tenantId') == true;
     final priceLists = await masterData.list('price_lists', tenantId);
     final priceItems = await masterData.list('price_list_items', tenantId);
     final customerPriceListId = customer['price_list_id']?.toString();
@@ -111,6 +113,19 @@ class OrderRepository {
       }
       if (!productIds.add(productId)) {
         throw StateError('A product can appear only once in an order.');
+      }
+
+      if (stockEnabled) {
+        final available = await _availableStock(tenantId, productId);
+        if (line.quantity > available + 0.0001) {
+          final name = (line.product['name'] ?? 'Product').toString();
+          throw StateError(
+            name +
+                ' exceeds available van stock. Available: ' +
+                available.toStringAsFixed(2) +
+                '.',
+          );
+        }
       }
 
       var unitPrice = _number(line.product['base_price']);
@@ -439,6 +454,37 @@ class OrderRepository {
       entityType: 'order',
       entityUuid: uuid,
     );
+  }
+
+  Future<double> _availableStock(
+    String tenantId,
+    String productUuid,
+  ) async {
+    final balanceRows = await db.db.query(
+      'local_stock_balances',
+      columns: ['sellable_qty'],
+      where: 'tenant_id=? AND product_uuid=?',
+      whereArgs: [tenantId, productUuid],
+      limit: 1,
+    );
+    var available = balanceRows.isEmpty
+        ? 0.0
+        : _number(balanceRows.first['sellable_qty']);
+
+    final reservedRows = await db.db.rawQuery(
+      'SELECT COALESCE(SUM(i.quantity),0) AS total '
+      'FROM local_order_items i '
+      'JOIN local_orders o '
+      'ON o.tenant_id=i.tenant_id '
+      'AND o.offline_uuid=i.order_offline_uuid '
+      'WHERE i.tenant_id=? AND i.product_uuid=? '
+      'AND o.status NOT IN ("rejected","cancelled") '
+      'AND o.sync_status<>"synced"',
+      [tenantId, productUuid],
+    );
+    available -= _number(reservedRows.first['total']);
+
+    return available < 0 ? 0 : available;
   }
 
   double _number(dynamic value) {
