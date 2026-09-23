@@ -59,17 +59,17 @@ Future<void> main() async {
   final collections = CollectionRepository(api: api, db: db);
   final expenses = ExpenseRepository(api: api, db: db);
   final targets = TargetRepository(api: api, db: db);
-  final stockReturns = StockReturnRepository(
-    api: api,
-    db: db,
-    retry: SyncRetryStore(db),
-  );
 
   final masterSource = ApiMasterDataSource(api);
   final masterData = MasterDataRepository(database: db, source: masterSource);
   final orders = OrderRepository(api: api, db: db, masterData: masterData);
   final localTransactions = LocalFirstTransaction(db);
   final retryStore = SyncRetryStore(db);
+  final stockReturns = StockReturnRepository(
+    api: api,
+    db: db,
+    retry: retryStore,
+  );
   final customers = CustomerRepository(
     database: db,
     transactions: localTransactions,
