@@ -19,6 +19,7 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
   DateTime? _cachedAt;
   bool _loading = true;
   bool _refreshing = false;
+  String? _changingOpportunityId;
   String? _message;
 
   @override
@@ -115,6 +116,67 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
     }
   }
 
+  Future<void> _addOpportunity(Map<String, dynamic> opportunity) async {
+    final tenantId = context.read<AppState>().session?.tenantId;
+    final customerId = opportunity['customer_id']?.toString();
+
+    if (tenantId == null || customerId == null || customerId.isEmpty) return;
+
+    setState(() => _changingOpportunityId = customerId);
+
+    try {
+      final repository = context.read<DailyRoutePlanRepository>();
+      await repository.includeOpportunity(tenantId, customerId);
+      await _refresh();
+
+      if (mounted) {
+        setState(() {
+          _message = 'Opportunity added to today\'s route and re-optimized from your current position.';
+        });
+      }
+    } finally {
+      if (mounted) setState(() => _changingOpportunityId = null);
+    }
+  }
+
+  Future<void> _removeOpportunity(Map<String, dynamic> stop) async {
+    final tenantId = context.read<AppState>().session?.tenantId;
+    final customerId = stop['customer_id']?.toString();
+
+    if (tenantId == null || customerId == null || customerId.isEmpty) return;
+
+    setState(() => _changingOpportunityId = customerId);
+
+    try {
+      final repository = context.read<DailyRoutePlanRepository>();
+      await repository.removeOpportunity(tenantId, customerId);
+      await _refresh();
+
+      if (mounted) {
+        setState(() {
+          _message = 'Extra opportunity stop removed from today\'s route.';
+        });
+      }
+    } finally {
+      if (mounted) setState(() => _changingOpportunityId = null);
+    }
+  }
+
+  List<Map<String, dynamic>> get _opportunities {
+    final raw = _plan?['nearby_opportunities'];
+    if (raw is! List) return const [];
+
+    return raw.whereType<Map>().map(Map<String, dynamic>.from).toList();
+  }
+
+  Map<String, dynamic> get _dynamicRoute {
+    final raw = _plan?['dynamic_route'];
+
+    return raw is Map
+        ? Map<String, dynamic>.from(raw)
+        : const <String, dynamic>{};
+  }
+
   List<Map<String, dynamic>> get _stops {
     final raw = _plan?['stops'];
     if (raw is! List) return const [];
@@ -159,6 +221,9 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
         ? Map<String, dynamic>.from(plan!['start_location'] as Map)
         : null;
     final distance = plan?['approximate_air_distance_km'];
+    final included =
+        (_dynamicRoute['included_opportunity_ids'] as List? ?? const []).length;
+    final radius = _dynamicRoute['nearby_radius_km'] ?? 5;
 
     return RefreshIndicator(
       onRefresh: _refresh,
@@ -202,8 +267,8 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                   const SizedBox(height: 8),
                   Text(
                     start != null
-                        ? 'Optimized from your current GPS position, then by business priority and proximity.'
-                        : 'Optimized by business priority and proximity. Pull to refresh with your current GPS position.',
+                        ? 'Live route: optimized from your current GPS position, business priority, and proximity.'
+                        : 'Optimized by business priority and proximity. Re-optimize when GPS is available.',
                   ),
                   if (_cachedAt != null) ...[
                     const SizedBox(height: 6),
@@ -222,7 +287,17 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                       _metric('Urgent', _summary['urgent']),
                       _metric('High', _summary['high']),
                       _metric('Visited', _summary['visited']),
+                      if (included > 0) _metric('Extra', included),
                     ],
+                  ),
+                  const SizedBox(height: 14),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.tonalIcon(
+                      onPressed: _refreshing ? null : _refresh,
+                      icon: const Icon(Icons.my_location),
+                      label: const Text('Re-optimize now'),
+                    ),
                   ),
                 ],
               ),
@@ -267,6 +342,10 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                   .whereType<String>()
                   .toList();
               final visited = stop['visited_today'] == true;
+              final opportunity = stop['is_opportunity'] == true;
+              final customerId = stop['customer_id']?.toString();
+              final changing =
+                  customerId != null && customerId == _changingOpportunityId;
               final priority = stop['priority']?.toString() ?? 'normal';
 
               return Padding(
@@ -309,6 +388,15 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                                   ),
                                 ],
                               ),
+                              if (opportunity)
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 6),
+                                  child: Text(
+                                    'Extra opportunity stop',
+                                    style: Theme.of(context).textTheme.bodySmall
+                                        ?.copyWith(fontWeight: FontWeight.w600),
+                                  ),
+                                ),
                               if ((stop['address'] ?? '')
                                   .toString()
                                   .trim()
@@ -339,6 +427,23 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                                   ),
                                 ),
                               ],
+                              if (opportunity && !visited) ...[
+                                const SizedBox(height: 10),
+                                TextButton.icon(
+                                  onPressed: changing
+                                      ? null
+                                      : () => _removeOpportunity(stop),
+                                  icon: changing
+                                      ? const SizedBox.square(
+                                          dimension: 14,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                          ),
+                                        )
+                                      : const Icon(Icons.remove_circle_outline),
+                                  label: const Text('Remove extra stop'),
+                                ),
+                              ],
                             ],
                           ),
                         ),
@@ -348,6 +453,109 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                 ),
               );
             }),
+          if (_opportunities.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Nearby opportunities',
+                    style: Theme.of(context).textTheme.titleMedium
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Text(
+                  'within ${radius.toString()} km',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Nearby customers inside your assignment scope but outside today\'s assigned route. Add one only when it makes business sense.',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            const SizedBox(height: 10),
+            ..._opportunities.map((opportunity) {
+              final reasons = (opportunity['reasons'] as List? ?? const [])
+                  .map((value) => value.toString())
+                  .toList();
+              final customerId = opportunity['customer_id']?.toString();
+              final changing =
+                  customerId != null && customerId == _changingOpportunityId;
+              final priority = opportunity['priority']?.toString() ?? 'normal';
+
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(14),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const CircleAvatar(
+                              child: Icon(Icons.near_me_outlined),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                opportunity['customer_name']?.toString() ??
+                                    'Customer',
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            Chip(
+                              label: Text(_priorityLabel(priority)),
+                              visualDensity: VisualDensity.compact,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '${opportunity['distance_km']?.toString() ?? '-'} km away',
+                        ),
+                        if ((opportunity['address'] ?? '')
+                            .toString()
+                            .trim()
+                            .isNotEmpty) ...[
+                          const SizedBox(height: 4),
+                          Text(opportunity['address'].toString()),
+                        ],
+                        if (reasons.isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            reasons.join(' · '),
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton.icon(
+                            onPressed: changing
+                                ? null
+                                : () => _addOpportunity(opportunity),
+                            icon: changing
+                                ? const SizedBox.square(
+                                    dimension: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Icon(Icons.add_road),
+                            label: const Text('Add to today\'s route'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }),
+          ],
           const SizedBox(height: 80),
         ],
       ),

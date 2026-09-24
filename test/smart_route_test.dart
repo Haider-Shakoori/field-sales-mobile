@@ -19,6 +19,11 @@ class _SmartRouteApi extends ApiClient {
     expect(path, 'route-plan/today');
     lastQuery = query;
 
+    final included = (query?['include_customer_ids']?.toString() ?? '')
+        .split(',')
+        .where((value) => value.isNotEmpty)
+        .toList();
+
     return {
       'date': '2026-09-24',
       'source': {'type': 'route', 'id': 'route-1', 'name': 'Kabul Route'},
@@ -43,8 +48,36 @@ class _SmartRouteApi extends ApiClient {
           'priority': 'normal',
           'reasons': ['Regular route stop'],
           'visited_today': false,
+          'is_opportunity': false,
         },
+        if (included.contains('opportunity-1'))
+          {
+            'customer_id': 'opportunity-1',
+            'customer_name': 'Nearby Opportunity',
+            'recommended_order': 2,
+            'priority': 'high',
+            'reasons': ['Nearby opportunity'],
+            'visited_today': false,
+            'is_opportunity': true,
+          },
       ],
+      'nearby_opportunities': included.contains('opportunity-1')
+          ? []
+          : [
+              {
+                'customer_id': 'opportunity-1',
+                'customer_name': 'Nearby Opportunity',
+                'distance_km': 0.8,
+                'priority': 'high',
+                'reasons': ['Within 1 km'],
+                'can_add_to_route': true,
+              },
+            ],
+      'dynamic_route': {
+        'included_opportunity_ids': included,
+        'nearby_radius_km': query?['nearby_radius_km'] ?? 5,
+        'rerouted_from_current_position': query?['latitude'] != null,
+      },
       'approximate_air_distance_km': 1.2,
       'distance_method': 'straight_line',
       'warnings': ['distance_estimate_is_straight_line'],
@@ -88,6 +121,48 @@ void main() {
       'customer-1',
     );
     expect(await repository.cachedAt('tenant-1'), isNotNull);
+
+    await db.db.close();
+  });
+
+  test('smart route persists explicit nearby opportunity inclusion', () async {
+    final db = AppDatabase();
+    await db.open();
+
+    final api = _SmartRouteApi();
+    final repository = DailyRoutePlanRepository(api: api, db: db);
+
+    await repository.includeOpportunity('tenant-1', 'opportunity-1');
+
+    final beforeRefresh = await repository.includedOpportunityIds('tenant-1');
+    expect(beforeRefresh, contains('opportunity-1'));
+
+    final plan = await repository.refresh(
+      'tenant-1',
+      latitude: 34.55,
+      longitude: 69.20,
+      accuracy: 5,
+      nearbyRadiusKm: 7,
+    );
+
+    expect(api.lastQuery?['include_customer_ids'], 'opportunity-1');
+    expect(api.lastQuery?['nearby_radius_km'], 7);
+    expect(
+      ((plan['dynamic_route'] as Map)['included_opportunity_ids'] as List),
+      contains('opportunity-1'),
+    );
+    expect(
+      (plan['stops'] as List).whereType<Map>().any(
+        (row) =>
+            row['customer_id'] == 'opportunity-1' &&
+            row['is_opportunity'] == true,
+      ),
+      isTrue,
+    );
+    expect(plan['nearby_opportunities'], isEmpty);
+
+    await repository.removeOpportunity('tenant-1', 'opportunity-1');
+    expect(await repository.includedOpportunityIds('tenant-1'), isEmpty);
 
     await db.db.close();
   });
