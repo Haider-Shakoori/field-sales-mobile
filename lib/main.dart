@@ -22,6 +22,7 @@ import 'features/expenses/expense_repository.dart';
 import 'features/financial_documents/customer_statement_repository.dart';
 import 'features/gps/gps_repository.dart';
 import 'features/gps/tracking_service.dart';
+import 'features/maps/offline_map_cache.dart';
 import 'features/master_data/master_data_repository.dart';
 import 'features/master_data/master_data_source.dart';
 import 'features/orders/order_repository.dart';
@@ -45,6 +46,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   AppConfig.validateForStartup();
   tz.initializeTimeZones();
+  await OfflineMapCache.initialize();
 
   final db = AppDatabase();
   await db.open();
