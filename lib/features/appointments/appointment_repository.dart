@@ -283,30 +283,26 @@ class AppointmentRepository {
       }
 
       final timestamp = DateTime.now().toUtc().toIso8601String();
-      await db.db.insert(
-        'local_appointments',
-        {
-          'tenant_id': tenantId,
-          'offline_uuid': uuid,
-          'server_uuid': uuid,
-          'customer_uuid': row['customer_id']?.toString(),
-          'customer_name': row['customer_name']?.toString(),
-          'title': row['title']?.toString() ?? 'Appointment',
-          'type': row['type']?.toString() ?? 'meeting',
-          'status': row['status']?.toString() ?? 'scheduled',
-          'starts_at': row['starts_at']?.toString() ?? timestamp,
-          'ends_at': row['ends_at']?.toString(),
-          'reminder_minutes_before': row['reminder_minutes_before'],
-          'location': row['location']?.toString(),
-          'notes': row['notes']?.toString(),
-          'completed_at': row['completed_at']?.toString(),
-          'sync_status': 'synced',
-          'last_error': null,
-          'created_at': timestamp,
-          'updated_at': row['updated_at']?.toString() ?? timestamp,
-        },
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
+      await db.db.insert('local_appointments', {
+        'tenant_id': tenantId,
+        'offline_uuid': uuid,
+        'server_uuid': uuid,
+        'customer_uuid': row['customer_id']?.toString(),
+        'customer_name': row['customer_name']?.toString(),
+        'title': row['title']?.toString() ?? 'Appointment',
+        'type': row['type']?.toString() ?? 'meeting',
+        'status': row['status']?.toString() ?? 'scheduled',
+        'starts_at': row['starts_at']?.toString() ?? timestamp,
+        'ends_at': row['ends_at']?.toString(),
+        'reminder_minutes_before': row['reminder_minutes_before'],
+        'location': row['location']?.toString(),
+        'notes': row['notes']?.toString(),
+        'completed_at': row['completed_at']?.toString(),
+        'sync_status': 'synced',
+        'last_error': null,
+        'created_at': timestamp,
+        'updated_at': row['updated_at']?.toString() ?? timestamp,
+      }, conflictAlgorithm: ConflictAlgorithm.replace);
     }
   }
 
