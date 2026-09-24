@@ -195,8 +195,7 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                   Text(
                     [
                       if (plan?['date'] != null) plan!['date'].toString(),
-                      if (source['type'] != null)
-                        'Source: ${source['type']}',
+                      if (source['type'] != null) 'Source: ${source['type']}',
                       if (distance != null) '~$distance km',
                     ].join(' · '),
                   ),
