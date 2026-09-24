@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:field_sales_mobile/core/api/api_client.dart';
 import 'package:field_sales_mobile/core/db/app_database.dart';
 import 'package:field_sales_mobile/core/storage/secret_store.dart';
