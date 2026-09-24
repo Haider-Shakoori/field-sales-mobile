@@ -162,7 +162,11 @@ class AttendanceController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> startDay({String source = 'manual'}) async {
+  Future<void> startDay({
+    String source = 'manual',
+    String? vehicleReference,
+    double? odometerStartKm,
+  }) async {
     if (busy || working) return;
     busy = true;
     message = null;
@@ -203,6 +207,8 @@ class AttendanceController extends ChangeNotifier {
         accuracy: fix.accuracy,
         source: source,
         privacyAckAt: DateTime.now().toUtc().toIso8601String(),
+        vehicleReference: vehicleReference,
+        odometerStartKm: odometerStartKm,
       );
       session = await attendance.active(tenantId);
       await reconcile();
@@ -215,7 +221,11 @@ class AttendanceController extends ChangeNotifier {
     }
   }
 
-  Future<void> endDay({bool sync = true}) async {
+  Future<void> endDay({
+    bool sync = true,
+    String? vehicleReference,
+    double? odometerEndKm,
+  }) async {
     if (busy || !working) return;
     busy = true;
     notifyListeners();
@@ -224,6 +234,15 @@ class AttendanceController extends ChangeNotifier {
       if (tenantId == null) {
         throw StateError('Signed-in tenant is unavailable.');
       }
+      final startOdometer = _double(session?['odometer_start_km']);
+      if (odometerEndKm != null &&
+          startOdometer != null &&
+          odometerEndKm < startOdometer) {
+        throw StateError(
+          'End odometer must be greater than or equal to the start odometer.',
+        );
+      }
+
       final fix = await tracking.oneShot(timeout: const Duration(seconds: 10));
       late final double latitude;
       late final double longitude;
@@ -262,6 +281,9 @@ class AttendanceController extends ChangeNotifier {
         lat: latitude,
         lng: longitude,
         accuracy: accuracy,
+        vehicleReference:
+            vehicleReference ?? session?['vehicle_reference']?.toString(),
+        odometerEndKm: odometerEndKm,
       );
       session = null;
       if (sync) unawaited(_flushPending());
@@ -448,6 +470,11 @@ class AttendanceController extends ChangeNotifier {
     await appState.logout();
     session = null;
     notifyListeners();
+  }
+
+  double? _double(dynamic value) {
+    if (value is num) return value.toDouble();
+    return double.tryParse(value?.toString() ?? '');
   }
 
   @override

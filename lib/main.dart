@@ -24,6 +24,7 @@ import 'features/financial_documents/customer_statement_repository.dart';
 import 'features/gps/gps_repository.dart';
 import 'features/gps/tracking_service.dart';
 import 'features/maps/offline_map_cache.dart';
+import 'features/mileage/mileage_repository.dart';
 import 'features/master_data/master_data_repository.dart';
 import 'features/master_data/master_data_source.dart';
 import 'features/orders/order_repository.dart';
@@ -69,6 +70,7 @@ Future<void> main() async {
   final smartRoute = DailyRoutePlanRepository(api: api, db: db);
   final stock = StockRepository(api: api, db: db);
   final statements = CustomerStatementRepository(api: api, db: db);
+  final mileage = MileageRepository(api: api, db: db);
 
   final masterSource = ApiMasterDataSource(api);
   final masterData = MasterDataRepository(database: db, source: masterSource);
@@ -202,6 +204,7 @@ Future<void> main() async {
         Provider.value(value: collections),
         Provider.value(value: expenses),
         Provider.value(value: targets),
+        Provider.value(value: mileage),
         Provider.value(value: retryStore),
         Provider.value(value: syncCoordinator),
       ],

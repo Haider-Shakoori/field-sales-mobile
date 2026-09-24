@@ -47,6 +47,8 @@ class AttendanceRepository {
     required double accuracy,
     required String source,
     String? privacyAckAt,
+    String? vehicleReference,
+    double? odometerStartKm,
   }) async {
     final uuid = const Uuid().v4();
 
@@ -65,6 +67,8 @@ class AttendanceRepository {
         'sync_status': 'pending',
         'start_source': source,
         'privacy_ack_at': privacyAckAt,
+        'vehicle_reference': _clean(vehicleReference),
+        'odometer_start_km': odometerStartKm,
         'created_at': now,
         'updated_at': now,
       });
@@ -80,6 +84,8 @@ class AttendanceRepository {
           'accuracy': accuracy,
           'offline_uuid': uuid,
           'started_at': at.toUtc().toIso8601String(),
+          'vehicle_reference': _clean(vehicleReference),
+          'odometer_start_km': odometerStartKm,
         }),
         'priority': 10,
         'status': 'pending',
@@ -97,6 +103,8 @@ class AttendanceRepository {
     required double lat,
     required double lng,
     required double accuracy,
+    String? vehicleReference,
+    double? odometerEndKm,
   }) async {
     final tenantId = '${session['tenant_id']}';
     if (tenantId.isEmpty || tenantId == 'null') {
@@ -115,6 +123,9 @@ class AttendanceRepository {
           'end_accuracy': accuracy,
           'status': 'completed',
           'sync_status': 'pending',
+          if (_clean(vehicleReference) != null)
+            'vehicle_reference': _clean(vehicleReference),
+          'odometer_end_km': odometerEndKm,
           'updated_at': now,
         },
         where: 'tenant_id=? AND id=?',
@@ -131,6 +142,8 @@ class AttendanceRepository {
           'longitude': lng,
           'accuracy': accuracy,
           'ended_at': at.toUtc().toIso8601String(),
+          'vehicle_reference': _clean(vehicleReference),
+          'odometer_end_km': odometerEndKm,
         }),
         'priority': 20,
         'status': 'pending',
@@ -191,6 +204,14 @@ class AttendanceRepository {
             {
               'server_id': result['id'],
               'sync_status': 'synced',
+              if (result['vehicle_reference'] != null)
+                'vehicle_reference': result['vehicle_reference'],
+              if (result['odometer_start_km'] != null)
+                'odometer_start_km': result['odometer_start_km'],
+              if (result['odometer_end_km'] != null)
+                'odometer_end_km': result['odometer_end_km'],
+              if (result['gps_distance_km'] != null)
+                'gps_distance_km': result['gps_distance_km'],
               'updated_at': DateTime.now().toUtc().toIso8601String(),
             },
             where: 'tenant_id=? AND offline_uuid=?',
@@ -238,6 +259,11 @@ class AttendanceRepository {
         break;
       }
     }
+  }
+
+  String? _clean(String? value) {
+    final trimmed = value?.trim();
+    return trimmed == null || trimmed.isEmpty ? null : trimmed;
   }
 
   Future<void> _reconcileServerSession({

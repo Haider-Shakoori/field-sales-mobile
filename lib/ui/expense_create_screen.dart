@@ -16,6 +16,9 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
   final _currency = TextEditingController(text: 'AFN');
   final _merchant = TextEditingController();
   final _reference = TextEditingController();
+  final _fuelLiters = TextEditingController();
+  final _fuelUnitPrice = TextEditingController();
+  final _odometer = TextEditingController();
   final _notes = TextEditingController();
 
   String _category = ExpenseRepository.categories.first;
@@ -27,6 +30,9 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
     _currency.dispose();
     _merchant.dispose();
     _reference.dispose();
+    _fuelLiters.dispose();
+    _fuelUnitPrice.dispose();
+    _odometer.dispose();
     _notes.dispose();
     super.dispose();
   }
@@ -40,6 +46,42 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
       return;
     }
 
+    double? parseOptional(
+      TextEditingController controller,
+      String label, {
+      bool allowZero = false,
+    }) {
+      final raw = controller.text.trim();
+      if (raw.isEmpty) return null;
+
+      final value = double.tryParse(raw);
+      if (value == null || (allowZero ? value < 0 : value <= 0)) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Enter a valid $label.')));
+        throw const FormatException();
+      }
+
+      return value;
+    }
+
+    double? fuelLiters;
+    double? fuelUnitPrice;
+    double? odometerKm;
+
+    if (_category == 'fuel') {
+      try {
+        fuelLiters = parseOptional(_fuelLiters, 'fuel quantity');
+        fuelUnitPrice = parseOptional(_fuelUnitPrice, 'fuel unit price');
+        odometerKm = parseOptional(
+          _odometer,
+          'odometer reading',
+          allowZero: true,
+        );
+      } on FormatException {
+        return;
+      }
+    }
+
     setState(() => _saving = true);
     final controller = context.read<ExpenseController>();
 
@@ -47,6 +89,9 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
       category: _category,
       currency: _currency.text,
       amount: amount,
+      fuelLiters: fuelLiters,
+      fuelUnitPrice: fuelUnitPrice,
+      odometerKm: odometerKm,
       merchant: _merchant.text,
       referenceNumber: _reference.text,
       notes: _notes.text,
@@ -102,6 +147,56 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             decoration: const InputDecoration(labelText: 'Amount'),
           ),
+          if (_category == 'fuel') ...[
+            const SizedBox(height: 12),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Fuel details',
+                      style: TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: _fuelLiters,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      decoration: const InputDecoration(
+                        labelText: 'Liters (optional)',
+                        helperText: 'Used for km/L fuel-efficiency reporting.',
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: _fuelUnitPrice,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      decoration: const InputDecoration(
+                        labelText: 'Unit price (optional)',
+                        helperText:
+                            'Leave blank to derive it from amount ÷ liters.',
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: _odometer,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      decoration: const InputDecoration(
+                        labelText: 'Odometer km (optional)',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
           const SizedBox(height: 12),
           TextField(
             controller: _currency,
