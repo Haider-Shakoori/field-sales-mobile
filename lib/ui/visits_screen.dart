@@ -30,6 +30,15 @@ class _VisitsScreenState extends State<VisitsScreen> {
     'customer_unavailable': 'Customer unavailable',
   };
 
+  void _showVisitMessage(BuildContext context, VisitController visits) {
+    final value = visits.message?.trim();
+    if (value == null || value.isEmpty || !context.mounted) return;
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(value)));
+  }
+
   Future<void> _startVisit(BuildContext context) async {
     final attendance = context.read<AttendanceController>();
     final visits = context.read<VisitController>();
@@ -92,6 +101,8 @@ class _VisitsScreenState extends State<VisitsScreen> {
 
     if (customer != null && context.mounted) {
       await visits.checkIn(customer);
+      if (!context.mounted) return;
+      _showVisitMessage(context, visits);
     }
   }
 
@@ -155,11 +166,10 @@ class _VisitsScreenState extends State<VisitsScreen> {
         false;
 
     if (save && context.mounted) {
-      await context.read<VisitController>().checkOut(
-        visit,
-        outcome: outcome,
-        notes: notes.text,
-      );
+      final visits = context.read<VisitController>();
+      await visits.checkOut(visit, outcome: outcome, notes: notes.text);
+      if (!context.mounted) return;
+      _showVisitMessage(context, visits);
     }
   }
 
@@ -320,7 +330,11 @@ class _VisitsScreenState extends State<VisitsScreen> {
                         OutlinedButton.icon(
                           onPressed: state.busy
                               ? null
-                              : () => state.capturePhoto(visit),
+                              : () async {
+                                  await state.capturePhoto(visit);
+                                  if (!context.mounted) return;
+                                  _showVisitMessage(context, state);
+                                },
                           icon: const Icon(Icons.camera_alt_outlined),
                           label: const Text('Photo'),
                         ),
