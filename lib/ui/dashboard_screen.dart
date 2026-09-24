@@ -9,6 +9,7 @@ import '../state/call_activity_controller.dart';
 import '../state/collection_controller.dart';
 import '../state/expense_controller.dart';
 import '../state/master_data_controller.dart';
+import '../state/lead_controller.dart';
 import '../state/order_controller.dart';
 import '../state/sync_controller.dart';
 import '../state/target_controller.dart';
@@ -61,6 +62,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Future<void> _initializeData() async {
     await Future.wait([
       context.read<MasterDataController>().reloadLocal(),
+      context.read<LeadController>().reloadLocal(),
       context.read<AppointmentController>().reloadLocal(),
       context.read<VisitController>().reloadLocal(),
       context.read<CallActivityController>().reloadLocal(),
@@ -78,6 +80,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     await Future.wait([
       context.read<MasterDataController>().reloadLocal(),
+      context.read<LeadController>().reloadLocal(),
       context.read<AppointmentController>().reloadLocal(),
       context.read<VisitController>().reloadLocal(),
       context.read<CallActivityController>().reloadLocal(),
@@ -92,6 +95,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     final master = context.watch<MasterDataController>();
     final appointments = context.watch<AppointmentController>();
+    final leads = context.watch<LeadController>();
     final visits = context.watch<VisitController>();
     final calls = context.watch<CallActivityController>();
     final orders = context.watch<OrderController>();
@@ -100,6 +104,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final sync = context.watch<SyncController>();
     final pending =
         master.pending +
+        leads.pending +
         appointments.pending +
         visits.pending +
         calls.pending +
