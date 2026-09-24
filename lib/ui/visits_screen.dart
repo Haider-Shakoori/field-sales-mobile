@@ -166,11 +166,7 @@ class _VisitsScreenState extends State<VisitsScreen> {
 
     if (save && context.mounted) {
       final visits = context.read<VisitController>();
-      await visits.checkOut(
-        visit,
-        outcome: outcome,
-        notes: notes.text,
-      );
+      await visits.checkOut(visit, outcome: outcome, notes: notes.text);
       _showVisitMessage(context, visits);
     }
   }
