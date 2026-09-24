@@ -30,6 +30,7 @@ jobs:
           FIELD_SALES_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           FIELD_SALES_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
           PRODUCTION_API_BASE_URL: ${{ vars.PRODUCTION_API_BASE_URL }}
+          PRODUCTION_TILE_URL_TEMPLATE: ${{ vars.PRODUCTION_TILE_URL_TEMPLATE }}
         run: |
           test -n "${ANDROID_KEYSTORE_BASE64}" || { echo "Missing ANDROID_KEYSTORE_BASE64 secret."; exit 1; }
           test -n "${FIELD_SALES_KEYSTORE_PASSWORD}" || { echo "Missing ANDROID_KEYSTORE_PASSWORD secret."; exit 1; }
@@ -40,6 +41,20 @@ jobs:
             https://*/api/v1|https://*/api/v1/) ;;
             *) echo "PRODUCTION_API_BASE_URL must be HTTPS and end with /api/v1."; exit 1 ;;
           esac
+
+          if [ -n "${PRODUCTION_TILE_URL_TEMPLATE}" ]; then
+            case "${PRODUCTION_TILE_URL_TEMPLATE}" in
+              https://*) ;;
+              *) echo "PRODUCTION_TILE_URL_TEMPLATE must use HTTPS."; exit 1 ;;
+            esac
+
+            for token in '{z}' '{x}' '{y}'; do
+              [[ "${PRODUCTION_TILE_URL_TEMPLATE}" == *"${token}"* ]] || {
+                echo "PRODUCTION_TILE_URL_TEMPLATE must contain {z}, {x}, and {y}.";
+                exit 1;
+              }
+            done
+          fi
 
       - name: Restore Android upload keystore
         shell: bash
@@ -62,6 +77,7 @@ jobs:
           FIELD_SALES_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           FIELD_SALES_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
           PRODUCTION_API_BASE_URL: ${{ vars.PRODUCTION_API_BASE_URL }}
+          PRODUCTION_TILE_URL_TEMPLATE: ${{ vars.PRODUCTION_TILE_URL_TEMPLATE }}
         run: |
           VERSION="$(awk '/^version:/ {print $2}' pubspec.yaml)"
           VERSION_NAME="${VERSION%%+*}"
@@ -74,17 +90,26 @@ jobs:
             exit 1
           fi
 
+          DART_DEFINES=(
+            "--dart-define=API_BASE_URL=${PRODUCTION_API_BASE_URL}"
+            "--dart-define=APP_VERSION=${VERSION_NAME}"
+          )
+
+          if [ -n "${PRODUCTION_TILE_URL_TEMPLATE}" ]; then
+            DART_DEFINES+=(
+              "--dart-define=TILE_URL_TEMPLATE=${PRODUCTION_TILE_URL_TEMPLATE}"
+            )
+          fi
+
           flutter build appbundle --release \
             --build-name="${VERSION_NAME}" \
             --build-number="${VERSION_CODE}" \
-            --dart-define=API_BASE_URL="${PRODUCTION_API_BASE_URL}" \
-            --dart-define=APP_VERSION="${VERSION_NAME}"
+            "${DART_DEFINES[@]}"
 
           flutter build apk --release \
             --build-name="${VERSION_NAME}" \
             --build-number="${VERSION_CODE}" \
-            --dart-define=API_BASE_URL="${PRODUCTION_API_BASE_URL}" \
-            --dart-define=APP_VERSION="${VERSION_NAME}"
+            "${DART_DEFINES[@]}"
 
       - name: Verify signatures and generate checksums
         shell: bash

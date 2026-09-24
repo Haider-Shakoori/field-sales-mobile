@@ -7,6 +7,7 @@ Stage 2 Batch 18 establishes a repeatable, secret-backed Android release path fo
 Production Android builds must satisfy all of the following:
 
 - The API base URL is explicitly supplied at build time.
+- The map tile URL may be supplied independently with `TILE_URL_TEMPLATE`; release builds only accept HTTPS tile URLs.
 - The production API URL uses HTTPS and ends with `/api/v1`.
 - `APP_VERSION` is supplied to Dart and matches the release version.
 - Android cleartext traffic is disabled in the main/release manifest.
@@ -60,7 +61,8 @@ flutter pub get --enforce-lockfile
 
 flutter build appbundle --release \
   --dart-define=API_BASE_URL=https://fieldpulse.businessos.af/api/v1 \
-  --dart-define=APP_VERSION=1.0.0
+  --dart-define=APP_VERSION=1.0.0 \
+  --dart-define=TILE_URL_TEMPLATE=https://YOUR_TILE_PROVIDER/{z}/{x}/{y}.png
 
 flutter build apk --release \
   --dart-define=API_BASE_URL=https://YOUR_DOMAIN/api/v1 \
@@ -86,6 +88,7 @@ Configure the following GitHub Actions secrets:
 Configure this GitHub Actions repository variable:
 
 - `PRODUCTION_API_BASE_URL` — canonical value: `https://fieldpulse.businessos.af/api/v1`
+- `PRODUCTION_TILE_URL_TEMPLATE` — optional HTTPS tile template containing `{z}`, `{x}`, `{y}`; use a provider/self-hosted source appropriate for production and offline caching needs
 
 Generate the base64 keystore value without adding the keystore to Git:
 
@@ -164,3 +167,10 @@ https://fieldpulse.businessos.af/api/v1
 ```
 
 The GitHub Actions repository variable `PRODUCTION_API_BASE_URL` must use that exact HTTPS URL before generating the externally signed release candidate. The workflow intentionally does not contain a production fallback so a missing variable fails closed instead of silently shipping against the wrong backend.
+
+
+## Offline map release note
+
+The Android client persists tiles the user has actually viewed in the app-support directory, capped at approximately 512 MB. This cache survives normal app restarts and supports previously viewed map areas when the network is unavailable.
+
+Do not configure a public tile source for bulk prefetching unless that provider explicitly permits it. FieldPulse's current implementation performs interactive-view caching only; it does not bulk-download cities or route corridors.

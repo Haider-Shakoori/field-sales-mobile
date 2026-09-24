@@ -12,6 +12,8 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../core/config.dart';
+import '../core/sync/connectivity_gate.dart';
+import '../features/maps/offline_map_cache.dart';
 import '../features/visits/visit_map_data.dart';
 import '../state/attendance_controller.dart';
 import '../state/visit_controller.dart';
@@ -110,8 +112,11 @@ class _VisitsMapViewState extends State<VisitsMapView> {
 
   LatLng? _position;
   Timer? _refreshTimer;
+  StreamSubscription<bool>? _connectivitySubscription;
   bool _locating = false;
   bool _centered = false;
+  bool _online = true;
+  int? _cacheBytes;
 
   final Map<TileCoordinates, int> _tileRetries = {};
   final Map<TileCoordinates, Timer> _tileRetryTimers = {};
@@ -141,6 +146,14 @@ class _VisitsMapViewState extends State<VisitsMapView> {
   @override
   void initState() {
     super.initState();
+    unawaited(_loadConnectivityAndCache());
+    _connectivitySubscription = ConnectivityGate.instance.statusChanges.listen((
+      online,
+    ) {
+      if (mounted) {
+        setState(() => _online = online);
+      }
+    });
     WidgetsBinding.instance.addPostFrameCallback(
       (_) => unawaited(_locate(moveCamera: true)),
     );
@@ -153,12 +166,40 @@ class _VisitsMapViewState extends State<VisitsMapView> {
   @override
   void dispose() {
     _refreshTimer?.cancel();
+    _connectivitySubscription?.cancel();
     for (final timer in _tileRetryTimers.values) {
       timer.cancel();
     }
     _tileRetryTimers.clear();
     _mapController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadConnectivityAndCache() async {
+    final online = await ConnectivityGate.instance.isOnline();
+    final cacheBytes = await OfflineMapCache.sizeBytes();
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _online = online;
+      _cacheBytes = cacheBytes;
+    });
+  }
+
+  String _formatCacheSize(int? bytes) {
+    if (bytes == null || bytes <= 0) {
+      return 'no cached tiles yet';
+    }
+
+    final megabytes = bytes / (1024 * 1024);
+    if (megabytes < 1) {
+      return '${(bytes / 1024).round()} KB cached';
+    }
+
+    return '${megabytes.toStringAsFixed(megabytes < 10 ? 1 : 0)} MB cached';
   }
 
   Future<void> _locate({bool moveCamera = false}) async {
@@ -407,13 +448,13 @@ class _VisitsMapViewState extends State<VisitsMapView> {
           children: [
             TileLayer(
               urlTemplate: AppConfig.tileUrlTemplate,
-              fallbackUrl: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
               userAgentPackageName: 'com.businessos.fieldpulse',
               errorTileCallback: _onTileError,
               evictErrorTileStrategy:
                   EvictErrorTileStrategy.notVisibleRespectMargin,
               tileProvider: NetworkTileProvider(
                 httpClient: _tileHttpClient,
+                cachingProvider: OfflineMapCache.provider,
                 headers: {
                   'User-Agent':
                       'FieldPulse Sales Mobile/1.0 (field-sales-mobile; '
@@ -462,10 +503,22 @@ class _VisitsMapViewState extends State<VisitsMapView> {
           child: Card(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Text(
-                '${widget.customers.length} customers · '
-                '${widget.visitedCustomerIds.length} visited',
-                style: Theme.of(context).textTheme.labelLarge,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${widget.customers.length} customers · '
+                    '${widget.visitedCustomerIds.length} visited',
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    _online
+                        ? 'Online map · ${_formatCacheSize(_cacheBytes)}'
+                        : 'Offline map · cached tiles only',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
               ),
             ),
           ),

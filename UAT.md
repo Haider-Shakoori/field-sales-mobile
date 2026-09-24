@@ -68,19 +68,22 @@ Expected: one active work session, ordered GPS updates, no duplicate sessions.
 
 ## UAT-05 — Full offline field workflow
 
+Before enabling airplane mode, open the Visits map and pan/zoom over the customer's route area so those tiles are cached.
+
 Enable airplane mode, then:
 
-1. Check in to a customer.
-2. Add visit notes.
-3. Capture/add a visit photo if available in the current UI.
-4. Check out the visit.
-5. Create a credit order.
-6. Create a collection.
-7. Create an expense.
-8. Continue moving long enough to generate offline GPS points.
-9. End Day if the intended workflow permits ending while offline.
+1. Reopen the Visits map and confirm the previously viewed area still renders with the `Offline map · cached tiles only` indicator.
+2. Check in to a customer.
+3. Add visit notes.
+4. Capture/add a visit photo if available in the current UI.
+5. Check out the visit.
+6. Create a credit order.
+7. Create a collection.
+8. Create an expense.
+9. Continue moving long enough to generate offline GPS points.
+10. End Day if the intended workflow permits ending while offline.
 
-Expected: every action remains usable and visibly pending; no network error destroys local work.
+Expected: previously viewed map tiles remain visible offline, every field action remains usable and visibly pending, and no network error destroys local work.
 
 ## UAT-06 — Process restart while offline
 
