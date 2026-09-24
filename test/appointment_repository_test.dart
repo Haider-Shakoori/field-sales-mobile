@@ -30,10 +30,7 @@ void main() {
 
     final uuid = await repository.createLocal(
       tenantId: 'tenant-calendar-test',
-      customer: const {
-        'id': 'customer-uuid-1',
-        'name': 'Calendar Customer',
-      },
+      customer: const {'id': 'customer-uuid-1', 'name': 'Calendar Customer'},
       title: 'Payment review',
       type: 'meeting',
       startsAt: DateTime.utc(2026, 9, 26, 5, 30),
@@ -76,40 +73,43 @@ void main() {
     await db.db.close();
   });
 
-  test('appointment cache is tenant scoped and chronologically ordered', () async {
-    final db = AppDatabase();
-    await db.open();
+  test(
+    'appointment cache is tenant scoped and chronologically ordered',
+    () async {
+      final db = AppDatabase();
+      await db.open();
 
-    final repository = AppointmentRepository(
-      api: ApiClient(SecretStore()),
-      db: db,
-    );
+      final repository = AppointmentRepository(
+        api: ApiClient(SecretStore()),
+        db: db,
+      );
 
-    await repository.createLocal(
-      tenantId: 'tenant-a',
-      title: 'Later meeting',
-      type: 'meeting',
-      startsAt: DateTime.utc(2026, 9, 28, 9),
-    );
-    await repository.createLocal(
-      tenantId: 'tenant-a',
-      title: 'Earlier visit',
-      type: 'visit',
-      startsAt: DateTime.utc(2026, 9, 27, 9),
-    );
-    await repository.createLocal(
-      tenantId: 'tenant-b',
-      title: 'Other tenant',
-      type: 'meeting',
-      startsAt: DateTime.utc(2026, 9, 26, 9),
-    );
+      await repository.createLocal(
+        tenantId: 'tenant-a',
+        title: 'Later meeting',
+        type: 'meeting',
+        startsAt: DateTime.utc(2026, 9, 28, 9),
+      );
+      await repository.createLocal(
+        tenantId: 'tenant-a',
+        title: 'Earlier visit',
+        type: 'visit',
+        startsAt: DateTime.utc(2026, 9, 27, 9),
+      );
+      await repository.createLocal(
+        tenantId: 'tenant-b',
+        title: 'Other tenant',
+        type: 'meeting',
+        startsAt: DateTime.utc(2026, 9, 26, 9),
+      );
 
-    final rows = await repository.list('tenant-a');
+      final rows = await repository.list('tenant-a');
 
-    expect(rows, hasLength(2));
-    expect(rows.first['title'], 'Earlier visit');
-    expect(rows.last['title'], 'Later meeting');
+      expect(rows, hasLength(2));
+      expect(rows.first['title'], 'Earlier visit');
+      expect(rows.last['title'], 'Later meeting');
 
-    await db.db.close();
-  });
+      await db.db.close();
+    },
+  );
 }
