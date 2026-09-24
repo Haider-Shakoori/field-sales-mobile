@@ -131,8 +131,7 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
 
       if (mounted) {
         setState(() {
-          _message =
-              'Opportunity added to today\'s route and re-optimized from your current position.';
+          _message = 'Opportunity added to today\'s route and re-optimized from your current position.';
         });
       }
     } finally {
@@ -394,12 +393,8 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                                   padding: const EdgeInsets.only(bottom: 6),
                                   child: Text(
                                     'Extra opportunity stop',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall
-                                        ?.copyWith(
-                                          fontWeight: FontWeight.w600,
-                                        ),
+                                    style: Theme.of(context).textTheme.bodySmall
+                                        ?.copyWith(fontWeight: FontWeight.w600),
                                   ),
                                 ),
                               if ((stop['address'] ?? '')
@@ -445,9 +440,7 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                                             strokeWidth: 2,
                                           ),
                                         )
-                                      : const Icon(
-                                          Icons.remove_circle_outline,
-                                        ),
+                                      : const Icon(Icons.remove_circle_outline),
                                   label: const Text('Remove extra stop'),
                                 ),
                               ],
@@ -467,9 +460,8 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                 Expanded(
                   child: Text(
                     'Nearby opportunities',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium
+                        ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
                 Text(
@@ -485,15 +477,13 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
             ),
             const SizedBox(height: 10),
             ..._opportunities.map((opportunity) {
-              final reasons =
-                  (opportunity['reasons'] as List? ?? const [])
-                      .map((value) => value.toString())
-                      .toList();
+              final reasons = (opportunity['reasons'] as List? ?? const [])
+                  .map((value) => value.toString())
+                  .toList();
               final customerId = opportunity['customer_id']?.toString();
               final changing =
                   customerId != null && customerId == _changingOpportunityId;
-              final priority =
-                  opportunity['priority']?.toString() ?? 'normal';
+              final priority = opportunity['priority']?.toString() ?? 'normal';
 
               return Padding(
                 padding: const EdgeInsets.only(bottom: 10),
@@ -513,12 +503,8 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                               child: Text(
                                 opportunity['customer_name']?.toString() ??
                                     'Customer',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.bold),
                               ),
                             ),
                             Chip(
