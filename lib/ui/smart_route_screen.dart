@@ -19,6 +19,7 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
   DateTime? _cachedAt;
   bool _loading = true;
   bool _refreshing = false;
+  String? _changingOpportunityId;
   String? _message;
 
   @override
