@@ -332,6 +332,7 @@ class _VisitsScreenState extends State<VisitsScreen> {
                               ? null
                               : () async {
                                   await state.capturePhoto(visit);
+                                  if (!context.mounted) return;
                                   _showVisitMessage(context, state);
                                 },
                           icon: const Icon(Icons.camera_alt_outlined),
