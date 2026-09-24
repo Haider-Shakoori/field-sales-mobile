@@ -285,15 +285,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
     final hour = local.hour.toString().padLeft(2, '0');
     final minute = local.minute.toString().padLeft(2, '0');
 
-    return local.year.toString() +
-        '-' +
-        month +
-        '-' +
-        day +
-        ' ' +
-        hour +
-        ':' +
-        minute;
+    return '${local.year}-$month-$day $hour:$minute';
   }
 
   @override
@@ -469,15 +461,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
                                   Text(
                                     starts == null
                                         ? '--:--'
-                                        : starts.hour.toString().padLeft(
-                                                2,
-                                                '0',
-                                              ) +
-                                              ':' +
-                                              starts.minute.toString().padLeft(
-                                                2,
-                                                '0',
-                                              ),
+                                        : '${starts.hour.toString().padLeft(2, '0')}:${starts.minute.toString().padLeft(2, '0')}',
                                     style: const TextStyle(fontSize: 11),
                                   ),
                                 ],
