@@ -10,6 +10,7 @@ class OrderCreateScreen extends StatefulWidget {
     required this.products,
     this.initialCustomerId,
     this.visitUuid,
+    this.initialLines = const [],
     super.key,
   });
 
@@ -17,6 +18,7 @@ class OrderCreateScreen extends StatefulWidget {
   final List<Map<String, dynamic>> products;
   final String? initialCustomerId;
   final String? visitUuid;
+  final List<OrderDraftLine> initialLines;
 
   @override
   State<OrderCreateScreen> createState() => _OrderCreateScreenState();
@@ -34,6 +36,15 @@ class _OrderCreateScreenState extends State<OrderCreateScreen> {
   void initState() {
     super.initState();
     _customerId = widget.initialCustomerId;
+    _lines.addAll(
+      widget.initialLines.map(
+        (line) => _DraftRow(
+          line.product,
+          quantity: line.quantity,
+          discountPercent: line.discountPercent,
+        ),
+      ),
+    );
   }
 
   @override
@@ -420,11 +431,21 @@ class _OrderCreateScreenState extends State<OrderCreateScreen> {
 }
 
 class _DraftRow {
-  _DraftRow(this.product);
+  _DraftRow(
+    this.product, {
+    double quantity = 1,
+    double discountPercent = 0,
+  }) : quantity = TextEditingController(text: _formatNumber(quantity)),
+       discount = TextEditingController(text: _formatNumber(discountPercent));
 
   final Map<String, dynamic> product;
-  final quantity = TextEditingController(text: '1');
-  final discount = TextEditingController(text: '0');
+  final TextEditingController quantity;
+  final TextEditingController discount;
+
+  static String _formatNumber(double value) {
+    if (value == value.roundToDouble()) return value.toInt().toString();
+    return value.toStringAsFixed(4).replaceFirst(RegExp(r'0+$'), '').replaceFirst(RegExp(r'\.$'), '');
+  }
 
   void dispose() {
     quantity.dispose();
