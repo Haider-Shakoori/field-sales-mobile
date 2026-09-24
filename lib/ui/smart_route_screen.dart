@@ -460,6 +460,117 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                 ),
               );
             }),
+          if (_opportunities.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Nearby opportunities',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Text(
+                  'within ' + radius.toString() + ' km',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Nearby customers inside your assignment scope but outside today\'s assigned route. Add one only when it makes business sense.',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            const SizedBox(height: 10),
+            ..._opportunities.map((opportunity) {
+              final reasons =
+                  (opportunity['reasons'] as List? ?? const [])
+                      .map((value) => value.toString())
+                      .toList();
+              final customerId = opportunity['customer_id']?.toString();
+              final changing =
+                  customerId != null && customerId == _changingOpportunityId;
+              final priority =
+                  opportunity['priority']?.toString() ?? 'normal';
+
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(14),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const CircleAvatar(
+                              child: Icon(Icons.near_me_outlined),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                opportunity['customer_name']?.toString() ??
+                                    'Customer',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                              ),
+                            ),
+                            Chip(
+                              label: Text(_priorityLabel(priority)),
+                              visualDensity: VisualDensity.compact,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          (opportunity['distance_km']?.toString() ?? '-') +
+                              ' km away',
+                        ),
+                        if ((opportunity['address'] ?? '')
+                            .toString()
+                            .trim()
+                            .isNotEmpty) ...[
+                          const SizedBox(height: 4),
+                          Text(opportunity['address'].toString()),
+                        ],
+                        if (reasons.isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            reasons.join(' · '),
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton.icon(
+                            onPressed: changing
+                                ? null
+                                : () => _addOpportunity(opportunity),
+                            icon: changing
+                                ? const SizedBox.square(
+                                    dimension: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Icon(Icons.add_road),
+                            label: const Text('Add to today\'s route'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }),
+          ],
           const SizedBox(height: 80),
         ],
       ),
