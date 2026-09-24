@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -72,7 +73,7 @@ class VisitController extends ChangeNotifier {
       message = 'Visit check-in saved locally.';
       await sync(silent: true);
     } catch (error) {
-      message = error.toString();
+      message = '$error'.replaceFirst('Bad state: ', '');
     } finally {
       busy = false;
       notifyListeners();
@@ -109,7 +110,7 @@ class VisitController extends ChangeNotifier {
       message = 'Visit check-out saved locally.';
       await sync(silent: true);
     } catch (error) {
-      message = error.toString();
+      message = '$error'.replaceFirst('Bad state: ', '');
     } finally {
       busy = false;
       notifyListeners();
@@ -164,7 +165,7 @@ class VisitController extends ChangeNotifier {
       message = 'Photo saved locally.';
       await sync(silent: true);
     } catch (error) {
-      message = error.toString();
+      message = '$error'.replaceFirst('Bad state: ', '');
     } finally {
       busy = false;
       notifyListeners();
@@ -220,8 +221,24 @@ class VisitController extends ChangeNotifier {
       throw StateError('Location permission is required for customer visits.');
     }
 
-    return Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
-    );
+    try {
+      final position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
+      ).timeout(const Duration(seconds: 20));
+
+      if (position.accuracy > 200) {
+        throw StateError(
+          'GPS accuracy is too low for a customer visit. Move to an open area and try again.',
+        );
+      }
+
+      return position;
+    } on TimeoutException {
+      throw StateError(
+        'Unable to get a GPS fix within 20 seconds. Move to an open area and try again.',
+      );
+    }
   }
 }
