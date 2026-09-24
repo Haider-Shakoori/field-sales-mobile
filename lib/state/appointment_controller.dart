@@ -54,9 +54,7 @@ class AppointmentController extends ChangeNotifier {
       if (!silent) {
         message = result.failed == 0
             ? 'Calendar sync complete.'
-            : 'Calendar sync completed with ' +
-                  result.failed.toString() +
-                  ' pending failure(s).';
+            : 'Calendar sync completed with ${result.failed} pending failure(s).';
       }
     } catch (_) {
       await reloadLocal();
