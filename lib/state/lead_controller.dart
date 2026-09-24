@@ -149,7 +149,8 @@ class LeadController extends ChangeNotifier {
   ) async {
     final tenantId = appState.session?.tenantId;
     final uuid = lead['offline_uuid']?.toString();
-    if (tenantId == null || uuid == null || notes.trim().isEmpty || busy) return;
+    if (tenantId == null || uuid == null || notes.trim().isEmpty || busy)
+      return;
     busy = true;
     notifyListeners();
     try {
