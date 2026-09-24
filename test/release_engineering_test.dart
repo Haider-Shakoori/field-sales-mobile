@@ -37,6 +37,23 @@ void main() {
     expect(attendance, contains('.timeout(const Duration(seconds: 15))'));
   });
 
+  test('visit GPS acquisition fails closed instead of hanging', () {
+    final visits = File('lib/state/visit_controller.dart').readAsStringSync();
+
+    expect(
+      visits,
+      contains(
+        'Geolocator.getCurrentPosition(\n'
+        '        locationSettings: const LocationSettings(\n'
+        '          accuracy: LocationAccuracy.high,\n'
+        '        ),\n'
+        '      ).timeout(const Duration(seconds: 20))',
+      ),
+    );
+    expect(visits, contains('position.accuracy > 200'));
+    expect(visits, contains('Unable to get a GPS fix within 20 seconds.'));
+  });
+
   test('release signing is externalized and fails closed', () {
     final gradle = File('android/app/build.gradle.kts').readAsStringSync();
 
