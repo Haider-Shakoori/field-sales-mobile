@@ -13,6 +13,7 @@ import 'core/storage/secret_store.dart';
 import 'core/sync/connectivity_gate.dart';
 import 'core/sync/sync_coordinator.dart';
 import 'core/sync/sync_retry_store.dart';
+import 'features/appointments/appointment_repository.dart';
 import 'features/attendance/attendance_repository.dart';
 import 'features/auth/auth_repository.dart';
 import 'features/customers/customer_repository.dart';
@@ -32,6 +33,7 @@ import 'features/stock/stock_repository.dart';
 import 'features/targets/target_repository.dart';
 import 'features/visits/visit_repository.dart';
 import 'state/app_state.dart';
+import 'state/appointment_controller.dart';
 import 'state/call_activity_controller.dart';
 import 'state/collection_controller.dart';
 import 'state/expense_controller.dart';
@@ -55,6 +57,7 @@ Future<void> main() async {
   final api = ApiClient(secrets);
   final auth = AuthRepository(api: api, secrets: secrets);
   final settings = SettingsRepository(api: api, db: db);
+  final appointments = AppointmentRepository(api: api, db: db);
   final attendance = AttendanceRepository(api: api, db: db);
   final gps = GpsRepository(api: api, db: db);
   final tracking = TrackingService(db: db, gpsRepository: gps);
@@ -92,6 +95,7 @@ Future<void> main() async {
     retryStore: retryStore,
     customers: customers,
     masterData: masterData,
+    appointments: appointments,
     attendance: attendance,
     gps: gps,
     visits: visits,
@@ -107,6 +111,11 @@ Future<void> main() async {
     appState: appState,
     masterData: masterData,
     customersRepository: customers,
+  );
+
+  final appointmentController = AppointmentController(
+    appState: appState,
+    repository: appointments,
   );
 
   final callActivityController = CallActivityController(
@@ -172,6 +181,7 @@ Future<void> main() async {
       providers: [
         ChangeNotifierProvider.value(value: appState),
         ChangeNotifierProvider.value(value: attendanceController),
+        ChangeNotifierProvider.value(value: appointmentController),
         ChangeNotifierProvider.value(value: masterDataController),
         ChangeNotifierProvider.value(value: visitController),
         ChangeNotifierProvider.value(value: callActivityController),
@@ -181,6 +191,7 @@ Future<void> main() async {
         ChangeNotifierProvider.value(value: targetController),
         ChangeNotifierProvider.value(value: syncController),
         Provider.value(value: masterData),
+        Provider.value(value: appointments),
         Provider.value(value: customers),
         Provider.value(value: visits),
         Provider.value(value: calls),
