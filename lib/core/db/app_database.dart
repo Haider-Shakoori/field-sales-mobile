@@ -4,7 +4,7 @@ import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
 class AppDatabase {
-  static const version = 15;
+  static const version = 16;
 
   Database? _db;
 
@@ -172,6 +172,10 @@ class AppDatabase {
       'sync_status TEXT NOT NULL, '
       'start_source TEXT NOT NULL DEFAULT "manual", '
       'privacy_ack_at TEXT, '
+      'vehicle_reference TEXT, '
+      'odometer_start_km REAL, '
+      'odometer_end_km REAL, '
+      'gps_distance_km REAL, '
       'created_at TEXT NOT NULL, '
       'updated_at TEXT NOT NULL'
       ')',
@@ -531,6 +535,9 @@ class AppDatabase {
       'category TEXT NOT NULL, '
       'currency TEXT NOT NULL, '
       'amount REAL NOT NULL, '
+      'fuel_liters REAL, '
+      'fuel_unit_price REAL, '
+      'odometer_km REAL, '
       'merchant TEXT, '
       'reference_number TEXT, '
       'latitude REAL NOT NULL, '
@@ -771,6 +778,33 @@ class AppDatabase {
     await _createStockTables(database);
     await _createStatementTables(database);
     await _createAppointmentTables(database);
+
+    if (oldVersion < 16) {
+      for (final column in const {
+        'vehicle_reference': 'TEXT',
+        'odometer_start_km': 'REAL',
+        'odometer_end_km': 'REAL',
+        'gps_distance_km': 'REAL',
+      }.entries) {
+        if (!await _hasColumn(database, 'local_work_sessions', column.key)) {
+          await database.execute(
+            'ALTER TABLE local_work_sessions ADD COLUMN ${column.key} ${column.value}',
+          );
+        }
+      }
+
+      for (final column in const {
+        'fuel_liters': 'REAL',
+        'fuel_unit_price': 'REAL',
+        'odometer_km': 'REAL',
+      }.entries) {
+        if (!await _hasColumn(database, 'local_expenses', column.key)) {
+          await database.execute(
+            'ALTER TABLE local_expenses ADD COLUMN ${column.key} ${column.value}',
+          );
+        }
+      }
+    }
 
     if (oldVersion < 4 &&
         !await _hasColumn(database, 'local_work_sessions', 'start_source')) {
