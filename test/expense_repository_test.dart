@@ -31,6 +31,8 @@ void main() {
       category: 'fuel',
       currency: 'afn',
       amount: 450.125,
+      fuelLiters: 10,
+      odometerKm: 1001.5,
       merchant: 'Fuel Station',
       referenceNumber: 'FUEL-001',
       latitude: 34.5553,
@@ -51,6 +53,9 @@ void main() {
     expect(row['currency'], 'AFN');
     expect(row['amount'], 450.125);
     expect(row['category'], 'fuel');
+    expect(row['fuel_liters'], 10);
+    expect(row['fuel_unit_price'], 45.0125);
+    expect(row['odometer_km'], 1001.5);
     expect(row['status'], 'pending');
     expect(row['sync_status'], 'pending');
     expect(row['latitude'], 34.5553);
