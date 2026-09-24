@@ -332,4 +332,160 @@ void main() {
     await folder.delete(recursive: true);
     await db.db.close();
   });
+
+  test('blocked visit form can be corrected and retried', () async {
+    final db = AppDatabase();
+    await db.open();
+    const tenantId = 'visit-form-retry';
+    await _seedCustomer(db, tenantId);
+
+    final now = DateTime.utc(2026, 9, 24, 6);
+
+    await db.db.insert('local_visit_form_templates', {
+      'tenant_id': tenantId,
+      'uuid': 'form-retry',
+      'code': 'RETRY-AUDIT',
+      'name': 'Retry Audit',
+      'version': 1,
+      'required_on_checkout': 1,
+      'scope_type': 'all',
+      'payload': jsonEncode({
+        'id': 'form-retry',
+        'code': 'RETRY-AUDIT',
+        'name': 'Retry Audit',
+        'version': 1,
+        'required_on_checkout': true,
+        'scope': {'type': 'all', 'id': null, 'name': null},
+        'questions': [
+          {
+            'id': 'question-retry',
+            'label': 'Comment',
+            'type': 'text',
+            'required': true,
+          },
+        ],
+      }),
+      'cached_at': now.toIso8601String(),
+    });
+
+    await db.db.insert('local_visits', {
+      'tenant_id': tenantId,
+      'offline_uuid': 'visit-retry',
+      'customer_uuid': 'customer-1',
+      'customer_name': 'Customer One',
+      'status': 'active',
+      'checked_in_at': now.toIso8601String(),
+      'checkin_latitude': 34.5,
+      'checkin_longitude': 69.2,
+      'checkin_accuracy': 8,
+      'sync_status': 'synced',
+      'server_uuid': 'visit-retry',
+      'created_at': now.toIso8601String(),
+      'updated_at': now.toIso8601String(),
+    });
+
+    await db.db.insert('local_visit_form_submissions', {
+      'tenant_id': tenantId,
+      'offline_uuid': 'submission-retry',
+      'visit_offline_uuid': 'visit-retry',
+      'template_uuid': 'form-retry',
+      'template_version': 1,
+      'template_name': 'Retry Audit',
+      'answers_json': jsonEncode([
+        {'question_id': 'question-retry', 'value': 'Old answer'},
+      ]),
+      'submitted_at': now.toIso8601String(),
+      'sync_status': 'blocked',
+      'last_error': 'Server rejected the previous answer.',
+      'created_at': now.toIso8601String(),
+      'updated_at': now.toIso8601String(),
+    });
+
+    final repository = VisitRepository(api: _VisitFormApi(), db: db);
+    await repository.retry.recordFailure(
+      tenantId: tenantId,
+      entityType: 'visit_form_submission',
+      entityUuid: 'submission-retry',
+      error: StateError('Server rejected the previous answer.'),
+      retryableOverride: false,
+    );
+
+    expect(
+      await repository.retry.shouldAttempt(
+        tenantId: tenantId,
+        entityType: 'visit_form_submission',
+        entityUuid: 'submission-retry',
+      ),
+      isFalse,
+    );
+
+    final visit = (await repository.list(tenantId)).single;
+    final form = (await repository.applicableForms(
+      tenantId,
+      customerUuid: 'customer-1',
+      visitOfflineUuid: 'visit-retry',
+    )).single;
+    final existing = Map<String, dynamic>.from(
+      form['local_submission'] as Map,
+    );
+    final existingAnswers = List<dynamic>.from(existing['answers'] as List);
+    expect(
+      (existingAnswers.single as Map)['value'],
+      'Old answer',
+    );
+
+    final uuid = await repository.saveFormSubmissionLocal(
+      tenantId: tenantId,
+      visit: visit,
+      template: form,
+      answers: [
+        {'question_id': 'question-retry', 'value': 'Corrected answer'},
+      ],
+    );
+
+    expect(uuid, 'submission-retry');
+    expect(
+      await repository.retry.shouldAttempt(
+        tenantId: tenantId,
+        entityType: 'visit_form_submission',
+        entityUuid: 'submission-retry',
+      ),
+      isTrue,
+    );
+
+    final row = (await db.db.query(
+      'local_visit_form_submissions',
+      where: 'tenant_id=? AND offline_uuid=?',
+      whereArgs: [tenantId, 'submission-retry'],
+    )).single;
+    expect(row['sync_status'], 'pending');
+    expect(row['last_error'], isNull);
+
+    final corrected = (await repository.applicableForms(
+      tenantId,
+      customerUuid: 'customer-1',
+      visitOfflineUuid: 'visit-retry',
+    )).single;
+    final correctedSubmission = Map<String, dynamic>.from(
+      corrected['local_submission'] as Map,
+    );
+    final correctedAnswers = List<dynamic>.from(
+      correctedSubmission['answers'] as List,
+    );
+    expect(
+      (correctedAnswers.single as Map)['value'],
+      'Corrected answer',
+    );
+
+    await db.db.close();
+  });
+
+  test('visit form UI keeps unsynced submissions editable', () {
+    final source = File('lib/ui/visit_forms_screen.dart').readAsStringSync();
+
+    expect(source, contains("final editable = !submitted || status != 'synced';"));
+    expect(source, contains('Tap to edit and retry'));
+    expect(source, contains("submission['answers'] is List"));
+  });
+
 }
