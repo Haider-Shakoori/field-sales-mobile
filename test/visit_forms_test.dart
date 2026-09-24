@@ -425,14 +425,9 @@ void main() {
       customerUuid: 'customer-1',
       visitOfflineUuid: 'visit-retry',
     )).single;
-    final existing = Map<String, dynamic>.from(
-      form['local_submission'] as Map,
-    );
+    final existing = Map<String, dynamic>.from(form['local_submission'] as Map);
     final existingAnswers = List<dynamic>.from(existing['answers'] as List);
-    expect(
-      (existingAnswers.single as Map)['value'],
-      'Old answer',
-    );
+    expect((existingAnswers.single as Map)['value'], 'Old answer');
 
     final uuid = await repository.saveFormSubmissionLocal(
       tenantId: tenantId,
@@ -472,10 +467,7 @@ void main() {
     final correctedAnswers = List<dynamic>.from(
       correctedSubmission['answers'] as List,
     );
-    expect(
-      (correctedAnswers.single as Map)['value'],
-      'Corrected answer',
-    );
+    expect((correctedAnswers.single as Map)['value'], 'Corrected answer');
 
     await db.db.close();
   });
@@ -483,9 +475,11 @@ void main() {
   test('visit form UI keeps unsynced submissions editable', () {
     final source = File('lib/ui/visit_forms_screen.dart').readAsStringSync();
 
-    expect(source, contains("final editable = !submitted || status != 'synced';"));
+    expect(
+      source,
+      contains("final editable = !submitted || status != 'synced';"),
+    );
     expect(source, contains('Tap to edit and retry'));
     expect(source, contains("submission['answers'] is List"));
   });
-
 }
