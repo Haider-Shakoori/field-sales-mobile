@@ -116,6 +116,68 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
     }
   }
 
+  Future<void> _addOpportunity(Map<String, dynamic> opportunity) async {
+    final tenantId = context.read<AppState>().session?.tenantId;
+    final customerId = opportunity['customer_id']?.toString();
+
+    if (tenantId == null || customerId == null || customerId.isEmpty) return;
+
+    setState(() => _changingOpportunityId = customerId);
+
+    try {
+      final repository = context.read<DailyRoutePlanRepository>();
+      await repository.includeOpportunity(tenantId, customerId);
+      await _refresh();
+
+      if (mounted) {
+        setState(() {
+          _message =
+              'Opportunity added to today\'s route and re-optimized from your current position.';
+        });
+      }
+    } finally {
+      if (mounted) setState(() => _changingOpportunityId = null);
+    }
+  }
+
+  Future<void> _removeOpportunity(Map<String, dynamic> stop) async {
+    final tenantId = context.read<AppState>().session?.tenantId;
+    final customerId = stop['customer_id']?.toString();
+
+    if (tenantId == null || customerId == null || customerId.isEmpty) return;
+
+    setState(() => _changingOpportunityId = customerId);
+
+    try {
+      final repository = context.read<DailyRoutePlanRepository>();
+      await repository.removeOpportunity(tenantId, customerId);
+      await _refresh();
+
+      if (mounted) {
+        setState(() {
+          _message = 'Extra opportunity stop removed from today\'s route.';
+        });
+      }
+    } finally {
+      if (mounted) setState(() => _changingOpportunityId = null);
+    }
+  }
+
+  List<Map<String, dynamic>> get _opportunities {
+    final raw = _plan?['nearby_opportunities'];
+    if (raw is! List) return const [];
+
+    return raw.whereType<Map>().map(Map<String, dynamic>.from).toList();
+  }
+
+  Map<String, dynamic> get _dynamicRoute {
+    final raw = _plan?['dynamic_route'];
+
+    return raw is Map
+        ? Map<String, dynamic>.from(raw)
+        : const <String, dynamic>{};
+  }
+
   List<Map<String, dynamic>> get _stops {
     final raw = _plan?['stops'];
     if (raw is! List) return const [];
