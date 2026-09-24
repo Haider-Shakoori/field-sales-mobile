@@ -279,7 +279,9 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                         CircleAvatar(
                           child: visited
                               ? const Icon(Icons.check)
-                              : Text((stop['recommended_order'] ?? '-').toString()),
+                              : Text(
+                                  (stop['recommended_order'] ?? '-').toString(),
+                                ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
@@ -315,13 +317,15 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                               Text(
                                 [
                                   if (stop['distance_from_previous_km'] != null)
-                                    stop['distance_from_previous_km'].toString() +
+                                    stop['distance_from_previous_km']
+                                            .toString() +
                                         ' km from previous',
                                   if (stop['planned_visit_minutes'] != null)
                                     stop['planned_visit_minutes'].toString() +
                                         ' min visit',
                                   if (stop['route_sequence'] != null)
-                                    'Route #' + stop['route_sequence'].toString(),
+                                    'Route #' +
+                                        stop['route_sequence'].toString(),
                                 ].join(' · '),
                                 style: Theme.of(context).textTheme.bodySmall,
                               ),
