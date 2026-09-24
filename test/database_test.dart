@@ -18,7 +18,7 @@ void main() {
     await deleteDatabase(await databasePath());
   });
 
-  test('database creates tenant-safe operational and calendar tables', () async {
+  test('database v11 creates tenant-safe operational target and sync-health tables', () async {
     final database = AppDatabase();
     await database.open();
 
