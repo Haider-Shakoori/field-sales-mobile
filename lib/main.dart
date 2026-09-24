@@ -25,6 +25,7 @@ import 'features/gps/tracking_service.dart';
 import 'features/master_data/master_data_repository.dart';
 import 'features/master_data/master_data_source.dart';
 import 'features/orders/order_repository.dart';
+import 'features/routes/daily_route_plan_repository.dart';
 import 'features/settings/settings_repository.dart';
 import 'features/stock/stock_repository.dart';
 import 'features/targets/target_repository.dart';
@@ -60,6 +61,7 @@ Future<void> main() async {
   final collections = CollectionRepository(api: api, db: db);
   final expenses = ExpenseRepository(api: api, db: db);
   final targets = TargetRepository(api: api, db: db);
+  final smartRoute = DailyRoutePlanRepository(api: api, db: db);
   final stock = StockRepository(api: api, db: db);
   final statements = CustomerStatementRepository(api: api, db: db);
 
@@ -181,6 +183,7 @@ Future<void> main() async {
         Provider.value(value: visits),
         Provider.value(value: calls),
         Provider.value(value: orders),
+        Provider.value(value: smartRoute),
         Provider.value(value: stock),
         Provider.value(value: statements),
         Provider.value(value: collections),
