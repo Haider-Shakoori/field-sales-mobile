@@ -55,6 +55,9 @@ class ExpenseRepository {
     required double latitude,
     required double longitude,
     required double accuracy,
+    double? fuelLiters,
+    double? fuelUnitPrice,
+    double? odometerKm,
     String? merchant,
     String? referenceNumber,
     String? notes,
@@ -65,6 +68,25 @@ class ExpenseRepository {
 
     if (amount <= 0) {
       throw StateError('Expense amount must be greater than zero.');
+    }
+
+    if (
+      category != 'fuel' &&
+      (fuelLiters != null || fuelUnitPrice != null || odometerKm != null)
+    ) {
+      throw StateError('Fuel details are only valid for fuel expenses.');
+    }
+
+    if (fuelLiters != null && fuelLiters <= 0) {
+      throw StateError('Fuel liters must be greater than zero.');
+    }
+
+    if (fuelUnitPrice != null && fuelUnitPrice <= 0) {
+      throw StateError('Fuel unit price must be greater than zero.');
+    }
+
+    if (odometerKm != null && odometerKm < 0) {
+      throw StateError('Odometer cannot be negative.');
     }
 
     final normalizedCurrency = currency.trim().toUpperCase();
@@ -86,6 +108,12 @@ class ExpenseRepository {
       'category': category,
       'currency': normalizedCurrency,
       'amount': _round4(amount),
+      'fuel_liters': category == 'fuel' ? fuelLiters : null,
+      'fuel_unit_price': category == 'fuel'
+          ? (fuelUnitPrice ??
+                (fuelLiters != null ? _round4(amount / fuelLiters) : null))
+          : null,
+      'odometer_km': category == 'fuel' ? odometerKm : null,
       'merchant': _clean(merchant),
       'reference_number': _clean(referenceNumber),
       'latitude': latitude,
@@ -137,6 +165,12 @@ class ExpenseRepository {
               'category': row['category'],
               'currency': row['currency'],
               'amount': row['amount'],
+              if (row['fuel_liters'] != null)
+                'fuel_liters': row['fuel_liters'],
+              if (row['fuel_unit_price'] != null)
+                'fuel_unit_price': row['fuel_unit_price'],
+              if (row['odometer_km'] != null)
+                'odometer_km': row['odometer_km'],
               if (row['merchant'] != null) 'merchant': row['merchant'],
               if (row['reference_number'] != null)
                 'reference_number': row['reference_number'],
@@ -213,6 +247,9 @@ class ExpenseRepository {
       'category': server['category']?.toString() ?? 'other',
       'currency': server['currency']?.toString() ?? 'AFN',
       'amount': _number(server['amount']),
+      'fuel_liters': _nullableNumber(server['fuel_liters']),
+      'fuel_unit_price': _nullableNumber(server['fuel_unit_price']),
+      'odometer_km': _nullableNumber(server['odometer_km']),
       'merchant': server['merchant']?.toString(),
       'reference_number': server['reference_number']?.toString(),
       'latitude': _number(server['latitude']),
@@ -259,6 +296,12 @@ class ExpenseRepository {
   double _number(dynamic value) {
     if (value is num) return value.toDouble();
     return double.tryParse(value?.toString() ?? '') ?? 0;
+  }
+
+  double? _nullableNumber(dynamic value) {
+    if (value == null) return null;
+    if (value is num) return value.toDouble();
+    return double.tryParse(value.toString());
   }
 
   double _round4(double value) => (value * 10000).round() / 10000;
