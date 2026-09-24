@@ -153,9 +153,7 @@ void main() {
       final startPayload = Map<String, dynamic>.from(
         requests.first.data as Map,
       );
-      final endPayload = Map<String, dynamic>.from(
-        requests.last.data as Map,
-      );
+      final endPayload = Map<String, dynamic>.from(requests.last.data as Map);
       expect(startPayload['vehicle_reference'], 'CAR-01');
       expect(startPayload['odometer_start_km'], 1000);
       expect(endPayload['vehicle_reference'], 'CAR-01');
