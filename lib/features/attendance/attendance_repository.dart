@@ -84,9 +84,8 @@ class AttendanceRepository {
           'accuracy': accuracy,
           'offline_uuid': uuid,
           'started_at': at.toUtc().toIso8601String(),
-          if (_clean(vehicleReference) != null)
-            'vehicle_reference': _clean(vehicleReference),
-          if (odometerStartKm != null) 'odometer_start_km': odometerStartKm,
+          'vehicle_reference': _clean(vehicleReference),
+          'odometer_start_km': odometerStartKm,
         }),
         'priority': 10,
         'status': 'pending',
@@ -143,9 +142,8 @@ class AttendanceRepository {
           'longitude': lng,
           'accuracy': accuracy,
           'ended_at': at.toUtc().toIso8601String(),
-          if (_clean(vehicleReference) != null)
-            'vehicle_reference': _clean(vehicleReference),
-          if (odometerEndKm != null) 'odometer_end_km': odometerEndKm,
+          'vehicle_reference': _clean(vehicleReference),
+          'odometer_end_km': odometerEndKm,
         }),
         'priority': 20,
         'status': 'pending',
