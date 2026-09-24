@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'appointments_screen.dart';
 import 'collections_screen.dart';
 import 'expenses_screen.dart';
+import 'mileage_screen.dart';
 import 'products_screen.dart';
 import 'routes_screen.dart';
 import 'smart_route_screen.dart';
@@ -61,6 +62,18 @@ class MoreScreen extends StatelessWidget {
               subtitle: const Text('Offline claims and finance review status'),
               trailing: const Icon(Icons.chevron_right),
               onTap: () => _open(context, 'Expenses', const ExpensesScreen()),
+            ),
+          ),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.local_gas_station_outlined),
+              title: const Text('Mileage & Fuel'),
+              subtitle: const Text(
+                'GPS distance, odometer variance and fuel efficiency',
+              ),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () =>
+                  _open(context, 'Mileage & Fuel', const MileageScreen()),
             ),
           ),
           Card(
