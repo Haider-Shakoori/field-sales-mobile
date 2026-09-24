@@ -68,7 +68,9 @@ class _MileageScreenState extends State<MileageScreen> {
   String _costs(dynamic raw) {
     if (raw is! Map || raw.isEmpty) return 'No approved fuel cost';
     return raw.entries
-        .map((entry) => '${entry.key} ${_number(entry.value).toStringAsFixed(2)}')
+        .map(
+          (entry) => '${entry.key} ${_number(entry.value).toStringAsFixed(2)}',
+        )
         .join(' · ');
   }
 
@@ -148,7 +150,8 @@ class _MileageScreenState extends State<MileageScreen> {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        today['vehicle_reference']?.toString().isNotEmpty == true
+                        today['vehicle_reference']?.toString().isNotEmpty ==
+                                true
                             ? 'Vehicle: ${today['vehicle_reference']}'
                             : 'No vehicle reference recorded.',
                       ),
