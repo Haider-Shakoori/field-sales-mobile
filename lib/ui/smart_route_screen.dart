@@ -343,6 +343,10 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                   .whereType<String>()
                   .toList();
               final visited = stop['visited_today'] == true;
+              final opportunity = stop['is_opportunity'] == true;
+              final customerId = stop['customer_id']?.toString();
+              final changing =
+                  customerId != null && customerId == _changingOpportunityId;
               final priority = stop['priority']?.toString() ?? 'normal';
 
               return Padding(
