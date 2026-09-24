@@ -19,20 +19,20 @@ class LeadRepository {
       'local_leads',
       where: 'tenant_id=?',
       whereArgs: [tenantId],
-      orderBy: 'COALESCE(last_activity_at, updated_at) DESC, id DESC',
+      orderBy: "CASE stage WHEN 'new' THEN 0 WHEN 'contacted' THEN 1 WHEN 'qualified' THEN 2 WHEN 'proposal' THEN 3 WHEN 'negotiation' THEN 4 WHEN 'won' THEN 5 ELSE 6 END, COALESCE(last_activity_at,created_at) DESC",
     );
     return rows.map(Map<String, dynamic>.from).toList();
   }
 
   Future<List<Map<String, dynamic>>> activities(
     String tenantId,
-    String leadOfflineUuid,
+    String leadUuid,
   ) async {
     final rows = await db.db.query(
       'local_lead_activities',
       where: 'tenant_id=? AND lead_offline_uuid=?',
-      whereArgs: [tenantId, leadOfflineUuid],
-      orderBy: 'occurred_at DESC, id DESC',
+      whereArgs: [tenantId, leadUuid],
+      orderBy: 'occurred_at DESC',
     );
     return rows.map(Map<String, dynamic>.from).toList();
   }
@@ -53,7 +53,6 @@ class LeadRepository {
   }) async {
     final uuid = const Uuid().v4();
     final now = DateTime.now().toUtc().toIso8601String();
-
     await db.db.insert('local_leads', {
       'tenant_id': tenantId,
       'offline_uuid': uuid,
@@ -66,46 +65,70 @@ class LeadRepository {
       'stage': 'new',
       'priority': priority,
       'estimated_value': estimatedValue,
-      'currency': currency.trim().toUpperCase(),
+      'currency': currency.toUpperCase(),
       'probability': 10,
-      'expected_close_date': expectedCloseDate == null
-          ? null
-          : _dateKey(expectedCloseDate),
+      'expected_close_date': expectedCloseDate
+          ?.toIso8601String()
+          .split('T')
+          .first,
       'notes': _nullable(notes),
       'last_activity_at': now,
-      'sync_status': 'pending_create',
       'pending_conversion': 0,
+      'sync_status': 'pending_create',
       'created_at': now,
       'updated_at': now,
     });
-
     return uuid;
   }
 
-  Future<void> updateStageLocal({
+  Future<void> updateLocal({
     required String tenantId,
     required String offlineUuid,
-    required String stage,
+    String? stage,
+    String? priority,
+    double? estimatedValue,
+    String? currency,
+    DateTime? expectedCloseDate,
     String? lostReason,
+    String? notes,
   }) async {
-    final row = await _lead(tenantId, offlineUuid);
-    final current = row['sync_status']?.toString() ?? 'synced';
-    final next = current.contains('create')
-        ? 'pending_create'
-        : 'pending_update';
-    final now = DateTime.now().toUtc().toIso8601String();
-
+    final rows = await db.db.query(
+      'local_leads',
+      columns: ['sync_status'],
+      where: 'tenant_id=? AND offline_uuid=?',
+      whereArgs: [tenantId, offlineUuid],
+      limit: 1,
+    );
+    if (rows.isEmpty) throw StateError('Lead not found.');
+    final current = rows.first['sync_status']?.toString() ?? 'synced';
+    final changes = <String, Object?>{
+      'last_activity_at': DateTime.now().toUtc().toIso8601String(),
+      'sync_status': current == 'pending_create' || current == 'failed_create'
+          ? current
+          : 'pending_update',
+      'last_error': null,
+      'updated_at': DateTime.now().toUtc().toIso8601String(),
+    };
+    if (stage != null) {
+      changes['stage'] = stage;
+      changes['probability'] = _probability(stage);
+      changes['lost_reason'] = stage == 'lost' ? _nullable(lostReason) : null;
+    } else if (lostReason != null) {
+      changes['lost_reason'] = _nullable(lostReason);
+    }
+    if (priority != null) changes['priority'] = priority;
+    if (estimatedValue != null) changes['estimated_value'] = estimatedValue;
+    if (currency != null) changes['currency'] = currency.toUpperCase();
+    if (expectedCloseDate != null) {
+      changes['expected_close_date'] = expectedCloseDate
+          .toIso8601String()
+          .split('T')
+          .first;
+    }
+    if (notes != null) changes['notes'] = _nullable(notes);
     await db.db.update(
       'local_leads',
-      {
-        'stage': stage,
-        'probability': _probability(stage),
-        'lost_reason': stage == 'lost' ? _nullable(lostReason) : null,
-        'sync_status': next,
-        'last_error': null,
-        'last_activity_at': now,
-        'updated_at': now,
-      },
+      changes,
       where: 'tenant_id=? AND offline_uuid=?',
       whereArgs: [tenantId, offlineUuid],
     );
@@ -117,10 +140,8 @@ class LeadRepository {
     required String type,
     required String notes,
   }) async {
-    await _lead(tenantId, leadOfflineUuid);
     final uuid = const Uuid().v4();
     final now = DateTime.now().toUtc().toIso8601String();
-
     await db.db.insert('local_lead_activities', {
       'tenant_id': tenantId,
       'offline_uuid': uuid,
@@ -128,7 +149,7 @@ class LeadRepository {
       'type': type,
       'notes': notes.trim(),
       'occurred_at': now,
-      'sync_status': 'pending_create',
+      'sync_status': 'pending',
       'created_at': now,
       'updated_at': now,
     });
@@ -138,25 +159,18 @@ class LeadRepository {
       where: 'tenant_id=? AND offline_uuid=?',
       whereArgs: [tenantId, leadOfflineUuid],
     );
-
     return uuid;
   }
 
-  Future<void> convertLocal({
-    required String tenantId,
-    required String offlineUuid,
-  }) async {
-    await _lead(tenantId, offlineUuid);
-    final now = DateTime.now().toUtc().toIso8601String();
+  Future<void> requestConversion(String tenantId, String offlineUuid) async {
     await db.db.update(
       'local_leads',
       {
         'stage': 'won',
         'probability': 100,
         'pending_conversion': 1,
-        'last_activity_at': now,
-        'last_error': null,
-        'updated_at': now,
+        'last_activity_at': DateTime.now().toUtc().toIso8601String(),
+        'updated_at': DateTime.now().toUtc().toIso8601String(),
       },
       where: 'tenant_id=? AND offline_uuid=?',
       whereArgs: [tenantId, offlineUuid],
@@ -164,88 +178,94 @@ class LeadRepository {
   }
 
   Future<int> pendingCount(String tenantId) async {
-    final leadRows = await db.db.rawQuery(
-      'SELECT COUNT(*) AS total FROM local_leads '
-      'WHERE tenant_id=? AND (sync_status<>? OR pending_conversion=1)',
+    final leads = await db.db.rawQuery(
+      'SELECT COUNT(*) AS total FROM local_leads WHERE tenant_id=? AND (sync_status<>? OR pending_conversion=1)',
       [tenantId, 'synced'],
     );
-    final activityRows = await db.db.rawQuery(
-      'SELECT COUNT(*) AS total FROM local_lead_activities '
-      'WHERE tenant_id=? AND sync_status<>?',
+    final activities = await db.db.rawQuery(
+      'SELECT COUNT(*) AS total FROM local_lead_activities WHERE tenant_id=? AND sync_status<>?',
       [tenantId, 'synced'],
     );
-    return (leadRows.first['total'] as int? ?? 0) +
-        (activityRows.first['total'] as int? ?? 0);
+    return (leads.first['total'] as int? ?? 0) +
+        (activities.first['total'] as int? ?? 0);
   }
 
   Future<LeadSyncResult> syncPending(String tenantId) async {
     if (!await ConnectivityGate.instance.isOnline()) {
       return const LeadSyncResult(synced: 0, failed: 0);
     }
-
     var synced = 0;
     var failed = 0;
-    final leads = await db.db.query(
+    final rows = await db.db.query(
       'local_leads',
       where: 'tenant_id=? AND (sync_status<>? OR pending_conversion=1)',
       whereArgs: [tenantId, 'synced'],
       orderBy: 'created_at ASC',
     );
-
-    for (final raw in leads) {
+    for (final raw in rows) {
       final row = Map<String, dynamic>.from(raw);
-      final offlineUuid = row['offline_uuid'].toString();
+      final uuid = row['offline_uuid'].toString();
       if (!await retry.shouldAttempt(
         tenantId: tenantId,
         entityType: 'lead',
-        entityUuid: offlineUuid,
+        entityUuid: uuid,
       )) {
         continue;
       }
-
       try {
         var serverUuid = row['server_uuid']?.toString();
-        var result = <String, dynamic>{};
         final status = row['sync_status']?.toString() ?? 'synced';
-
         if (status == 'pending_create' || status == 'failed_create') {
-          result = Map<String, dynamic>.from(
+          final result = Map<String, dynamic>.from(
             await api.post('leads', data: _createPayload(row)) as Map,
           );
-          serverUuid = result['id']?.toString() ?? offlineUuid;
+          serverUuid = result['id']?.toString() ?? uuid;
         } else if (status == 'pending_update' || status == 'failed_update') {
-          serverUuid ??= offlineUuid;
-          result = Map<String, dynamic>.from(
-            await api.patch('leads/$serverUuid', data: _updatePayload(row))
-                as Map,
-          );
+          serverUuid ??= uuid;
+          await api.patch('leads/$serverUuid', data: _updatePayload(row));
         }
-
         if ((row['pending_conversion'] as int? ?? 0) == 1) {
-          serverUuid ??= offlineUuid;
-          result = Map<String, dynamic>.from(
-            await api.post('leads/$serverUuid/convert') as Map,
+          serverUuid ??= uuid;
+          final result = Map<String, dynamic>.from(
+            await api.post('leads/$serverUuid/convert', data: const {}) as Map,
+          );
+          await db.db.update(
+            'local_leads',
+            {
+              'converted_customer_uuid': result['converted_customer_id']
+                  ?.toString(),
+              'converted_customer_name': result['converted_customer_name']
+                  ?.toString(),
+              'pending_conversion': 0,
+              'stage': result['stage']?.toString() ?? 'won',
+              'probability': result['probability'] ?? 100,
+            },
+            where: 'tenant_id=? AND offline_uuid=?',
+            whereArgs: [tenantId, uuid],
           );
         }
-
-        await _saveServerLead(
-          tenantId,
-          offlineUuid,
-          result.isEmpty ? row : result,
-          serverUuid: serverUuid ?? offlineUuid,
-          synced: true,
+        await db.db.update(
+          'local_leads',
+          {
+            'server_uuid': serverUuid ?? uuid,
+            'sync_status': 'synced',
+            'last_error': null,
+            'updated_at': DateTime.now().toUtc().toIso8601String(),
+          },
+          where: 'tenant_id=? AND offline_uuid=?',
+          whereArgs: [tenantId, uuid],
         );
         await retry.clear(
           tenantId: tenantId,
           entityType: 'lead',
-          entityUuid: offlineUuid,
+          entityUuid: uuid,
         );
         synced++;
       } catch (error) {
         final failure = await retry.recordFailure(
           tenantId: tenantId,
           entityType: 'lead',
-          entityUuid: offlineUuid,
+          entityUuid: uuid,
           error: error,
         );
         final status = row['sync_status']?.toString() ?? '';
@@ -259,7 +279,7 @@ class LeadRepository {
             'updated_at': DateTime.now().toUtc().toIso8601String(),
           },
           where: 'tenant_id=? AND offline_uuid=?',
-          whereArgs: [tenantId, offlineUuid],
+          whereArgs: [tenantId, uuid],
         );
         failed++;
       }
@@ -271,31 +291,30 @@ class LeadRepository {
       whereArgs: [tenantId, 'synced'],
       orderBy: 'occurred_at ASC',
     );
-
-    for (final raw in activities) {
-      final row = Map<String, dynamic>.from(raw);
-      final offlineUuid = row['offline_uuid'].toString();
-      final leadOfflineUuid = row['lead_offline_uuid'].toString();
-      final lead = await _lead(tenantId, leadOfflineUuid);
-      final leadServerUuid = lead['server_uuid']?.toString();
-
-      if (leadServerUuid == null || leadServerUuid.isEmpty) {
-        continue;
-      }
+    for (final row in activities) {
+      final activityUuid = row['offline_uuid'].toString();
+      final leadRows = await db.db.query(
+        'local_leads',
+        columns: ['server_uuid', 'offline_uuid'],
+        where: 'tenant_id=? AND offline_uuid=?',
+        whereArgs: [tenantId, row['lead_offline_uuid']],
+        limit: 1,
+      );
+      if (leadRows.isEmpty || leadRows.first['server_uuid'] == null) continue;
       if (!await retry.shouldAttempt(
         tenantId: tenantId,
         entityType: 'lead_activity',
-        entityUuid: offlineUuid,
+        entityUuid: activityUuid,
       )) {
         continue;
       }
-
       try {
+        final leadUuid = leadRows.first['server_uuid'].toString();
         final result = Map<String, dynamic>.from(
           await api.post(
-            'leads/$leadServerUuid/activities',
+            'leads/$leadUuid/activities',
             data: {
-              'offline_uuid': offlineUuid,
+              'offline_uuid': activityUuid,
               'type': row['type'],
               'notes': row['notes'],
             },
@@ -304,41 +323,38 @@ class LeadRepository {
         await db.db.update(
           'local_lead_activities',
           {
-            'server_uuid': result['id']?.toString() ?? offlineUuid,
+            'server_uuid': result['id']?.toString() ?? activityUuid,
             'sync_status': 'synced',
             'last_error': null,
-            'updated_at': DateTime.now().toUtc().toIso8601String(),
           },
           where: 'tenant_id=? AND offline_uuid=?',
-          whereArgs: [tenantId, offlineUuid],
+          whereArgs: [tenantId, activityUuid],
         );
         await retry.clear(
           tenantId: tenantId,
           entityType: 'lead_activity',
-          entityUuid: offlineUuid,
+          entityUuid: activityUuid,
         );
         synced++;
       } catch (error) {
         final failure = await retry.recordFailure(
           tenantId: tenantId,
           entityType: 'lead_activity',
-          entityUuid: offlineUuid,
+          entityUuid: activityUuid,
           error: error,
         );
         await db.db.update(
           'local_lead_activities',
           {
-            'sync_status': 'failed_create',
+            'sync_status': failure.blocked ? 'blocked' : 'failed',
             'last_error': failure.message,
-            'updated_at': DateTime.now().toUtc().toIso8601String(),
           },
           where: 'tenant_id=? AND offline_uuid=?',
-          whereArgs: [tenantId, offlineUuid],
+          whereArgs: [tenantId, activityUuid],
         );
         failed++;
       }
     }
-
     return LeadSyncResult(synced: synced, failed: failed);
   }
 
@@ -349,59 +365,12 @@ class LeadRepository {
         .whereType<Map>()
         .map((row) => Map<String, dynamic>.from(row))
         .toList();
-
     for (final row in rows) {
       final uuid = row['id']?.toString();
       if (uuid == null || uuid.isEmpty) continue;
       final existing = await db.db.query(
         'local_leads',
-        where: 'tenant_id=? AND (server_uuid=? OR offline_uuid=?)',
-        whereArgs: [tenantId, uuid, uuid],
-        limit: 1,
-      );
-      if (existing.isNotEmpty) {
-        final local = existing.first;
-        if (local['sync_status']?.toString() != 'synced' ||
-            (local['pending_conversion'] as int? ?? 0) == 1) {
-          continue;
-        }
-        await _saveServerLead(
-          tenantId,
-          local['offline_uuid'].toString(),
-          row,
-          serverUuid: uuid,
-          synced: true,
-        );
-      } else {
-        await _insertServerLead(tenantId, uuid, row);
-      }
-    }
-  }
-
-  Future<void> refreshDetails(String tenantId, String offlineUuid) async {
-    if (!await ConnectivityGate.instance.isOnline()) return;
-    final local = await _lead(tenantId, offlineUuid);
-    final serverUuid = local['server_uuid']?.toString() ?? offlineUuid;
-    final data = Map<String, dynamic>.from(
-      await api.get('leads/$serverUuid') as Map,
-    );
-    await _saveServerLead(
-      tenantId,
-      offlineUuid,
-      data,
-      serverUuid: serverUuid,
-      synced: local['sync_status']?.toString() == 'synced',
-    );
-
-    final activities = (data['activities'] as List? ?? const [])
-        .whereType<Map>()
-        .map((row) => Map<String, dynamic>.from(row));
-    for (final activity in activities) {
-      final uuid = activity['id']?.toString();
-      if (uuid == null || uuid.isEmpty) continue;
-      final existing = await db.db.query(
-        'local_lead_activities',
-        columns: ['sync_status'],
+        columns: ['sync_status', 'offline_uuid'],
         where: 'tenant_id=? AND (server_uuid=? OR offline_uuid=?)',
         whereArgs: [tenantId, uuid, uuid],
         limit: 1,
@@ -409,35 +378,42 @@ class LeadRepository {
       if (existing.isNotEmpty && existing.first['sync_status'] != 'synced') {
         continue;
       }
-      await db.db.insert('local_lead_activities', {
+      final offlineUuid = existing.isNotEmpty
+          ? existing.first['offline_uuid'].toString()
+          : uuid;
+      await db.db.insert('local_leads', {
         'tenant_id': tenantId,
-        'offline_uuid': uuid,
+        'offline_uuid': offlineUuid,
         'server_uuid': uuid,
-        'lead_offline_uuid': offlineUuid,
-        'type': activity['type'] ?? 'note',
-        'notes': activity['notes'],
-        'occurred_at':
-            activity['occurred_at'] ?? DateTime.now().toUtc().toIso8601String(),
+        'name': row['name'],
+        'contact_person': row['contact_person'],
+        'phone': row['phone'],
+        'email': row['email'],
+        'address': row['address'],
+        'source': row['source'],
+        'stage': row['stage'],
+        'priority': row['priority'],
+        'estimated_value': row['estimated_value'],
+        'currency': row['currency'],
+        'probability': row['probability'],
+        'expected_close_date': row['expected_close_date'],
+        'lost_reason': row['lost_reason'],
+        'notes': row['notes'],
+        'territory_uuid': row['territory_id'],
+        'territory_name': row['territory_name'],
+        'converted_customer_uuid': row['converted_customer_id'],
+        'converted_customer_name': row['converted_customer_name'],
+        'last_activity_at': row['last_activity_at'],
+        'converted_at': row['converted_at'],
+        'pending_conversion': 0,
         'sync_status': 'synced',
+        'last_error': null,
         'created_at':
-            activity['occurred_at'] ?? DateTime.now().toUtc().toIso8601String(),
-        'updated_at': DateTime.now().toUtc().toIso8601String(),
+            row['updated_at'] ?? DateTime.now().toUtc().toIso8601String(),
+        'updated_at':
+            row['updated_at'] ?? DateTime.now().toUtc().toIso8601String(),
       }, conflictAlgorithm: ConflictAlgorithm.replace);
     }
-  }
-
-  Future<Map<String, dynamic>> _lead(
-    String tenantId,
-    String offlineUuid,
-  ) async {
-    final rows = await db.db.query(
-      'local_leads',
-      where: 'tenant_id=? AND offline_uuid=?',
-      whereArgs: [tenantId, offlineUuid],
-      limit: 1,
-    );
-    if (rows.isEmpty) throw StateError('Lead not found.');
-    return Map<String, dynamic>.from(rows.first);
   }
 
   Map<String, dynamic> _createPayload(Map<String, dynamic> row) => {
@@ -470,95 +446,21 @@ class LeadRepository {
     if (row['notes'] != null) 'notes': row['notes'],
   };
 
-  Future<void> _insertServerLead(
-    String tenantId,
-    String uuid,
-    Map<String, dynamic> row,
-  ) async {
-    final now = DateTime.now().toUtc().toIso8601String();
-    await db.db.insert('local_leads', {
-      'tenant_id': tenantId,
-      'offline_uuid': uuid,
-      'server_uuid': uuid,
-      ..._serverColumns(row),
-      'sync_status': 'synced',
-      'pending_conversion': 0,
-      'created_at': now,
-      'updated_at': row['updated_at'] ?? now,
-    });
-  }
-
-  Future<void> _saveServerLead(
-    String tenantId,
-    String offlineUuid,
-    Map<String, dynamic> row, {
-    required String serverUuid,
-    required bool synced,
-  }) async {
-    await db.db.update(
-      'local_leads',
-      {
-        'server_uuid': serverUuid,
-        ..._serverColumns(row),
-        if (synced) 'sync_status': 'synced',
-        if (synced) 'pending_conversion': 0,
-        if (synced) 'last_error': null,
-        'updated_at':
-            row['updated_at'] ?? DateTime.now().toUtc().toIso8601String(),
-      },
-      where: 'tenant_id=? AND offline_uuid=?',
-      whereArgs: [tenantId, offlineUuid],
-    );
-  }
-
-  Map<String, dynamic> _serverColumns(Map<String, dynamic> row) => {
-    if (row.containsKey('name')) 'name': row['name'],
-    if (row.containsKey('contact_person'))
-      'contact_person': row['contact_person'],
-    if (row.containsKey('phone')) 'phone': row['phone'],
-    if (row.containsKey('email')) 'email': row['email'],
-    if (row.containsKey('address')) 'address': row['address'],
-    if (row.containsKey('source')) 'source': row['source'],
-    if (row.containsKey('stage')) 'stage': row['stage'],
-    if (row.containsKey('priority')) 'priority': row['priority'],
-    if (row.containsKey('estimated_value'))
-      'estimated_value': row['estimated_value'],
-    if (row.containsKey('currency')) 'currency': row['currency'],
-    if (row.containsKey('probability')) 'probability': row['probability'],
-    if (row.containsKey('expected_close_date'))
-      'expected_close_date': row['expected_close_date'],
-    if (row.containsKey('lost_reason')) 'lost_reason': row['lost_reason'],
-    if (row.containsKey('notes')) 'notes': row['notes'],
-    if (row.containsKey('territory_id')) 'territory_uuid': row['territory_id'],
-    if (row.containsKey('territory_name'))
-      'territory_name': row['territory_name'],
-    if (row.containsKey('converted_customer_id'))
-      'converted_customer_uuid': row['converted_customer_id'],
-    if (row.containsKey('converted_customer_name'))
-      'converted_customer_name': row['converted_customer_name'],
-    if (row.containsKey('last_activity_at'))
-      'last_activity_at': row['last_activity_at'],
-    if (row.containsKey('converted_at')) 'converted_at': row['converted_at'],
-  };
-
-  int _probability(String stage) => switch (stage) {
-    'new' => 10,
-    'contacted' => 25,
-    'qualified' => 50,
-    'proposal' => 65,
-    'negotiation' => 80,
-    'won' => 100,
-    'lost' => 0,
-    _ => 10,
-  };
-
+  int _probability(String stage) =>
+      const {
+        'new': 10,
+        'contacted': 25,
+        'qualified': 50,
+        'proposal': 65,
+        'negotiation': 80,
+        'won': 100,
+        'lost': 0,
+      }[stage] ??
+      10;
   String? _nullable(String? value) {
     final trimmed = value?.trim();
     return trimmed == null || trimmed.isEmpty ? null : trimmed;
   }
-
-  String _dateKey(DateTime value) =>
-      '${value.year.toString().padLeft(4, '0')}-${value.month.toString().padLeft(2, '0')}-${value.day.toString().padLeft(2, '0')}';
 }
 
 class LeadSyncResult {

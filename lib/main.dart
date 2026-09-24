@@ -23,6 +23,7 @@ import 'features/expenses/expense_repository.dart';
 import 'features/financial_documents/customer_statement_repository.dart';
 import 'features/gps/gps_repository.dart';
 import 'features/gps/tracking_service.dart';
+import 'features/insights/sales_insights_repository.dart';
 import 'features/maps/offline_map_cache.dart';
 import 'features/leads/lead_repository.dart';
 import 'features/mileage/mileage_repository.dart';
@@ -74,6 +75,7 @@ Future<void> main() async {
   final statements = CustomerStatementRepository(api: api, db: db);
   final mileage = MileageRepository(api: api, db: db);
   final leads = LeadRepository(api: api, db: db);
+  final salesInsights = SalesInsightsRepository(api: api, db: db);
 
   final masterSource = ApiMasterDataSource(api);
   final masterData = MasterDataRepository(database: db, source: masterSource);
@@ -202,6 +204,7 @@ Future<void> main() async {
         Provider.value(value: masterData),
         Provider.value(value: appointments),
         Provider.value(value: leads),
+        Provider.value(value: salesInsights),
         Provider.value(value: customers),
         Provider.value(value: visits),
         Provider.value(value: calls),

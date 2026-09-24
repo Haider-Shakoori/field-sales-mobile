@@ -304,6 +304,17 @@ class AppDatabase {
     );
 
     await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_visit_voice_notes ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, tenant_id TEXT NOT NULL, client_uuid TEXT NOT NULL, visit_offline_uuid TEXT NOT NULL, server_uuid TEXT, local_path TEXT NOT NULL, captured_at TEXT NOT NULL, duration_seconds INTEGER, sync_status TEXT NOT NULL DEFAULT "pending", last_error TEXT, created_at TEXT NOT NULL)',
+    );
+    await database.execute(
+      'CREATE UNIQUE INDEX IF NOT EXISTS idx_visit_voice_uuid ON local_visit_voice_notes(tenant_id,client_uuid)',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_visit_voice_sync ON local_visit_voice_notes(tenant_id,visit_offline_uuid,sync_status)',
+    );
+
+    await database.execute(
       'CREATE TABLE IF NOT EXISTS local_visit_form_templates ('
       'id INTEGER PRIMARY KEY AUTOINCREMENT, '
       'tenant_id TEXT NOT NULL, '

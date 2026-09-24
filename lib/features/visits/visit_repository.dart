@@ -340,6 +340,27 @@ class VisitRepository {
     return offlineUuid;
   }
 
+  Future<String> addVoiceNoteLocal({
+    required String tenantId,
+    required String visitOfflineUuid,
+    required String localPath,
+    required DateTime capturedAt,
+    int? durationSeconds,
+  }) async {
+    final uuid = const Uuid().v4();
+    await db.db.insert('local_visit_voice_notes', {
+      'tenant_id': tenantId,
+      'client_uuid': uuid,
+      'visit_offline_uuid': visitOfflineUuid,
+      'local_path': localPath,
+      'captured_at': capturedAt.toUtc().toIso8601String(),
+      'duration_seconds': durationSeconds,
+      'sync_status': 'pending',
+      'created_at': DateTime.now().toUtc().toIso8601String(),
+    });
+    return uuid;
+  }
+
   Future<List<Map<String, dynamic>>> visitPhotos(
     String tenantId,
     String visitOfflineUuid,
@@ -370,10 +391,15 @@ class VisitRepository {
       'WHERE tenant_id=? AND sync_status<>?',
       [tenantId, 'synced'],
     );
+    final voiceNotes = await db.db.rawQuery(
+      'SELECT COUNT(*) AS total FROM local_visit_voice_notes WHERE tenant_id=? AND sync_status<>?',
+      [tenantId, 'synced'],
+    );
 
     return (visits.first['total'] as int? ?? 0) +
         (photos.first['total'] as int? ?? 0) +
-        (forms.first['total'] as int? ?? 0);
+        (forms.first['total'] as int? ?? 0) +
+        (voiceNotes.first['total'] as int? ?? 0);
   }
 
   Future<VisitSyncResult> syncPending(String tenantId) async {
@@ -460,6 +486,11 @@ class VisitRepository {
           row['offline_uuid'].toString(),
           row['server_uuid'].toString(),
         );
+        await _syncVoiceNotes(
+          tenantId,
+          row['offline_uuid'].toString(),
+          row['server_uuid'].toString(),
+        );
       } catch (_) {
         failed++;
       }
@@ -511,6 +542,7 @@ class VisitRepository {
     }
 
     await _syncPhotos(tenantId, row['offline_uuid'].toString(), serverUuid);
+    await _syncVoiceNotes(tenantId, row['offline_uuid'].toString(), serverUuid);
     await _syncFormSubmissions(
       tenantId,
       row['offline_uuid'].toString(),
@@ -666,6 +698,120 @@ class VisitRepository {
             'sync_status': failure.blocked ? 'blocked' : 'failed',
             'last_error': failure.message,
             'updated_at': DateTime.now().toUtc().toIso8601String(),
+          },
+          where: 'tenant_id=? AND id=?',
+          whereArgs: [tenantId, row['id']],
+        );
+      }
+    }
+  }
+
+  Future<void> _syncVoiceNotes(
+    String tenantId,
+    String visitOfflineUuid,
+    String visitServerUuid,
+  ) async {
+    final rows = await db.db.query(
+      'local_visit_voice_notes',
+      where: 'tenant_id=? AND visit_offline_uuid=? AND sync_status IN (?,?,?)',
+      whereArgs: [tenantId, visitOfflineUuid, 'pending', 'failed', 'blocked'],
+      orderBy: 'id ASC',
+    );
+    for (final row in rows) {
+      final clientUuid = row['client_uuid'].toString();
+      if (!await retry.shouldAttempt(
+        tenantId: tenantId,
+        entityType: 'visit_voice_note',
+        entityUuid: clientUuid,
+      )) {
+        continue;
+      }
+      final file = File(row['local_path'].toString());
+      if (!await file.exists()) {
+        try {
+          final existing = Map<String, dynamic>.from(
+            await api.post(
+              'visits/$visitServerUuid/voice-notes',
+              data: {'client_uuid': clientUuid},
+            ) as Map,
+          );
+          await db.db.update(
+            'local_visit_voice_notes',
+            {
+              'server_uuid': existing['id']?.toString(),
+              'sync_status': 'synced',
+              'last_error': null,
+            },
+            where: 'tenant_id=? AND id=?',
+            whereArgs: [tenantId, row['id']],
+          );
+          await retry.clear(
+            tenantId: tenantId,
+            entityType: 'visit_voice_note',
+            entityUuid: clientUuid,
+          );
+          continue;
+        } catch (error) {
+          final failure = await retry.recordFailure(
+            tenantId: tenantId,
+            entityType: 'visit_voice_note',
+            entityUuid: clientUuid,
+            error: StateError('Local voice-note file is unavailable.'),
+            retryableOverride: false,
+          );
+          await db.db.update(
+            'local_visit_voice_notes',
+            {
+              'sync_status': failure.blocked ? 'blocked' : 'failed',
+              'last_error': failure.message,
+            },
+            where: 'tenant_id=? AND id=?',
+            whereArgs: [tenantId, row['id']],
+          );
+          continue;
+        }
+      }
+      try {
+        final result = Map<String, dynamic>.from(
+          await api.postMultipart(
+            'visits/$visitServerUuid/voice-notes',
+            filePath: file.path,
+            field: 'audio',
+            fields: {
+              'client_uuid': clientUuid,
+              'captured_at': row['captured_at'],
+              if (row['duration_seconds'] != null)
+                'duration_seconds': row['duration_seconds'],
+            },
+          ) as Map,
+        );
+        await db.db.update(
+          'local_visit_voice_notes',
+          {
+            'server_uuid': result['id']?.toString(),
+            'sync_status': 'synced',
+            'last_error': null,
+          },
+          where: 'tenant_id=? AND id=?',
+          whereArgs: [tenantId, row['id']],
+        );
+        await retry.clear(
+          tenantId: tenantId,
+          entityType: 'visit_voice_note',
+          entityUuid: clientUuid,
+        );
+      } catch (error) {
+        final failure = await retry.recordFailure(
+          tenantId: tenantId,
+          entityType: 'visit_voice_note',
+          entityUuid: clientUuid,
+          error: error,
+        );
+        await db.db.update(
+          'local_visit_voice_notes',
+          {
+            'sync_status': failure.blocked ? 'blocked' : 'failed',
+            'last_error': failure.message,
           },
           where: 'tenant_id=? AND id=?',
           whereArgs: [tenantId, row['id']],

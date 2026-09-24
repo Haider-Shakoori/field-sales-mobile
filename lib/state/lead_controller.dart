@@ -5,10 +5,8 @@ import 'app_state.dart';
 
 class LeadController extends ChangeNotifier {
   LeadController({required this.appState, required this.repository});
-
   final AppState appState;
   final LeadRepository repository;
-
   bool busy = false;
   String? message;
   String? loadedTenantId;
@@ -33,18 +31,9 @@ class LeadController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<Map<String, dynamic>>> activities(String leadOfflineUuid) async {
-    final tenantId = appState.session?.tenantId;
-    if (tenantId == null) return const [];
-    try {
-      await repository.refreshDetails(tenantId, leadOfflineUuid);
-    } catch (_) {}
-    return repository.activities(tenantId, leadOfflineUuid);
-  }
-
   Future<void> sync({bool silent = false}) async {
     final tenantId = appState.session?.tenantId;
-    if (tenantId == null || busy) return;
+    if (tenantId == null) return;
     if (!silent) {
       busy = true;
       message = null;
@@ -56,7 +45,7 @@ class LeadController extends ChangeNotifier {
       await reloadLocal();
       if (!silent) {
         message = result.failed == 0
-            ? 'Lead pipeline sync complete.'
+            ? 'Lead sync complete.'
             : 'Lead sync completed with ${result.failed} pending failure(s).';
       }
     } catch (_) {
@@ -106,36 +95,47 @@ class LeadController extends ChangeNotifier {
       await reloadLocal();
       message = 'Lead saved locally.';
       await sync(silent: true);
-    } catch (error) {
-      message = error.toString();
+    } catch (e) {
+      message = e.toString();
     } finally {
       busy = false;
       notifyListeners();
     }
   }
 
-  Future<void> updateStage(
-    Map<String, dynamic> lead,
-    String stage, {
+  Future<void> update(
+    Map<String, dynamic> lead, {
+    String? stage,
+    String? priority,
+    double? estimatedValue,
+    String? currency,
+    DateTime? expectedCloseDate,
     String? lostReason,
+    String? notes,
   }) async {
     final tenantId = appState.session?.tenantId;
     final uuid = lead['offline_uuid']?.toString();
     if (tenantId == null || uuid == null || busy) return;
     busy = true;
+    message = null;
     notifyListeners();
     try {
-      await repository.updateStageLocal(
+      await repository.updateLocal(
         tenantId: tenantId,
         offlineUuid: uuid,
         stage: stage,
+        priority: priority,
+        estimatedValue: estimatedValue,
+        currency: currency,
+        expectedCloseDate: expectedCloseDate,
         lostReason: lostReason,
+        notes: notes,
       );
       await reloadLocal();
-      message = 'Lead stage updated locally.';
+      message = 'Lead updated locally.';
       await sync(silent: true);
-    } catch (error) {
-      message = error.toString();
+    } catch (e) {
+      message = e.toString();
     } finally {
       busy = false;
       notifyListeners();
@@ -143,15 +143,13 @@ class LeadController extends ChangeNotifier {
   }
 
   Future<void> addActivity(
-    Map<String, dynamic> lead,
-    String type,
-    String notes,
-  ) async {
+    Map<String, dynamic> lead, {
+    required String type,
+    required String notes,
+  }) async {
     final tenantId = appState.session?.tenantId;
     final uuid = lead['offline_uuid']?.toString();
-    if (tenantId == null || uuid == null || notes.trim().isEmpty || busy) {
-      return;
-    }
+    if (tenantId == null || uuid == null || busy) return;
     busy = true;
     notifyListeners();
     try {
@@ -164,8 +162,8 @@ class LeadController extends ChangeNotifier {
       await reloadLocal();
       message = 'Lead activity saved locally.';
       await sync(silent: true);
-    } catch (error) {
-      message = error.toString();
+    } catch (e) {
+      message = e.toString();
     } finally {
       busy = false;
       notifyListeners();
@@ -179,12 +177,12 @@ class LeadController extends ChangeNotifier {
     busy = true;
     notifyListeners();
     try {
-      await repository.convertLocal(tenantId: tenantId, offlineUuid: uuid);
+      await repository.requestConversion(tenantId, uuid);
       await reloadLocal();
-      message = 'Lead marked for customer conversion.';
+      message = 'Lead marked Won locally; customer conversion will sync.';
       await sync(silent: true);
-    } catch (error) {
-      message = error.toString();
+    } catch (e) {
+      message = e.toString();
     } finally {
       busy = false;
       notifyListeners();
