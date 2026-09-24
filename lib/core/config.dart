@@ -1,7 +1,12 @@
 class AppConfig {
   static const _configuredApiBaseUrl = String.fromEnvironment('API_BASE_URL');
   static const _configuredAppVersion = String.fromEnvironment('APP_VERSION');
+  static const _configuredTileUrlTemplate = String.fromEnvironment(
+    'TILE_URL_TEMPLATE',
+  );
   static const _debugApiBaseUrl = 'http://10.0.2.2:8001/api/v1';
+  static const _defaultTileUrlTemplate =
+      'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 
   static String get apiBaseUrl => _configuredApiBaseUrl.isNotEmpty
       ? _configuredApiBaseUrl
@@ -10,11 +15,11 @@ class AppConfig {
   static String get appVersion =>
       _configuredAppVersion.isNotEmpty ? _configuredAppVersion : '1.0.0';
 
-  static String get tileUrlTemplate {
-    final base = apiBaseUrl.replaceFirst(RegExp(r'/api/v1/?$'), '');
+  static String get tileUrlTemplate => _configuredTileUrlTemplate.isNotEmpty
+      ? _configuredTileUrlTemplate
+      : _defaultTileUrlTemplate;
 
-    return '$base/tiles/{z}/{x}/{y}.png';
-  }
+  static bool get tileSourceConfigured => _configuredTileUrlTemplate.isNotEmpty;
 
   static const privacyPolicyVersionFallback = '1';
 
@@ -35,6 +40,26 @@ class AppConfig {
       );
     }
 
+    final tileTemplate = tileUrlTemplate;
+    if (!tileTemplate.contains('{z}') ||
+        !tileTemplate.contains('{x}') ||
+        !tileTemplate.contains('{y}')) {
+      throw StateError(
+        'TILE_URL_TEMPLATE must contain {z}, {x}, and {y} placeholders.',
+      );
+    }
+
+    final tileUri = Uri.tryParse(
+      tileTemplate
+          .replaceAll('{z}', '0')
+          .replaceAll('{x}', '0')
+          .replaceAll('{y}', '0'),
+    );
+
+    if (tileUri == null || !tileUri.hasScheme || tileUri.host.isEmpty) {
+      throw StateError('TILE_URL_TEMPLATE must be a valid absolute URL.');
+    }
+
     if (productMode) {
       if (_configuredApiBaseUrl.isEmpty) {
         throw StateError('Release builds require API_BASE_URL.');
@@ -46,6 +71,10 @@ class AppConfig {
 
       if (_configuredAppVersion.isEmpty) {
         throw StateError('Release builds require APP_VERSION.');
+      }
+
+      if (tileUri.scheme.toLowerCase() != 'https') {
+        throw StateError('Release builds require an HTTPS TILE_URL_TEMPLATE.');
       }
     }
   }
