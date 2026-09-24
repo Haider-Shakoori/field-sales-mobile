@@ -8,6 +8,7 @@ import '../state/visit_controller.dart';
 import 'collection_create_screen.dart';
 import 'order_create_screen.dart';
 import 'visit_forms_screen.dart';
+import 'visit_voice_recorder_dialog.dart';
 import 'sync_refresh.dart';
 import 'visits_map_view.dart';
 
@@ -337,6 +338,21 @@ class _VisitsScreenState extends State<VisitsScreen> {
                                 },
                           icon: const Icon(Icons.camera_alt_outlined),
                           label: const Text('Photo'),
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: state.busy
+                              ? null
+                              : () async {
+                                  await showDialog<bool>(
+                                    context: context,
+                                    builder: (_) =>
+                                        VisitVoiceRecorderDialog(visit: visit),
+                                  );
+                                  if (!context.mounted) return;
+                                  _showVisitMessage(context, state);
+                                },
+                          icon: const Icon(Icons.mic_none),
+                          label: const Text('Voice note'),
                         ),
                         OutlinedButton.icon(
                           onPressed: state.busy

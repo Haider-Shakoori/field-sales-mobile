@@ -172,6 +172,35 @@ class VisitController extends ChangeNotifier {
     }
   }
 
+  Future<void> attachVoiceNote(
+    Map<String, dynamic> visit, {
+    required String localPath,
+    required int durationSeconds,
+  }) async {
+    final tenantId = appState.session?.tenantId;
+    if (tenantId == null || busy) return;
+    busy = true;
+    message = null;
+    notifyListeners();
+    try {
+      await repository.addVoiceNoteLocal(
+        tenantId: tenantId,
+        visitOfflineUuid: visit['offline_uuid'].toString(),
+        localPath: localPath,
+        capturedAt: DateTime.now().toUtc(),
+        durationSeconds: durationSeconds,
+      );
+      await reloadLocal();
+      message = 'Voice note saved locally.';
+      await sync(silent: true);
+    } catch (error) {
+      message = '$error'.replaceFirst('Bad state: ', '');
+    } finally {
+      busy = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> sync({bool silent = false}) async {
     final tenantId = appState.session?.tenantId;
     if (tenantId == null) return;

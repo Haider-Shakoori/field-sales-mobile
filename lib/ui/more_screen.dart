@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'appointments_screen.dart';
 import 'collections_screen.dart';
+import 'commission_screen.dart';
 import 'expenses_screen.dart';
 import 'mileage_screen.dart';
 import 'leads_screen.dart';
 import 'products_screen.dart';
+import 'reorder_recommendations_screen.dart';
 import 'routes_screen.dart';
 import 'smart_route_screen.dart';
 import 'stock_returns_screen.dart';
@@ -44,6 +46,40 @@ class MoreScreen extends StatelessWidget {
               trailing: const Icon(Icons.chevron_right),
               onTap: () =>
                   _open(context, 'Leads & Pipeline', const LeadsScreen()),
+            ),
+          ),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.filter_alt_outlined),
+              title: const Text('Leads'),
+              subtitle: const Text('Offline prospects and sales pipeline'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => _open(context, 'Leads', const LeadsScreen()),
+            ),
+          ),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.repeat),
+              title: const Text('Reorder recommendations'),
+              subtitle: const Text(
+                'Customer purchase cadence and suggested quantities',
+              ),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => _open(
+                context,
+                'Reorders',
+                const ReorderRecommendationsScreen(),
+              ),
+            ),
+          ),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.account_balance_wallet_outlined),
+              title: const Text('My commissions'),
+              subtitle: const Text('Earned and paid commission history'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () =>
+                  _open(context, 'My commissions', const CommissionScreen()),
             ),
           ),
           Card(
