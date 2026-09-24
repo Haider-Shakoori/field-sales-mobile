@@ -146,7 +146,8 @@ class HomeTab extends StatelessWidget {
                     ),
                     decoration: InputDecoration(
                       labelText: 'End odometer km (optional)',
-                      helperText: controller.session?['odometer_start_km'] == null
+                      helperText:
+                          controller.session?['odometer_start_km'] == null
                           ? null
                           : 'Start: ${controller.session!['odometer_start_km']} km',
                     ),
