@@ -36,14 +36,14 @@ class DailyRoutePlanRepository {
     final raw = await db.readSetting(_inclusionsKey(tenantId));
 
     if (raw is! Map) {
-      return const [];
+      return <String>[];
     }
 
     final date = raw['date']?.toString();
     final today = _localDateKey(DateTime.now());
 
     if (date != today || raw['ids'] is! List) {
-      return const [];
+      return <String>[];
     }
 
     return (raw['ids'] as List)
