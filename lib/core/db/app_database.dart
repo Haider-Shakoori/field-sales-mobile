@@ -706,7 +706,6 @@ class AppDatabase {
     );
   }
 
-
   Future<void> _createLeadTables(Database database) async {
     await database.execute(
       'CREATE TABLE IF NOT EXISTS local_leads ('
