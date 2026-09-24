@@ -101,6 +101,7 @@ class _VisitsScreenState extends State<VisitsScreen> {
 
     if (customer != null && context.mounted) {
       await visits.checkIn(customer);
+      if (!context.mounted) return;
       _showVisitMessage(context, visits);
     }
   }
@@ -167,6 +168,7 @@ class _VisitsScreenState extends State<VisitsScreen> {
     if (save && context.mounted) {
       final visits = context.read<VisitController>();
       await visits.checkOut(visit, outcome: outcome, notes: notes.text);
+      if (!context.mounted) return;
       _showVisitMessage(context, visits);
     }
   }
