@@ -124,10 +124,7 @@ Future<void> main() async {
     repository: appointments,
   );
 
-  final leadController = LeadController(
-    appState: appState,
-    repository: leads,
-  );
+  final leadController = LeadController(appState: appState, repository: leads);
 
   final callActivityController = CallActivityController(
     appState: appState,
