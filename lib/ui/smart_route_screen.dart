@@ -268,8 +268,8 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                   const SizedBox(height: 8),
                   Text(
                     start != null
-                        ? 'Optimized from your current GPS position, then by business priority and proximity.'
-                        : 'Optimized by business priority and proximity. Pull to refresh with your current GPS position.',
+                        ? 'Live route: optimized from your current GPS position, business priority, and proximity.'
+                        : 'Optimized by business priority and proximity. Re-optimize when GPS is available.',
                   ),
                   if (_cachedAt != null) ...[
                     const SizedBox(height: 6),
@@ -288,7 +288,17 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                       _metric('Urgent', _summary['urgent']),
                       _metric('High', _summary['high']),
                       _metric('Visited', _summary['visited']),
+                      if (included > 0) _metric('Extra', included),
                     ],
+                  ),
+                  const SizedBox(height: 14),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.tonalIcon(
+                      onPressed: _refreshing ? null : _refresh,
+                      icon: const Icon(Icons.my_location),
+                      label: const Text('Re-optimize now'),
+                    ),
                   ),
                 ],
               ),
