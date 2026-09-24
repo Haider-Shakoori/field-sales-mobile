@@ -15,6 +15,7 @@ Flutter 3.47 Android client for FieldPulse. The app is local-first: attendance, 
 - Tenant timezone database initialized at startup
 - Session restore, logout stop, local history and modern Material 3 UI
 - Visits map with customer pins, live position, planned route order, nearest-first suggestions and navigate/check-in actions
+- Persistent viewed-area map tile cache stored in application support storage for offline reuse across app restarts
 
 ## Run against the local web project
 
@@ -52,3 +53,18 @@ See [RELEASE.md](RELEASE.md) for signing setup, GitHub Actions secrets/variables
 ## Production endpoint
 
 The canonical FieldPulse production backend is `https://fieldpulse.businessos.af`. Production Android releases must be built with `PRODUCTION_API_BASE_URL=https://fieldpulse.businessos.af/api/v1`. Debug/local builds remain configurable independently through `API_BASE_URL`.
+
+
+## Map tiles and offline reuse
+
+FieldPulse keeps map tiles that the salesman has actually viewed in persistent application-support storage (soft limit: 512 MB), so previously viewed customer/route areas can still render when connectivity drops or the app restarts.
+
+The tile source can be changed without a new code change:
+
+```bash
+flutter run \
+  --dart-define=API_BASE_URL=http://10.0.2.2:8001/api/v1 \
+  --dart-define=TILE_URL_TEMPLATE=https://YOUR_TILE_PROVIDER/{z}/{x}/{y}.png
+```
+
+If `TILE_URL_TEMPLATE` is omitted, the app uses the standard OpenStreetMap raster endpoint and honors normal interactive-view caching. FieldPulse intentionally does **not** bulk-download or prefetch public OpenStreetMap tiles. For guaranteed region downloads, configure a tile service or self-hosted source whose terms explicitly allow offline/prefetch use.
