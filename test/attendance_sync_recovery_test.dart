@@ -108,6 +108,8 @@ void main() {
         lng: 69.2075,
         accuracy: 5,
         source: 'manual',
+        vehicleReference: 'CAR-01',
+        odometerStartKm: 1000,
       );
 
       final session = await attendance.active(tenantId);
@@ -117,6 +119,8 @@ void main() {
         lat: 34.5588,
         lng: 69.2120,
         accuracy: 5,
+        vehicleReference: 'CAR-01',
+        odometerEndKm: 1002,
       );
 
       await attendance.drain(tenantId);
@@ -146,6 +150,16 @@ void main() {
         '/api/v1/attendance/start',
         '/api/v1/attendance/end',
       ]);
+      final startPayload = Map<String, dynamic>.from(
+        requests.first.data as Map,
+      );
+      final endPayload = Map<String, dynamic>.from(
+        requests.last.data as Map,
+      );
+      expect(startPayload['vehicle_reference'], 'CAR-01');
+      expect(startPayload['odometer_start_km'], 1000);
+      expect(endPayload['vehicle_reference'], 'CAR-01');
+      expect(endPayload['odometer_end_km'], 1002);
 
       await db.db.close();
     },
