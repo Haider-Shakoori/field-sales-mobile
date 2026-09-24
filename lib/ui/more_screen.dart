@@ -4,6 +4,7 @@ import 'appointments_screen.dart';
 import 'collections_screen.dart';
 import 'expenses_screen.dart';
 import 'mileage_screen.dart';
+import 'leads_screen.dart';
 import 'products_screen.dart';
 import 'routes_screen.dart';
 import 'smart_route_screen.dart';
@@ -33,6 +34,15 @@ class MoreScreen extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.filter_alt_outlined),
+              title: const Text('Leads & Pipeline'),
+              subtitle: const Text('Prospects, opportunity stages and conversion'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => _open(context, 'Leads & Pipeline', const LeadsScreen()),
+            ),
+          ),
           Card(
             child: ListTile(
               leading: const Icon(Icons.calendar_month_outlined),
