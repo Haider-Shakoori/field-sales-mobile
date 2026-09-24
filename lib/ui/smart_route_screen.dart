@@ -77,6 +77,8 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
     final tenantId = context.read<AppState>().session?.tenantId;
     if (tenantId == null) return;
 
+    final repository = context.read<DailyRoutePlanRepository>();
+
     setState(() {
       _refreshing = true;
       _message = null;
@@ -84,7 +86,7 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
 
     try {
       final position = await _currentPosition();
-      final plan = await context.read<DailyRoutePlanRepository>().refresh(
+      final plan = await repository.refresh(
         tenantId,
         latitude: position?.latitude,
         longitude: position?.longitude,
@@ -136,7 +138,7 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
   };
 
   Widget _metric(String label, dynamic value) => Chip(
-    label: Text(label + ' ' + (value ?? 0).toString()),
+    label: Text('${label} ${value ?? 0}'),
     visualDensity: VisualDensity.compact,
   );
 
@@ -194,8 +196,8 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                     [
                       if (plan?['date'] != null) plan!['date'].toString(),
                       if (source['type'] != null)
-                        'Source: ' + source['type'].toString(),
-                      if (distance != null) '~' + distance.toString() + ' km',
+                        'Source: ${source['type']}',
+                      if (distance != null) '~$distance km',
                     ].join(' · '),
                   ),
                   const SizedBox(height: 8),
@@ -207,7 +209,7 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                   if (_cachedAt != null) ...[
                     const SizedBox(height: 6),
                     Text(
-                      'Cached ' + _cachedAt!.toLocal().toString(),
+                      'Cached ${_cachedAt!.toLocal()}',
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],
@@ -260,7 +262,7 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                     final currency = row['currency']?.toString() ?? '';
                     final amount = row['overdue'];
                     return amount is num && amount > 0
-                        ? currency + ' ' + amount.toString() + ' overdue'
+                        ? '$currency $amount overdue'
                         : null;
                   })
                   .whereType<String>()
@@ -317,15 +319,11 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                               Text(
                                 [
                                   if (stop['distance_from_previous_km'] != null)
-                                    stop['distance_from_previous_km']
-                                            .toString() +
-                                        ' km from previous',
+                                    '${stop['distance_from_previous_km']} km from previous',
                                   if (stop['planned_visit_minutes'] != null)
-                                    stop['planned_visit_minutes'].toString() +
-                                        ' min visit',
+                                    '${stop['planned_visit_minutes']} min visit',
                                   if (stop['route_sequence'] != null)
-                                    'Route #' +
-                                        stop['route_sequence'].toString(),
+                                    'Route #${stop['route_sequence']}',
                                 ].join(' · '),
                                 style: Theme.of(context).textTheme.bodySmall,
                               ),
