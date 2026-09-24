@@ -48,6 +48,16 @@ class ExpensesScreen extends StatelessWidget {
                 "Status: ${_label(expense['status']?.toString() ?? 'pending')}",
               ),
               Text("Spent: ${expense['spent_at'] ?? '—'}"),
+              if (expense['category'] == 'fuel') ...[
+                if (expense['fuel_liters'] != null)
+                  Text("Fuel: ${expense['fuel_liters']} L"),
+                if (expense['fuel_unit_price'] != null)
+                  Text(
+                    "Unit price: ${expense['fuel_unit_price']} ${expense['currency']}",
+                  ),
+                if (expense['odometer_km'] != null)
+                  Text("Odometer: ${expense['odometer_km']} km"),
+              ],
               if (expense['merchant'] != null)
                 Text("Merchant: ${expense['merchant']}"),
               if (expense['reference_number'] != null)
