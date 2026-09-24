@@ -465,7 +465,7 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                   ),
                 ),
                 Text(
-                  'within ' + radius.toString() + ' km',
+                  'within ${radius.toString()} km',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ],
@@ -515,8 +515,7 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          (opportunity['distance_km']?.toString() ?? '-') +
-                              ' km away',
+                          '${opportunity['distance_km']?.toString() ?? '-'} km away',
                         ),
                         if ((opportunity['address'] ?? '')
                             .toString()
