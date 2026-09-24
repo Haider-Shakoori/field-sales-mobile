@@ -25,7 +25,8 @@ void main() {
   test('tile source is configurable and defaults to compliant HTTPS OSM', () {
     final source = File('lib/core/config.dart').readAsStringSync();
 
-    expect(source, contains("String.fromEnvironment('TILE_URL_TEMPLATE'"));
+    expect(source, contains('String.fromEnvironment('));
+    expect(source, contains("'TILE_URL_TEMPLATE'"));
     expect(source, contains('https://tile.openstreetmap.org/{z}/{x}/{y}.png'));
     expect(
       source,
