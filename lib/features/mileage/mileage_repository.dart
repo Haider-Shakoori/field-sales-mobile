@@ -92,9 +92,7 @@ class MileageRepository {
 
       final sessionFuel = expenses.where((expense) {
         final at = DateTime.tryParse('${expense['spent_at']}')?.toUtc();
-        return at != null &&
-            !at.isBefore(start.toUtc()) &&
-            !at.isAfter(end);
+        return at != null && !at.isBefore(start.toUtc()) && !at.isAfter(end);
       }).toList();
 
       final fuelLiters = _round(
@@ -186,10 +184,7 @@ class MileageRepository {
         _number(current['latitude']) ?? 0,
         _number(current['longitude']) ?? 0,
       );
-      final seconds = math.max(
-        1,
-        currentAt.difference(previousAt).inSeconds,
-      );
+      final seconds = math.max(1, currentAt.difference(previousAt).inSeconds);
       final speedKmh = kilometres / (seconds / 3600);
 
       if (speedKmh <= 200) {
