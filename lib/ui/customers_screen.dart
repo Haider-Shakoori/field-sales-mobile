@@ -187,6 +187,117 @@ class CustomersScreen extends StatelessWidget {
     );
   }
 
+  Future<void> _messageCustomer(
+    BuildContext context,
+    Map<String, dynamic> customer,
+  ) async {
+    final phone =
+        customer['phone']?.toString().trim().isNotEmpty == true
+        ? customer['phone'].toString().trim()
+        : customer['alternate_phone']?.toString().trim() ?? '';
+
+    if (phone.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('This customer has no phone number.')),
+      );
+      return;
+    }
+
+    var channel = 'whatsapp';
+    final message = TextEditingController(
+      text: 'Hello ${(customer['name'] ?? 'there').toString()}, ',
+    );
+
+    final send =
+        await showDialog<bool>(
+          context: context,
+          builder: (dialogContext) => StatefulBuilder(
+            builder: (context, setState) => AlertDialog(
+              title: const Text('Message customer'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    DropdownButtonFormField<String>(
+                      initialValue: channel,
+                      decoration: const InputDecoration(labelText: 'Channel'),
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'whatsapp',
+                          child: Text('WhatsApp'),
+                        ),
+                        DropdownMenuItem(value: 'sms', child: Text('SMS')),
+                      ],
+                      onChanged: (value) {
+                        if (value != null) setState(() => channel = value);
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: message,
+                      maxLines: 5,
+                      maxLength: 1600,
+                      autofocus: true,
+                      decoration: const InputDecoration(
+                        labelText: 'Message',
+                        alignLabelWithHint: true,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext, false),
+                  child: const Text('Cancel'),
+                ),
+                FilledButton(
+                  onPressed: () {
+                    if (message.text.trim().isNotEmpty) {
+                      Navigator.pop(dialogContext, true);
+                    }
+                  },
+                  child: const Text('Open app'),
+                ),
+              ],
+            ),
+          ),
+        ) ??
+        false;
+
+    if (!send || !context.mounted) return;
+
+    final body = message.text.trim();
+    final Uri uri;
+
+    if (channel == 'whatsapp') {
+      final digits = phone.replaceAll(RegExp(r'\D'), '');
+      if (digits.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('The customer phone number is invalid.')),
+        );
+        return;
+      }
+
+      uri = Uri.https('wa.me', '/$digits', {'text': body});
+    } else {
+      uri = Uri(scheme: 'sms', path: phone, queryParameters: {'body': body});
+    }
+
+    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+
+    if (!launched && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            channel == 'whatsapp'
+                ? 'WhatsApp could not be opened.'
+                : 'The SMS app could not be opened.',
+          ),
+        ),
+      );
+    }
+  }
   void _showHistory(BuildContext context, Map<String, dynamic> customer) {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -277,6 +388,13 @@ class CustomersScreen extends StatelessWidget {
                             tooltip: 'Call history',
                             onPressed: () => _showHistory(context, customer),
                             icon: const Icon(Icons.history),
+                          ),
+                          IconButton(
+                            tooltip: phone.isEmpty ? 'No phone' : 'Message',
+                            onPressed: phone.isEmpty
+                                ? null
+                                : () => _messageCustomer(context, customer),
+                            icon: const Icon(Icons.chat_bubble_outline),
                           ),
                           IconButton(
                             tooltip: phone.isEmpty ? 'No phone' : 'Call',
