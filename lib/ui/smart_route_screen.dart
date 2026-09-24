@@ -222,6 +222,9 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
         ? Map<String, dynamic>.from(plan!['start_location'] as Map)
         : null;
     final distance = plan?['approximate_air_distance_km'];
+    final included =
+        (_dynamicRoute['included_opportunity_ids'] as List? ?? const []).length;
+    final radius = _dynamicRoute['nearby_radius_km'] ?? 5;
 
     return RefreshIndicator(
       onRefresh: _refresh,
