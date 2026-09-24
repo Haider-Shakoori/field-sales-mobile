@@ -4,6 +4,7 @@ import 'collections_screen.dart';
 import 'expenses_screen.dart';
 import 'products_screen.dart';
 import 'routes_screen.dart';
+import 'smart_route_screen.dart';
 import 'stock_returns_screen.dart';
 import 'sync_refresh.dart';
 import 'sync_screen.dart';
@@ -56,6 +57,18 @@ class MoreScreen extends StatelessWidget {
               subtitle: const Text('Current goals and authoritative progress'),
               trailing: const Icon(Icons.chevron_right),
               onTap: () => _open(context, 'Targets', const TargetsScreen()),
+            ),
+          ),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.alt_route),
+              title: const Text('Smart Route'),
+              subtitle: const Text(
+                'Today\'s optimized customer order, priorities and distance',
+              ),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () =>
+                  _open(context, 'Smart Route', const SmartRouteScreen()),
             ),
           ),
           Card(
