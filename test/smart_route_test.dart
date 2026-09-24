@@ -23,11 +23,7 @@ class _SmartRouteApi extends ApiClient {
 
     return {
       'date': '2026-09-24',
-      'source': {
-        'type': 'route',
-        'id': 'route-1',
-        'name': 'Kabul Route',
-      },
+      'source': {'type': 'route', 'id': 'route-1', 'name': 'Kabul Route'},
       'start_location': {
         'latitude': query?['latitude'],
         'longitude': query?['longitude'],
@@ -102,10 +98,7 @@ void main() {
     final db = AppDatabase();
     await db.open();
 
-    final repository = DailyRoutePlanRepository(
-      api: _SmartRouteApi(),
-      db: db,
-    );
+    final repository = DailyRoutePlanRepository(api: _SmartRouteApi(), db: db);
 
     await repository.refresh('tenant-a');
 
