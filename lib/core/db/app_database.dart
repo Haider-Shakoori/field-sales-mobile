@@ -4,7 +4,7 @@ import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
 class AppDatabase {
-  static const version = 16;
+  static const version = 17;
 
   Database? _db;
 
@@ -32,6 +32,7 @@ class AppDatabase {
     await _createStockTables(database);
     await _createStatementTables(database);
     await _createAppointmentTables(database);
+    await _createLeadTables(database);
   }
 
   Future<void> _createSyncTables(Database database) async {
@@ -705,6 +706,83 @@ class AppDatabase {
     );
   }
 
+  Future<void> _createLeadTables(Database database) async {
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_leads ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL, '
+      'offline_uuid TEXT NOT NULL, '
+      'server_uuid TEXT, '
+      'name TEXT NOT NULL, '
+      'contact_person TEXT, '
+      'phone TEXT, '
+      'email TEXT, '
+      'address TEXT, '
+      'source TEXT NOT NULL DEFAULT "field", '
+      'stage TEXT NOT NULL DEFAULT "new", '
+      'priority TEXT NOT NULL DEFAULT "normal", '
+      'estimated_value REAL, '
+      'currency TEXT NOT NULL DEFAULT "AFN", '
+      'probability INTEGER NOT NULL DEFAULT 10, '
+      'expected_close_date TEXT, '
+      'lost_reason TEXT, '
+      'notes TEXT, '
+      'territory_uuid TEXT, '
+      'territory_name TEXT, '
+      'converted_customer_uuid TEXT, '
+      'converted_customer_name TEXT, '
+      'last_activity_at TEXT, '
+      'converted_at TEXT, '
+      'sync_status TEXT NOT NULL DEFAULT "synced", '
+      'pending_conversion INTEGER NOT NULL DEFAULT 0, '
+      'last_error TEXT, '
+      'created_at TEXT NOT NULL, '
+      'updated_at TEXT NOT NULL'
+      ')',
+    );
+    await database.execute(
+      'CREATE UNIQUE INDEX IF NOT EXISTS idx_leads_tenant_uuid '
+      'ON local_leads(tenant_id,offline_uuid)',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_leads_pipeline '
+      'ON local_leads(tenant_id,stage,priority,last_activity_at)',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_leads_sync '
+      'ON local_leads(tenant_id,sync_status,pending_conversion)',
+    );
+
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_lead_activities ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL, '
+      'offline_uuid TEXT NOT NULL, '
+      'server_uuid TEXT, '
+      'lead_offline_uuid TEXT NOT NULL, '
+      'type TEXT NOT NULL DEFAULT "note", '
+      'notes TEXT, '
+      'occurred_at TEXT NOT NULL, '
+      'sync_status TEXT NOT NULL DEFAULT "synced", '
+      'last_error TEXT, '
+      'created_at TEXT NOT NULL, '
+      'updated_at TEXT NOT NULL'
+      ')',
+    );
+    await database.execute(
+      'CREATE UNIQUE INDEX IF NOT EXISTS idx_lead_activities_tenant_uuid '
+      'ON local_lead_activities(tenant_id,offline_uuid)',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_lead_activities_timeline '
+      'ON local_lead_activities(tenant_id,lead_offline_uuid,occurred_at)',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_lead_activities_sync '
+      'ON local_lead_activities(tenant_id,sync_status,occurred_at)',
+    );
+  }
+
   Future<void> _createStatementTables(Database database) async {
     await database.execute(
       'CREATE TABLE IF NOT EXISTS local_customer_statements ('
@@ -778,6 +856,7 @@ class AppDatabase {
     await _createStockTables(database);
     await _createStatementTables(database);
     await _createAppointmentTables(database);
+    await _createLeadTables(database);
 
     if (oldVersion < 16) {
       for (final column in const {

@@ -52,6 +52,8 @@ void main() {
         'local_sync_failures',
         'local_sync_cycles',
         'local_appointments',
+        'local_leads',
+        'local_lead_activities',
       ]),
     );
 
@@ -182,6 +184,12 @@ void main() {
         'idx_appointments_tenant_uuid',
         'idx_appointments_calendar',
         'idx_appointments_sync',
+        'idx_leads_tenant_uuid',
+        'idx_leads_pipeline',
+        'idx_leads_sync',
+        'idx_lead_activities_tenant_uuid',
+        'idx_lead_activities_timeline',
+        'idx_lead_activities_sync',
       ]),
     );
 

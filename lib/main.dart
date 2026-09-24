@@ -24,6 +24,7 @@ import 'features/financial_documents/customer_statement_repository.dart';
 import 'features/gps/gps_repository.dart';
 import 'features/gps/tracking_service.dart';
 import 'features/maps/offline_map_cache.dart';
+import 'features/leads/lead_repository.dart';
 import 'features/mileage/mileage_repository.dart';
 import 'features/master_data/master_data_repository.dart';
 import 'features/master_data/master_data_source.dart';
@@ -40,6 +41,7 @@ import 'state/collection_controller.dart';
 import 'state/expense_controller.dart';
 import 'state/attendance_controller.dart';
 import 'state/master_data_controller.dart';
+import 'state/lead_controller.dart';
 import 'state/order_controller.dart';
 import 'state/sync_controller.dart';
 import 'state/target_controller.dart';
@@ -71,6 +73,7 @@ Future<void> main() async {
   final stock = StockRepository(api: api, db: db);
   final statements = CustomerStatementRepository(api: api, db: db);
   final mileage = MileageRepository(api: api, db: db);
+  final leads = LeadRepository(api: api, db: db);
 
   final masterSource = ApiMasterDataSource(api);
   final masterData = MasterDataRepository(database: db, source: masterSource);
@@ -97,6 +100,7 @@ Future<void> main() async {
     retryStore: retryStore,
     customers: customers,
     masterData: masterData,
+    leads: leads,
     appointments: appointments,
     attendance: attendance,
     gps: gps,
@@ -119,6 +123,8 @@ Future<void> main() async {
     appState: appState,
     repository: appointments,
   );
+
+  final leadController = LeadController(appState: appState, repository: leads);
 
   final callActivityController = CallActivityController(
     appState: appState,
@@ -184,6 +190,7 @@ Future<void> main() async {
         ChangeNotifierProvider.value(value: appState),
         ChangeNotifierProvider.value(value: attendanceController),
         ChangeNotifierProvider.value(value: appointmentController),
+        ChangeNotifierProvider.value(value: leadController),
         ChangeNotifierProvider.value(value: masterDataController),
         ChangeNotifierProvider.value(value: visitController),
         ChangeNotifierProvider.value(value: callActivityController),
@@ -194,6 +201,7 @@ Future<void> main() async {
         ChangeNotifierProvider.value(value: syncController),
         Provider.value(value: masterData),
         Provider.value(value: appointments),
+        Provider.value(value: leads),
         Provider.value(value: customers),
         Provider.value(value: visits),
         Provider.value(value: calls),

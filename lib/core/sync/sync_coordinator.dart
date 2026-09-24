@@ -10,6 +10,7 @@ import '../../features/customers/customer_repository.dart';
 import '../../features/expenses/expense_repository.dart';
 import '../../features/gps/gps_repository.dart';
 import '../../features/master_data/master_data_repository.dart';
+import '../../features/leads/lead_repository.dart';
 import '../../features/orders/order_repository.dart';
 import '../../features/stock/stock_repository.dart';
 import '../../features/targets/target_repository.dart';
@@ -25,6 +26,7 @@ class SyncCoordinator {
     required this.retryStore,
     required this.customers,
     required this.masterData,
+    required this.leads,
     required this.appointments,
     required this.attendance,
     required this.gps,
@@ -41,6 +43,7 @@ class SyncCoordinator {
   final SyncRetryStore retryStore;
   final CustomerRepository customers;
   final MasterDataRepository masterData;
+  final LeadRepository leads;
   final AppointmentRepository appointments;
   final AttendanceRepository attendance;
   final GpsRepository gps;
@@ -142,6 +145,12 @@ class SyncCoordinator {
         result.synced,
         result.failed,
       );
+    });
+
+    await stage('leads', () async {
+      final result = await leads.syncPending(tenantId);
+      await leads.refresh(tenantId);
+      return SyncStageReport.fromCounts('leads', result.synced, result.failed);
     });
 
     await stage('master_data', () async {
