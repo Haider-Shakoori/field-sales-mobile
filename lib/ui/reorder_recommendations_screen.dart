@@ -39,9 +39,9 @@ class _ReorderRecommendationsScreenState
       _error = null;
     });
     try {
-      final rows = await context
-          .read<OrderController>()
-          .reorderRecommendations(widget.customer);
+      final rows = await context.read<OrderController>().reorderRecommendations(
+        widget.customer,
+      );
       if (!mounted) return;
       setState(() => _rows = rows);
     } catch (error) {
@@ -75,7 +75,9 @@ class _ReorderRecommendationsScreenState
     if (lines.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('No suggested quantity is currently available to order.'),
+          content: Text(
+            'No suggested quantity is currently available to order.',
+          ),
         ),
       );
       return;
@@ -172,7 +174,9 @@ class _ReorderRecommendationsScreenState
                                 label: Text(
                                   due < 0
                                       ? '${-due}d overdue'
-                                      : (due == 0 ? 'Due today' : 'Due in ${due}d'),
+                                      : (due == 0
+                                            ? 'Due today'
+                                            : 'Due in ${due}d'),
                                 ),
                               ),
                             ],
