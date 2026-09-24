@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../state/lead_controller.dart';
-import 'sync_refresh.dart';
 
 class LeadsScreen extends StatefulWidget {
   const LeadsScreen({super.key});
-
   @override
   State<LeadsScreen> createState() => _LeadsScreenState();
 }
 
 class _LeadsScreenState extends State<LeadsScreen> {
+  String _stage = 'open';
   static const stages = [
     'new',
     'contacted',
@@ -21,6 +20,15 @@ class _LeadsScreenState extends State<LeadsScreen> {
     'won',
     'lost',
   ];
+  static const stageLabels = {
+    'new': 'New',
+    'contacted': 'Contacted',
+    'qualified': 'Qualified',
+    'proposal': 'Proposal',
+    'negotiation': 'Negotiation',
+    'won': 'Won',
+    'lost': 'Lost',
+  };
   static const sources = [
     'field',
     'referral',
@@ -30,130 +38,219 @@ class _LeadsScreenState extends State<LeadsScreen> {
     'walk_in',
     'other',
   ];
-  static const priorities = ['low', 'normal', 'high'];
-  String? _stage;
+
+  Future<void> _create(BuildContext context) async {
+    final name = TextEditingController(),
+        contact = TextEditingController(),
+        phone = TextEditingController(),
+        email = TextEditingController(),
+        value = TextEditingController(),
+        notes = TextEditingController();
+    String source = 'field', priority = 'normal', currency = 'AFN';
+    final save = await showDialog<bool>(
+      context: context,
+      builder: (dialog) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('New lead'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: name,
+                  autofocus: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Prospect or business name',
+                  ),
+                ),
+                TextField(
+                  controller: contact,
+                  decoration: const InputDecoration(
+                    labelText: 'Contact person',
+                  ),
+                ),
+                TextField(
+                  controller: phone,
+                  keyboardType: TextInputType.phone,
+                  decoration: const InputDecoration(labelText: 'Phone'),
+                ),
+                TextField(
+                  controller: email,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: const InputDecoration(labelText: 'Email'),
+                ),
+                DropdownButtonFormField<String>(
+                  initialValue: source,
+                  items: sources
+                      .map(
+                        (e) => DropdownMenuItem(
+                          value: e,
+                          child: Text(e.replaceAll('_', ' ')),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (v) => setState(() => source = v ?? source),
+                  decoration: const InputDecoration(labelText: 'Source'),
+                ),
+                DropdownButtonFormField<String>(
+                  initialValue: priority,
+                  items: ['low', 'normal', 'high']
+                      .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                      .toList(),
+                  onChanged: (v) => setState(() => priority = v ?? priority),
+                  decoration: const InputDecoration(labelText: 'Priority'),
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: value,
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        decoration: const InputDecoration(
+                          labelText: 'Estimated value',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    SizedBox(
+                      width: 90,
+                      child: TextField(
+                        controller: TextEditingController(text: currency),
+                        onChanged: (v) => currency = v,
+                        decoration: const InputDecoration(
+                          labelText: 'Currency',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                TextField(
+                  controller: notes,
+                  maxLines: 3,
+                  decoration: const InputDecoration(labelText: 'Notes'),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialog, false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () =>
+                  Navigator.pop(dialog, name.text.trim().isNotEmpty),
+              child: const Text('Save offline'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (save != true || !context.mounted) return;
+    await context.read<LeadController>().create(
+      name: name.text,
+      contactPerson: contact.text,
+      phone: phone.text,
+      email: email.text,
+      source: source,
+      priority: priority,
+      estimatedValue: double.tryParse(value.text),
+      currency: currency,
+      notes: notes.text,
+    );
+  }
+
+  Future<void> _details(BuildContext context, Map<String, dynamic> lead) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (sheet) => _LeadSheet(lead: lead),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final state = context.watch<LeadController>();
-    final rows = _stage == null
-        ? state.leads
-        : state.leads.where((row) => row['stage'] == _stage).toList();
-    final open = state.leads
-        .where((row) => !['won', 'lost'].contains(row['stage']))
-        .length;
-    final won = state.leads.where((row) => row['stage'] == 'won').length;
-
+    final rows = state.leads
+        .where(
+          (lead) =>
+              _stage == 'all' ||
+              (_stage == 'open' && !['won', 'lost'].contains(lead['stage'])) ||
+              lead['stage'] == _stage,
+        )
+        .toList();
     return Scaffold(
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: state.busy ? null : () => _create(context),
-        icon: const Icon(Icons.add),
-        label: const Text('New lead'),
-      ),
       body: RefreshIndicator(
-        onRefresh: () => syncAndReload(context, triggerSource: 'pull:leads'),
+        onRefresh: () => state.sync(),
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+          padding: const EdgeInsets.all(16),
           children: [
             Card(
               child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                padding: const EdgeInsets.all(14),
+                child: Row(
                   children: [
-                    Row(
-                      children: [
-                        const CircleAvatar(
-                          child: Icon(Icons.filter_alt_outlined),
-                        ),
-                        const SizedBox(width: 12),
-                        const Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Leads & sales pipeline',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 17,
-                                ),
-                              ),
-                              SizedBox(height: 2),
-                              Text(
-                                'Capture prospects and move opportunities toward conversion.',
-                                style: TextStyle(fontSize: 12),
-                              ),
-                            ],
+                    const CircleAvatar(child: Icon(Icons.filter_alt_outlined)),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Leads & pipeline',
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
-                        ),
-                        if (state.pending > 0)
-                          Badge(
-                            label: Text('${state.pending}'),
-                            child: const Icon(Icons.cloud_upload_outlined),
+                          Text(
+                            'Capture prospects offline and move them toward conversion.',
+                            style: TextStyle(fontSize: 12),
                           ),
-                      ],
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 14),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _Metric(label: 'Open', value: '$open'),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: _Metric(label: 'Won', value: '$won'),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: _Metric(
-                            label: 'Total',
-                            value: '${state.leads.length}',
-                          ),
-                        ),
-                      ],
-                    ),
+                    if (state.pending > 0)
+                      Badge(
+                        label: Text('${state.pending}'),
+                        child: const Icon(Icons.cloud_upload_outlined),
+                      ),
                   ],
                 ),
               ),
             ),
-            const SizedBox(height: 12),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 6),
-                    child: FilterChip(
-                      label: const Text('All'),
-                      selected: _stage == null,
-                      onSelected: (_) => setState(() => _stage = null),
-                    ),
-                  ),
-                  ...stages.map(
-                    (stage) => Padding(
-                      padding: const EdgeInsets.only(right: 6),
-                      child: FilterChip(
-                        label: Text(_label(stage)),
-                        selected: _stage == stage,
-                        onSelected: (_) => setState(() => _stage = stage),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (state.message != null) ...[
-              const SizedBox(height: 8),
-              Text(
-                state.message!,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            ],
             const SizedBox(height: 10),
+            DropdownButtonFormField<String>(
+              initialValue: _stage,
+              items: [
+                const DropdownMenuItem(
+                  value: 'open',
+                  child: Text('Open pipeline'),
+                ),
+                const DropdownMenuItem(value: 'all', child: Text('All stages')),
+                ...stages.map(
+                  (s) =>
+                      DropdownMenuItem(value: s, child: Text(stageLabels[s]!)),
+                ),
+              ],
+              onChanged: (v) => setState(() => _stage = v ?? 'open'),
+              decoration: const InputDecoration(labelText: 'Stage'),
+            ),
+            if (state.message != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(
+                  state.message!,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ),
+            const SizedBox(height: 12),
             if (rows.isEmpty)
               const Padding(
-                padding: EdgeInsets.symmetric(vertical: 60),
-                child: Center(child: Text('No leads in this stage.')),
+                padding: EdgeInsets.all(32),
+                child: Center(child: Text('No leads in this view.')),
               )
             else
               ...rows.map(
@@ -164,47 +261,30 @@ class _LeadsScreenState extends State<LeadsScreen> {
                       onTap: () => _details(context, lead),
                       leading: CircleAvatar(
                         child: Text(
-                          (lead['name']?.toString().trim().isNotEmpty ?? false)
-                              ? lead['name'].toString().trim()[0].toUpperCase()
-                              : '?',
+                          (lead['name']?.toString() ?? '?')
+                              .substring(0, 1)
+                              .toUpperCase(),
                         ),
                       ),
-                      title: Text(
-                        lead['name']?.toString() ?? 'Lead',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      title: Text(lead['name']?.toString() ?? 'Lead'),
+                      subtitle: Text(
+                        '${stageLabels[lead['stage']] ?? lead['stage']} · ${lead['priority']}\n${lead['contact_person'] ?? lead['phone'] ?? ''}',
                       ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      isThreeLine: true,
+                      trailing: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          const SizedBox(height: 3),
-                          Text(
-                            '${_label(lead['stage']?.toString() ?? 'new')} · ${lead['probability'] ?? 0}% · ${_label(lead['priority']?.toString() ?? 'normal')}',
-                          ),
                           if (lead['estimated_value'] != null)
                             Text(
-                              '${lead['currency'] ?? 'AFN'} ${_number(lead['estimated_value'])}',
+                              '${lead['currency']} ${lead['estimated_value']}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
-                          if (lead['contact_person'] != null ||
-                              lead['phone'] != null)
-                            Text(
-                              [lead['contact_person'], lead['phone']]
-                                  .where(
-                                    (value) =>
-                                        value != null &&
-                                        value.toString().trim().isNotEmpty,
-                                  )
-                                  .join(' · '),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                          Text('${lead['probability'] ?? 0}%'),
                         ],
                       ),
-                      trailing:
-                          lead['sync_status'] == 'synced' &&
-                              lead['pending_conversion'] != 1
-                          ? const Icon(Icons.chevron_right)
-                          : const Icon(Icons.cloud_upload_outlined, size: 20),
                     ),
                   ),
                 ),
@@ -212,416 +292,167 @@ class _LeadsScreenState extends State<LeadsScreen> {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: state.busy ? null : () => _create(context),
+        icon: const Icon(Icons.person_add_alt_1),
+        label: const Text('Lead'),
+      ),
     );
   }
+}
 
-  Future<void> _create(BuildContext context) async {
-    final name = TextEditingController();
-    final contact = TextEditingController();
-    final phone = TextEditingController();
-    final email = TextEditingController();
-    final value = TextEditingController();
-    final currency = TextEditingController(text: 'AFN');
-    final notes = TextEditingController();
-    var source = 'field';
-    var priority = 'normal';
+class _LeadSheet extends StatefulWidget {
+  const _LeadSheet({required this.lead});
+  final Map<String, dynamic> lead;
+  @override
+  State<_LeadSheet> createState() => _LeadSheetState();
+}
 
-    final save =
-        await showModalBottomSheet<bool>(
-          context: context,
-          isScrollControlled: true,
-          builder: (sheetContext) => StatefulBuilder(
-            builder: (context, setModalState) => Padding(
-              padding: EdgeInsets.fromLTRB(
-                20,
-                20,
-                20,
-                MediaQuery.of(context).viewInsets.bottom + 20,
-              ),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Text(
-                      'New lead',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: name,
-                      autofocus: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Business or prospect name',
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    TextField(
-                      controller: contact,
-                      decoration: const InputDecoration(
-                        labelText: 'Contact person',
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    TextField(
-                      controller: phone,
-                      keyboardType: TextInputType.phone,
-                      decoration: const InputDecoration(labelText: 'Phone'),
-                    ),
-                    const SizedBox(height: 10),
-                    TextField(
-                      controller: email,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(labelText: 'Email'),
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: DropdownButtonFormField<String>(
-                            initialValue: source,
-                            decoration: const InputDecoration(
-                              labelText: 'Source',
-                            ),
-                            items: sources
-                                .map(
-                                  (item) => DropdownMenuItem(
-                                    value: item,
-                                    child: Text(_label(item)),
-                                  ),
-                                )
-                                .toList(),
-                            onChanged: (v) =>
-                                setModalState(() => source = v ?? source),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: DropdownButtonFormField<String>(
-                            initialValue: priority,
-                            decoration: const InputDecoration(
-                              labelText: 'Priority',
-                            ),
-                            items: priorities
-                                .map(
-                                  (item) => DropdownMenuItem(
-                                    value: item,
-                                    child: Text(_label(item)),
-                                  ),
-                                )
-                                .toList(),
-                            onChanged: (v) =>
-                                setModalState(() => priority = v ?? priority),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: value,
-                            keyboardType: const TextInputType.numberWithOptions(
-                              decimal: true,
-                            ),
-                            decoration: const InputDecoration(
-                              labelText: 'Estimated value',
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        SizedBox(
-                          width: 90,
-                          child: TextField(
-                            controller: currency,
-                            maxLength: 3,
-                            textCapitalization: TextCapitalization.characters,
-                            decoration: const InputDecoration(
-                              labelText: 'Currency',
-                              counterText: '',
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    TextField(
-                      controller: notes,
-                      maxLines: 3,
-                      decoration: const InputDecoration(labelText: 'Notes'),
-                    ),
-                    const SizedBox(height: 18),
-                    FilledButton(
-                      onPressed: () {
-                        if (name.text.trim().isNotEmpty) {
-                          Navigator.pop(sheetContext, true);
-                        }
-                      },
-                      child: const Text('Save offline'),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ) ??
-        false;
-
-    if (!save || !context.mounted) return;
-    await context.read<LeadController>().create(
-      name: name.text,
-      contactPerson: contact.text,
-      phone: phone.text,
-      email: email.text,
-      source: source,
-      priority: priority,
-      estimatedValue: double.tryParse(value.text.trim()),
-      currency: currency.text.trim().isEmpty ? 'AFN' : currency.text.trim(),
-      notes: notes.text,
-    );
+class _LeadSheetState extends State<_LeadSheet> {
+  late String stage;
+  late String priority;
+  final notes = TextEditingController();
+  final activity = TextEditingController();
+  String activityType = 'note';
+  @override
+  void initState() {
+    super.initState();
+    stage = widget.lead['stage']?.toString() ?? 'new';
+    priority = widget.lead['priority']?.toString() ?? 'normal';
+    notes.text = widget.lead['notes']?.toString() ?? '';
   }
 
-  Future<void> _details(BuildContext context, Map<String, dynamic> lead) async {
-    final controller = context.read<LeadController>();
-    final uuid = lead['offline_uuid']?.toString();
-    if (uuid == null) return;
-    var activityRows = await controller.activities(uuid);
-    if (!context.mounted) return;
-    var selectedStage = lead['stage']?.toString() ?? 'new';
+  @override
+  void dispose() {
+    notes.dispose();
+    activity.dispose();
+    super.dispose();
+  }
 
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      builder: (sheetContext) => StatefulBuilder(
-        builder: (context, setModalState) => DraggableScrollableSheet(
-          expand: false,
-          initialChildSize: .82,
-          maxChildSize: .95,
-          minChildSize: .5,
-          builder: (_, scrollController) => ListView(
-            controller: scrollController,
-            padding: const EdgeInsets.all(20),
+  @override
+  Widget build(BuildContext context) {
+    final state = context.watch<LeadController>();
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: 16,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Row(
                 children: [
                   Expanded(
                     child: Text(
-                      lead['name']?.toString() ?? 'Lead',
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                      ),
+                      widget.lead['name']?.toString() ?? 'Lead',
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ),
-                  if (lead['sync_status'] != 'synced' ||
-                      lead['pending_conversion'] == 1)
-                    const Icon(Icons.cloud_upload_outlined),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close),
+                  ),
                 ],
               ),
-              const SizedBox(height: 6),
-              Text(
-                [lead['contact_person'], lead['phone'], lead['email']]
-                    .where(
-                      (value) =>
-                          value != null && value.toString().trim().isNotEmpty,
-                    )
-                    .join(' · '),
-              ),
-              if (lead['estimated_value'] != null) ...[
-                const SizedBox(height: 8),
-                Text(
-                  '${lead['currency'] ?? 'AFN'} ${_number(lead['estimated_value'])}',
-                  style: const TextStyle(fontWeight: FontWeight.w700),
-                ),
-              ],
-              if (lead['converted_customer_name'] != null) ...[
-                const SizedBox(height: 8),
-                Chip(
-                  avatar: const Icon(Icons.check_circle_outline, size: 18),
-                  label: Text('Customer: ${lead['converted_customer_name']}'),
-                ),
-              ],
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
               DropdownButtonFormField<String>(
-                initialValue: selectedStage,
-                decoration: const InputDecoration(labelText: 'Pipeline stage'),
-                items: stages
+                initialValue: stage,
+                items: _LeadsScreenState.stages
                     .map(
-                      (stage) => DropdownMenuItem(
-                        value: stage,
-                        child: Text(_label(stage)),
+                      (s) => DropdownMenuItem(
+                        value: s,
+                        child: Text(_LeadsScreenState.stageLabels[s]!),
                       ),
                     )
                     .toList(),
-                onChanged: lead['converted_customer_uuid'] != null
-                    ? null
-                    : (value) => setModalState(
-                        () => selectedStage = value ?? selectedStage,
-                      ),
+                onChanged: (v) => setState(() => stage = v ?? stage),
+                decoration: const InputDecoration(labelText: 'Stage'),
               ),
-              const SizedBox(height: 10),
-              FilledButton.tonal(
-                onPressed: lead['converted_customer_uuid'] != null
+              DropdownButtonFormField<String>(
+                initialValue: priority,
+                items: ['low', 'normal', 'high']
+                    .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                    .toList(),
+                onChanged: (v) => setState(() => priority = v ?? priority),
+                decoration: const InputDecoration(labelText: 'Priority'),
+              ),
+              TextField(
+                controller: notes,
+                maxLines: 3,
+                decoration: const InputDecoration(
+                  labelText: 'Opportunity notes',
+                ),
+              ),
+              const SizedBox(height: 8),
+              FilledButton(
+                onPressed: state.busy
                     ? null
                     : () async {
-                        await controller.updateStage(lead, selectedStage);
-                        if (sheetContext.mounted) Navigator.pop(sheetContext);
+                        await state.update(
+                          widget.lead,
+                          stage: stage,
+                          priority: priority,
+                          notes: notes.text,
+                        );
+                        if (context.mounted) Navigator.pop(context);
                       },
-                child: const Text('Save stage'),
+                child: const Text('Save changes'),
+              ),
+              const Divider(height: 32),
+              Text(
+                'Add activity',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              DropdownButtonFormField<String>(
+                initialValue: activityType,
+                items: ['note', 'call', 'meeting', 'visit', 'other']
+                    .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                    .toList(),
+                onChanged: (v) =>
+                    setState(() => activityType = v ?? activityType),
+                decoration: const InputDecoration(labelText: 'Type'),
+              ),
+              TextField(
+                controller: activity,
+                maxLines: 3,
+                decoration: const InputDecoration(labelText: 'What happened?'),
               ),
               const SizedBox(height: 8),
-              OutlinedButton.icon(
-                onPressed: () async {
-                  await _activity(context, lead);
-                  activityRows = await controller.activities(uuid);
-                  if (sheetContext.mounted) setModalState(() {});
-                },
-                icon: const Icon(Icons.add_comment_outlined),
-                label: const Text('Add activity'),
+              OutlinedButton(
+                onPressed: state.busy || activity.text.trim().isEmpty
+                    ? null
+                    : () async {
+                        await state.addActivity(
+                          widget.lead,
+                          type: activityType,
+                          notes: activity.text,
+                        );
+                        if (context.mounted) Navigator.pop(context);
+                      },
+                child: const Text('Save activity offline'),
               ),
-              if (lead['converted_customer_uuid'] == null) ...[
-                const SizedBox(height: 8),
-                FilledButton.icon(
-                  onPressed: () async {
-                    await controller.convert(lead);
-                    if (sheetContext.mounted) Navigator.pop(sheetContext);
-                  },
-                  icon: const Icon(Icons.person_add_alt_1_outlined),
-                  label: const Text('Convert to customer'),
+              if (widget.lead['converted_customer_uuid'] == null &&
+                  stage != 'lost') ...[
+                const Divider(height: 32),
+                FilledButton.tonalIcon(
+                  onPressed: state.busy
+                      ? null
+                      : () async {
+                          await state.convert(widget.lead);
+                          if (context.mounted) Navigator.pop(context);
+                        },
+                  icon: const Icon(Icons.storefront),
+                  label: const Text('Mark Won & convert to customer'),
                 ),
               ],
-              const SizedBox(height: 22),
-              const Text(
-                'Activity timeline',
-                style: TextStyle(fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 8),
-              if (activityRows.isEmpty)
-                const Text('No activity cached yet.')
-              else
-                ...activityRows.map(
-                  (row) => ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.timeline_outlined),
-                    title: Text(_label(row['type']?.toString() ?? 'note')),
-                    subtitle: Text(row['notes']?.toString() ?? ''),
-                    trailing: row['sync_status'] == 'synced'
-                        ? null
-                        : const Icon(Icons.cloud_upload_outlined, size: 18),
-                  ),
-                ),
             ],
           ),
         ),
       ),
     );
   }
-
-  Future<void> _activity(
-    BuildContext context,
-    Map<String, dynamic> lead,
-  ) async {
-    final notes = TextEditingController();
-    var type = 'note';
-    const types = ['note', 'call', 'meeting', 'visit', 'other'];
-    final save =
-        await showDialog<bool>(
-          context: context,
-          builder: (dialogContext) => StatefulBuilder(
-            builder: (context, setModalState) => AlertDialog(
-              title: const Text('Add lead activity'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  DropdownButtonFormField<String>(
-                    initialValue: type,
-                    items: types
-                        .map(
-                          (item) => DropdownMenuItem(
-                            value: item,
-                            child: Text(_label(item)),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (value) =>
-                        setModalState(() => type = value ?? type),
-                  ),
-                  const SizedBox(height: 10),
-                  TextField(
-                    controller: notes,
-                    autofocus: true,
-                    maxLines: 4,
-                    decoration: const InputDecoration(
-                      labelText: 'What happened?',
-                    ),
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(dialogContext, false),
-                  child: const Text('Cancel'),
-                ),
-                FilledButton(
-                  onPressed: () {
-                    if (notes.text.trim().isNotEmpty) {
-                      Navigator.pop(dialogContext, true);
-                    }
-                  },
-                  child: const Text('Save offline'),
-                ),
-              ],
-            ),
-          ),
-        ) ??
-        false;
-    if (!save || !context.mounted) return;
-    await context.read<LeadController>().addActivity(lead, type, notes.text);
-  }
-
-  static String _label(String value) => value
-      .split('_')
-      .map(
-        (part) => part.isEmpty
-            ? part
-            : '${part[0].toUpperCase()}${part.substring(1)}',
-      )
-      .join(' ');
-
-  static String _number(dynamic value) {
-    final number = value is num ? value.toDouble() : double.tryParse('$value');
-    return number == null
-        ? '$value'
-        : number.toStringAsFixed(number.truncateToDouble() == number ? 0 : 2);
-  }
-}
-
-class _Metric extends StatelessWidget {
-  const _Metric({required this.label, required this.value});
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.all(10),
-    decoration: BoxDecoration(
-      color: Theme.of(context).colorScheme.surfaceContainerHighest,
-      borderRadius: BorderRadius.circular(12),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: Theme.of(context).textTheme.labelSmall),
-        const SizedBox(height: 2),
-        Text(
-          value,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-        ),
-      ],
-    ),
-  );
 }
