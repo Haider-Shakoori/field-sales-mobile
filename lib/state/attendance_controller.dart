@@ -235,11 +235,9 @@ class AttendanceController extends ChangeNotifier {
         throw StateError('Signed-in tenant is unavailable.');
       }
       final startOdometer = _double(session?['odometer_start_km']);
-      if (
-        odometerEndKm != null &&
-        startOdometer != null &&
-        odometerEndKm < startOdometer
-      ) {
+      if (odometerEndKm != null &&
+          startOdometer != null &&
+          odometerEndKm < startOdometer) {
         throw StateError(
           'End odometer must be greater than or equal to the start odometer.',
         );
@@ -283,7 +281,8 @@ class AttendanceController extends ChangeNotifier {
         lat: latitude,
         lng: longitude,
         accuracy: accuracy,
-        vehicleReference: vehicleReference ?? session?['vehicle_reference']?.toString(),
+        vehicleReference:
+            vehicleReference ?? session?['vehicle_reference']?.toString(),
         odometerEndKm: odometerEndKm,
       );
       session = null;
