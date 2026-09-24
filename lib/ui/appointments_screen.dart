@@ -144,9 +144,11 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
                         setState(() {
                           customer = value == null
                               ? null
-                              : customers.cast<Map<String, dynamic>>().firstWhere(
-                                  (row) => row['id']?.toString() == value,
-                                );
+                              : customers
+                                    .cast<Map<String, dynamic>>()
+                                    .firstWhere(
+                                      (row) => row['id']?.toString() == value,
+                                    );
                         });
                       },
                     ),
@@ -299,15 +301,15 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
     final state = context.watch<AppointmentController>();
     final now = DateTime.now();
 
-    final rows = state.appointments.where((row) {
-      if (_showCompleted) return true;
-      return row['status'] == 'scheduled';
-    }).toList()
-      ..sort((a, b) {
-        final aDate = DateTime.tryParse(a['starts_at']?.toString() ?? '');
-        final bDate = DateTime.tryParse(b['starts_at']?.toString() ?? '');
-        return (aDate ?? now).compareTo(bDate ?? now);
-      });
+    final rows =
+        state.appointments.where((row) {
+          if (_showCompleted) return true;
+          return row['status'] == 'scheduled';
+        }).toList()..sort((a, b) {
+          final aDate = DateTime.tryParse(a['starts_at']?.toString() ?? '');
+          final bDate = DateTime.tryParse(b['starts_at']?.toString() ?? '');
+          return (aDate ?? now).compareTo(bDate ?? now);
+        });
 
     return Scaffold(
       body: RefreshIndicator(
@@ -467,13 +469,15 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
                                   Text(
                                     starts == null
                                         ? '--:--'
-                                        : starts.hour
-                                                  .toString()
-                                                  .padLeft(2, '0') +
+                                        : starts.hour.toString().padLeft(
+                                                2,
+                                                '0',
+                                              ) +
                                               ':' +
-                                              starts.minute
-                                                  .toString()
-                                                  .padLeft(2, '0'),
+                                              starts.minute.toString().padLeft(
+                                                2,
+                                                '0',
+                                              ),
                                     style: const TextStyle(fontSize: 11),
                                   ),
                                 ],
@@ -508,10 +512,10 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
                                   const SizedBox(height: 4),
                                   Text(
                                     [
-                                      row['type'],
-                                      row['customer_name'],
-                                      row['location'],
-                                    ]
+                                          row['type'],
+                                          row['customer_name'],
+                                          row['location'],
+                                        ]
                                         .where(
                                           (value) =>
                                               value != null &&
@@ -521,11 +525,14 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
                                                   .isNotEmpty,
                                         )
                                         .join(' · '),
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodySmall,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall,
                                   ),
-                                  if (row['notes']?.toString().trim().isNotEmpty ==
+                                  if (row['notes']
+                                          ?.toString()
+                                          .trim()
+                                          .isNotEmpty ==
                                       true) ...[
                                     const SizedBox(height: 6),
                                     Text(
