@@ -251,6 +251,7 @@ class VisitRepository {
               'sync_status': submission['sync_status'],
               'submitted_at': submission['submitted_at'],
               'last_error': submission['last_error'],
+              'answers': jsonDecode(submission['answers_json'].toString()),
             };
       forms.add(form);
     }
@@ -329,6 +330,12 @@ class VisitRepository {
         whereArgs: [tenantId, existing.first['id']],
       );
     }
+
+    await retry.clear(
+      tenantId: tenantId,
+      entityType: 'visit_form_submission',
+      entityUuid: offlineUuid,
+    );
 
     return offlineUuid;
   }

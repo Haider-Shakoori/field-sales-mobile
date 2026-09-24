@@ -50,7 +50,8 @@ class _VisitFormsScreenState extends State<VisitFormsScreen> {
   }
 
   Future<void> _open(Map<String, dynamic> form) async {
-    if (form['local_submission'] != null) return;
+    final submission = form['local_submission'];
+    if (submission is Map && submission['sync_status'] == 'synced') return;
 
     final saved = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
@@ -101,13 +102,16 @@ class _VisitFormsScreenState extends State<VisitFormsScreen> {
                   final status = submitted
                       ? (submission['sync_status'] ?? 'pending').toString()
                       : null;
+                  final editable = !submitted || status != 'synced';
 
                   return Card(
                     child: ListTile(
-                      onTap: submitted ? null : () => _open(form),
+                      onTap: editable ? () => _open(form) : null,
                       leading: Icon(
-                        submitted
+                        status == 'synced'
                             ? Icons.check_circle_outline
+                            : submitted
+                            ? Icons.error_outline
                             : Icons.fact_check_outlined,
                       ),
                       title: Text((form['name'] ?? 'Visit form').toString()),
@@ -125,13 +129,28 @@ class _VisitFormsScreenState extends State<VisitFormsScreen> {
                               if (form['required_on_checkout'] == true)
                                 'Required before checkout',
                               if (submitted) 'Saved · $status',
+                              if (submitted && status != 'synced')
+                                'Tap to edit and retry',
                             ].join(' · '),
                           ),
+                          if (submitted &&
+                              status != 'synced' &&
+                              (submission['last_error'] ?? '')
+                                  .toString()
+                                  .trim()
+                                  .isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Text(
+                                submission['last_error'].toString(),
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            ),
                         ],
                       ),
-                      trailing: submitted
-                          ? null
-                          : const Icon(Icons.chevron_right),
+                      trailing: editable
+                          ? const Icon(Icons.chevron_right)
+                          : null,
                     ),
                   );
                 },
@@ -173,10 +192,23 @@ class _VisitFormEntryScreenState extends State<VisitFormEntryScreen> {
   void initState() {
     super.initState();
 
+    final submission = widget.template['local_submission'];
+    final previousAnswers = submission is Map && submission['answers'] is List
+        ? List<dynamic>.from(submission['answers'] as List)
+        : const <dynamic>[];
+
+    for (final raw in previousAnswers) {
+      if (raw is! Map || raw['question_id'] == null) continue;
+      _answers[raw['question_id'].toString()] = raw['value'];
+    }
+
     for (final question in _questions) {
+      final id = question['id'].toString();
       final type = question['type']?.toString();
       if (type == 'text' || type == 'textarea' || type == 'number') {
-        _controllers[question['id'].toString()] = TextEditingController();
+        _controllers[id] = TextEditingController(
+          text: _answers[id]?.toString() ?? '',
+        );
       }
     }
 
