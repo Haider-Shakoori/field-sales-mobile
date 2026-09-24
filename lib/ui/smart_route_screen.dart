@@ -389,6 +389,19 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                                   ),
                                 ],
                               ),
+                              if (opportunity)
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 6),
+                                  child: Text(
+                                    'Extra opportunity stop',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                  ),
+                                ),
                               if ((stop['address'] ?? '')
                                   .toString()
                                   .trim()
