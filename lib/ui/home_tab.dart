@@ -35,7 +35,79 @@ class HomeTab extends StatelessWidget {
       await controller.acknowledgePrivacy();
     }
 
-    await controller.startDay();
+    final vehicle = TextEditingController();
+    final odometer = TextEditingController();
+
+    final details = await showDialog<Map<String, dynamic>>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Start Day'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Vehicle and odometer are optional. Add them when you want mileage reconciliation.',
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: vehicle,
+              decoration: const InputDecoration(
+                labelText: 'Vehicle / plate (optional)',
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: odometer,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              decoration: const InputDecoration(
+                labelText: 'Start odometer km (optional)',
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              final raw = odometer.text.trim();
+              final value = raw.isEmpty ? null : double.tryParse(raw);
+
+              if (raw.isNotEmpty && (value == null || value < 0)) {
+                ScaffoldMessenger.of(dialogContext).showSnackBar(
+                  const SnackBar(
+                    content: Text('Enter a valid odometer reading.'),
+                  ),
+                );
+                return;
+              }
+
+              Navigator.pop(dialogContext, {
+                'vehicle': vehicle.text.trim(),
+                'odometer': value,
+              });
+            },
+            child: const Text('Start Day'),
+          ),
+        ],
+      ),
+    );
+
+    vehicle.dispose();
+    odometer.dispose();
+
+    if (details == null || !context.mounted) {
+      return;
+    }
+
+    await controller.startDay(
+      vehicleReference: details['vehicle']?.toString(),
+      odometerStartKm: details['odometer'] as double?,
+    );
   }
 
   Future<void> _end(
@@ -43,6 +115,10 @@ class HomeTab extends StatelessWidget {
     AttendanceController controller,
   ) async {
     var syncBeforeEnd = true;
+    final vehicle = TextEditingController(
+      text: controller.session?['vehicle_reference']?.toString() ?? '',
+    );
+    final odometer = TextEditingController();
 
     final confirmed =
         await showDialog<bool>(
@@ -56,6 +132,26 @@ class HomeTab extends StatelessWidget {
                 children: [
                   const Text('Do you want to end the day?'),
                   const SizedBox(height: 12),
+                  TextField(
+                    controller: vehicle,
+                    decoration: const InputDecoration(
+                      labelText: 'Vehicle / plate (optional)',
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: odometer,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    decoration: InputDecoration(
+                      labelText: 'End odometer km (optional)',
+                      helperText: controller.session?['odometer_start_km'] == null
+                          ? null
+                          : 'Start: ${controller.session!['odometer_start_km']} km',
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
                     title: const Text('Sync data'),
@@ -86,10 +182,34 @@ class HomeTab extends StatelessWidget {
         false;
 
     if (!confirmed || !context.mounted) {
+      vehicle.dispose();
+      odometer.dispose();
       return;
     }
 
-    await controller.endDay(sync: syncBeforeEnd);
+    final rawOdometer = odometer.text.trim();
+    final endOdometer = rawOdometer.isEmpty
+        ? null
+        : double.tryParse(rawOdometer);
+
+    if (rawOdometer.isNotEmpty && (endOdometer == null || endOdometer < 0)) {
+      vehicle.dispose();
+      odometer.dispose();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Enter a valid odometer reading.')),
+      );
+      return;
+    }
+
+    final vehicleReference = vehicle.text.trim();
+    vehicle.dispose();
+    odometer.dispose();
+
+    await controller.endDay(
+      sync: syncBeforeEnd,
+      vehicleReference: vehicleReference,
+      odometerEndKm: endOdometer,
+    );
   }
 
   @override
