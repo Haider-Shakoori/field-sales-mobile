@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'appointments_screen.dart';
 import 'collections_screen.dart';
 import 'expenses_screen.dart';
 import 'products_screen.dart';
@@ -31,6 +32,18 @@ class MoreScreen extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.calendar_month_outlined),
+              title: const Text('Calendar'),
+              subtitle: const Text(
+                'Appointments, reminders and offline schedule',
+              ),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () =>
+                  _open(context, 'Calendar', const AppointmentsScreen()),
+            ),
+          ),
           Card(
             child: ListTile(
               leading: const Icon(Icons.payments_outlined),
