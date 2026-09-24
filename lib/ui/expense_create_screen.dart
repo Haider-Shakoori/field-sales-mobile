@@ -55,13 +55,9 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
       if (raw.isEmpty) return null;
 
       final value = double.tryParse(raw);
-      if (
-        value == null ||
-        (allowZero ? value < 0 : value <= 0)
-      ) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Enter a valid $label.')),
-        );
+      if (value == null || (allowZero ? value < 0 : value <= 0)) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Enter a valid $label.')));
         throw const FormatException();
       }
 
@@ -171,8 +167,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                       ),
                       decoration: const InputDecoration(
                         labelText: 'Liters (optional)',
-                        helperText:
-                            'Used for km/L fuel-efficiency reporting.',
+                        helperText: 'Used for km/L fuel-efficiency reporting.',
                       ),
                     ),
                     const SizedBox(height: 10),
