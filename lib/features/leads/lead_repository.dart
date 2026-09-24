@@ -7,7 +7,8 @@ import '../../core/sync/connectivity_gate.dart';
 import '../../core/sync/sync_retry_store.dart';
 
 class LeadRepository {
-  LeadRepository({required this.api, required this.db}) : retry = SyncRetryStore(db);
+  LeadRepository({required this.api, required this.db})
+    : retry = SyncRetryStore(db);
 
   final ApiClient api;
   final AppDatabase db;
@@ -89,7 +90,9 @@ class LeadRepository {
   }) async {
     final row = await _lead(tenantId, offlineUuid);
     final current = row['sync_status']?.toString() ?? 'synced';
-    final next = current.contains('create') ? 'pending_create' : 'pending_update';
+    final next = current.contains('create')
+        ? 'pending_create'
+        : 'pending_update';
     final now = DateTime.now().toUtc().toIso8601String();
 
     await db.db.update(
@@ -290,14 +293,13 @@ class LeadRepository {
       try {
         final result = Map<String, dynamic>.from(
           await api.post(
-                'leads/$leadServerUuid/activities',
-                data: {
-                  'offline_uuid': offlineUuid,
-                  'type': row['type'],
-                  'notes': row['notes'],
-                },
-              )
-              as Map,
+            'leads/$leadServerUuid/activities',
+            data: {
+              'offline_uuid': offlineUuid,
+              'type': row['type'],
+              'notes': row['notes'],
+            },
+          ) as Map,
         );
         await db.db.update(
           'local_lead_activities',
@@ -407,26 +409,27 @@ class LeadRepository {
       if (existing.isNotEmpty && existing.first['sync_status'] != 'synced') {
         continue;
       }
-      await db.db.insert(
-        'local_lead_activities',
-        {
-          'tenant_id': tenantId,
-          'offline_uuid': uuid,
-          'server_uuid': uuid,
-          'lead_offline_uuid': offlineUuid,
-          'type': activity['type'] ?? 'note',
-          'notes': activity['notes'],
-          'occurred_at': activity['occurred_at'] ?? DateTime.now().toUtc().toIso8601String(),
-          'sync_status': 'synced',
-          'created_at': activity['occurred_at'] ?? DateTime.now().toUtc().toIso8601String(),
-          'updated_at': DateTime.now().toUtc().toIso8601String(),
-        },
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
+      await db.db.insert('local_lead_activities', {
+        'tenant_id': tenantId,
+        'offline_uuid': uuid,
+        'server_uuid': uuid,
+        'lead_offline_uuid': offlineUuid,
+        'type': activity['type'] ?? 'note',
+        'notes': activity['notes'],
+        'occurred_at':
+            activity['occurred_at'] ?? DateTime.now().toUtc().toIso8601String(),
+        'sync_status': 'synced',
+        'created_at':
+            activity['occurred_at'] ?? DateTime.now().toUtc().toIso8601String(),
+        'updated_at': DateTime.now().toUtc().toIso8601String(),
+      }, conflictAlgorithm: ConflictAlgorithm.replace);
     }
   }
 
-  Future<Map<String, dynamic>> _lead(String tenantId, String offlineUuid) async {
+  Future<Map<String, dynamic>> _lead(
+    String tenantId,
+    String offlineUuid,
+  ) async {
     final rows = await db.db.query(
       'local_leads',
       where: 'tenant_id=? AND offline_uuid=?',
@@ -447,7 +450,8 @@ class LeadRepository {
     'source': row['source'],
     'stage': row['stage'],
     'priority': row['priority'],
-    if (row['estimated_value'] != null) 'estimated_value': row['estimated_value'],
+    if (row['estimated_value'] != null)
+      'estimated_value': row['estimated_value'],
     'currency': row['currency'],
     if (row['expected_close_date'] != null)
       'expected_close_date': row['expected_close_date'],
@@ -457,7 +461,8 @@ class LeadRepository {
   Map<String, dynamic> _updatePayload(Map<String, dynamic> row) => {
     'stage': row['stage'],
     'priority': row['priority'],
-    if (row['estimated_value'] != null) 'estimated_value': row['estimated_value'],
+    if (row['estimated_value'] != null)
+      'estimated_value': row['estimated_value'],
     'currency': row['currency'],
     if (row['expected_close_date'] != null)
       'expected_close_date': row['expected_close_date'],
@@ -498,7 +503,8 @@ class LeadRepository {
         if (synced) 'sync_status': 'synced',
         if (synced) 'pending_conversion': 0,
         if (synced) 'last_error': null,
-        'updated_at': row['updated_at'] ?? DateTime.now().toUtc().toIso8601String(),
+        'updated_at':
+            row['updated_at'] ?? DateTime.now().toUtc().toIso8601String(),
       },
       where: 'tenant_id=? AND offline_uuid=?',
       whereArgs: [tenantId, offlineUuid],
@@ -507,14 +513,16 @@ class LeadRepository {
 
   Map<String, dynamic> _serverColumns(Map<String, dynamic> row) => {
     if (row.containsKey('name')) 'name': row['name'],
-    if (row.containsKey('contact_person')) 'contact_person': row['contact_person'],
+    if (row.containsKey('contact_person'))
+      'contact_person': row['contact_person'],
     if (row.containsKey('phone')) 'phone': row['phone'],
     if (row.containsKey('email')) 'email': row['email'],
     if (row.containsKey('address')) 'address': row['address'],
     if (row.containsKey('source')) 'source': row['source'],
     if (row.containsKey('stage')) 'stage': row['stage'],
     if (row.containsKey('priority')) 'priority': row['priority'],
-    if (row.containsKey('estimated_value')) 'estimated_value': row['estimated_value'],
+    if (row.containsKey('estimated_value'))
+      'estimated_value': row['estimated_value'],
     if (row.containsKey('currency')) 'currency': row['currency'],
     if (row.containsKey('probability')) 'probability': row['probability'],
     if (row.containsKey('expected_close_date'))
@@ -522,12 +530,14 @@ class LeadRepository {
     if (row.containsKey('lost_reason')) 'lost_reason': row['lost_reason'],
     if (row.containsKey('notes')) 'notes': row['notes'],
     if (row.containsKey('territory_id')) 'territory_uuid': row['territory_id'],
-    if (row.containsKey('territory_name')) 'territory_name': row['territory_name'],
+    if (row.containsKey('territory_name'))
+      'territory_name': row['territory_name'],
     if (row.containsKey('converted_customer_id'))
       'converted_customer_uuid': row['converted_customer_id'],
     if (row.containsKey('converted_customer_name'))
       'converted_customer_name': row['converted_customer_name'],
-    if (row.containsKey('last_activity_at')) 'last_activity_at': row['last_activity_at'],
+    if (row.containsKey('last_activity_at'))
+      'last_activity_at': row['last_activity_at'],
     if (row.containsKey('converted_at')) 'converted_at': row['converted_at'],
   };
 
