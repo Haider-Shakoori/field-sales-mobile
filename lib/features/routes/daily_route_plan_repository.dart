@@ -8,8 +8,7 @@ class DailyRoutePlanRepository {
   final AppDatabase db;
 
   String _cacheKey(String tenantId) => 'daily_route_plan:$tenantId';
-  String _inclusionsKey(String tenantId) =>
-      'daily_route_inclusions:$tenantId';
+  String _inclusionsKey(String tenantId) => 'daily_route_inclusions:$tenantId';
 
   Future<Map<String, dynamic>?> cached(String tenantId) async {
     final raw = await db.readSetting(_cacheKey(tenantId));
@@ -54,10 +53,7 @@ class DailyRoutePlanRepository {
         .toList();
   }
 
-  Future<void> includeOpportunity(
-    String tenantId,
-    String customerId,
-  ) async {
+  Future<void> includeOpportunity(String tenantId, String customerId) async {
     final ids = await includedOpportunityIds(tenantId);
 
     if (!ids.contains(customerId)) {
@@ -67,10 +63,7 @@ class DailyRoutePlanRepository {
     await _saveInclusions(tenantId, ids);
   }
 
-  Future<void> removeOpportunity(
-    String tenantId,
-    String customerId,
-  ) async {
+  Future<void> removeOpportunity(String tenantId, String customerId) async {
     final ids = await includedOpportunityIds(tenantId);
     ids.removeWhere((value) => value == customerId);
 
@@ -122,13 +115,10 @@ class DailyRoutePlanRepository {
     return plan;
   }
 
-  Future<void> _saveInclusions(
-    String tenantId,
-    List<String> ids,
-  ) => db.setting(_inclusionsKey(tenantId), {
-    'date': _localDateKey(DateTime.now()),
-    'ids': ids.toSet().toList(),
-  });
+  Future<void> _saveInclusions(String tenantId, List<String> ids) => db.setting(
+    _inclusionsKey(tenantId),
+    {'date': _localDateKey(DateTime.now()), 'ids': ids.toSet().toList()},
+  );
 
   String _localDateKey(DateTime value) {
     final local = value.toLocal();
