@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:uuid/uuid.dart';
 
+import '../../features/appointments/appointment_repository.dart';
 import '../../features/attendance/attendance_repository.dart';
 import '../../features/calls/call_activity_repository.dart';
 import '../../features/collections/collection_repository.dart';
@@ -24,6 +25,7 @@ class SyncCoordinator {
     required this.retryStore,
     required this.customers,
     required this.masterData,
+    required this.appointments,
     required this.attendance,
     required this.gps,
     required this.visits,
@@ -39,6 +41,7 @@ class SyncCoordinator {
   final SyncRetryStore retryStore;
   final CustomerRepository customers;
   final MasterDataRepository masterData;
+  final AppointmentRepository appointments;
   final AttendanceRepository attendance;
   final GpsRepository gps;
   final VisitRepository visits;
@@ -192,6 +195,16 @@ class SyncCoordinator {
     await stage('calls', () async {
       final result = await calls.syncPending(tenantId);
       return SyncStageReport.fromCounts('calls', result.synced, result.failed);
+    });
+
+    await stage('appointments', () async {
+      final result = await appointments.syncPending(tenantId);
+      await appointments.refresh(tenantId);
+      return SyncStageReport.fromCounts(
+        'appointments',
+        result.synced,
+        result.failed,
+      );
     });
 
     await stage('stock', () async {
