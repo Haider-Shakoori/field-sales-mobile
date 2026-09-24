@@ -38,9 +38,12 @@ class MoreScreen extends StatelessWidget {
             child: ListTile(
               leading: const Icon(Icons.filter_alt_outlined),
               title: const Text('Leads & Pipeline'),
-              subtitle: const Text('Prospects, opportunity stages and conversion'),
+              subtitle: const Text(
+                'Prospects, opportunity stages and conversion',
+              ),
               trailing: const Icon(Icons.chevron_right),
-              onTap: () => _open(context, 'Leads & Pipeline', const LeadsScreen()),
+              onTap: () =>
+                  _open(context, 'Leads & Pipeline', const LeadsScreen()),
             ),
           ),
           Card(
