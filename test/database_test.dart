@@ -51,6 +51,7 @@ void main() {
         'local_targets',
         'local_sync_failures',
         'local_sync_cycles',
+        'local_appointments',
       ]),
     );
 
@@ -161,6 +162,9 @@ void main() {
         'idx_targets_tenant_uuid',
         'idx_sync_failures_status',
         'idx_sync_cycles_recent',
+        'idx_appointments_tenant_uuid',
+        'idx_appointments_calendar',
+        'idx_appointments_sync',
       ]),
     );
 

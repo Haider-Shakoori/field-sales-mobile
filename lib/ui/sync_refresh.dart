@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../state/appointment_controller.dart';
 import '../state/call_activity_controller.dart';
 import '../state/collection_controller.dart';
 import '../state/expense_controller.dart';
@@ -12,6 +13,8 @@ import '../state/visit_controller.dart';
 
 Future<void> reloadAllLocal(BuildContext context) async {
   await context.read<MasterDataController>().reloadLocal();
+  if (!context.mounted) return;
+  await context.read<AppointmentController>().reloadLocal();
   if (!context.mounted) return;
   await context.read<VisitController>().reloadLocal();
   if (!context.mounted) return;

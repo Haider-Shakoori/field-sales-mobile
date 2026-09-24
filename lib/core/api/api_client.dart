@@ -78,6 +78,18 @@ class ApiClient {
     ),
   );
 
+  Future<dynamic> patch(
+    String p, {
+    Object? data,
+    Map<String, String>? headers,
+  }) => _send(
+    () => dio.patchUri(
+      Uri.parse(path(p)),
+      data: data,
+      options: Options(headers: headers),
+    ),
+  );
+
   Future<dynamic> postMultipart(
     String p, {
     required String filePath,
