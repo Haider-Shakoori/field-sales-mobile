@@ -70,10 +70,8 @@ class ExpenseRepository {
       throw StateError('Expense amount must be greater than zero.');
     }
 
-    if (
-      category != 'fuel' &&
-      (fuelLiters != null || fuelUnitPrice != null || odometerKm != null)
-    ) {
+    if (category != 'fuel' &&
+        (fuelLiters != null || fuelUnitPrice != null || odometerKm != null)) {
       throw StateError('Fuel details are only valid for fuel expenses.');
     }
 
@@ -165,12 +163,10 @@ class ExpenseRepository {
               'category': row['category'],
               'currency': row['currency'],
               'amount': row['amount'],
-              if (row['fuel_liters'] != null)
-                'fuel_liters': row['fuel_liters'],
+              if (row['fuel_liters'] != null) 'fuel_liters': row['fuel_liters'],
               if (row['fuel_unit_price'] != null)
                 'fuel_unit_price': row['fuel_unit_price'],
-              if (row['odometer_km'] != null)
-                'odometer_km': row['odometer_km'],
+              if (row['odometer_km'] != null) 'odometer_km': row['odometer_km'],
               if (row['merchant'] != null) 'merchant': row['merchant'],
               if (row['reference_number'] != null)
                 'reference_number': row['reference_number'],
