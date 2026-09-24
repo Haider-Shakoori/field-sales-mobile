@@ -191,8 +191,7 @@ class CustomersScreen extends StatelessWidget {
     BuildContext context,
     Map<String, dynamic> customer,
   ) async {
-    final phone =
-        customer['phone']?.toString().trim().isNotEmpty == true
+    final phone = customer['phone']?.toString().trim().isNotEmpty == true
         ? customer['phone'].toString().trim()
         : customer['alternate_phone']?.toString().trim() ?? '';
 
@@ -274,7 +273,9 @@ class CustomersScreen extends StatelessWidget {
       final digits = phone.replaceAll(RegExp(r'\D'), '');
       if (digits.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('The customer phone number is invalid.')),
+          const SnackBar(
+            content: Text('The customer phone number is invalid.'),
+          ),
         );
         return;
       }
@@ -298,6 +299,7 @@ class CustomersScreen extends StatelessWidget {
       );
     }
   }
+
   void _showHistory(BuildContext context, Map<String, dynamic> customer) {
     Navigator.of(context).push(
       MaterialPageRoute(
