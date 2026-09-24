@@ -71,8 +71,8 @@ class DailyRoutePlanRepository {
     String tenantId,
     String customerId,
   ) async {
-    final ids = await includedOpportunityIds(tenantId)
-      ..removeWhere((value) => value == customerId);
+    final ids = await includedOpportunityIds(tenantId);
+    ids.removeWhere((value) => value == customerId);
 
     await _saveInclusions(tenantId, ids);
   }
