@@ -432,6 +432,25 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                                   ),
                                 ),
                               ],
+                              if (opportunity && !visited) ...[
+                                const SizedBox(height: 10),
+                                TextButton.icon(
+                                  onPressed: changing
+                                      ? null
+                                      : () => _removeOpportunity(stop),
+                                  icon: changing
+                                      ? const SizedBox.square(
+                                          dimension: 14,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                          ),
+                                        )
+                                      : const Icon(
+                                          Icons.remove_circle_outline,
+                                        ),
+                                  label: const Text('Remove extra stop'),
+                                ),
+                              ],
                             ],
                           ),
                         ),
