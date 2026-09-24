@@ -4,7 +4,7 @@ import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
 class AppDatabase {
-  static const version = 14;
+  static const version = 15;
 
   Database? _db;
 
@@ -31,6 +31,7 @@ class AppDatabase {
     await _createExpenseTargetTables(database);
     await _createStockTables(database);
     await _createStatementTables(database);
+    await _createAppointmentTables(database);
   }
 
   Future<void> _createSyncTables(Database database) async {
@@ -659,6 +660,44 @@ class AppDatabase {
     );
   }
 
+  Future<void> _createAppointmentTables(Database database) async {
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_appointments ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL, '
+      'offline_uuid TEXT NOT NULL, '
+      'server_uuid TEXT, '
+      'customer_uuid TEXT, '
+      'customer_name TEXT, '
+      'title TEXT NOT NULL, '
+      'type TEXT NOT NULL, '
+      'status TEXT NOT NULL DEFAULT "scheduled", '
+      'starts_at TEXT NOT NULL, '
+      'ends_at TEXT, '
+      'reminder_minutes_before INTEGER, '
+      'location TEXT, '
+      'notes TEXT, '
+      'completed_at TEXT, '
+      'sync_status TEXT NOT NULL DEFAULT "synced", '
+      'last_error TEXT, '
+      'created_at TEXT NOT NULL, '
+      'updated_at TEXT NOT NULL'
+      ')',
+    );
+    await database.execute(
+      'CREATE UNIQUE INDEX IF NOT EXISTS idx_appointments_tenant_uuid '
+      'ON local_appointments(tenant_id,offline_uuid)',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_appointments_calendar '
+      'ON local_appointments(tenant_id,starts_at,status)',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_appointments_sync '
+      'ON local_appointments(tenant_id,sync_status,starts_at)',
+    );
+  }
+
   Future<void> _createStatementTables(Database database) async {
     await database.execute(
       'CREATE TABLE IF NOT EXISTS local_customer_statements ('
@@ -731,6 +770,7 @@ class AppDatabase {
     await _createExpenseTargetTables(database);
     await _createStockTables(database);
     await _createStatementTables(database);
+    await _createAppointmentTables(database);
 
     if (oldVersion < 4 &&
         !await _hasColumn(database, 'local_work_sessions', 'start_source')) {
