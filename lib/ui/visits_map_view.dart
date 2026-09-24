@@ -147,13 +147,13 @@ class _VisitsMapViewState extends State<VisitsMapView> {
   void initState() {
     super.initState();
     unawaited(_loadConnectivityAndCache());
-    _connectivitySubscription = ConnectivityGate.instance.statusChanges.listen(
-      (online) {
-        if (mounted) {
-          setState(() => _online = online);
-        }
-      },
-    );
+    _connectivitySubscription = ConnectivityGate.instance.statusChanges.listen((
+      online,
+    ) {
+      if (mounted) {
+        setState(() => _online = online);
+      }
+    });
     WidgetsBinding.instance.addPostFrameCallback(
       (_) => unawaited(_locate(moveCamera: true)),
     );
@@ -201,6 +201,7 @@ class _VisitsMapViewState extends State<VisitsMapView> {
 
     return '${megabytes.toStringAsFixed(megabytes < 10 ? 1 : 0)} MB cached';
   }
+
   Future<void> _locate({bool moveCamera = false}) async {
     if (_locating) {
       return;
