@@ -54,6 +54,14 @@ void main() {
     expect(visits, contains('Unable to get a GPS fix within 20 seconds.'));
   });
 
+  test('visit actions surface controller feedback to the salesman', () {
+    final visitsScreen = File('lib/ui/visits_screen.dart').readAsStringSync();
+
+    expect(visitsScreen, contains('_showVisitMessage(context, visits);'));
+    expect(visitsScreen, contains('_showVisitMessage(context, state);'));
+    expect(visitsScreen, contains('SnackBar(content: Text(value))'));
+  });
+
   test('release signing is externalized and fails closed', () {
     final gradle = File('android/app/build.gradle.kts').readAsStringSync();
 
