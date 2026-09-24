@@ -357,8 +357,9 @@ class _LeadsScreenState extends State<LeadsScreen> {
                     const SizedBox(height: 18),
                     FilledButton(
                       onPressed: () {
-                        if (name.text.trim().isNotEmpty)
+                        if (name.text.trim().isNotEmpty) {
                           Navigator.pop(sheetContext, true);
+                        }
                       },
                       child: const Text('Save offline'),
                     ),
@@ -567,8 +568,9 @@ class _LeadsScreenState extends State<LeadsScreen> {
                 ),
                 FilledButton(
                   onPressed: () {
-                    if (notes.text.trim().isNotEmpty)
+                    if (notes.text.trim().isNotEmpty) {
                       Navigator.pop(dialogContext, true);
+                    }
                   },
                   child: const Text('Save offline'),
                 ),
