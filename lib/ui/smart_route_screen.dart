@@ -138,7 +138,7 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
   };
 
   Widget _metric(String label, dynamic value) => Chip(
-    label: Text('${label} ${value ?? 0}'),
+    label: Text('$label ${value ?? 0}'),
     visualDensity: VisualDensity.compact,
   );
 
