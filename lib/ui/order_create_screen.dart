@@ -431,12 +431,9 @@ class _OrderCreateScreenState extends State<OrderCreateScreen> {
 }
 
 class _DraftRow {
-  _DraftRow(
-    this.product, {
-    double quantity = 1,
-    double discountPercent = 0,
-  }) : quantity = TextEditingController(text: _formatNumber(quantity)),
-       discount = TextEditingController(text: _formatNumber(discountPercent));
+  _DraftRow(this.product, {double quantity = 1, double discountPercent = 0})
+    : quantity = TextEditingController(text: _formatNumber(quantity)),
+      discount = TextEditingController(text: _formatNumber(discountPercent));
 
   final Map<String, dynamic> product;
   final TextEditingController quantity;
@@ -444,7 +441,10 @@ class _DraftRow {
 
   static String _formatNumber(double value) {
     if (value == value.roundToDouble()) return value.toInt().toString();
-    return value.toStringAsFixed(4).replaceFirst(RegExp(r'0+$'), '').replaceFirst(RegExp(r'\.$'), '');
+    return value
+        .toStringAsFixed(4)
+        .replaceFirst(RegExp(r'0+$'), '')
+        .replaceFirst(RegExp(r'\.$'), '');
   }
 
   void dispose() {

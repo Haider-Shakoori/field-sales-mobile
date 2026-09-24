@@ -53,11 +53,7 @@ class OrderController extends ChangeNotifier {
       return const [];
     }
 
-    return repository.reorderRecommendations(
-      tenantId,
-      customerId,
-      asOf: asOf,
-    );
+    return repository.reorderRecommendations(tenantId, customerId, asOf: asOf);
   }
 
   Future<OrderPreview> preview({

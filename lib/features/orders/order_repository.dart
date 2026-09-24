@@ -73,11 +73,7 @@ class OrderRepository {
       }
     }
 
-    return _localReorderRecommendations(
-      tenantId,
-      customerUuid,
-      asOf: asOf,
-    );
+    return _localReorderRecommendations(tenantId, customerUuid, asOf: asOf);
   }
 
   Future<List<Map<String, dynamic>>> _localReorderRecommendations(
@@ -102,9 +98,9 @@ class OrderRepository {
     for (final row in rows) {
       final productId = row['product_uuid']?.toString() ?? '';
       if (productId.isEmpty) continue;
-      grouped.putIfAbsent(productId, () => []).add(
-        Map<String, dynamic>.from(row),
-      );
+      grouped
+          .putIfAbsent(productId, () => [])
+          .add(Map<String, dynamic>.from(row));
     }
 
     final products = await masterData.list('products', tenantId);
@@ -146,7 +142,11 @@ class OrderRepository {
         lastDate.month,
         lastDate.day,
       ).add(Duration(days: typical));
-      final today = DateTime.utc(reference.year, reference.month, reference.day);
+      final today = DateTime.utc(
+        reference.year,
+        reference.month,
+        reference.day,
+      );
       final daysUntilDue = nextDue.difference(today).inDays;
       final dueWindow = (typical * .25).round().clamp(7, 21).toInt();
       if (daysUntilDue > dueWindow) continue;
@@ -169,11 +169,12 @@ class OrderRepository {
           ? 'high'
           : (purchaseCount >= 3 ? 'medium' : 'low');
       final overdue = daysUntilDue < 0 ? -daysUntilDue : 0;
-      final score = (40 +
-              ((purchaseCount - 2) * 10).clamp(0, 30) +
-              overdue.clamp(0, 20) +
-              (daysUntilDue <= 0 ? 10 : 0))
-          .clamp(0, 100);
+      final score =
+          (40 +
+                  ((purchaseCount - 2) * 10).clamp(0, 30) +
+                  overdue.clamp(0, 20) +
+                  (daysUntilDue <= 0 ? 10 : 0))
+              .clamp(0, 100);
       final last = events.last;
 
       result.add({
@@ -236,9 +237,7 @@ class OrderRepository {
   ) {
     final timing = daysUntilDue < 0
         ? '${-daysUntilDue} day(s) overdue'
-        : (daysUntilDue == 0
-              ? 'due today'
-              : 'due in $daysUntilDue day(s)');
+        : (daysUntilDue == 0 ? 'due today' : 'due in $daysUntilDue day(s)');
     final base =
         'Ordered $purchaseCount times; typical interval $intervalDays days; '
         '$timing; recent average $quantity $unit.';
