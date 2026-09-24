@@ -71,7 +71,16 @@ void main() {
       'PRAGMA table_info(local_gps_points)',
     )).map((row) => row['name']).toSet();
 
-    expect(sessionColumns, contains('tenant_id'));
+    expect(
+      sessionColumns,
+      containsAll([
+        'tenant_id',
+        'vehicle_reference',
+        'odometer_start_km',
+        'odometer_end_km',
+        'gps_distance_km',
+      ]),
+    );
     expect(gpsColumns, contains('tenant_id'));
 
     final collectionColumns = (await database.db.rawQuery(
@@ -96,7 +105,15 @@ void main() {
 
     expect(
       expenseColumns,
-      containsAll(['tenant_id', 'offline_uuid', 'sync_status', 'review_note']),
+      containsAll([
+        'tenant_id',
+        'offline_uuid',
+        'sync_status',
+        'review_note',
+        'fuel_liters',
+        'fuel_unit_price',
+        'odometer_km',
+      ]),
     );
     expect(
       targetColumns,
