@@ -33,6 +33,10 @@ class HomeTab extends StatelessWidget {
       }
 
       await controller.acknowledgePrivacy();
+
+      if (!context.mounted) {
+        return;
+      }
     }
 
     final vehicle = TextEditingController();
