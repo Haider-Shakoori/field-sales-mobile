@@ -68,3 +68,32 @@ jobs:
           test -s build/app/outputs/bundle/release/app-release.aab
           jarsigner -verify build/app/outputs/bundle/release/app-release.aab
           sha256sum build/app/outputs/bundle/release/app-release.aab
+
+      - name: Build FieldPulse production APK
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        env:
+          FIELD_SALES_KEYSTORE_FILE: ${{ github.workspace }}/android/ci-release.jks
+          FIELD_SALES_KEYSTORE_PASSWORD: ci-release-password
+          FIELD_SALES_KEY_ALIAS: ci-release
+          FIELD_SALES_KEY_PASSWORD: ci-release-password
+        run: |
+          APP_VERSION="$(awk '/^version:/ {print $2}' pubspec.yaml)"
+          APP_VERSION_NAME="${APP_VERSION%%+*}"
+          flutter build apk --release \
+            --dart-define=API_BASE_URL=https://fieldpulse.businessos.af/api/v1 \
+            --dart-define=APP_VERSION="${APP_VERSION_NAME}"
+          mkdir -p dist
+          cp build/app/outputs/flutter-apk/app-release.apk "dist/FieldPulse-${APP_VERSION_NAME}-uat.apk"
+          sha256sum "dist/FieldPulse-${APP_VERSION_NAME}-uat.apk" | tee dist/SHA256SUMS.txt
+
+      - name: Upload FieldPulse production APK
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: fieldpulse-android-uat-${{ github.run_number }}
+          path: |
+            dist/FieldPulse-*.apk
+            dist/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 7
