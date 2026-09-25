@@ -175,54 +175,57 @@ void main() {
     },
   );
 
-  test('visit voice note upload uses stable UUID and voice_note multipart field', () async {
-    final db = AppDatabase();
-    await db.open();
-    const tenantId = 'tenant-voice';
-    const visitUuid = '55555555-5555-4555-8555-555555555555';
-    const voiceUuid = '66666666-6666-4666-8666-666666666666';
+  test(
+    'visit voice note upload uses stable UUID and voice_note multipart field',
+    () async {
+      final db = AppDatabase();
+      await db.open();
+      const tenantId = 'tenant-voice';
+      const visitUuid = '55555555-5555-4555-8555-555555555555';
+      const voiceUuid = '66666666-6666-4666-8666-666666666666';
 
-    await _seedSyncedVisit(db, tenantId: tenantId, visitUuid: visitUuid);
+      await _seedSyncedVisit(db, tenantId: tenantId, visitUuid: visitUuid);
 
-    final folder = await Directory.systemTemp.createTemp('field-voice-test');
-    final file = File(p.join(folder.path, 'voice.m4a'));
-    await file.writeAsBytes([1, 2, 3, 4, 5]);
+      final folder = await Directory.systemTemp.createTemp('field-voice-test');
+      final file = File(p.join(folder.path, 'voice.m4a'));
+      await file.writeAsBytes([1, 2, 3, 4, 5]);
 
-    await db.db.insert('local_visit_voice_notes', {
-      'tenant_id': tenantId,
-      'client_uuid': voiceUuid,
-      'visit_offline_uuid': visitUuid,
-      'local_path': file.path,
-      'duration_seconds': 37,
-      'recorded_at': DateTime.utc(2026, 9, 19, 8).toIso8601String(),
-      'language': 'fa',
-      'sync_status': 'pending',
-      'created_at': DateTime.utc(2026, 9, 19, 8).toIso8601String(),
-    });
+      await db.db.insert('local_visit_voice_notes', {
+        'tenant_id': tenantId,
+        'client_uuid': voiceUuid,
+        'visit_offline_uuid': visitUuid,
+        'local_path': file.path,
+        'duration_seconds': 37,
+        'recorded_at': DateTime.utc(2026, 9, 19, 8).toIso8601String(),
+        'language': 'fa',
+        'sync_status': 'pending',
+        'created_at': DateTime.utc(2026, 9, 19, 8).toIso8601String(),
+      });
 
-    final api = _FakeApiClient();
-    final repository = VisitRepository(api: api, db: db);
+      final api = _FakeApiClient();
+      final repository = VisitRepository(api: api, db: db);
 
-    await repository.syncPending(tenantId);
+      await repository.syncPending(tenantId);
 
-    expect(api.lastMultipartField, 'voice_note');
-    expect(api.lastMultipartPath, 'visits/$visitUuid/voice-notes');
-    expect(api.lastMultipartFields?['client_uuid'], voiceUuid);
-    expect(api.lastMultipartFields?['duration_seconds'], 37);
-    expect(api.lastMultipartFields?['language'], 'fa');
+      expect(api.lastMultipartField, 'voice_note');
+      expect(api.lastMultipartPath, 'visits/$visitUuid/voice-notes');
+      expect(api.lastMultipartFields?['client_uuid'], voiceUuid);
+      expect(api.lastMultipartFields?['duration_seconds'], 37);
+      expect(api.lastMultipartFields?['language'], 'fa');
 
-    final note = (await db.db.query(
-      'local_visit_voice_notes',
-      where: 'tenant_id=? AND client_uuid=?',
-      whereArgs: [tenantId, voiceUuid],
-    )).single;
+      final note = (await db.db.query(
+        'local_visit_voice_notes',
+        where: 'tenant_id=? AND client_uuid=?',
+        whereArgs: [tenantId, voiceUuid],
+      )).single;
 
-    expect(note['sync_status'], 'synced');
-    expect(note['server_uuid'], voiceUuid);
-    expect(note['transcription_status'], 'blocked_policy');
+      expect(note['sync_status'], 'synced');
+      expect(note['server_uuid'], voiceUuid);
+      expect(note['transcription_status'], 'blocked_policy');
 
-    await folder.delete(recursive: true);
-    await db.db.close();
-  });
+      await folder.delete(recursive: true);
+      await db.db.close();
+    },
+  );
 
 }
