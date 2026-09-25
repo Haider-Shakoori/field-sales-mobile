@@ -141,6 +141,32 @@ class VisitRepository {
     return uuid;
   }
 
+  Future<String> addVoiceNoteLocal({
+    required String tenantId,
+    required String visitOfflineUuid,
+    required String localPath,
+    required DateTime recordedAt,
+    required int durationSeconds,
+  }) async {
+    final uuid = const Uuid().v4();
+    final now = DateTime.now().toUtc().toIso8601String();
+
+    await db.db.insert('local_visit_voice_notes', {
+      'tenant_id': tenantId,
+      'client_uuid': uuid,
+      'visit_offline_uuid': visitOfflineUuid,
+      'local_path': localPath,
+      'duration_seconds': durationSeconds,
+      'recorded_at': recordedAt.toUtc().toIso8601String(),
+      'transcription_status': 'pending',
+      'sync_status': 'pending',
+      'created_at': now,
+      'updated_at': now,
+    });
+
+    return uuid;
+  }
+
   Future<void> refreshForms(String tenantId) async {
     final result = await api.get('visit-forms');
     final body = result is Map<String, dynamic>
@@ -354,6 +380,33 @@ class VisitRepository {
     return rows.map(Map<String, dynamic>.from).toList();
   }
 
+  Future<List<Map<String, dynamic>>> visitVoiceNotes(
+    String tenantId,
+    String visitOfflineUuid,
+  ) async {
+    final rows = await db.db.query(
+      'local_visit_voice_notes',
+      where: 'tenant_id=? AND visit_offline_uuid=?',
+      whereArgs: [tenantId, visitOfflineUuid],
+      orderBy: 'recorded_at DESC',
+    );
+
+    return rows.map((row) {
+      final result = Map<String, dynamic>.from(row);
+      final structured = row['structured_notes_json']?.toString();
+
+      if (structured != null && structured.isNotEmpty) {
+        try {
+          result['structured_notes'] = jsonDecode(structured);
+        } catch (_) {
+          result['structured_notes'] = null;
+        }
+      }
+
+      return result;
+    }).toList();
+  }
+
   Future<int> pendingCount(String tenantId) async {
     final visits = await db.db.rawQuery(
       'SELECT COUNT(*) AS total FROM local_visits '
@@ -365,6 +418,11 @@ class VisitRepository {
       'WHERE tenant_id=? AND sync_status<>?',
       [tenantId, 'synced'],
     );
+    final voiceNotes = await db.db.rawQuery(
+      'SELECT COUNT(*) AS total FROM local_visit_voice_notes '
+      'WHERE tenant_id=? AND sync_status<>?',
+      [tenantId, 'synced'],
+    );
     final forms = await db.db.rawQuery(
       'SELECT COUNT(*) AS total FROM local_visit_form_submissions '
       'WHERE tenant_id=? AND sync_status<>?',
@@ -373,6 +431,7 @@ class VisitRepository {
 
     return (visits.first['total'] as int? ?? 0) +
         (photos.first['total'] as int? ?? 0) +
+        (voiceNotes.first['total'] as int? ?? 0) +
         (forms.first['total'] as int? ?? 0);
   }
 
@@ -455,6 +514,11 @@ class VisitRepository {
           row['offline_uuid'].toString(),
           row['server_uuid'].toString(),
         );
+        await _syncVoiceNotes(
+          tenantId,
+          row['offline_uuid'].toString(),
+          row['server_uuid'].toString(),
+        );
         await _syncFormSubmissions(
           tenantId,
           row['offline_uuid'].toString(),
@@ -511,6 +575,11 @@ class VisitRepository {
     }
 
     await _syncPhotos(tenantId, row['offline_uuid'].toString(), serverUuid);
+    await _syncVoiceNotes(
+      tenantId,
+      row['offline_uuid'].toString(),
+      serverUuid,
+    );
     await _syncFormSubmissions(
       tenantId,
       row['offline_uuid'].toString(),
@@ -672,6 +741,136 @@ class VisitRepository {
         );
       }
     }
+  }
+
+  Future<void> _syncVoiceNotes(
+    String tenantId,
+    String visitOfflineUuid,
+    String visitServerUuid,
+  ) async {
+    final rows = await db.db.query(
+      'local_visit_voice_notes',
+      where: 'tenant_id=? AND visit_offline_uuid=? AND sync_status IN (?,?,?)',
+      whereArgs: [tenantId, visitOfflineUuid, 'pending', 'failed', 'blocked'],
+      orderBy: 'id ASC',
+    );
+
+    for (final row in rows) {
+      final clientUuid = row['client_uuid'].toString();
+
+      if (!await retry.shouldAttempt(
+        tenantId: tenantId,
+        entityType: 'visit_voice_note',
+        entityUuid: clientUuid,
+      )) {
+        continue;
+      }
+
+      try {
+        final file = File(row['local_path'].toString());
+        Map<String, dynamic> result;
+
+        if (await file.exists()) {
+          result = Map<String, dynamic>.from(
+            await api.postMultipart(
+              'visits/$visitServerUuid/voice-notes',
+              filePath: file.path,
+              field: 'audio',
+              fields: {
+                'client_uuid': clientUuid,
+                'duration_seconds': row['duration_seconds'],
+                'recorded_at': row['recorded_at'],
+              },
+            ) as Map,
+          );
+        } else {
+          result = Map<String, dynamic>.from(
+            await api.post(
+              'visits/$visitServerUuid/voice-notes',
+              data: {'client_uuid': clientUuid},
+            ) as Map,
+          );
+        }
+
+        await _applyVoiceNoteServerRow(tenantId, row['id'] as int, result);
+        await retry.clear(
+          tenantId: tenantId,
+          entityType: 'visit_voice_note',
+          entityUuid: clientUuid,
+        );
+      } catch (error) {
+        final failure = await retry.recordFailure(
+          tenantId: tenantId,
+          entityType: 'visit_voice_note',
+          entityUuid: clientUuid,
+          error: error,
+        );
+        await db.db.update(
+          'local_visit_voice_notes',
+          {
+            'sync_status': failure.blocked ? 'blocked' : 'failed',
+            'last_error': failure.message,
+            'updated_at': DateTime.now().toUtc().toIso8601String(),
+          },
+          where: 'tenant_id=? AND id=?',
+          whereArgs: [tenantId, row['id']],
+        );
+      }
+    }
+
+    try {
+      final result = await api.get('visits/$visitServerUuid/voice-notes');
+
+      if (result is List) {
+        for (final raw in result.whereType<Map>()) {
+          final server = Map<String, dynamic>.from(raw);
+          final clientUuid = server['id']?.toString();
+
+          if (clientUuid == null || clientUuid.isEmpty) continue;
+
+          final locals = await db.db.query(
+            'local_visit_voice_notes',
+            where: 'tenant_id=? AND client_uuid=?',
+            whereArgs: [tenantId, clientUuid],
+            limit: 1,
+          );
+
+          if (locals.isNotEmpty) {
+            await _applyVoiceNoteServerRow(
+              tenantId,
+              locals.first['id'] as int,
+              server,
+            );
+          }
+        }
+      }
+    } catch (_) {
+      // Refreshing asynchronous transcription is best-effort.
+    }
+  }
+
+  Future<void> _applyVoiceNoteServerRow(
+    String tenantId,
+    int localId,
+    Map<String, dynamic> result,
+  ) async {
+    await db.db.update(
+      'local_visit_voice_notes',
+      {
+        'server_uuid': result['id']?.toString(),
+        'transcription_status':
+            result['transcription_status']?.toString() ?? 'disabled',
+        'transcript': result['transcript']?.toString(),
+        'structured_notes_json': result['structured_notes'] == null
+            ? null
+            : jsonEncode(result['structured_notes']),
+        'sync_status': 'synced',
+        'last_error': null,
+        'updated_at': DateTime.now().toUtc().toIso8601String(),
+      },
+      where: 'tenant_id=? AND id=?',
+      whereArgs: [tenantId, localId],
+    );
   }
 
   Future<void> _syncPhotos(
