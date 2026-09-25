@@ -561,11 +561,7 @@ class VisitRepository {
     }
 
     await _syncPhotos(tenantId, row['offline_uuid'].toString(), serverUuid);
-    await _syncVoiceNotes(
-      tenantId,
-      row['offline_uuid'].toString(),
-      serverUuid,
-    );
+    await _syncVoiceNotes(tenantId, row['offline_uuid'].toString(), serverUuid);
     await _syncFormSubmissions(
       tenantId,
       row['offline_uuid'].toString(),
