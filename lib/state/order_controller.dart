@@ -43,6 +43,19 @@ class OrderController extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<List<Map<String, dynamic>>> reorderRecommendations(
+    Map<String, dynamic> customer, {
+    DateTime? asOf,
+  }) async {
+    final tenantId = appState.session?.tenantId;
+    final customerId = customer['id']?.toString();
+    if (tenantId == null || customerId == null || customerId.isEmpty) {
+      return const [];
+    }
+
+    return repository.reorderRecommendations(tenantId, customerId, asOf: asOf);
+  }
+
   Future<OrderPreview> preview({
     required Map<String, dynamic> customer,
     required List<OrderDraftLine> lines,

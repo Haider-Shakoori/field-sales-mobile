@@ -1,6 +1,7 @@
 import 'package:uuid/uuid.dart';
 
 import '../../core/api/api_client.dart';
+import '../../core/api/api_exception.dart';
 import '../../core/db/app_database.dart';
 import '../../core/sync/connectivity_gate.dart';
 import '../../core/sync/local_dependency_guard.dart';
@@ -47,6 +48,202 @@ class OrderRepository {
     );
 
     return rows.map(Map<String, dynamic>.from).toList();
+  }
+
+  Future<List<Map<String, dynamic>>> reorderRecommendations(
+    String tenantId,
+    String customerUuid, {
+    DateTime? asOf,
+  }) async {
+    if (await ConnectivityGate.instance.isOnline()) {
+      try {
+        final response = await api.get(
+          'customers/$customerUuid/reorder-recommendations',
+        );
+        if (response is Map && response['recommendations'] is List) {
+          return (response['recommendations'] as List)
+              .whereType<Map>()
+              .map((row) => Map<String, dynamic>.from(row))
+              .toList();
+        }
+      } on ApiException catch (error) {
+        if (!error.retryable) rethrow;
+      } catch (_) {
+        // Network/plugin failures fall back to cached approved order history.
+      }
+    }
+
+    return _localReorderRecommendations(tenantId, customerUuid, asOf: asOf);
+  }
+
+  Future<List<Map<String, dynamic>>> _localReorderRecommendations(
+    String tenantId,
+    String customerUuid, {
+    DateTime? asOf,
+  }) async {
+    final reference = (asOf ?? DateTime.now()).toUtc();
+    final cutoff = reference.subtract(const Duration(days: 365));
+    final rows = await db.db.rawQuery(
+      'SELECT o.ordered_at, i.product_uuid, i.product_sku, '
+      'i.product_name, i.unit, i.quantity, i.unit_price, o.currency '
+      'FROM local_orders o '
+      'JOIN local_order_items i '
+      'ON i.tenant_id=o.tenant_id AND i.order_offline_uuid=o.offline_uuid '
+      'WHERE o.tenant_id=? AND o.customer_uuid=? AND o.status=? '
+      'AND o.ordered_at>=? ORDER BY o.ordered_at ASC',
+      [tenantId, customerUuid, 'approved', cutoff.toIso8601String()],
+    );
+
+    final grouped = <String, List<Map<String, dynamic>>>{};
+    for (final row in rows) {
+      final productId = row['product_uuid']?.toString() ?? '';
+      if (productId.isEmpty) continue;
+      grouped
+          .putIfAbsent(productId, () => [])
+          .add(Map<String, dynamic>.from(row));
+    }
+
+    final products = await masterData.list('products', tenantId);
+    final productById = {
+      for (final product in products)
+        if (product['id'] != null) product['id'].toString(): product,
+    };
+    final stockEnabled = await stock.enabled(tenantId);
+    final result = <Map<String, dynamic>>[];
+
+    for (final entry in grouped.entries) {
+      final events = entry.value;
+      if (events.length < 2) continue;
+
+      final product = productById[entry.key];
+      if (product == null || product['is_active'] == false) continue;
+
+      final dates = events
+          .map((row) => DateTime.parse(row['ordered_at'].toString()).toUtc())
+          .toList();
+      final intervals = <int>[];
+      for (var i = 1; i < dates.length; i++) {
+        intervals.add(
+          dates[i].difference(dates[i - 1]).inDays.abs().clamp(1, 9999).toInt(),
+        );
+      }
+      intervals.sort();
+      final typical = _medianInt(intervals).clamp(7, 180).toInt();
+      final recent = events.length > 6
+          ? events.sublist(events.length - 6)
+          : events;
+      final average = _round4(
+        recent.map((row) => _number(row['quantity'])).reduce((a, b) => a + b) /
+            recent.length,
+      );
+      final lastDate = dates.last;
+      final nextDue = DateTime.utc(
+        lastDate.year,
+        lastDate.month,
+        lastDate.day,
+      ).add(Duration(days: typical));
+      final today = DateTime.utc(
+        reference.year,
+        reference.month,
+        reference.day,
+      );
+      final daysUntilDue = nextDue.difference(today).inDays;
+      final dueWindow = (typical * .25).round().clamp(7, 21).toInt();
+      if (daysUntilDue > dueWindow) continue;
+
+      double? available;
+      var suggested = average;
+      var stockLimited = false;
+      if (stockEnabled) {
+        available = _round4(
+          await stock.availableForProduct(tenantId, entry.key),
+        );
+        if (!available.isFinite) available = 0;
+        available = available.clamp(0, double.infinity).toDouble();
+        suggested = _round4(average < available ? average : available);
+        stockLimited = available + .00001 < average;
+      }
+
+      final purchaseCount = events.length;
+      final confidence = purchaseCount >= 5
+          ? 'high'
+          : (purchaseCount >= 3 ? 'medium' : 'low');
+      final overdue = daysUntilDue < 0 ? -daysUntilDue : 0;
+      final score =
+          (40 +
+                  ((purchaseCount - 2) * 10).clamp(0, 30) +
+                  overdue.clamp(0, 20) +
+                  (daysUntilDue <= 0 ? 10 : 0))
+              .clamp(0, 100);
+      final last = events.last;
+
+      result.add({
+        'product_id': entry.key,
+        'sku': last['product_sku'],
+        'name': last['product_name'],
+        'unit': last['unit'],
+        'currency': last['currency'],
+        'last_unit_price': _number(last['unit_price']),
+        'purchase_count': purchaseCount,
+        'average_quantity': average,
+        'demand_quantity': average,
+        'suggested_quantity': suggested,
+        'typical_interval_days': typical,
+        'last_ordered_at': lastDate.toIso8601String(),
+        'next_due_date': nextDue.toIso8601String().substring(0, 10),
+        'days_until_due': daysUntilDue,
+        'days_overdue': overdue,
+        'confidence': confidence,
+        'score': score,
+        'stock_enabled': stockEnabled,
+        'available_stock': available,
+        'stock_limited': stockLimited,
+        'reason': _reorderReason(
+          purchaseCount,
+          typical,
+          average,
+          (last['unit'] ?? '').toString(),
+          daysUntilDue,
+          stockLimited,
+        ),
+      });
+    }
+
+    result.sort((a, b) {
+      final due = (a['days_until_due'] as int).compareTo(
+        b['days_until_due'] as int,
+      );
+      if (due != 0) return due;
+      return (b['score'] as int).compareTo(a['score'] as int);
+    });
+
+    return result;
+  }
+
+  static int _medianInt(List<int> values) {
+    if (values.isEmpty) return 30;
+    final middle = values.length ~/ 2;
+    if (values.length.isOdd) return values[middle];
+    return ((values[middle - 1] + values[middle]) / 2).round();
+  }
+
+  static String _reorderReason(
+    int purchaseCount,
+    int intervalDays,
+    double quantity,
+    String unit,
+    int daysUntilDue,
+    bool stockLimited,
+  ) {
+    final timing = daysUntilDue < 0
+        ? '${-daysUntilDue} day(s) overdue'
+        : (daysUntilDue == 0 ? 'due today' : 'due in $daysUntilDue day(s)');
+    final base =
+        'Ordered $purchaseCount times; typical interval $intervalDays days; '
+        '$timing; recent average $quantity $unit.';
+    return stockLimited
+        ? '$base Suggested quantity is capped by available stock.'
+        : base;
   }
 
   Future<int> pendingCount(String tenantId) async {

@@ -7,6 +7,7 @@ import '../state/master_data_controller.dart';
 import 'sync_refresh.dart';
 import 'call_history_screen.dart';
 import 'customer_statement_screen.dart';
+import 'reorder_recommendations_screen.dart';
 
 class CustomersScreen extends StatelessWidget {
   const CustomersScreen({super.key});
@@ -374,6 +375,18 @@ class CustomersScreen extends StatelessWidget {
                       trailing: Wrap(
                         spacing: 0,
                         children: [
+                          IconButton(
+                            tooltip: 'Reorder recommendations',
+                            onPressed: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => ReorderRecommendationsScreen(
+                                  customer: customer,
+                                  products: state.products,
+                                ),
+                              ),
+                            ),
+                            icon: const Icon(Icons.auto_awesome_outlined),
+                          ),
                           IconButton(
                             tooltip: 'Statement',
                             onPressed: () => Navigator.of(context).push(
