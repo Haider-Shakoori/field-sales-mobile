@@ -238,7 +238,11 @@ class VisitController extends ChangeNotifier {
       final recording = await voiceRecorder.stop();
 
       if (recording.durationSeconds > 300) {
-        await File(recording.path).delete().catchError((_) {});
+        try {
+          await File(recording.path).delete();
+        } catch (_) {
+          // The local file is disposable when a recording exceeds the limit.
+        }
         throw StateError('Voice notes are limited to 5 minutes.');
       }
 
