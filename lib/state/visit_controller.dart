@@ -220,8 +220,7 @@ class VisitController extends ChangeNotifier {
     final tenantId = appState.session?.tenantId;
     final visitUuid = visit['offline_uuid']?.toString();
 
-    if (
-        tenantId == null ||
+    if (tenantId == null ||
         visitUuid == null ||
         visitUuid.isEmpty ||
         busy ||
