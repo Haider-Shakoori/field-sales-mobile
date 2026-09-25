@@ -331,8 +331,7 @@ class _VisitsScreenState extends State<VisitsScreen> {
                           onPressed: state.busy
                               ? null
                               : () async {
-                                  if (
-                                      state.recordingVoice &&
+                                  if (state.recordingVoice &&
                                       state.recordingVisitUuid ==
                                           visit['offline_uuid']?.toString()) {
                                     await state.stopVoiceNote(visit);
