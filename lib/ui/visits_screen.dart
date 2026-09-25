@@ -331,6 +331,36 @@ class _VisitsScreenState extends State<VisitsScreen> {
                           onPressed: state.busy
                               ? null
                               : () async {
+                                  if (state.recordingVoice &&
+                                      state.recordingVisitUuid ==
+                                          visit['offline_uuid']?.toString()) {
+                                    await state.stopVoiceNote(visit);
+                                  } else {
+                                    await state.startVoiceNote(visit);
+                                  }
+
+                                  if (!context.mounted) return;
+                                  _showVisitMessage(context, state);
+                                },
+                          icon: Icon(
+                            state.recordingVoice &&
+                                    state.recordingVisitUuid ==
+                                        visit['offline_uuid']?.toString()
+                                ? Icons.stop_circle_outlined
+                                : Icons.mic_none_outlined,
+                          ),
+                          label: Text(
+                            state.recordingVoice &&
+                                    state.recordingVisitUuid ==
+                                        visit['offline_uuid']?.toString()
+                                ? 'Stop voice'
+                                : 'Voice note',
+                          ),
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: state.busy
+                              ? null
+                              : () async {
                                   await state.capturePhoto(visit);
                                   if (!context.mounted) return;
                                   _showVisitMessage(context, state);

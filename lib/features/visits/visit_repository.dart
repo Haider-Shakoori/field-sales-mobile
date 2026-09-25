@@ -141,6 +141,45 @@ class VisitRepository {
     return uuid;
   }
 
+  Future<String> addVoiceNoteLocal({
+    required String tenantId,
+    required String visitOfflineUuid,
+    required String localPath,
+    required int durationSeconds,
+    required DateTime recordedAt,
+    String? language,
+  }) async {
+    final uuid = const Uuid().v4();
+
+    await db.db.insert('local_visit_voice_notes', {
+      'tenant_id': tenantId,
+      'client_uuid': uuid,
+      'visit_offline_uuid': visitOfflineUuid,
+      'local_path': localPath,
+      'duration_seconds': durationSeconds,
+      'recorded_at': recordedAt.toUtc().toIso8601String(),
+      'language': language,
+      'sync_status': 'pending',
+      'created_at': DateTime.now().toUtc().toIso8601String(),
+    });
+
+    return uuid;
+  }
+
+  Future<List<Map<String, dynamic>>> visitVoiceNotes(
+    String tenantId,
+    String visitOfflineUuid,
+  ) async {
+    final rows = await db.db.query(
+      'local_visit_voice_notes',
+      where: 'tenant_id=? AND visit_offline_uuid=?',
+      whereArgs: [tenantId, visitOfflineUuid],
+      orderBy: 'recorded_at DESC',
+    );
+
+    return rows.map(Map<String, dynamic>.from).toList();
+  }
+
   Future<void> refreshForms(String tenantId) async {
     final result = await api.get('visit-forms');
     final body = result is Map<String, dynamic>
@@ -370,10 +409,16 @@ class VisitRepository {
       'WHERE tenant_id=? AND sync_status<>?',
       [tenantId, 'synced'],
     );
+    final voiceNotes = await db.db.rawQuery(
+      'SELECT COUNT(*) AS total FROM local_visit_voice_notes '
+      'WHERE tenant_id=? AND sync_status<>?',
+      [tenantId, 'synced'],
+    );
 
     return (visits.first['total'] as int? ?? 0) +
         (photos.first['total'] as int? ?? 0) +
-        (forms.first['total'] as int? ?? 0);
+        (forms.first['total'] as int? ?? 0) +
+        (voiceNotes.first['total'] as int? ?? 0);
   }
 
   Future<VisitSyncResult> syncPending(String tenantId) async {
@@ -455,6 +500,11 @@ class VisitRepository {
           row['offline_uuid'].toString(),
           row['server_uuid'].toString(),
         );
+        await _syncVoiceNotes(
+          tenantId,
+          row['offline_uuid'].toString(),
+          row['server_uuid'].toString(),
+        );
         await _syncFormSubmissions(
           tenantId,
           row['offline_uuid'].toString(),
@@ -511,6 +561,7 @@ class VisitRepository {
     }
 
     await _syncPhotos(tenantId, row['offline_uuid'].toString(), serverUuid);
+    await _syncVoiceNotes(tenantId, row['offline_uuid'].toString(), serverUuid);
     await _syncFormSubmissions(
       tenantId,
       row['offline_uuid'].toString(),
@@ -788,6 +839,104 @@ class VisitRepository {
         );
         await db.db.update(
           'local_visit_photos',
+          {
+            'sync_status': failure.blocked ? 'blocked' : 'failed',
+            'last_error': failure.message,
+          },
+          where: 'tenant_id=? AND id=?',
+          whereArgs: [tenantId, row['id']],
+        );
+      }
+    }
+  }
+
+  Future<void> _syncVoiceNotes(
+    String tenantId,
+    String visitOfflineUuid,
+    String visitServerUuid,
+  ) async {
+    final rows = await db.db.query(
+      'local_visit_voice_notes',
+      where: 'tenant_id=? AND visit_offline_uuid=? AND sync_status IN (?,?,?)',
+      whereArgs: [tenantId, visitOfflineUuid, 'pending', 'failed', 'blocked'],
+      orderBy: 'id ASC',
+    );
+
+    for (final row in rows) {
+      final clientUuid = row['client_uuid'].toString();
+
+      if (!await retry.shouldAttempt(
+        tenantId: tenantId,
+        entityType: 'visit_voice_note',
+        entityUuid: clientUuid,
+      )) {
+        continue;
+      }
+
+      final file = File(row['local_path'].toString());
+
+      try {
+        Map<String, dynamic> result;
+
+        if (await file.exists()) {
+          result = Map<String, dynamic>.from(
+            await api.postMultipart(
+              'visits/$visitServerUuid/voice-notes',
+              filePath: file.path,
+              field: 'voice_note',
+              fields: {
+                'client_uuid': clientUuid,
+                'duration_seconds': row['duration_seconds'],
+                'recorded_at': row['recorded_at'],
+                if (row['language'] != null) 'language': row['language'],
+              },
+            ) as Map,
+          );
+        } else {
+          result = Map<String, dynamic>.from(
+            await api.post(
+              'visits/$visitServerUuid/voice-notes',
+              data: {'client_uuid': clientUuid},
+            ) as Map,
+          );
+        }
+
+        await db.db.update(
+          'local_visit_voice_notes',
+          {
+            'server_uuid': result['id']?.toString(),
+            'transcription_status': result['transcription_status']?.toString(),
+            'transcript': result['transcript']?.toString(),
+            'structured_notes_json': result['structured_notes'] == null
+                ? null
+                : jsonEncode(result['structured_notes']),
+            'sync_status': 'synced',
+            'last_error': null,
+          },
+          where: 'tenant_id=? AND id=?',
+          whereArgs: [tenantId, row['id']],
+        );
+        await retry.clear(
+          tenantId: tenantId,
+          entityType: 'visit_voice_note',
+          entityUuid: clientUuid,
+        );
+      } catch (error) {
+        final missingOnServer =
+            !await file.exists() &&
+            error is ApiException &&
+            error.status == 422;
+        final failure = await retry.recordFailure(
+          tenantId: tenantId,
+          entityType: 'visit_voice_note',
+          entityUuid: clientUuid,
+          error: missingOnServer
+              ? StateError('Local voice note file is unavailable.')
+              : error,
+          retryableOverride: missingOnServer ? false : null,
+        );
+        await db.db.update(
+          'local_visit_voice_notes',
           {
             'sync_status': failure.blocked ? 'blocked' : 'failed',
             'last_error': failure.message,
