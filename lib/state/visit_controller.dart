@@ -8,6 +8,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import '../features/visits/visit_repository.dart';
+import '../features/visits/visit_voice_recorder.dart';
 import 'app_state.dart';
 
 class VisitController extends ChangeNotifier {
@@ -15,8 +16,11 @@ class VisitController extends ChangeNotifier {
 
   final AppState appState;
   final VisitRepository repository;
+  final VisitVoiceRecorder voiceRecorder = VisitVoiceRecorder();
 
   bool busy = false;
+  bool recordingVoice = false;
+  String? recordingVisitUuid;
   String? message;
   String? loadedTenantId;
   int pending = 0;
@@ -168,6 +172,109 @@ class VisitController extends ChangeNotifier {
       message = '$error'.replaceFirst('Bad state: ', '');
     } finally {
       busy = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> startVoiceNote(Map<String, dynamic> visit) async {
+    final tenantId = appState.session?.tenantId;
+    final visitUuid = visit['offline_uuid']?.toString();
+
+    if (tenantId == null || visitUuid == null || visitUuid.isEmpty || busy) {
+      return;
+    }
+
+    if (recordingVoice) {
+      message = 'Stop the current voice note before starting another one.';
+      notifyListeners();
+      return;
+    }
+
+    busy = true;
+    message = null;
+    notifyListeners();
+
+    try {
+      final granted = await voiceRecorder.requestPermission();
+
+      if (!granted) {
+        throw StateError('Microphone permission is required for voice notes.');
+      }
+
+      await voiceRecorder.start();
+      recordingVoice = true;
+      recordingVisitUuid = visitUuid;
+      message = 'Recording voice note… tap Stop voice when finished.';
+    } catch (error) {
+      message = '$error'.replaceFirst('Bad state: ', '');
+    } finally {
+      busy = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> stopVoiceNote(
+    Map<String, dynamic> visit, {
+    String? language,
+  }) async {
+    final tenantId = appState.session?.tenantId;
+    final visitUuid = visit['offline_uuid']?.toString();
+
+    if (
+        tenantId == null ||
+        visitUuid == null ||
+        visitUuid.isEmpty ||
+        busy ||
+        !recordingVoice ||
+        recordingVisitUuid != visitUuid) {
+      return;
+    }
+
+    busy = true;
+    message = null;
+    notifyListeners();
+
+    try {
+      final recording = await voiceRecorder.stop();
+
+      if (recording.durationSeconds > 300) {
+        await File(recording.path).delete().catchError((_) {});
+        throw StateError('Voice notes are limited to 5 minutes.');
+      }
+
+      await repository.addVoiceNoteLocal(
+        tenantId: tenantId,
+        visitOfflineUuid: visitUuid,
+        localPath: recording.path,
+        durationSeconds: recording.durationSeconds,
+        recordedAt: DateTime.now().toUtc(),
+        language: language,
+      );
+
+      recordingVoice = false;
+      recordingVisitUuid = null;
+      await reloadLocal();
+      message = 'Voice note saved locally.';
+      await sync(silent: true);
+    } catch (error) {
+      recordingVoice = false;
+      recordingVisitUuid = null;
+      message = '$error'.replaceFirst('Bad state: ', '');
+    } finally {
+      busy = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> cancelVoiceNote() async {
+    if (!recordingVoice) return;
+
+    try {
+      await voiceRecorder.cancel();
+    } finally {
+      recordingVoice = false;
+      recordingVisitUuid = null;
+      message = 'Voice note recording cancelled.';
       notifyListeners();
     }
   }
