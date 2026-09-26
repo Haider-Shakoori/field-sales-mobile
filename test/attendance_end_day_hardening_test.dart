@@ -15,12 +15,13 @@ void main() {
 
   test('raw runtime type errors are converted to a recoverable message', () {
     final message = friendlyAttendanceError(
-      TypeError(),
+      StateError("type 'int' is not a subtype of type 'double'"),
     );
 
-    // A TypeError has VM-specific text, but users must never see raw
-    // implementation details from a failed End Day operation.
-    expect(message, isNotEmpty);
+    expect(
+      message,
+      'The saved attendance data could not be read safely. Refresh the page and try End Day again.',
+    );
   });
 
   test('End Day only stops tracking after local completion succeeds', () {
