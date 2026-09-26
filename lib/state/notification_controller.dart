@@ -19,7 +19,10 @@ class NotificationController extends ChangeNotifier {
   void start() {
     _timer?.cancel();
     if (!appState.signedIn) return;
-    _timer = Timer.periodic(const Duration(minutes: 2), (_) => refresh(silent: true));
+    _timer = Timer.periodic(
+      const Duration(minutes: 2),
+      (_) => refresh(silent: true),
+    );
     unawaited(refresh(silent: true));
   }
 
