@@ -307,14 +307,15 @@ class CustomersScreen extends StatelessWidget {
                   final offline = customer['offline_uuid'] != null;
                   final phone = customer['phone']?.toString().trim() ?? '';
                   final territoryId = customer['territory_id']?.toString();
-                  final territory = state.territories
-                      .where(
-                        (row) =>
-                            row['id']?.toString() == territoryId &&
-                            territoryId != null,
-                      )
-                      .cast<Map<String, dynamic>?>()
-                      .firstOrNull;
+                  Map<String, dynamic>? territory;
+                  if (territoryId != null) {
+                    for (final row in state.territories) {
+                      if (row['id']?.toString() == territoryId) {
+                        territory = row;
+                        break;
+                      }
+                    }
+                  }
 
                   return Card(
                     child: ListTile(
