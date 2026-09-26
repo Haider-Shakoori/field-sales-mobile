@@ -35,7 +35,10 @@ class _UnusedSource implements MasterDataSource {
   }
 
   @override
-  Future<Map<String, dynamic>> patch(String path, Map<String, dynamic> payload) {
+  Future<Map<String, dynamic>> patch(
+    String path,
+    Map<String, dynamic> payload,
+  ) {
     throw UnimplementedError();
   }
 }
