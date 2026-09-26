@@ -40,8 +40,8 @@ void main() {
   test('management mode is separated from salesman offline workflows', () {
     final app = File('lib/app.dart').readAsStringSync();
     final sync = File('lib/state/sync_controller.dart').readAsStringSync();
-    final attendance =
-        File('lib/state/attendance_controller.dart').readAsStringSync();
+    final attendance = File('lib/state/attendance_controller.dart')
+        .readAsStringSync();
 
     expect(app, contains('ManagementDashboardScreen'));
     expect(app, contains('state.session?.isManagement == true'));
@@ -51,9 +51,9 @@ void main() {
 
   test('management dashboard includes team overview and live map', () {
     final team = File('lib/ui/team_overview_screen.dart').readAsStringSync();
-    final repository =
-        File('lib/features/management/management_repository.dart')
-            .readAsStringSync();
+    final repository = File(
+      'lib/features/management/management_repository.dart',
+    ).readAsStringSync();
 
     expect(repository, contains("api.get('mobile/team/overview')"));
     expect(team, contains('FlutterMap('));
@@ -66,9 +66,9 @@ void main() {
     final home = File('lib/ui/home_tab.dart').readAsStringSync();
     final attendance =
         File('lib/state/attendance_controller.dart').readAsStringSync();
-    final diagnostics =
-        File('lib/features/diagnostics/diagnostic_reporter.dart')
-            .readAsStringSync();
+    final diagnostics = File(
+      'lib/features/diagnostics/diagnostic_reporter.dart',
+    ).readAsStringSync();
 
     expect(home, contains('dayClosingSummary()'));
     expect(home, contains('Complete the active customer visit'));
