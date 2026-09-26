@@ -7,12 +7,17 @@ import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 
 import '../core/config.dart';
+import '../features/customers/territory_locator.dart';
 import '../state/master_data_controller.dart';
 
 const _kabulCenter = LatLng(34.5553, 69.2075);
 
 class CustomerCreateScreen extends StatefulWidget {
-  const CustomerCreateScreen({super.key});
+  const CustomerCreateScreen({super.key, this.customer});
+
+  final Map<String, dynamic>? customer;
+
+  bool get editing => customer != null;
 
   @override
   State<CustomerCreateScreen> createState() => _CustomerCreateScreenState();
@@ -21,15 +26,38 @@ class CustomerCreateScreen extends StatefulWidget {
 class _CustomerCreateScreenState extends State<CustomerCreateScreen> {
   final _formKey = GlobalKey<FormState>();
   final _mapController = MapController();
-  final _name = TextEditingController();
-  final _code = TextEditingController();
-  final _phone = TextEditingController();
-  final _address = TextEditingController();
+
+  late final TextEditingController _name;
+  late final TextEditingController _code;
+  late final TextEditingController _phone;
+  late final TextEditingController _address;
 
   LatLng? _shopLocation;
   bool _locating = false;
   bool _saving = false;
   String? _locationMessage;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final customer = widget.customer ?? const <String, dynamic>{};
+    _name = TextEditingController(text: customer['name']?.toString() ?? '');
+    _code = TextEditingController(text: customer['code']?.toString() ?? '');
+    _phone = TextEditingController(text: customer['phone']?.toString() ?? '');
+    _address = TextEditingController(
+      text: customer['address']?.toString() ?? '',
+    );
+
+    final latitude = _number(customer['latitude']);
+    final longitude = _number(customer['longitude']);
+
+    if (latitude != null && longitude != null) {
+      _shopLocation = LatLng(latitude, longitude);
+      _locationMessage =
+          'Saved shop location loaded. Tap the map to adjust it.';
+    }
+  }
 
   @override
   void dispose() {
@@ -82,13 +110,15 @@ class _CustomerCreateScreenState extends State<CustomerCreateScreen> {
       final point = LatLng(position.latitude, position.longitude);
       setState(() {
         _shopLocation = point;
-        _locationMessage = 'Current location selected. Drag the map and tap again if the shop entrance is slightly different.';
+        _locationMessage =
+            'Current location selected. Tap the exact shop entrance if adjustment is needed.';
       });
       _mapController.move(point, 18);
     } on TimeoutException {
       if (mounted) {
         setState(() {
-          _locationMessage = 'Could not get a precise GPS fix. Move to an open area or tap the shop on the map.';
+          _locationMessage =
+              'Could not get a precise GPS fix. Move to an open area or tap the shop on the map.';
         });
       }
     } catch (error) {
@@ -126,21 +156,36 @@ class _CustomerCreateScreenState extends State<CustomerCreateScreen> {
     setState(() => _saving = true);
 
     try {
-      await context.read<MasterDataController>().createCustomer(
-        name: _name.text,
-        code: _code.text,
-        phone: _phone.text,
-        address: _address.text,
-        latitude: _shopLocation!.latitude,
-        longitude: _shopLocation!.longitude,
-      );
+      final master = context.read<MasterDataController>();
+
+      if (widget.editing) {
+        await master.updateCustomer(
+          customerUuid: widget.customer!['id'].toString(),
+          name: _name.text,
+          code: _code.text,
+          phone: _phone.text,
+          address: _address.text,
+          latitude: _shopLocation!.latitude,
+          longitude: _shopLocation!.longitude,
+        );
+      } else {
+        await master.createCustomer(
+          name: _name.text,
+          code: _code.text,
+          phone: _phone.text,
+          address: _address.text,
+          latitude: _shopLocation!.latitude,
+          longitude: _shopLocation!.longitude,
+        );
+      }
 
       if (!mounted) return;
       Navigator.of(context).pop(true);
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _locationMessage = 'The customer could not be saved. Your entry is still on this screen; please try again.';
+        _locationMessage =
+            'The customer could not be saved. Your changes are still on this screen; please try again.';
       });
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -150,9 +195,15 @@ class _CustomerCreateScreenState extends State<CustomerCreateScreen> {
   @override
   Widget build(BuildContext context) {
     final selected = _shopLocation;
+    final master = context.watch<MasterDataController>();
+    final detectedTerritory = selected == null
+        ? null
+        : detectTerritoryForPoint(master.territories, selected);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('New customer')),
+      appBar: AppBar(
+        title: Text(widget.editing ? 'Edit customer' : 'New customer'),
+      ),
       body: SafeArea(
         child: Form(
           key: _formKey,
@@ -161,7 +212,7 @@ class _CustomerCreateScreenState extends State<CustomerCreateScreen> {
             children: [
               TextFormField(
                 controller: _name,
-                autofocus: true,
+                autofocus: !widget.editing,
                 textInputAction: TextInputAction.next,
                 decoration: const InputDecoration(
                   labelText: 'Customer / shop name',
@@ -213,7 +264,7 @@ class _CustomerCreateScreenState extends State<CustomerCreateScreen> {
                         ),
                         SizedBox(height: 3),
                         Text(
-                          'Tap the exact shop on the map. Latitude and longitude are saved automatically.',
+                          'Tap the exact shop on the map. Latitude, longitude and territory are handled automatically.',
                           style: TextStyle(fontSize: 12),
                         ),
                       ],
@@ -274,6 +325,36 @@ class _CustomerCreateScreenState extends State<CustomerCreateScreen> {
                 ),
               ),
               const SizedBox(height: 8),
+              if (selected != null)
+                Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: detectedTerritory == null
+                        ? Colors.amber.withValues(alpha: 0.12)
+                        : Colors.indigo.withValues(alpha: 0.10),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        detectedTerritory == null
+                            ? Icons.location_searching
+                            : Icons.map_outlined,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          detectedTerritory == null
+                              ? 'No cached territory boundary contains this point. The server will check all mapped territories when this customer syncs.'
+                              : 'Detected territory: ${detectedTerritory['code'] ?? ''} — ${detectedTerritory['name'] ?? ''}',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               Row(
                 children: [
                   Expanded(
@@ -314,12 +395,20 @@ class _CustomerCreateScreenState extends State<CustomerCreateScreen> {
                     : const Icon(Icons.save_outlined),
                 label: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: Text(_saving ? 'Saving…' : 'Save customer'),
+                  child: Text(
+                    _saving
+                        ? 'Saving…'
+                        : widget.editing
+                        ? 'Save changes'
+                        : 'Save customer',
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
               Text(
-                'Customer creation remains offline-first. The location will sync with the customer when connectivity is available.',
+                widget.editing
+                    ? 'Changes are saved offline first and synchronized when connectivity is available.'
+                    : 'Customer creation remains offline-first. The location will sync with the customer when connectivity is available.',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodySmall,
               ),
@@ -328,6 +417,11 @@ class _CustomerCreateScreenState extends State<CustomerCreateScreen> {
         ),
       ),
     );
+  }
+
+  double? _number(dynamic value) {
+    if (value is num) return value.toDouble();
+    return double.tryParse(value?.toString() ?? '');
   }
 }
 
