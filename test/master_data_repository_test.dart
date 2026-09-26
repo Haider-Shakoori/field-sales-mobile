@@ -10,6 +10,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 class FakeMasterDataSource implements MasterDataSource {
   final calls = <String>[];
   final posts = <Map<String, dynamic>>[];
+  final patches = <Map<String, dynamic>>[];
 
   @override
   Future<MasterPage> fetchPage(
@@ -119,6 +120,17 @@ class FakeMasterDataSource implements MasterDataSource {
     posts.add({'path': path, ...payload});
 
     return {'id': payload['offline_uuid'], ...payload, 'is_active': true};
+  }
+
+  @override
+  Future<Map<String, dynamic>> patch(
+    String path,
+    Map<String, dynamic> payload,
+  ) async {
+    patches.add({'path': path, ...payload});
+    final id = path.split('/').last;
+
+    return {'id': id, ...payload, 'is_active': true};
   }
 }
 
