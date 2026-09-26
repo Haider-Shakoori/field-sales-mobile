@@ -25,8 +25,8 @@ void main() {
   });
 
   test('End Day only stops tracking after local completion succeeds', () {
-    final source =
-        File('lib/state/attendance_controller.dart').readAsStringSync();
+    final source = File('lib/state/attendance_controller.dart')
+        .readAsStringSync();
     final endDayStart = source.indexOf('Future<void> endDay(');
     final attendanceEnd = source.indexOf('await attendance.end(', endDayStart);
     final stopTracking = source.indexOf('tracking.stop();', attendanceEnd);
