@@ -36,11 +36,11 @@ class DiagnosticReporter {
           'context': {
             'app_version': AppConfig.appVersion,
             'platform': 'android',
-            if (screen != null) 'screen': screen,
-            if (operation != null) 'operation': operation,
-            if (entity != null) 'entity': entity,
-            if (syncStatus != null) 'sync_status': syncStatus,
-            if (network != null) 'network': network,
+            'screen': ?screen,
+            'operation': ?operation,
+            'entity': ?entity,
+            'sync_status': ?syncStatus,
+            'network': ?network,
           },
         },
       );
