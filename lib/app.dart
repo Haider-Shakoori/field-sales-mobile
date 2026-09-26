@@ -3,16 +3,70 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'features/notifications/push_service.dart';
 import 'state/app_state.dart';
 import 'ui/dashboard_screen.dart';
 import 'ui/fieldpulse_splash_screen.dart';
 import 'ui/login_screen.dart';
+import 'ui/notifications_screen.dart';
+import 'ui/smart_route_screen.dart';
+import 'ui/leadership_dashboard_screen.dart';
 
-class FieldSalesApp extends StatelessWidget {
+class FieldSalesApp extends StatefulWidget {
   const FieldSalesApp({super.key});
 
   @override
+  State<FieldSalesApp> createState() => _FieldSalesAppState();
+}
+
+class _FieldSalesAppState extends State<FieldSalesApp> {
+  final navigatorKey = GlobalKey<NavigatorState>();
+  StreamSubscription<Map<String, dynamic>>? _pushSubscription;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _pushSubscription ??= context.read<PushService>().opened.listen(_openPush);
+  }
+
+  void _openPush(Map<String, dynamic> data) {
+    final navigator = navigatorKey.currentState;
+    if (navigator == null || context.read<AppState>().signedIn == false) return;
+
+    final screen = data['screen']?.toString();
+    final Widget destination = switch (screen) {
+      'smart_route' => const SmartRouteScreen(),
+      'team' => const LeadershipDashboardScreen(),
+      _ => const NotificationsScreen(),
+    };
+
+    navigator.push(
+      MaterialPageRoute(
+        builder: (_) => Scaffold(
+          appBar: AppBar(
+            title: Text(
+              screen == 'smart_route'
+                  ? 'Smart Route'
+                  : screen == 'team'
+                  ? 'Team'
+                  : 'Notifications',
+            ),
+          ),
+          body: destination,
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _pushSubscription?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) => MaterialApp(
+    navigatorKey: navigatorKey,
     title: 'FieldPulse',
     debugShowCheckedModeBanner: false,
     theme: ThemeData(
