@@ -17,6 +17,7 @@ import 'features/appointments/appointment_repository.dart';
 import 'features/attendance/attendance_repository.dart';
 import 'features/auth/auth_repository.dart';
 import 'features/customers/customer_repository.dart';
+import 'features/diagnostics/diagnostic_reporter.dart';
 import 'features/calls/call_activity_repository.dart';
 import 'features/collections/collection_repository.dart';
 import 'features/expenses/expense_repository.dart';
@@ -62,6 +63,7 @@ Future<void> main() async {
   final api = ApiClient(secrets);
   final auth = AuthRepository(api: api, secrets: secrets);
   final settings = SettingsRepository(api: api, db: db);
+  final diagnostics = DiagnosticReporter(api);
   final appointments = AppointmentRepository(api: api, db: db);
   final attendance = AttendanceRepository(api: api, db: db);
   final gps = GpsRepository(api: api, db: db);
@@ -168,6 +170,7 @@ Future<void> main() async {
     tracking: tracking,
     settings: settings,
     db: db,
+    diagnostics: diagnostics,
   );
 
   final syncController = SyncController(
@@ -175,6 +178,7 @@ Future<void> main() async {
     db: db,
     coordinator: syncCoordinator,
     retryStore: retryStore,
+    diagnostics: diagnostics,
   );
 
   await appState.restore();
@@ -207,6 +211,7 @@ Future<void> main() async {
         ChangeNotifierProvider.value(value: targetController),
         ChangeNotifierProvider.value(value: teamController),
         ChangeNotifierProvider.value(value: syncController),
+        Provider.value(value: diagnostics),
         Provider.value(value: masterData),
         Provider.value(value: appointments),
         Provider.value(value: leads),
