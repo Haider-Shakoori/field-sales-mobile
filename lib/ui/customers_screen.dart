@@ -307,22 +307,21 @@ class CustomersScreen extends StatelessWidget {
                   final offline = customer['offline_uuid'] != null;
                   final phone = customer['phone']?.toString().trim() ?? '';
 
-                  final rawName =
-                      customer['name']?.toString().trim() ?? '';
-                  final displayName =
-                      rawName.isEmpty ? 'Customer' : rawName;
-                  final details = [
-                    customer['code'],
-                    customer['phone'],
-                    if (offline) 'Offline-created',
-                  ]
-                      .where(
-                        (value) =>
-                            value != null &&
-                            value.toString().trim().isNotEmpty,
-                      )
-                      .map((value) => value.toString().trim())
-                      .join(' · ');
+                  final rawName = customer['name']?.toString().trim() ?? '';
+                  final displayName = rawName.isEmpty ? 'Customer' : rawName;
+                  final details =
+                      [
+                            customer['code'],
+                            customer['phone'],
+                            if (offline) 'Offline-created',
+                          ]
+                          .where(
+                            (value) =>
+                                value != null &&
+                                value.toString().trim().isNotEmpty,
+                          )
+                          .map((value) => value.toString().trim())
+                          .join(' · ');
 
                   return Card(
                     clipBehavior: Clip.antiAlias,
@@ -365,9 +364,9 @@ class CustomersScreen extends StatelessWidget {
                                           details,
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
-                                          style: Theme.of(
-                                            context,
-                                          ).textTheme.bodyMedium,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium,
                                         ),
                                       ],
                                     ],
@@ -398,19 +397,16 @@ class CustomersScreen extends StatelessWidget {
                                           ),
                                     ),
                                   ),
-                                  icon: const Icon(
-                                    Icons.auto_awesome_outlined,
-                                  ),
+                                  icon: const Icon(Icons.auto_awesome_outlined),
                                 ),
                                 IconButton(
                                   tooltip: 'Statement',
                                   visualDensity: VisualDensity.compact,
                                   onPressed: () => Navigator.of(context).push(
                                     MaterialPageRoute(
-                                      builder: (_) =>
-                                          CustomerStatementScreen(
-                                            customer: customer,
-                                          ),
+                                      builder: (_) => CustomerStatementScreen(
+                                        customer: customer,
+                                      ),
                                     ),
                                   ),
                                   icon: const Icon(
@@ -425,15 +421,14 @@ class CustomersScreen extends StatelessWidget {
                                   icon: const Icon(Icons.history),
                                 ),
                                 IconButton(
-                                  tooltip:
-                                      phone.isEmpty ? 'No phone' : 'Message',
+                                  tooltip: phone.isEmpty
+                                      ? 'No phone'
+                                      : 'Message',
                                   visualDensity: VisualDensity.compact,
                                   onPressed: phone.isEmpty
                                       ? null
-                                      : () => _messageCustomer(
-                                            context,
-                                            customer,
-                                          ),
+                                      : () =>
+                                            _messageCustomer(context, customer),
                                   icon: const Icon(Icons.chat_bubble_outline),
                                 ),
                                 IconButton(
@@ -441,8 +436,7 @@ class CustomersScreen extends StatelessWidget {
                                   visualDensity: VisualDensity.compact,
                                   onPressed: phone.isEmpty || callState.busy
                                       ? null
-                                      : () =>
-                                          _callCustomer(context, customer),
+                                      : () => _callCustomer(context, customer),
                                   icon: const Icon(Icons.call_outlined),
                                 ),
                               ],
