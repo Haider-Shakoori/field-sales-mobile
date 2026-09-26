@@ -36,10 +36,14 @@ class _GamificationScreenState extends State<GamificationScreen> {
     }
     if (data == null) return const Center(child: CircularProgressIndicator());
     if (data!['enabled'] != true) {
-      return const Center(child: Text('Gamification is not enabled for this organization.'));
+      return const Center(
+        child: Text('Gamification is not enabled for this organization.'),
+      );
     }
 
-    final me = data!['me'] is Map ? Map<String, dynamic>.from(data!['me']) : null;
+    final me = data!['me'] is Map
+        ? Map<String, dynamic>.from(data!['me'])
+        : null;
     final leaderboard = (data!['leaderboard'] as List? ?? const []);
 
     return RefreshIndicator(
@@ -54,7 +58,10 @@ class _GamificationScreenState extends State<GamificationScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('${me['level']}', style: Theme.of(context).textTheme.titleLarge),
+                    Text(
+                      '${me['level']}',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
                     const SizedBox(height: 8),
                     Text('${me['points']} points · Rank #${me['rank']}'),
                     const SizedBox(height: 8),
@@ -68,21 +75,28 @@ class _GamificationScreenState extends State<GamificationScreen> {
               ),
             ),
           const SizedBox(height: 16),
-          Text('30-day leaderboard', style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            '30-day leaderboard',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
           const SizedBox(height: 8),
           for (final raw in leaderboard)
-            Builder(builder: (_) {
-              final row = Map<String, dynamic>.from(raw as Map);
-              return Card(
-                margin: const EdgeInsets.only(bottom: 8),
-                child: ListTile(
-                  leading: CircleAvatar(child: Text('#${row['rank']}')),
-                  title: Text('${row['salesman_name']}'),
-                  subtitle: Text('${row['level']} · ${row['active_days']} active day(s)'),
-                  trailing: Text('${row['points']} pts'),
-                ),
-              );
-            }),
+            Builder(
+              builder: (_) {
+                final row = Map<String, dynamic>.from(raw as Map);
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  child: ListTile(
+                    leading: CircleAvatar(child: Text('#${row['rank']}')),
+                    title: Text('${row['salesman_name']}'),
+                    subtitle: Text(
+                      '${row['level']} · ${row['active_days']} active day(s)',
+                    ),
+                    trailing: Text('${row['points']} pts'),
+                  ),
+                );
+              },
+            ),
         ],
       ),
     );
