@@ -7,6 +7,7 @@ import 'state/app_state.dart';
 import 'ui/dashboard_screen.dart';
 import 'ui/fieldpulse_splash_screen.dart';
 import 'ui/login_screen.dart';
+import 'ui/management_dashboard_screen.dart';
 
 class FieldSalesApp extends StatelessWidget {
   const FieldSalesApp({super.key});
@@ -74,7 +75,13 @@ class _StartupGateState extends State<_StartupGate> {
           );
         }
 
-        return state.signedIn ? const DashboardScreen() : const LoginScreen();
+        if (!state.signedIn) {
+          return const LoginScreen();
+        }
+
+        return state.session?.isManagement == true
+            ? const ManagementDashboardScreen()
+            : const DashboardScreen();
       },
     );
   }
