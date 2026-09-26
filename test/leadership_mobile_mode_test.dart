@@ -4,10 +4,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('leadership mobile mode uses team overview and live map', () {
-    final repository =
-        File('lib/features/team/team_repository.dart').readAsStringSync();
-    final dashboard =
-        File('lib/ui/leadership_dashboard_screen.dart').readAsStringSync();
+    final repository = File('lib/features/team/team_repository.dart')
+        .readAsStringSync();
+    final dashboard = File('lib/ui/leadership_dashboard_screen.dart')
+        .readAsStringSync();
     final shell = File('lib/ui/dashboard_screen.dart').readAsStringSync();
     final main = File('lib/main.dart').readAsStringSync();
 
