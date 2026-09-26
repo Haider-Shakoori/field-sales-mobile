@@ -157,6 +157,49 @@ class HomeTab extends StatelessWidget {
     );
   }
 
+  Future<void> _reopen(
+    BuildContext context,
+    AttendanceController controller,
+  ) async {
+    final confirmed =
+        await showDialog<bool>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: const Text('Reopen today\'s work day?'),
+            content: const Text(
+              'Use this only if End Day was tapped by mistake. Your original '
+              'Start Day time and existing visits, orders, collections, and '
+              'other work stay unchanged. Location tracking will resume.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext, false),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(dialogContext, true),
+                child: const Text('Reopen Day'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+
+    if (!confirmed || !context.mounted) return;
+
+    await controller.reopenDay();
+
+    if (!context.mounted) return;
+
+    if (controller.working && controller.message == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Work day reopened. Tracking has resumed.'),
+        ),
+      );
+    }
+  }
+
   Future<void> _end(
     BuildContext context,
     AttendanceController controller,
@@ -497,6 +540,25 @@ class HomeTab extends StatelessWidget {
                       child: const Padding(
                         padding: EdgeInsets.all(12),
                         child: Text('End Day'),
+                      ),
+                    ),
+                  ] else if (controller.canReopenToday) ...[
+                    const Text(
+                      'Today\'s work day is closed. If End Day was tapped by '
+                      'mistake, reopen the same attendance session to continue '
+                      'working without changing the original start time.',
+                    ),
+                    const SizedBox(height: 18),
+                    FilledButton.tonalIcon(
+                      onPressed: controller.busy
+                          ? null
+                          : () => _reopen(context, controller),
+                      icon: const Icon(Icons.restart_alt),
+                      label: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Text(
+                          controller.busy ? 'Reopening…' : 'Reopen Day',
+                        ),
                       ),
                     ),
                   ] else ...[
