@@ -11,7 +11,7 @@ void main() {
     final sync = File('lib/state/sync_controller.dart').readAsStringSync();
     final mainSource = File('lib/main.dart').readAsStringSync();
 
-    expect(reporter, contains("api.post("));
+    expect(reporter, contains('api.post('));
     expect(reporter, contains("'mobile/diagnostics'"));
     expect(reporter, contains('Bearer [redacted]'));
     expect(reporter, contains('Diagnostics'));
