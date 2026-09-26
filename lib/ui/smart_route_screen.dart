@@ -211,6 +211,66 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
     }
 
     final plan = _plan;
+
+    if (plan?['enabled'] == false) {
+      return RefreshIndicator(
+        onRefresh: _refresh,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.alt_route),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            'Smart route planning is disabled',
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'Your company has turned off route optimization in FieldPulse settings. Your normal route, territory and customer assignments are still available.',
+                    ),
+                    if (_cachedAt != null) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        'Policy checked ${_cachedAt!.toLocal()}',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
+                    const SizedBox(height: 14),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton.tonalIcon(
+                        onPressed: _refreshing ? null : _refresh,
+                        icon: _refreshing
+                            ? const SizedBox.square(
+                                dimension: 16,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : const Icon(Icons.refresh),
+                        label: const Text('Check again'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     final source = plan?['source'] is Map
         ? Map<String, dynamic>.from(plan!['source'] as Map)
         : const <String, dynamic>{};
