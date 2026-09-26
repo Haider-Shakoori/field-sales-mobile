@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:device_info_plus/device_info_plus.dart';
 
 import '../../core/api/api_client.dart';
@@ -10,19 +12,36 @@ class AuthSession {
     required this.tenantId,
     required this.deviceId,
     required this.name,
+    required this.role,
+    required this.permissions,
   });
-  final String userId, tenantId, deviceId, name;
+
+  final String userId, tenantId, deviceId, name, role;
+  final List<String> permissions;
+
+  bool get isSalesman => role == 'salesman';
+  bool get isManagement =>
+      role == 'supervisor' ||
+      role == 'sales_manager' ||
+      role == 'owner' ||
+      role == 'company_admin';
   Map<String, dynamic> toJson() => {
     'user_id': userId,
     'tenant_id': tenantId,
     'device_id': deviceId,
     'name': name,
+    'role': role,
+    'permissions': permissions,
   };
   factory AuthSession.fromJson(Map<String, dynamic> j) => AuthSession(
     userId: '${j['user_id']}',
     tenantId: '${j['tenant_id']}',
     deviceId: '${j['device_id']}',
     name: '${j['name']}',
+    role: '${j['role'] ?? 'salesman'}',
+    permissions: (j['permissions'] as List<dynamic>? ?? const [])
+        .map((value) => value.toString())
+        .toList(growable: false),
   );
 }
 
@@ -70,11 +89,12 @@ class AuthRepository {
       tenantId: '${tenant['id']}',
       deviceId: '${registeredDevice['id']}',
       name: '${user['name']}',
+      role: '${user['role'] ?? data['profile_type'] ?? 'salesman'}',
+      permissions: (data['permissions'] as List<dynamic>? ?? const [])
+          .map((value) => value.toString())
+          .toList(growable: false),
     );
-    await secrets.write(
-      'session',
-      '${s.userId}|${s.tenantId}|${s.deviceId}|${s.name}',
-    );
+    await secrets.write('session', jsonEncode(s.toJson()));
     return s;
   }
 
@@ -82,6 +102,16 @@ class AuthRepository {
     if (await secrets.token == null) return null;
     final raw = await secrets.read('session');
     if (raw == null) return null;
+    if (raw.trimLeft().startsWith('{')) {
+      try {
+        return AuthSession.fromJson(
+          Map<String, dynamic>.from(jsonDecode(raw) as Map),
+        );
+      } catch (_) {
+        return null;
+      }
+    }
+
     final p = raw.split('|');
     return p.length < 4
         ? null
@@ -90,6 +120,8 @@ class AuthRepository {
             tenantId: p[1],
             deviceId: p[2],
             name: p.sublist(3).join('|'),
+            role: 'salesman',
+            permissions: const [],
           );
   }
 
