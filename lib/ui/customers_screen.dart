@@ -35,6 +35,23 @@ class CustomersScreen extends StatelessWidget {
     }
   }
 
+  Future<void> _edit(
+    BuildContext context,
+    Map<String, dynamic> customer,
+  ) async {
+    final updated = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => CustomerCreateScreen(customer: customer),
+      ),
+    );
+
+    if (updated == true && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Customer changes saved.')),
+      );
+    }
+  }
+
   Future<void> _callCustomer(
     BuildContext context,
     Map<String, dynamic> customer,
@@ -289,6 +306,15 @@ class CustomersScreen extends StatelessWidget {
                   final customer = rows[index];
                   final offline = customer['offline_uuid'] != null;
                   final phone = customer['phone']?.toString().trim() ?? '';
+                  final territoryId = customer['territory_id']?.toString();
+                  final territory = state.territories
+                      .where(
+                        (row) =>
+                            row['id']?.toString() == territoryId &&
+                            territoryId != null,
+                      )
+                      .cast<Map<String, dynamic>?>()
+                      .firstOrNull;
 
                   return Card(
                     child: ListTile(
@@ -306,6 +332,7 @@ class CustomersScreen extends StatelessWidget {
                         [
                               customer['code'],
                               customer['phone'],
+                              territory?['name'],
                               if (offline) 'Offline-created',
                             ]
                             .where(
@@ -318,6 +345,11 @@ class CustomersScreen extends StatelessWidget {
                       trailing: Wrap(
                         spacing: 0,
                         children: [
+                          IconButton(
+                            tooltip: 'Edit customer',
+                            onPressed: () => _edit(context, customer),
+                            icon: const Icon(Icons.edit_outlined),
+                          ),
                           IconButton(
                             tooltip: 'Reorder recommendations',
                             onPressed: () => Navigator.of(context).push(
