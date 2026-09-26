@@ -15,6 +15,19 @@ void main() {
     expect(auth, contains("'tenant': tenant!.trim()"));
   });
 
+  test('successful tenant is remembered and prefilled on next login', () {
+    final auth = File('lib/features/auth/auth_repository.dart')
+        .readAsStringSync();
+    final appState = File('lib/state/app_state.dart').readAsStringSync();
+    final login = File('lib/ui/login_screen.dart').readAsStringSync();
+
+    expect(auth, contains("'last_tenant_code'"));
+    expect(auth, contains("tenantData['slug']"));
+    expect(appState, contains('Future<String?> lastTenantCode()'));
+    expect(login, contains('lastTenantCode()'));
+    expect(login, contains('tenant.text = remembered.trim()'));
+  });
+
   test('tenant ambiguity is explained without exposing raw API errors', () {
     final message = friendlyLoginError(
       ApiException(
