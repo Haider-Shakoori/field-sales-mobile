@@ -22,7 +22,14 @@ jobs:
           channel: stable
           cache: true
 
-      - run: flutter pub get && echo LOCKFILE_BASE64_START && base64 -w0 pubspec.lock && echo && echo LOCKFILE_BASE64_END
+      - run: flutter pub get
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pubspec.lock
+          if ! git diff --cached --quiet; then
+            git commit -m "Refresh Firebase lockfile"
+            git push origin HEAD:batch28-fcm-background-push
+          fi
 
       - name: Verify Dart formatting
         shell: bash
