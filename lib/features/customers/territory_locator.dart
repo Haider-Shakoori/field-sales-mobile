@@ -132,15 +132,21 @@ bool _pointOnSegment(LatLng point, LatLng a, LatLng b) {
 
   if (cross.abs() > 1e-9) return false;
 
+  final lengthSquared =
+      (b.longitude - a.longitude) * (b.longitude - a.longitude) +
+      (b.latitude - a.latitude) * (b.latitude - a.latitude);
+
+  if (lengthSquared <= 1e-18) {
+    final dx = point.longitude - a.longitude;
+    final dy = point.latitude - a.latitude;
+    return dx * dx + dy * dy <= 1e-18;
+  }
+
   final dot =
       (point.longitude - a.longitude) * (b.longitude - a.longitude) +
       (point.latitude - a.latitude) * (b.latitude - a.latitude);
 
   if (dot < -1e-9) return false;
-
-  final lengthSquared =
-      (b.longitude - a.longitude) * (b.longitude - a.longitude) +
-      (b.latitude - a.latitude) * (b.latitude - a.latitude);
 
   return dot <= lengthSquared + 1e-9;
 }
