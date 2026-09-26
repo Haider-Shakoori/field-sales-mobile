@@ -149,10 +149,7 @@ Future<void> main() async {
     repository: targets,
   );
 
-  final teamController = TeamController(
-    appState: appState,
-    repository: team,
-  );
+  final teamController = TeamController(appState: appState, repository: team);
 
   final orderController = OrderController(
     appState: appState,
