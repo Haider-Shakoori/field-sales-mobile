@@ -419,7 +419,9 @@ class AttendanceController extends ChangeNotifier {
       unawaited(
         diagnostics.report(
           area: 'attendance.end_day',
-          code: error is ApiException ? error.code : error.runtimeType.toString(),
+          code: error is ApiException
+              ? error.code
+              : error.runtimeType.toString(),
           message: message!,
           screen: 'home',
           operation: 'end_day',
@@ -477,10 +479,7 @@ class AttendanceController extends ChangeNotifier {
       return rows.first;
     }
 
-    final visitsRow = await aggregate(
-      'local_visits',
-      'checked_in_at',
-    );
+    final visitsRow = await aggregate('local_visits', 'checked_in_at');
     final activeVisitRows = await db.db.rawQuery(
       'SELECT COUNT(*) AS total FROM local_visits '
       'WHERE tenant_id=? AND status=?',
