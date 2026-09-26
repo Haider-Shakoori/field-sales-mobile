@@ -179,15 +179,49 @@ class CustomerRepository {
           whereArgs: [pendingCreates.first['id']],
         );
       } else {
-        await transactions.enqueue(
-          transaction,
-          tenantId: tenantId,
-          entityType: 'customer',
-          entityUuid: customerUuid,
-          action: 'update',
-          payload: jsonEncode(syncPayload),
-          priority: 21,
+        final pendingUpdates = await transaction.query(
+          'sync_queue',
+          where:
+              'tenant_id = ? AND entity_type = ? AND entity_uuid = ? '
+              'AND action = ? AND status IN (?,?,?)',
+          whereArgs: [
+            tenantId,
+            'customer',
+            customerUuid,
+            'update',
+            'pending',
+            'failed',
+            'blocked',
+          ],
+          orderBy: 'id DESC',
+          limit: 1,
         );
+
+        if (pendingUpdates.isNotEmpty) {
+          await transaction.update(
+            'sync_queue',
+            {
+              'payload': jsonEncode(syncPayload),
+              'status': 'pending',
+              'attempts': 0,
+              'error_message': null,
+              'next_retry_at': null,
+              'updated_at': now,
+            },
+            where: 'id = ?',
+            whereArgs: [pendingUpdates.first['id']],
+          );
+        } else {
+          await transactions.enqueue(
+            transaction,
+            tenantId: tenantId,
+            entityType: 'customer',
+            entityUuid: customerUuid,
+            action: 'update',
+            payload: jsonEncode(syncPayload),
+            priority: 21,
+          );
+        }
       }
     });
 
