@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:timezone/timezone.dart' as tz;
 
+import '../core/api/api_exception.dart';
 import '../core/config.dart';
 import '../core/db/app_database.dart';
 import '../features/attendance/attendance_repository.dart';
@@ -12,6 +13,40 @@ import '../features/gps/tracking_service.dart';
 import '../features/settings/attendance_tracking_settings.dart';
 import '../features/settings/settings_repository.dart';
 import 'app_state.dart';
+
+@visibleForTesting
+double? parseAttendanceNumber(dynamic value) {
+  if (value is num) return value.toDouble();
+  return double.tryParse(value?.toString().trim() ?? '');
+}
+
+@visibleForTesting
+String friendlyAttendanceError(Object error) {
+  if (error is ApiException) {
+    return error.message.trim().isEmpty
+        ? 'The server could not complete the attendance action. Please try again.'
+        : error.message.trim();
+  }
+
+  var message = error.toString().trim();
+  for (final prefix in ['Bad state: ', 'StateError: ', 'Exception: ']) {
+    if (message.startsWith(prefix)) {
+      message = message.substring(prefix.length).trim();
+    }
+  }
+
+  final lower = message.toLowerCase();
+  if (lower.contains('is not a subtype of') ||
+      lower.contains('type cast') ||
+      lower.contains('format exception') ||
+      lower.contains('null check operator')) {
+    return 'The saved attendance data could not be read safely. Refresh the page and try End Day again.';
+  }
+
+  return message.isEmpty
+      ? 'End Day could not be completed. Please try again.'
+      : message;
+}
 
 class AttendanceController extends ChangeNotifier {
   AttendanceController({
@@ -227,14 +262,25 @@ class AttendanceController extends ChangeNotifier {
     double? odometerEndKm,
   }) async {
     if (busy || !working) return;
+
     busy = true;
+    message = null;
     notifyListeners();
+
     try {
       final tenantId = appState.session?.tenantId;
       if (tenantId == null) {
         throw StateError('Signed-in tenant is unavailable.');
       }
-      final startOdometer = _double(session?['odometer_start_km']);
+
+      final currentSession = session;
+      if (currentSession == null) {
+        throw StateError('No active work day was found.');
+      }
+
+      final startOdometer = parseAttendanceNumber(
+        currentSession['odometer_start_km'],
+      );
       if (odometerEndKm != null &&
           startOdometer != null &&
           odometerEndKm < startOdometer) {
@@ -243,10 +289,18 @@ class AttendanceController extends ChangeNotifier {
         );
       }
 
+      // Flush older pending work first when requested. Failures remain queued
+      // and must never prevent the local work day from being completed.
+      if (sync) {
+        await _flushPending();
+      }
+
       final fix = await tracking.oneShot(timeout: const Duration(seconds: 10));
-      late final double latitude;
-      late final double longitude;
-      late final double accuracy;
+
+      double? latitude;
+      double? longitude;
+      double? accuracy;
+
       if (fix != null) {
         latitude = fix.latitude;
         longitude = fix.longitude;
@@ -259,37 +313,72 @@ class AttendanceController extends ChangeNotifier {
           orderBy: 'recorded_at DESC',
           limit: 1,
         );
-        if (points.isNotEmpty &&
-            DateTime.now().difference(
-                  DateTime.parse(points.first['recorded_at'] as String),
-                ) <=
-                const Duration(minutes: 10)) {
-          latitude = points.first['latitude'] as double;
-          longitude = points.first['longitude'] as double;
-          accuracy = points.first['accuracy'] as double;
-        } else {
-          latitude = session!['start_latitude'] as double;
-          longitude = session!['start_longitude'] as double;
-          accuracy = session!['start_accuracy'] as double;
+
+        if (points.isNotEmpty) {
+          final row = points.first;
+          final recordedAt = DateTime.tryParse(
+            row['recorded_at']?.toString() ?? '',
+          );
+          final cachedLatitude = parseAttendanceNumber(row['latitude']);
+          final cachedLongitude = parseAttendanceNumber(row['longitude']);
+          final cachedAccuracy = parseAttendanceNumber(row['accuracy']);
+
+          final fresh =
+              recordedAt != null &&
+              DateTime.now().difference(recordedAt.toLocal()).abs() <=
+                  const Duration(minutes: 10);
+
+          if (fresh &&
+              cachedLatitude != null &&
+              cachedLongitude != null &&
+              cachedAccuracy != null) {
+            latitude = cachedLatitude;
+            longitude = cachedLongitude;
+            accuracy = cachedAccuracy;
+          }
         }
+
+        latitude ??= parseAttendanceNumber(currentSession['start_latitude']);
+        longitude ??= parseAttendanceNumber(currentSession['start_longitude']);
+        accuracy ??= parseAttendanceNumber(currentSession['start_accuracy']);
       }
-      tracking.stop();
-      _stopUploader();
+
+      if (latitude == null ||
+          longitude == null ||
+          accuracy == null ||
+          latitude == 0 ||
+          longitude == 0) {
+        throw StateError(
+          'A usable location is required to end the day. Turn on location services and try again.',
+        );
+      }
+
       await attendance.end(
-        session: session!,
+        session: currentSession,
         at: DateTime.now(),
         lat: latitude,
         lng: longitude,
-        accuracy: accuracy,
+        accuracy: accuracy.clamp(0, 200).toDouble(),
         vehicleReference:
-            vehicleReference ?? session?['vehicle_reference']?.toString(),
+            vehicleReference ?? currentSession['vehicle_reference']?.toString(),
         odometerEndKm: odometerEndKm,
       );
+
+      // Only stop tracking after the local End Day transaction succeeds.
+      // If anything above fails, the active work day remains intact.
+      tracking.stop();
+      _stopUploader();
       session = null;
-      if (sync) unawaited(_flushPending());
+      message = null;
+
+      if (sync) {
+        unawaited(_flushPending());
+      }
+
       _scheduleBoundary();
     } catch (error) {
-      message = '$error';
+      message = friendlyAttendanceError(error);
+      await reconcile();
     } finally {
       busy = false;
       notifyListeners();
@@ -470,11 +559,6 @@ class AttendanceController extends ChangeNotifier {
     await appState.logout();
     session = null;
     notifyListeners();
-  }
-
-  double? _double(dynamic value) {
-    if (value is num) return value.toDouble();
-    return double.tryParse(value?.toString() ?? '');
   }
 
   @override
