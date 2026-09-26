@@ -35,6 +35,23 @@ class CustomersScreen extends StatelessWidget {
     }
   }
 
+  Future<void> _edit(
+    BuildContext context,
+    Map<String, dynamic> customer,
+  ) async {
+    final updated = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => CustomerCreateScreen(customer: customer),
+      ),
+    );
+
+    if (updated == true && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Customer changes saved.')),
+      );
+    }
+  }
+
   Future<void> _callCustomer(
     BuildContext context,
     Map<String, dynamic> customer,
@@ -292,6 +309,7 @@ class CustomersScreen extends StatelessWidget {
 
                   return Card(
                     child: ListTile(
+                      onTap: () => _edit(context, customer),
                       leading: CircleAvatar(
                         child: Text(
                           (customer['name'] ?? '?')
