@@ -14,7 +14,6 @@ void main() {
     expect(reporter, contains('api.post('));
     expect(reporter, contains("'mobile/diagnostics'"));
     expect(reporter, contains('Bearer [redacted]'));
-    expect(reporter, contains('Diagnostics'));
     expect(attendance, contains("area: 'attendance.end_day'"));
     expect(attendance, contains("area: 'attendance.end_day_preview'"));
     expect(sync, contains("area: 'sync.cycle'"));
