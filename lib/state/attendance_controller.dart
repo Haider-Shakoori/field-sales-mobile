@@ -8,6 +8,7 @@ import '../core/api/api_exception.dart';
 import '../core/config.dart';
 import '../core/db/app_database.dart';
 import '../features/attendance/attendance_repository.dart';
+import '../features/diagnostics/diagnostic_reporter.dart';
 import '../features/gps/gps_repository.dart';
 import '../features/gps/tracking_service.dart';
 import '../features/settings/attendance_tracking_settings.dart';
@@ -48,6 +49,30 @@ String friendlyAttendanceError(Object error) {
       : message;
 }
 
+class DayClosingSummary {
+  const DayClosingSummary({
+    required this.visits,
+    required this.activeVisits,
+    required this.orders,
+    required this.orderTotal,
+    required this.collections,
+    required this.collectionTotal,
+    required this.expenses,
+    required this.expenseTotal,
+    required this.pendingSync,
+  });
+
+  final int visits;
+  final int activeVisits;
+  final int orders;
+  final double orderTotal;
+  final int collections;
+  final double collectionTotal;
+  final int expenses;
+  final double expenseTotal;
+  final int pendingSync;
+}
+
 class AttendanceController extends ChangeNotifier {
   AttendanceController({
     required this.appState,
@@ -56,6 +81,7 @@ class AttendanceController extends ChangeNotifier {
     required this.tracking,
     required this.settings,
     required this.db,
+    required this.diagnostics,
   }) {
     attendance.api.onAuthRevoked = handleRevocation;
   }
@@ -66,6 +92,7 @@ class AttendanceController extends ChangeNotifier {
   final TrackingService tracking;
   final SettingsRepository settings;
   final AppDatabase db;
+  final DiagnosticReporter diagnostics;
 
   Map<String, dynamic>? session;
   bool restored = false;
@@ -78,6 +105,17 @@ class AttendanceController extends ChangeNotifier {
   bool get working => session?['status'] == 'active';
 
   Future<void> restore() async {
+    if (appState.session?.isSalesman != true) {
+      session = null;
+      restored = true;
+      tracking.stop();
+      _stopUploader();
+      _boundary?.cancel();
+      _boundary = null;
+      notifyListeners();
+      return;
+    }
+
     final tenantId = appState.session?.tenantId;
     session = tenantId == null ? null : await attendance.active(tenantId);
     restored = true;
@@ -202,7 +240,7 @@ class AttendanceController extends ChangeNotifier {
     String? vehicleReference,
     double? odometerStartKm,
   }) async {
-    if (busy || working) return;
+    if (appState.session?.isSalesman != true || busy || working) return;
     busy = true;
     message = null;
     notifyListeners();
@@ -378,11 +416,116 @@ class AttendanceController extends ChangeNotifier {
       _scheduleBoundary();
     } catch (error) {
       message = friendlyAttendanceError(error);
+      unawaited(
+        diagnostics.report(
+          area: 'attendance.end_day',
+          code: error is ApiException ? error.code : error.runtimeType.toString(),
+          message: message!,
+          screen: 'home',
+          operation: 'end_day',
+        ),
+      );
       await reconcile();
     } finally {
       busy = false;
       notifyListeners();
     }
+  }
+
+  Future<DayClosingSummary> dayClosingSummary() async {
+    final tenantId = appState.session?.tenantId;
+    final now = _tenantNow();
+
+    if (tenantId == null || now == null) {
+      return const DayClosingSummary(
+        visits: 0,
+        activeVisits: 0,
+        orders: 0,
+        orderTotal: 0,
+        collections: 0,
+        collectionTotal: 0,
+        expenses: 0,
+        expenseTotal: 0,
+        pendingSync: 0,
+      );
+    }
+
+    final start = tz.TZDateTime(
+      now.location,
+      now.year,
+      now.month,
+      now.day,
+    ).toUtc();
+    final end = start.add(const Duration(days: 1));
+    final from = start.toIso8601String();
+    final to = end.toIso8601String();
+
+    Future<Map<String, Object?>> aggregate(
+      String table,
+      String dateColumn, {
+      String? amountColumn,
+      String? extraWhere,
+      List<Object?> extraArgs = const [],
+    }) async {
+      final amountSql = amountColumn == null
+          ? ''
+          : ', COALESCE(SUM($amountColumn), 0) AS amount';
+      final rows = await db.db.rawQuery(
+        'SELECT COUNT(*) AS total$amountSql FROM $table '
+        'WHERE tenant_id=? AND $dateColumn>=? AND $dateColumn<?'
+        ${extraWhere == null ? "''" : "' AND '+extraWhere"},
+        [tenantId, from, to, ...extraArgs],
+      );
+
+      return rows.first;
+    }
+
+    final visitsRow = await aggregate(
+      'local_visits',
+      'checked_in_at',
+    );
+    final activeVisitRows = await db.db.rawQuery(
+      'SELECT COUNT(*) AS total FROM local_visits '
+      'WHERE tenant_id=? AND status=?',
+      [tenantId, 'active'],
+    );
+    final ordersRow = await aggregate(
+      'local_orders',
+      'ordered_at',
+      amountColumn: 'grand_total',
+    );
+    final collectionsRow = await aggregate(
+      'local_collections',
+      'collected_at',
+      amountColumn: 'amount',
+    );
+    final expensesRow = await aggregate(
+      'local_expenses',
+      'spent_at',
+      amountColumn: 'amount',
+    );
+    final pendingRows = await db.db.rawQuery(
+      'SELECT COUNT(*) AS total FROM sync_queue '
+      'WHERE tenant_id=? AND status IN (?,?,?)',
+      [tenantId, 'pending', 'failed', 'blocked'],
+    );
+
+    int count(Map<String, Object?> row) =>
+        parseAttendanceNumber(row['total'])?.toInt() ?? 0;
+    double amount(Map<String, Object?> row) =>
+        parseAttendanceNumber(row['amount']) ?? 0;
+
+    return DayClosingSummary(
+      visits: count(visitsRow),
+      activeVisits: count(activeVisitRows.first),
+      orders: count(ordersRow),
+      orderTotal: amount(ordersRow),
+      collections: count(collectionsRow),
+      collectionTotal: amount(collectionsRow),
+      expenses: count(expensesRow),
+      expenseTotal: amount(expensesRow),
+      pendingSync: count(pendingRows.first),
+    );
   }
 
   Future<void> evaluateAutomaticPolicy() async {
@@ -514,6 +657,8 @@ class AttendanceController extends ChangeNotifier {
   }
 
   Future<void> _flushPending() async {
+    if (appState.session?.isSalesman != true) return;
+
     final tenantId = appState.session?.tenantId;
     if (tenantId == null) return;
 
