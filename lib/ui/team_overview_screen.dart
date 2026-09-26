@@ -22,12 +22,14 @@ class TeamOverviewScreen extends StatelessWidget {
               .toList(growable: false)
         : const <Map<String, dynamic>>[];
 
-    final located = members.where((member) {
-      final location = member['location'];
-      return location is Map &&
-          _number(location['latitude']) != null &&
-          _number(location['longitude']) != null;
-    }).toList(growable: false);
+    final located = members
+        .where((member) {
+          final location = member['location'];
+          return location is Map &&
+              _number(location['latitude']) != null &&
+              _number(location['longitude']) != null;
+        })
+        .toList(growable: false);
 
     return RefreshIndicator(
       onRefresh: () => context.read<ManagementController>().refresh(),
@@ -54,9 +56,7 @@ class TeamOverviewScreen extends StatelessWidget {
                       maxZoom: 19,
                     ),
                     MarkerLayer(
-                      markers: [
-                        for (final member in located) _marker(member),
-                      ],
+                      markers: [for (final member in located) _marker(member)],
                     ),
                     const RichAttributionWidget(
                       attributions: [
@@ -193,10 +193,14 @@ class _MemberCard extends StatelessWidget {
                       ),
                       Text(
                         [
-                          member['employee_code'],
-                          _nestedName(member['route']),
-                          _nestedName(member['territory']),
-                        ].where((value) => value != null && value!.isNotEmpty).join(' · '),
+                              member['employee_code'],
+                              _nestedName(member['route']),
+                              _nestedName(member['territory']),
+                            ]
+                            .where(
+                              (value) => value != null && value!.isNotEmpty,
+                            )
+                            .join(' · '),
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
