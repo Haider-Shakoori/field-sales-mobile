@@ -224,6 +224,69 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
     final included =
         (_dynamicRoute['included_opportunity_ids'] as List? ?? const []).length;
     final radius = _dynamicRoute['nearby_radius_km'] ?? 5;
+    final enabled = plan?['enabled'] != false;
+
+    if (!enabled) {
+      return RefreshIndicator(
+        onRefresh: _refresh,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.alt_route),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            'Smart route planning is disabled',
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        if (_refreshing)
+                          const SizedBox.square(
+                            dimension: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'Your company has turned off route optimization in FieldPulse settings. Your assigned customers, routes, visits, and normal field work are unchanged.',
+                    ),
+                    const SizedBox(height: 14),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton.tonalIcon(
+                        onPressed: _refreshing ? null : _refresh,
+                        icon: const Icon(Icons.refresh),
+                        label: const Text('Refresh setting'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            if (_message != null) ...[
+              const SizedBox(height: 12),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Text(_message!),
+                ),
+              ),
+            ],
+            const SizedBox(height: 80),
+          ],
+        ),
+      );
+    }
 
     return RefreshIndicator(
       onRefresh: _refresh,
