@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import '../core/db/app_database.dart';
 import '../core/sync/sync_coordinator.dart';
 import '../core/sync/sync_retry_store.dart';
+import '../features/diagnostics/diagnostic_reporter.dart';
 import 'app_state.dart';
 
 class SyncController extends ChangeNotifier {
@@ -11,12 +12,14 @@ class SyncController extends ChangeNotifier {
     required this.db,
     required this.coordinator,
     required this.retryStore,
+    required this.diagnostics,
   });
 
   final AppState appState;
   final AppDatabase db;
   final SyncCoordinator coordinator;
   final SyncRetryStore retryStore;
+  final DiagnosticReporter diagnostics;
 
   bool busy = false;
   String? message;
@@ -67,6 +70,19 @@ class SyncController extends ChangeNotifier {
       );
 
       final report = lastReport!;
+
+      if (report.status != 'success' && report.status != 'deferred') {
+        diagnostics.report(
+          area: 'sync.cycle',
+          severity: report.blocked > 0 ? 'error' : 'warning',
+          code: 'SYNC_${report.status.toUpperCase()}',
+          message:
+              'Sync completed with ${report.issues} issues and ${report.blocked} blocked items.',
+          operation: triggerSource,
+          syncStatus: report.status,
+        );
+      }
+
       message = switch (report.status) {
         'success' => 'Sync completed successfully.',
         'deferred' =>
@@ -78,6 +94,13 @@ class SyncController extends ChangeNotifier {
       return report;
     } catch (error) {
       message = 'Sync could not complete: $error';
+      diagnostics.report(
+        area: 'sync.cycle',
+        code: error.runtimeType.toString(),
+        message: message!,
+        operation: triggerSource,
+        syncStatus: 'failed',
+      );
       return null;
     } finally {
       busy = false;
