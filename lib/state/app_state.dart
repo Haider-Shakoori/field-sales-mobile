@@ -14,6 +14,10 @@ class AppState extends ChangeNotifier {
   AuthSession? session;
   AttendanceTrackingSettings? policy;
   bool get signedIn => session != null;
+  bool get isSalesman => session?.isSalesman == true;
+  bool get isSupervisor => session?.isSupervisor == true;
+  bool get isSalesManager => session?.isSalesManager == true;
+  bool get isLeadership => session?.isLeadership == true;
 
   Timer? _heartbeat;
   bool _beatInFlight = false;

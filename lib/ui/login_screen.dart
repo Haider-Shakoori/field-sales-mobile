@@ -23,7 +23,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       await appState.login(email.text.trim(), password.text);
-      await attendance.restore();
+      if (appState.isSalesman) {
+        await attendance.restore();
+      }
     } catch (e) {
       if (mounted) {
         setState(() => error = '$e');

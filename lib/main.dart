@@ -33,6 +33,7 @@ import 'features/routes/daily_route_plan_repository.dart';
 import 'features/settings/settings_repository.dart';
 import 'features/stock/stock_repository.dart';
 import 'features/targets/target_repository.dart';
+import 'features/team/team_repository.dart';
 import 'features/visits/visit_repository.dart';
 import 'state/app_state.dart';
 import 'state/appointment_controller.dart';
@@ -45,6 +46,7 @@ import 'state/lead_controller.dart';
 import 'state/order_controller.dart';
 import 'state/sync_controller.dart';
 import 'state/target_controller.dart';
+import 'state/team_controller.dart';
 import 'state/visit_controller.dart';
 
 Future<void> main() async {
@@ -69,6 +71,7 @@ Future<void> main() async {
   final collections = CollectionRepository(api: api, db: db);
   final expenses = ExpenseRepository(api: api, db: db);
   final targets = TargetRepository(api: api, db: db);
+  final team = TeamRepository(api);
   final smartRoute = DailyRoutePlanRepository(api: api, db: db);
   final stock = StockRepository(api: api, db: db);
   final statements = CustomerStatementRepository(api: api, db: db);
@@ -146,6 +149,8 @@ Future<void> main() async {
     repository: targets,
   );
 
+  final teamController = TeamController(appState: appState, repository: team);
+
   final orderController = OrderController(
     appState: appState,
     repository: orders,
@@ -173,8 +178,10 @@ Future<void> main() async {
   );
 
   await appState.restore();
-  await attendanceController.restore();
-  await syncController.initialize();
+  if (appState.isSalesman) {
+    await attendanceController.restore();
+    await syncController.initialize();
+  }
 
   var wasOnline = true;
   ConnectivityGate.instance.statusChanges.listen((online) {
@@ -198,6 +205,7 @@ Future<void> main() async {
         ChangeNotifierProvider.value(value: collectionController),
         ChangeNotifierProvider.value(value: expenseController),
         ChangeNotifierProvider.value(value: targetController),
+        ChangeNotifierProvider.value(value: teamController),
         ChangeNotifierProvider.value(value: syncController),
         Provider.value(value: masterData),
         Provider.value(value: appointments),
@@ -212,6 +220,7 @@ Future<void> main() async {
         Provider.value(value: collections),
         Provider.value(value: expenses),
         Provider.value(value: targets),
+        Provider.value(value: team),
         Provider.value(value: mileage),
         Provider.value(value: retryStore),
         Provider.value(value: syncCoordinator),
