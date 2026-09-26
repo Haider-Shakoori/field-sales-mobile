@@ -1,7 +1,7 @@
 <resources>
     <style name="LaunchTheme" parent="@android:style/Theme.Material.Light.NoActionBar">
         <item name="android:windowSplashScreenBackground">@color/fieldpulse_navy</item>
-        <item name="android:windowSplashScreenAnimatedIcon">@drawable/fieldpulse_splash_vector</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/fieldpulse_launcher_foreground</item>
         <item name="android:windowSplashScreenIconBackgroundColor">@color/fieldpulse_navy</item>
         <item name="android:windowBackground">@drawable/launch_background</item>
         <item name="android:windowLightStatusBar">false</item>
