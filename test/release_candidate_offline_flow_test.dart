@@ -29,6 +29,11 @@ class _OfflineSource implements MasterDataSource {
   Future<Map<String, dynamic>> post(String path, Map<String, dynamic> payload) {
     throw StateError('RC offline golden path must not use the network.');
   }
+
+  @override
+  Future<Map<String, dynamic>> patch(String path, Map<String, dynamic> payload) {
+    throw StateError('RC offline golden path must not use the network.');
+  }
 }
 
 Future<String> _databasePath() async =>
