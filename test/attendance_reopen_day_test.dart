@@ -10,6 +10,7 @@ void main() {
       'lib/features/attendance/attendance_repository.dart',
     ).readAsStringSync();
     final home = File('lib/ui/home_tab.dart').readAsStringSync();
+    final compactHome = home.replaceAll(RegExp(r'\s+'), ' ');
 
     expect(controller, contains('bool get canReopenToday'));
     expect(controller, contains('Future<void> reopenDay() async'));
@@ -19,7 +20,7 @@ void main() {
     expect(home, contains('controller.canReopenToday'));
     expect(home, contains("const Text('Reopen Day')"));
     expect(
-      home,
+      compactHome,
       contains('Your original Start Day time and existing visits, orders'),
     );
   });
