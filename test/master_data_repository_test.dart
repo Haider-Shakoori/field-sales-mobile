@@ -10,6 +10,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 class FakeMasterDataSource implements MasterDataSource {
   final calls = <String>[];
   final posts = <Map<String, dynamic>>[];
+  final patches = <Map<String, dynamic>>[];
 
   @override
   Future<MasterPage> fetchPage(
@@ -119,6 +120,17 @@ class FakeMasterDataSource implements MasterDataSource {
     posts.add({'path': path, ...payload});
 
     return {'id': payload['offline_uuid'], ...payload, 'is_active': true};
+  }
+
+  @override
+  Future<Map<String, dynamic>> patch(
+    String path,
+    Map<String, dynamic> payload,
+  ) async {
+    patches.add({'path': path, ...payload});
+    final id = path.split('/').last;
+
+    return {'id': id, ...payload, 'is_active': true};
   }
 }
 
@@ -234,6 +246,72 @@ void main() {
       expect(await masterData.pendingCount('tenant-a'), 0);
     },
   );
+
+  test('offline customer edits are coalesced and sync with PATCH', () async {
+    final customers = CustomerRepository(
+      database: database,
+      transactions: LocalFirstTransaction(database),
+      masterData: masterData,
+      source: source,
+    );
+
+    await masterData.cacheServerRow(
+      table: 'customers',
+      tenantId: 'tenant-a',
+      row: {
+        'id': 'customer-1',
+        'name': 'Original Shop',
+        'code': 'CUS-1',
+        'latitude': 34.5,
+        'longitude': 69.1,
+        'geofence_radius_meters': 100,
+        'is_active': true,
+      },
+    );
+
+    await customers.updateOffline(
+      tenantId: 'tenant-a',
+      customerUuid: 'customer-1',
+      name: 'Updated Shop',
+      code: 'CUS-1',
+      phone: '0700111222',
+      address: 'New address',
+      latitude: 34.55,
+      longitude: 69.2,
+    );
+
+    await customers.updateOffline(
+      tenantId: 'tenant-a',
+      customerUuid: 'customer-1',
+      name: 'Updated Shop Again',
+      code: 'CUS-1',
+      phone: '0700111222',
+      address: 'Final address',
+      latitude: 34.56,
+      longitude: 69.21,
+    );
+
+    final queued = await database.db.query(
+      'sync_queue',
+      where: 'tenant_id=? AND entity_type=? AND entity_uuid=?',
+      whereArgs: ['tenant-a', 'customer', 'customer-1'],
+    );
+
+    expect(queued, hasLength(1));
+    expect(queued.single['action'], 'update');
+
+    final result = await customers.syncPending('tenant-a');
+
+    expect(result.synced, 1);
+    expect(result.failed, 0);
+    expect(source.patches, hasLength(1));
+    expect(source.patches.single['path'], 'customers/customer-1');
+    expect(source.patches.single['name'], 'Updated Shop Again');
+
+    final cached = await masterData.list('customers', 'tenant-a');
+    expect(cached.single['name'], 'Updated Shop Again');
+    expect(cached.single['latitude'], 34.56);
+  });
 
   test('delta refresh records a tenant-specific sync cursor', () async {
     await masterData.refreshAll('tenant-a');
