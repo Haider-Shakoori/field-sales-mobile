@@ -47,7 +47,11 @@ class AppState extends ChangeNotifier {
 
   Future<void> restore() async {
     session = await auth.restore();
-    if (session != null) policy = await settings.load(session!.tenantId);
+    if (session != null) {
+      policy = await settings.load(session!.tenantId);
+      final features = await settings.features();
+      gamificationEnabled = features['gamification_enabled'] == true;
+    }
     restored = true;
     _syncHeartbeat();
     notifyListeners();
@@ -58,6 +62,8 @@ class AppState extends ChangeNotifier {
   Future<void> login(String email, String password, {String? tenant}) async {
     session = await auth.login(email, password, tenant: tenant);
     policy = await settings.refresh(session!.tenantId);
+    final features = await settings.features();
+    gamificationEnabled = features['gamification_enabled'] == true;
     _syncHeartbeat();
     notifyListeners();
   }
@@ -73,6 +79,7 @@ class AppState extends ChangeNotifier {
     await auth.logout();
     session = null;
     policy = null;
+    gamificationEnabled = false;
     notifyListeners();
   }
 
