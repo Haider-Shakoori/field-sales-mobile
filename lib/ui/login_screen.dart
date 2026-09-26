@@ -10,6 +10,17 @@ String friendlyLoginError(Object error) {
     return 'Unable to sign in right now. Please try again.';
   }
 
+  String? fieldMessage;
+  for (final messages in error.fieldErrors.values) {
+    for (final message in messages) {
+      if (message.trim().isNotEmpty) {
+        fieldMessage = message;
+        break;
+      }
+    }
+    if (fieldMessage != null) break;
+  }
+
   return switch (error.code) {
     'TENANT_REQUIRED' =>
       'This email is used in more than one company. Enter your Company / Tenant code and try again.',
@@ -29,11 +40,8 @@ String friendlyLoginError(Object error) {
       'FieldPulse could not identify this device. Restart the app and try again.',
     'SERVER_ERROR' =>
       'The server could not complete the sign-in request. Please try again. If it continues, contact your administrator.',
-    'VALIDATION_ERROR' => error.fieldErrors.values
-            .expand((messages) => messages)
-            .where((message) => message.trim().isNotEmpty)
-            .firstOrNull ??
-        'Please check the sign-in details and try again.',
+    'VALIDATION_ERROR' =>
+      fieldMessage ?? 'Please check the sign-in details and try again.',
     _ => error.status == null
         ? (error.message.trim().isEmpty
               ? 'No connection to the server. Check your internet connection and try again.'
