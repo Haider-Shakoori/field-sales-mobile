@@ -6,7 +6,6 @@ void main() {
   test('release candidate uses approved FieldPulse branding', () {
     final manifest = File('android/app/src/main/AndroidManifest.xml')
         .readAsStringSync();
-    final pubspec = File('pubspec.yaml').readAsStringSync();
     final app = File('lib/app.dart').readAsStringSync();
     final splash = File('lib/ui/fieldpulse_splash_screen.dart')
         .readAsStringSync();
