@@ -7,9 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('login exposes optional company tenant field and sends it to API', () {
     final login = File('lib/ui/login_screen.dart').readAsStringSync();
-    final auth = File(
-      'lib/features/auth/auth_repository.dart',
-    ).readAsStringSync();
+    final auth = File('lib/features/auth/auth_repository.dart')
+        .readAsStringSync();
 
     expect(login, contains('Company / Tenant code'));
     expect(login, contains('Optional unless your email is used'));
