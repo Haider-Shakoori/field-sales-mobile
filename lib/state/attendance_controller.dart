@@ -256,10 +256,50 @@ class AttendanceController extends ChangeNotifier {
     }
   }
 
+  Future<Map<String, dynamic>> endDaySummary() async {
+    final tenantId = appState.session?.tenantId;
+    if (tenantId == null) {
+      return const <String, dynamic>{
+        'server_available': false,
+        'local_pending': 0,
+      };
+    }
+
+    Map<String, dynamic> server = const {};
+
+    try {
+      server = await attendance.endDayPreview();
+    } catch (_) {
+      // The End Day screen must remain usable offline.
+    }
+
+    final queueRows = await db.db.rawQuery(
+      'SELECT COUNT(*) AS total FROM sync_queue '
+      'WHERE tenant_id=? AND status IN (?,?,?)',
+      [tenantId, 'pending', 'failed', 'blocked'],
+    );
+    final gpsRows = await db.db.rawQuery(
+      'SELECT COUNT(*) AS total FROM local_gps_points '
+      'WHERE tenant_id=? AND sync_status<>?',
+      [tenantId, 'synced'],
+    );
+
+    final pending =
+        (queueRows.first['total'] as int? ?? 0) +
+        (gpsRows.first['total'] as int? ?? 0);
+
+    return {
+      ...server,
+      'server_available': server.isNotEmpty,
+      'local_pending': pending,
+    };
+  }
+
   Future<void> endDay({
     bool sync = true,
     String? vehicleReference,
     double? odometerEndKm,
+    String? notes,
   }) async {
     if (busy || !working) return;
 
@@ -362,6 +402,7 @@ class AttendanceController extends ChangeNotifier {
         vehicleReference:
             vehicleReference ?? currentSession['vehicle_reference']?.toString(),
         odometerEndKm: odometerEndKm,
+        notes: notes,
       );
 
       // Only stop tracking after the local End Day transaction succeeds.
