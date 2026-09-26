@@ -16,19 +16,12 @@ class ManagementDashboardScreen extends StatefulWidget {
       _ManagementDashboardScreenState();
 }
 
-class _ManagementDashboardScreenState
-    extends State<ManagementDashboardScreen> {
+class _ManagementDashboardScreenState extends State<ManagementDashboardScreen> {
   var _index = 0;
 
-  static const _pages = [
-    ManagementHomeScreen(),
-    TeamOverviewScreen(),
-  ];
+  static const _pages = [ManagementHomeScreen(), TeamOverviewScreen()];
 
-  static const _titles = [
-    'Management',
-    'Team',
-  ];
+  static const _titles = ['Management', 'Team'];
 
   @override
   void initState() {
@@ -52,8 +45,7 @@ class _ManagementDashboardScreenState
       actions: [
         IconButton(
           tooltip: 'Refresh',
-          onPressed: () =>
-              context.read<ManagementController>().refresh(),
+          onPressed: () => context.read<ManagementController>().refresh(),
           icon: const Icon(Icons.refresh),
         ),
         IconButton(
