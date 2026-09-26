@@ -32,21 +32,24 @@ void main() {
     expect(match.name, 'Kabul One');
   });
 
-  test('supports legacy lat-lng territory arrays and rejects outside points', () {
-    final territories = [
-      {
-        'id': 'legacy',
-        'name': 'Legacy',
-        'polygon': [
-          [34.50, 69.10],
-          [34.50, 69.30],
-          [34.70, 69.30],
-          [34.70, 69.10],
-        ],
-      },
-    ];
+  test(
+    'supports legacy lat-lng territory arrays and rejects outside points',
+    () {
+      final territories = [
+        {
+          'id': 'legacy',
+          'name': 'Legacy',
+          'polygon': [
+            [34.50, 69.10],
+            [34.50, 69.30],
+            [34.70, 69.30],
+            [34.70, 69.10],
+          ],
+        },
+      ];
 
-    expect(locateCustomerTerritory(territories, 34.60, 69.20)?.id, 'legacy');
-    expect(locateCustomerTerritory(territories, 35.0, 70.0), isNull);
-  });
+      expect(locateCustomerTerritory(territories, 34.60, 69.20)?.id, 'legacy');
+      expect(locateCustomerTerritory(territories, 35.0, 70.0), isNull);
+    },
+  );
 }
