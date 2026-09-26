@@ -10,8 +10,9 @@ Future<String> _databasePath() async =>
     p.join(await getDatabasesPath(), 'field_sales.db');
 
 class _SmartRouteApi extends ApiClient {
-  _SmartRouteApi() : super(SecretStore());
+  _SmartRouteApi({this.disabled = false}) : super(SecretStore());
 
+  final bool disabled;
   Map<String, dynamic>? lastQuery;
 
   @override
@@ -24,7 +25,32 @@ class _SmartRouteApi extends ApiClient {
         .where((value) => value.isNotEmpty)
         .toList();
 
+    if (disabled) {
+      return {
+        'enabled': false,
+        'date': '2026-09-24',
+        'source': null,
+        'route': null,
+        'summary': {
+          'total_stops': 0,
+          'remaining': 0,
+          'visited': 0,
+          'urgent': 0,
+          'high': 0,
+        },
+        'stops': <dynamic>[],
+        'nearby_opportunities': <dynamic>[],
+        'dynamic_route': {
+          'included_opportunity_ids': <dynamic>[],
+          'nearby_radius_km': 8,
+          'rerouted_from_current_position': false,
+        },
+        'warnings': ['smart_route_planning_disabled'],
+      };
+    }
+
     return {
+      'enabled': true,
       'date': '2026-09-24',
       'source': {'type': 'route', 'id': 'route-1', 'name': 'Kabul Route'},
       'start_location': {
@@ -112,6 +138,7 @@ void main() {
     expect(api.lastQuery?['latitude'], 34.555);
     expect(api.lastQuery?['longitude'], 69.207);
     expect(api.lastQuery?['accuracy'], 7.5);
+    expect(api.lastQuery?['nearby_radius_km'], isNull);
     expect(plan['stops'], isNotEmpty);
 
     final cached = await repository.cached('tenant-1');
@@ -163,6 +190,30 @@ void main() {
 
     await repository.removeOpportunity('tenant-1', 'opportunity-1');
     expect(await repository.includedOpportunityIds('tenant-1'), isEmpty);
+
+    await db.db.close();
+  });
+
+  test('company-disabled smart route is preserved in the cache', () async {
+    final db = AppDatabase();
+    await db.open();
+
+    final repository = DailyRoutePlanRepository(
+      api: _SmartRouteApi(disabled: true),
+      db: db,
+    );
+
+    final plan = await repository.refresh('tenant-1');
+
+    expect(plan['enabled'], isFalse);
+    expect(plan['stops'], isEmpty);
+    expect(
+      (plan['warnings'] as List),
+      contains('smart_route_planning_disabled'),
+    );
+
+    final cached = await repository.cached('tenant-1');
+    expect(cached?['enabled'], isFalse);
 
     await db.db.close();
   });
