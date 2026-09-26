@@ -78,6 +78,15 @@ class ApiClient {
     ),
   );
 
+  Future<dynamic> put(String p, {Object? data, Map<String, String>? headers}) =>
+      _send(
+        () => dio.putUri(
+          Uri.parse(path(p)),
+          data: data,
+          options: Options(headers: headers),
+        ),
+      );
+
   Future<dynamic> patch(
     String p, {
     Object? data,
