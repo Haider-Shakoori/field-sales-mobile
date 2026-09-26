@@ -191,6 +191,22 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
         : const <String, dynamic>{};
   }
 
+  Map<String, dynamic> get _schedule {
+    final raw = _plan?['schedule'];
+    return raw is Map
+        ? Map<String, dynamic>.from(raw)
+        : const <String, dynamic>{};
+  }
+
+  String? _clock(dynamic iso) {
+    final parsed = DateTime.tryParse(iso?.toString() ?? '');
+    if (parsed == null) return null;
+    final local = parsed.toLocal();
+    final hour = local.hour.toString().padLeft(2, '0');
+    final minute = local.minute.toString().padLeft(2, '0');
+    return '$hour:$minute';
+  }
+
   String _priorityLabel(String value) => switch (value) {
     'urgent' => 'Urgent',
     'high' => 'High',
@@ -225,6 +241,9 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
         (_dynamicRoute['included_opportunity_ids'] as List? ?? const []).length;
     final radius = _dynamicRoute['nearby_radius_km'] ?? 5;
     final enabled = plan?['enabled'] != false;
+    final capacityUtilization =
+        (_summary['capacity_utilization_percent'] as num?)?.toDouble();
+    final overflowStops = (_summary['overflow_stops'] as num?)?.toInt() ?? 0;
 
     if (!enabled) {
       return RefreshIndicator(
@@ -350,9 +369,31 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                       _metric('Urgent', _summary['urgent']),
                       _metric('High', _summary['high']),
                       _metric('Visited', _summary['visited']),
+                      _metric(
+                        'Travel',
+                        '${_summary['estimated_travel_minutes'] ?? 0} min',
+                      ),
+                      if (capacityUtilization != null)
+                        _metric(
+                          'Route load',
+                          '${capacityUtilization.toStringAsFixed(0)}%',
+                        ),
+                      if (overflowStops > 0)
+                        _metric('Overflow', overflowStops),
                       if (included > 0) _metric('Extra', included),
                     ],
                   ),
+                  if (_schedule.isNotEmpty) ...[
+                    const SizedBox(height: 10),
+                    Text(
+                      overflowStops > 0
+                          ? '$overflowStops stop(s) exceed the configured workday capacity. Consider removing optional stops or reprioritizing the remaining route.'
+                          : 'The remaining route fits within the configured workday capacity.',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 14),
                   SizedBox(
                     width: double.infinity,
@@ -470,6 +511,9 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                                 [
                                   if (stop['distance_from_previous_km'] != null)
                                     '${stop['distance_from_previous_km']} km from previous',
+                                  if ((stop['estimated_travel_minutes'] as num?) != null &&
+                                      (stop['estimated_travel_minutes'] as num) > 0)
+                                    '~${stop['estimated_travel_minutes']} min travel',
                                   if (stop['planned_visit_minutes'] != null)
                                     '${stop['planned_visit_minutes']} min visit',
                                   if (stop['route_sequence'] != null)
@@ -477,6 +521,23 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                                 ].join(' · '),
                                 style: Theme.of(context).textTheme.bodySmall,
                               ),
+                              if (!visited &&
+                                  stop['estimated_arrival_at'] != null) ...[
+                                const SizedBox(height: 5),
+                                Text(
+                                  [
+                                    'ETA ${_clock(stop['estimated_arrival_at']) ?? '-'}',
+                                    if (_clock(stop['estimated_departure_at']) != null)
+                                      'finish ${_clock(stop['estimated_departure_at'])}',
+                                    if (stop['capacity_status'] == 'overflow')
+                                      'outside planned capacity',
+                                  ].join(' · '),
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                ),
+                              ],
                               if (reasons.isNotEmpty) ...[
                                 const SizedBox(height: 8),
                                 Text(reasons.join(' · ')),
