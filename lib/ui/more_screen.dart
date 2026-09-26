@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'appointments_screen.dart';
+
 import 'package:provider/provider.dart';
 
 import '../state/app_state.dart';
@@ -43,9 +44,12 @@ class MoreScreen extends StatelessWidget {
             child: ListTile(
               leading: const Icon(Icons.notifications_outlined),
               title: const Text('Notifications'),
-              subtitle: const Text('Route alerts, supervisor messages and updates'),
+              subtitle: const Text(
+                'Route alerts, supervisor messages and updates',
+              ),
               trailing: const Icon(Icons.chevron_right),
-              onTap: () => _open(context, 'Notifications', const NotificationsScreen()),
+              onTap: () =>
+                  _open(context, 'Notifications', const NotificationsScreen()),
             ),
           ),
           if (context.watch<AppState>().gamificationEnabled)
@@ -53,9 +57,12 @@ class MoreScreen extends StatelessWidget {
               child: ListTile(
                 leading: const Icon(Icons.emoji_events_outlined),
                 title: const Text('Recognition'),
-                subtitle: const Text('Points, level, achievements and team leaderboard'),
+                subtitle: const Text(
+                  'Points, level, achievements and team leaderboard',
+                ),
                 trailing: const Icon(Icons.chevron_right),
-                onTap: () => _open(context, 'Recognition', const GamificationScreen()),
+                onTap: () =>
+                    _open(context, 'Recognition', const GamificationScreen()),
               ),
             ),
           Card(
