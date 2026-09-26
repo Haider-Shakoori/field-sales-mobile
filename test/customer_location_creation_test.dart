@@ -4,12 +4,13 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('mobile customer creation requires a map-selected shop location', () {
-    final screen = File('lib/ui/customer_create_screen.dart').readAsStringSync();
+    final screen = File('lib/ui/customer_create_screen.dart')
+        .readAsStringSync();
     final customers = File('lib/ui/customers_screen.dart').readAsStringSync();
-    final controller =
-        File('lib/state/master_data_controller.dart').readAsStringSync();
-    final repository =
-        File('lib/features/customers/customer_repository.dart').readAsStringSync();
+    final controller = File('lib/state/master_data_controller.dart')
+        .readAsStringSync();
+    final repository = File('lib/features/customers/customer_repository.dart')
+        .readAsStringSync();
 
     expect(screen, contains('FlutterMap('));
     expect(screen, contains('Shop location'));
