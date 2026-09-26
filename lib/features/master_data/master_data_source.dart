@@ -21,6 +21,8 @@ abstract class MasterDataSource {
   });
 
   Future<Map<String, dynamic>> post(String path, Map<String, dynamic> payload);
+
+  Future<Map<String, dynamic>> patch(String path, Map<String, dynamic> payload);
 }
 
 class ApiMasterDataSource implements MasterDataSource {
@@ -64,6 +66,16 @@ class ApiMasterDataSource implements MasterDataSource {
     Map<String, dynamic> payload,
   ) async {
     final data = await api.post(path, data: payload);
+
+    return Map<String, dynamic>.from(data as Map);
+  }
+
+  @override
+  Future<Map<String, dynamic>> patch(
+    String path,
+    Map<String, dynamic> payload,
+  ) async {
+    final data = await api.patch(path, data: payload);
 
     return Map<String, dynamic>.from(data as Map);
   }
