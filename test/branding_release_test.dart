@@ -14,14 +14,12 @@ void main() {
     expect(manifest, contains('android:label="FieldPulse"'));
     expect(manifest, contains('android:icon="@mipmap/ic_launcher"'));
     expect(manifest, isNot(contains('sym_def_app_icon')));
-    expect(pubspec, contains('assets/branding/fieldpulse_splash.webp'));
     expect(app, contains("title: 'FieldPulse'"));
-    expect(
-      splash,
-      contains("AssetImage('assets/branding/fieldpulse_splash.webp')"),
-    );
-
-    expect(File('assets/branding/fieldpulse_splash.webp').existsSync(), isTrue);
+    expect(splash, contains("text: 'Field'"));
+    expect(splash, contains("text: 'Pulse'"));
+    expect(splash, contains("'by BusinessOS'"));
+    expect(splash, contains('_FieldPulseMarkPainter'));
+    expect(splash, isNot(contains('AssetImage(')));
     expect(
       File('android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp')
           .existsSync(),
@@ -29,7 +27,7 @@ void main() {
     );
     expect(
       File(
-        'android/app/src/main/res/drawable-nodpi/fieldpulse_splash_mark.webp',
+        'android/app/src/main/res/drawable/fieldpulse_splash_vector.xml',
       ).existsSync(),
       isTrue,
     );
