@@ -215,6 +215,14 @@ class HomeTab extends StatelessWidget {
       vehicleReference: vehicleReference,
       odometerEndKm: endOdometer,
     );
+
+    if (!context.mounted) return;
+
+    if (!controller.working && controller.message == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Work day ended successfully.')),
+      );
+    }
   }
 
   @override
@@ -320,9 +328,32 @@ class HomeTab extends StatelessWidget {
                   if (controller.message != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 12),
-                      child: Text(
-                        controller.message!,
-                        style: const TextStyle(color: Colors.red),
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.amber.withValues(alpha: 0.12),
+                          border: Border.all(
+                            color: Colors.amber.withValues(alpha: 0.35),
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.info_outline,
+                              size: 20,
+                              color: Colors.amber.shade800,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                controller.message!,
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                 ],
