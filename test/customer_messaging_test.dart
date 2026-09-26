@@ -11,7 +11,10 @@ void main() {
     expect(source, contains("value: 'sms'"));
     expect(source, contains("Uri.https('wa.me'"));
     expect(source, contains("Uri(scheme: 'sms'"));
-    expect(compact, contains("tooltip: phone.isEmpty ? 'No phone' : 'Message'"));
+    expect(
+      compact,
+      contains("tooltip: phone.isEmpty ? 'No phone' : 'Message'"),
+    );
     expect(source, contains('LaunchMode.externalApplication'));
   });
 }
