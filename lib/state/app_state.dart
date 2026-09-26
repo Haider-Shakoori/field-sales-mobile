@@ -13,6 +13,7 @@ class AppState extends ChangeNotifier {
   bool restored = false;
   AuthSession? session;
   AttendanceTrackingSettings? policy;
+  bool gamificationEnabled = false;
   bool get signedIn => session != null;
   bool get isSalesman => session?.isSalesman == true;
   bool get isSupervisor => session?.isSupervisor == true;
@@ -88,6 +89,7 @@ class AppState extends ChangeNotifier {
     await auth.clearLocalAuth();
     session = null;
     policy = null;
+    gamificationEnabled = false;
     notifyListeners();
   }
 
