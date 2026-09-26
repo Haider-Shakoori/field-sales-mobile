@@ -97,6 +97,14 @@ class AttendanceRepository {
     return uuid;
   }
 
+  Future<Map<String, dynamic>> endDayPreview() async {
+    final data = await api.get('attendance/end-day-preview');
+
+    return data is Map<String, dynamic>
+        ? data
+        : Map<String, dynamic>.from(data as Map);
+  }
+
   Future<void> end({
     required Map<String, dynamic> session,
     required DateTime at,
@@ -105,6 +113,7 @@ class AttendanceRepository {
     required double accuracy,
     String? vehicleReference,
     double? odometerEndKm,
+    String? notes,
   }) async {
     final tenantId = '${session['tenant_id']}';
     if (tenantId.isEmpty || tenantId == 'null') {
@@ -144,6 +153,7 @@ class AttendanceRepository {
           'ended_at': at.toUtc().toIso8601String(),
           'vehicle_reference': _clean(vehicleReference),
           'odometer_end_km': odometerEndKm,
+          'notes': _clean(notes),
         }),
         'priority': 20,
         'status': 'pending',
