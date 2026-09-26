@@ -64,8 +64,8 @@ void main() {
 
   test('End Day includes closing summary and diagnostic reporting', () {
     final home = File('lib/ui/home_tab.dart').readAsStringSync();
-    final attendance =
-        File('lib/state/attendance_controller.dart').readAsStringSync();
+    final attendance = File('lib/state/attendance_controller.dart')
+        .readAsStringSync();
     final diagnostics = File(
       'lib/features/diagnostics/diagnostic_reporter.dart',
     ).readAsStringSync();
