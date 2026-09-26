@@ -46,9 +46,9 @@ class CustomersScreen extends StatelessWidget {
     );
 
     if (updated == true && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Customer changes saved.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Customer changes saved.')));
     }
   }
 
