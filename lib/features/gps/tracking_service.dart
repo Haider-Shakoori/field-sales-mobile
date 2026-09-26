@@ -10,6 +10,9 @@ class TrackingService {
   final AppDatabase db;
   final GpsRepository gpsRepository;
   StreamSubscription<Position>? _sub;
+  bool _processingPosition = false;
+  Position? _queuedPosition;
+
   bool get active => _sub != null;
   Future<void> start({
     required String tenantId,
@@ -45,24 +48,62 @@ class TrackingService {
       ),
     );
     _sub = Geolocator.getPositionStream(locationSettings: settings).listen(
-      (p) => gpsRepository.store(
-        tenantId: tenantId,
-        latitude: p.latitude,
-        longitude: p.longitude,
-        accuracy: p.accuracy,
-        altitude: p.altitude,
-        speed: p.speed,
-        heading: p.heading,
-        isMock: p.isMocked,
-        recordedAt: p.timestamp,
-      ),
+      (position) {
+        unawaited(_queuePosition(tenantId, position));
+      },
+      onError: (_) {
+        stop();
+      },
+      cancelOnError: false,
     );
   }
 
+  Future<void> _queuePosition(String tenantId, Position position) async {
+    if (_processingPosition) {
+      // Keep only the newest fix while a previous point is still being
+      // persisted. This prevents a slow emulator/device from building an
+      // unbounded backlog of battery/network/database work.
+      _queuedPosition = position;
+      return;
+    }
+
+    _processingPosition = true;
+    var current = position;
+
+    try {
+      while (true) {
+        try {
+          await gpsRepository.store(
+            tenantId: tenantId,
+            latitude: current.latitude,
+            longitude: current.longitude,
+            accuracy: current.accuracy,
+            altitude: current.altitude,
+            speed: current.speed,
+            heading: current.heading,
+            isMock: current.isMocked,
+            recordedAt: current.timestamp,
+          );
+        } catch (_) {
+          // A single failed GPS persistence attempt must never block the
+          // location stream or freeze the UI. The next valid fix can continue.
+        }
+
+        final next = _queuedPosition;
+        _queuedPosition = null;
+        if (next == null) break;
+        current = next;
+      }
+    } finally {
+      _processingPosition = false;
+    }
+  }
+
   void stop() {
-    final s = _sub;
+    final subscription = _sub;
     _sub = null;
-    unawaited(s?.cancel());
+    _queuedPosition = null;
+    unawaited(subscription?.cancel());
   }
 
   Future<Position?> oneShot({
