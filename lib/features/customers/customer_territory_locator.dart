@@ -111,11 +111,7 @@ bool _polygonContains(
   return true;
 }
 
-bool _ringContains(
-  List<List<double>> ring,
-  double latitude,
-  double longitude,
-) {
+bool _ringContains(List<List<double>> ring, double latitude, double longitude) {
   if (ring.length < 3) return false;
 
   var inside = false;
@@ -133,7 +129,9 @@ bool _ringContains(
     final crosses =
         ((yi > latitude) != (yj > latitude)) &&
         (longitude <
-            ((xj - xi) * (latitude - yi) / ((yj - yi).abs() < 1e-12 ? 1e-12 : (yj - yi))) +
+            ((xj - xi) *
+                    (latitude - yi) /
+                    ((yj - yi).abs() < 1e-12 ? 1e-12 : (yj - yi))) +
                 xi);
 
     if (crosses) inside = !inside;
