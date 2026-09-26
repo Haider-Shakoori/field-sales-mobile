@@ -6,6 +6,14 @@ class SettingsRepository {
   SettingsRepository({required this.api, required this.db});
   final ApiClient api;
   final AppDatabase db;
+  Future<Map<String, dynamic>> features() async {
+    try {
+      return Map<String, dynamic>.from(await api.get('settings/features'));
+    } catch (_) {
+      return const {};
+    }
+  }
+
   Future<AttendanceTrackingSettings> load(String tenantId) async {
     final cached = await db.readSetting('attendance_tracking_settings');
     if (cached is Map &&
