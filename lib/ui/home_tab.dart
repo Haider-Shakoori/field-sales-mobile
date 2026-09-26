@@ -147,7 +147,13 @@ class HomeTab extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Do you want to end the day?'),
+                  const Text('Review today before ending the day.'),
+                  const SizedBox(height: 8),
+                  Text('Visits: ${closing.visits}'),
+                  Text('Orders: ${closing.orders} · AFN ${closing.orderTotal.toStringAsFixed(0)}'),
+                  Text('Collections: ${closing.collections} · AFN ${closing.collectionTotal.toStringAsFixed(0)}'),
+                  Text('Expenses: ${closing.expenses} · AFN ${closing.expenseTotal.toStringAsFixed(0)}'),
+                  Text('Pending sync: ${closing.pendingSync}'),
                   const SizedBox(height: 12),
                   TextField(
                     controller: vehicle,
