@@ -22,33 +22,27 @@ String friendlyLoginError(Object error) {
   }
 
   return switch (error.code) {
-    'TENANT_REQUIRED' =>
-      'This email is used in more than one company. Enter your Company / Tenant code and try again.',
+    'TENANT_REQUIRED' => 'This email is used in more than one company. Enter your Company / Tenant code and try again.',
     'INVALID_CREDENTIALS' =>
       'The email, password, or Company / Tenant code is incorrect.',
-    'MOBILE_ROLE_REQUIRED' =>
-      'This account is not enabled for the FieldPulse mobile app. Ask your administrator to assign Salesman, Supervisor, or Sales Manager access.',
+    'MOBILE_ROLE_REQUIRED' => 'This account is not enabled for the FieldPulse mobile app. Ask your administrator to assign Salesman, Supervisor, or Sales Manager access.',
     'TENANT_SUSPENDED' =>
       'This company account is suspended. Please contact your administrator.',
-    'DEVICE_LIMIT_REACHED' =>
-      'This account is already active on another device. Ask an administrator to revoke the old device before signing in here.',
-    'DEVICE_REVOKED' =>
-      'This device has been revoked for this account. Please contact your administrator.',
-    'APP_UPGRADE_REQUIRED' =>
-      'This FieldPulse version is no longer supported. Update the app and try again.',
-    'DEVICE_HEADERS_REQUIRED' =>
-      'FieldPulse could not identify this device. Restart the app and try again.',
-    'SERVER_ERROR' =>
-      'The server could not complete the sign-in request. Please try again. If it continues, contact your administrator.',
+    'DEVICE_LIMIT_REACHED' => 'This account is already active on another device. Ask an administrator to revoke the old device before signing in here.',
+    'DEVICE_REVOKED' => 'This device has been revoked for this account. Please contact your administrator.',
+    'APP_UPGRADE_REQUIRED' => 'This FieldPulse version is no longer supported. Update the app and try again.',
+    'DEVICE_HEADERS_REQUIRED' => 'FieldPulse could not identify this device. Restart the app and try again.',
+    'SERVER_ERROR' => 'The server could not complete the sign-in request. Please try again. If it continues, contact your administrator.',
     'VALIDATION_ERROR' =>
       fieldMessage ?? 'Please check the sign-in details and try again.',
-    _ => error.status == null
-        ? (error.message.trim().isEmpty
-              ? 'No connection to the server. Check your internet connection and try again.'
-              : error.message)
-        : (error.message.trim().isEmpty
-              ? 'Unable to sign in. Please try again.'
-              : error.message),
+    _ =>
+      error.status == null
+          ? (error.message.trim().isEmpty
+                ? 'No connection to the server. Check your internet connection and try again.'
+                : error.message)
+          : (error.message.trim().isEmpty
+                ? 'Unable to sign in. Please try again.'
+                : error.message),
   };
 }
 
@@ -165,8 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         decoration: const InputDecoration(
                           labelText: 'Company / Tenant code',
                           hintText: 'e.g. shahab-demo',
-                          helperText:
-                              'Optional unless your email is used in more than one company.',
+                          helperText: 'Optional unless your email is used in more than one company.',
                           border: OutlineInputBorder(),
                           prefixIcon: Icon(Icons.business_outlined),
                         ),
@@ -215,9 +208,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.errorContainer,
+                            color: Theme.of(context).colorScheme.errorContainer,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Row(
@@ -225,18 +216,18 @@ class _LoginScreenState extends State<LoginScreen> {
                             children: [
                               Icon(
                                 Icons.error_outline,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onErrorContainer,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onErrorContainer,
                               ),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
                                   error!,
                                   style: TextStyle(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onErrorContainer,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onErrorContainer,
                                   ),
                                 ),
                               ),
