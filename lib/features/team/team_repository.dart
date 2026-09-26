@@ -12,4 +12,11 @@ class TeamRepository {
         ? data
         : Map<String, dynamic>.from(data as Map);
   }
+
+  Future<void> nudge(String salesmanId, String message) async {
+    await api.post(
+      'team/salesmen/$salesmanId/nudge',
+      data: {'message': message},
+    );
+  }
 }
