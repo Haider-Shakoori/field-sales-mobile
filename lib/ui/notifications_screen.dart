@@ -69,8 +69,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         ),
                       ),
                     ),
-                    if (item.unread)
-                      const Badge(smallSize: 8),
+                    if (item.unread) const Badge(smallSize: 8),
                   ],
                 ),
                 subtitle: Padding(
