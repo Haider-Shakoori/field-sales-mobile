@@ -241,6 +241,7 @@ Future<void> main() async {
         Provider.value(value: team),
         Provider.value(value: mileage),
         Provider.value(value: gamification),
+        Provider.value(value: push),
         Provider.value(value: retryStore),
         Provider.value(value: syncCoordinator),
       ],

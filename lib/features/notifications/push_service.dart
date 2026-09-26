@@ -32,6 +32,8 @@ class FieldPulseFirebaseOptions {
 
 class PushService {
   PushService(this.api);
+  final _opened = StreamController<Map<String, dynamic>>.broadcast();
+  Stream<Map<String, dynamic>> get opened => _opened.stream;
   final ApiClient api;
   StreamSubscription<String>? _tokenSubscription;
 
@@ -50,6 +52,17 @@ class PushService {
     _tokenSubscription = FirebaseMessaging.instance.onTokenRefresh.listen(
       (token) => unawaited(registerToken(token)),
     );
+
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      _opened.add(Map<String, dynamic>.from(message.data));
+    });
+
+    final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    if (initialMessage != null) {
+      scheduleMicrotask(
+        () => _opened.add(Map<String, dynamic>.from(initialMessage.data)),
+      );
+    }
   }
 
   Future<void> registerCurrentToken() async {
@@ -70,5 +83,6 @@ class PushService {
 
   Future<void> dispose() async {
     await _tokenSubscription?.cancel();
+    await _opened.close();
   }
 }
