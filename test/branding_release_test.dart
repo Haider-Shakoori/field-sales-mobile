@@ -27,7 +27,8 @@ void main() {
     expect(
       splashAsset.lengthSync(),
       greaterThan(100000),
-      reason: 'The production splash must use the enhanced high-resolution asset.',
+      reason:
+          'The production splash must use the enhanced high-resolution asset.',
     );
     expect(
       File(
