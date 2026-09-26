@@ -51,6 +51,9 @@ class AuthRepository {
   AuthRepository({required this.api, required this.secrets});
   final ApiClient api;
   final SecretStore secrets;
+
+  Future<String?> lastTenantCode() => secrets.read('last_tenant_code');
+
   Future<AuthSession> login(
     String email,
     String password, {
@@ -90,6 +93,11 @@ class AuthRepository {
     await secrets.setToken('${data['token']}');
     final user = Map<String, dynamic>.from(data['user']);
     final tenantData = Map<String, dynamic>.from(data['tenant']);
+    final tenantSlug = tenantData['slug']?.toString().trim();
+    if (tenantSlug != null && tenantSlug.isNotEmpty) {
+      await secrets.write('last_tenant_code', tenantSlug);
+    }
+
     final registeredDevice = Map<String, dynamic>.from(data['device']);
     final s = AuthSession(
       userId: '${user['id']}',
