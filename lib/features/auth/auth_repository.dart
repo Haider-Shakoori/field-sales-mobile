@@ -51,7 +51,11 @@ class AuthRepository {
   AuthRepository({required this.api, required this.secrets});
   final ApiClient api;
   final SecretStore secrets;
-  Future<AuthSession> login(String email, String password) async {
+  Future<AuthSession> login(
+    String email,
+    String password, {
+    String? tenant,
+  }) async {
     await secrets.installationUuid();
     final deviceUuid = await secrets.deviceUuid();
     var deviceModel = 'unknown';
@@ -73,6 +77,7 @@ class AuthRepository {
         data: {
           'email': email,
           'password': password,
+          if (tenant?.trim().isNotEmpty == true) 'tenant': tenant!.trim(),
           'device_uuid': deviceUuid,
           'device_model': deviceModel,
           'manufacturer': manufacturer,
