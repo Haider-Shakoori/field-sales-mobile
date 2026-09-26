@@ -17,6 +17,7 @@ import 'features/appointments/appointment_repository.dart';
 import 'features/attendance/attendance_repository.dart';
 import 'features/auth/auth_repository.dart';
 import 'features/customers/customer_repository.dart';
+import 'features/diagnostics/diagnostic_reporter.dart';
 import 'features/calls/call_activity_repository.dart';
 import 'features/collections/collection_repository.dart';
 import 'features/expenses/expense_repository.dart';
@@ -28,6 +29,7 @@ import 'features/leads/lead_repository.dart';
 import 'features/mileage/mileage_repository.dart';
 import 'features/master_data/master_data_repository.dart';
 import 'features/master_data/master_data_source.dart';
+import 'features/management/management_repository.dart';
 import 'features/orders/order_repository.dart';
 import 'features/routes/daily_route_plan_repository.dart';
 import 'features/settings/settings_repository.dart';
@@ -41,6 +43,7 @@ import 'state/collection_controller.dart';
 import 'state/expense_controller.dart';
 import 'state/attendance_controller.dart';
 import 'state/master_data_controller.dart';
+import 'state/management_controller.dart';
 import 'state/lead_controller.dart';
 import 'state/order_controller.dart';
 import 'state/sync_controller.dart';
@@ -60,6 +63,8 @@ Future<void> main() async {
   final api = ApiClient(secrets);
   final auth = AuthRepository(api: api, secrets: secrets);
   final settings = SettingsRepository(api: api, db: db);
+  final diagnostics = DiagnosticReporter(api);
+  final management = ManagementRepository(api);
   final appointments = AppointmentRepository(api: api, db: db);
   final attendance = AttendanceRepository(api: api, db: db);
   final gps = GpsRepository(api: api, db: db);
@@ -156,6 +161,11 @@ Future<void> main() async {
     repository: visits,
   );
 
+  final managementController = ManagementController(
+    appState: appState,
+    repository: management,
+  );
+
   final attendanceController = AttendanceController(
     appState: appState,
     attendance: attendance,
@@ -163,6 +173,7 @@ Future<void> main() async {
     tracking: tracking,
     settings: settings,
     db: db,
+    diagnostics: diagnostics,
   );
 
   final syncController = SyncController(
@@ -192,6 +203,7 @@ Future<void> main() async {
         ChangeNotifierProvider.value(value: appointmentController),
         ChangeNotifierProvider.value(value: leadController),
         ChangeNotifierProvider.value(value: masterDataController),
+        ChangeNotifierProvider.value(value: managementController),
         ChangeNotifierProvider.value(value: visitController),
         ChangeNotifierProvider.value(value: callActivityController),
         ChangeNotifierProvider.value(value: orderController),
@@ -200,6 +212,8 @@ Future<void> main() async {
         ChangeNotifierProvider.value(value: targetController),
         ChangeNotifierProvider.value(value: syncController),
         Provider.value(value: masterData),
+        Provider.value(value: management),
+        Provider.value(value: diagnostics),
         Provider.value(value: appointments),
         Provider.value(value: leads),
         Provider.value(value: customers),
