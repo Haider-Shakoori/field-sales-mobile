@@ -79,8 +79,7 @@ bool _polygonContains(List<dynamic> rings, LatLng point) {
   }
 
   for (final hole in rings.skip(1)) {
-    if (hole is List &&
-        _ringContains(List<dynamic>.from(hole), point)) {
+    if (hole is List && _ringContains(List<dynamic>.from(hole), point)) {
       return false;
     }
   }
