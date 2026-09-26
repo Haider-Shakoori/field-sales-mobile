@@ -378,8 +378,7 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                           'Route load',
                           '${capacityUtilization.toStringAsFixed(0)}%',
                         ),
-                      if (overflowStops > 0)
-                        _metric('Overflow', overflowStops),
+                      if (overflowStops > 0) _metric('Overflow', overflowStops),
                       if (included > 0) _metric('Extra', included),
                     ],
                   ),
@@ -389,9 +388,8 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                       overflowStops > 0
                           ? '$overflowStops stop(s) exceed the configured workday capacity. Consider removing optional stops or reprioritizing the remaining route.'
                           : 'The remaining route fits within the configured workday capacity.',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall
+                          ?.copyWith(fontWeight: FontWeight.w600),
                     ),
                   ],
                   const SizedBox(height: 14),
@@ -511,8 +509,12 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                                 [
                                   if (stop['distance_from_previous_km'] != null)
                                     '${stop['distance_from_previous_km']} km from previous',
-                                  if ((stop['estimated_travel_minutes'] as num?) != null &&
-                                      (stop['estimated_travel_minutes'] as num) > 0)
+                                  if ((stop['estimated_travel_minutes']
+                                              as num?) !=
+                                          null &&
+                                      (stop['estimated_travel_minutes']
+                                              as num) >
+                                          0)
                                     '~${stop['estimated_travel_minutes']} min travel',
                                   if (stop['planned_visit_minutes'] != null)
                                     '${stop['planned_visit_minutes']} min visit',
@@ -527,15 +529,16 @@ class _SmartRouteScreenState extends State<SmartRouteScreen> {
                                 Text(
                                   [
                                     'ETA ${_clock(stop['estimated_arrival_at']) ?? '-'}',
-                                    if (_clock(stop['estimated_departure_at']) != null)
+                                    if (_clock(
+                                          stop['estimated_departure_at'],
+                                        ) !=
+                                        null)
                                       'finish ${_clock(stop['estimated_departure_at'])}',
                                     if (stop['capacity_status'] == 'overflow')
                                       'outside planned capacity',
                                   ].join(' · '),
                                   style: Theme.of(context).textTheme.bodySmall
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                      ),
+                                      ?.copyWith(fontWeight: FontWeight.w600),
                                 ),
                               ],
                               if (reasons.isNotEmpty) ...[
