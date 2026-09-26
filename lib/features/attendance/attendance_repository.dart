@@ -163,6 +163,49 @@ class AttendanceRepository {
     });
   }
 
+  Future<void> reopen({
+    required Map<String, dynamic> session,
+    required DateTime at,
+  }) async {
+    final tenantId = '${session['tenant_id']}';
+    if (tenantId.isEmpty || tenantId == 'null') {
+      throw StateError('Work session tenant is unavailable.');
+    }
+
+    await db.db.transaction((txn) async {
+      final now = DateTime.now().toUtc().toIso8601String();
+
+      await txn.update(
+        'local_work_sessions',
+        {
+          'end_time': null,
+          'end_latitude': null,
+          'end_longitude': null,
+          'end_accuracy': null,
+          'status': 'active',
+          'sync_status': 'pending',
+          'odometer_end_km': null,
+          'gps_distance_km': null,
+          'updated_at': now,
+        },
+        where: 'tenant_id=? AND id=?',
+        whereArgs: [tenantId, session['id']],
+      );
+
+      await txn.insert('sync_queue', {
+        'tenant_id': tenantId,
+        'entity_type': 'attendance',
+        'entity_uuid': session['offline_uuid'],
+        'action': 'reopen',
+        'payload': jsonEncode({'reopened_at': at.toUtc().toIso8601String()}),
+        'priority': 30,
+        'status': 'pending',
+        'created_at': now,
+        'updated_at': now,
+      });
+    });
+  }
+
   Future<void> drain(String tenantId) async {
     if (!await ConnectivityGate.instance.isOnline()) {
       return;
@@ -172,7 +215,9 @@ class AttendanceRepository {
       'sync_queue',
       where: 'tenant_id=? AND entity_type=? AND status IN (?,?,?)',
       whereArgs: [tenantId, 'attendance', 'pending', 'failed', 'blocked'],
-      orderBy: 'priority ASC, id ASC',
+      // Attendance is a state machine (start -> end -> reopen -> end ...).
+      // Preserve the exact local action order so retries cannot reorder state.
+      orderBy: 'id ASC',
     );
 
     for (final row in rows) {

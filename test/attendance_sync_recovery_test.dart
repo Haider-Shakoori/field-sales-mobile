@@ -59,6 +59,18 @@ class _StubAdapter implements HttpClientAdapter {
       }, 200);
     }
 
+    if (options.path.endsWith('/attendance/reopen')) {
+      return _json({
+        'success': true,
+        'data': {
+          'id': 'server-session-uuid',
+          'uuid': 'server-session-uuid',
+          'status': 'active',
+        },
+        'meta': <String, dynamic>{},
+      }, 200);
+    }
+
     return _json({
       'success': false,
       'data': null,
@@ -158,6 +170,89 @@ void main() {
       expect(startPayload['odometer_start_km'], 1000);
       expect(endPayload['vehicle_reference'], 'CAR-01');
       expect(endPayload['odometer_end_km'], 1002);
+
+      await db.db.close();
+    },
+  );
+  test(
+    'reopen preserves attendance action order across an accidental close',
+    () async {
+      const tenantId = 'reopen-tenant';
+
+      final db = AppDatabase();
+      await db.open();
+
+      final api = ApiClient(SecretStore());
+      final requests = <RequestOptions>[];
+      api.dio.httpClientAdapter = _StubAdapter(requests);
+
+      final attendance = AttendanceRepository(api: api, db: db);
+
+      await attendance.start(
+        tenantId: tenantId,
+        date: '2026-09-26',
+        at: DateTime.utc(2026, 9, 26, 4, 30),
+        lat: 34.5553,
+        lng: 69.2075,
+        accuracy: 5,
+        source: 'manual',
+      );
+
+      var session = await attendance.active(tenantId);
+      await attendance.end(
+        session: session!,
+        at: DateTime.utc(2026, 9, 26, 7),
+        lat: 34.5588,
+        lng: 69.2120,
+        accuracy: 5,
+      );
+
+      final completed = await attendance.forDate(tenantId, '2026-09-26');
+      expect(completed!['status'], 'completed');
+
+      await attendance.reopen(
+        session: completed,
+        at: DateTime.utc(2026, 9, 26, 7, 5),
+      );
+
+      session = await attendance.active(tenantId);
+      expect(session, isNotNull);
+      expect(session!['status'], 'active');
+      expect(session['end_time'], isNull);
+
+      await attendance.end(
+        session: session,
+        at: DateTime.utc(2026, 9, 26, 10),
+        lat: 34.5600,
+        lng: 69.2200,
+        accuracy: 5,
+      );
+
+      await attendance.drain(tenantId);
+
+      expect(requests.map((request) => request.uri.path).toList(), [
+        '/api/v1/attendance/start',
+        '/api/v1/attendance/end',
+        '/api/v1/attendance/reopen',
+        '/api/v1/attendance/end',
+      ]);
+
+      final queue = await db.db.query(
+        'sync_queue',
+        where: 'tenant_id=?',
+        whereArgs: [tenantId],
+        orderBy: 'id ASC',
+      );
+      expect(queue.map((row) => row['action']).toList(), [
+        'start',
+        'end',
+        'reopen',
+        'end',
+      ]);
+      expect(queue.every((row) => row['status'] == 'synced'), isTrue);
+
+      final finalSession = await attendance.forDate(tenantId, '2026-09-26');
+      expect(finalSession!['status'], 'completed');
 
       await db.db.close();
     },
