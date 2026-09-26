@@ -54,7 +54,7 @@ class AuthRepository {
   Future<AuthSession> login(
     String email,
     String password, {
-    String? tenantCode,
+    String? tenant,
   }) async {
     await secrets.installationUuid();
     final deviceUuid = await secrets.deviceUuid();
@@ -77,8 +77,7 @@ class AuthRepository {
         data: {
           'email': email,
           'password': password,
-          if (tenantCode?.trim().isNotEmpty == true)
-            'tenant': tenantCode!.trim(),
+          if (tenant?.trim().isNotEmpty == true) 'tenant': tenant!.trim(),
           'device_uuid': deviceUuid,
           'device_model': deviceModel,
           'manufacturer': manufacturer,
@@ -90,11 +89,11 @@ class AuthRepository {
     );
     await secrets.setToken('${data['token']}');
     final user = Map<String, dynamic>.from(data['user']);
-    final tenant = Map<String, dynamic>.from(data['tenant']);
+    final tenantData = Map<String, dynamic>.from(data['tenant']);
     final registeredDevice = Map<String, dynamic>.from(data['device']);
     final s = AuthSession(
       userId: '${user['id']}',
-      tenantId: '${tenant['id']}',
+      tenantId: '${tenantData['id']}',
       deviceId: '${registeredDevice['id']}',
       name: '${user['name']}',
       role: (user['role'] ?? 'salesman').toString(),
