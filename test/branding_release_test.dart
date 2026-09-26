@@ -20,21 +20,25 @@ void main() {
     expect(splash, contains('_FieldPulseMarkPainter'));
     expect(splash, isNot(contains('AssetImage(')));
     expect(
-      File('android/app/src/main/res/drawable/fieldpulse_launcher_foreground.xml')
+      File(
+        'android/app/src/main/res/drawable/fieldpulse_launcher_foreground.xml',
+      ).existsSync(),
+      isTrue,
+    );
+    expect(
+      File('android/app/src/main/res/mipmap-anydpi/ic_launcher.xml')
           .existsSync(),
       isTrue,
     );
     expect(
-      File('android/app/src/main/res/mipmap-anydpi/ic_launcher.xml').existsSync(),
-      isTrue,
-    );
-    expect(
-      File('android/app/src/main/res/drawable-nodpi/fieldpulse_launcher_foreground.png')
-          .existsSync(),
+      File(
+        'android/app/src/main/res/drawable-nodpi/fieldpulse_launcher_foreground.png',
+      ).existsSync(),
       isFalse,
     );
     expect(
-      File('android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp').existsSync(),
+      File('android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp')
+          .existsSync(),
       isFalse,
     );
     expect(
