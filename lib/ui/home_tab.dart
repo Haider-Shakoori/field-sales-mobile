@@ -35,9 +35,8 @@ class _EndDayMetric extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             value,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(context).textTheme.titleLarge
+                ?.copyWith(fontWeight: FontWeight.bold),
           ),
           Text(
             detail,
@@ -227,7 +226,8 @@ class HomeTab extends StatelessWidget {
                           _EndDayMetric(
                             label: 'Planned',
                             value: '${planSummary['total_stops'] ?? 0}',
-                            detail: '${planSummary['remaining'] ?? 0} remaining',
+                            detail:
+                                '${planSummary['remaining'] ?? 0} remaining',
                           ),
                           _EndDayMetric(
                             label: 'Visits',
@@ -264,7 +264,9 @@ class HomeTab extends StatelessWidget {
                               ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 6),
-                        ...missedRows.take(5).map(
+                        ...missedRows
+                            .take(5)
+                            .map(
                               (row) => Padding(
                                 padding: const EdgeInsets.only(bottom: 3),
                                 child: Text(
