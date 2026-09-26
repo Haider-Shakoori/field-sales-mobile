@@ -8,6 +8,7 @@ import '../core/api/api_exception.dart';
 import '../core/config.dart';
 import '../core/db/app_database.dart';
 import '../features/attendance/attendance_repository.dart';
+import '../features/diagnostics/diagnostic_reporter.dart';
 import '../features/gps/gps_repository.dart';
 import '../features/gps/tracking_service.dart';
 import '../features/settings/attendance_tracking_settings.dart';
@@ -56,6 +57,7 @@ class AttendanceController extends ChangeNotifier {
     required this.tracking,
     required this.settings,
     required this.db,
+    required this.diagnostics,
   }) {
     attendance.api.onAuthRevoked = handleRevocation;
   }
@@ -66,6 +68,7 @@ class AttendanceController extends ChangeNotifier {
   final TrackingService tracking;
   final SettingsRepository settings;
   final AppDatabase db;
+  final DiagnosticReporter diagnostics;
 
   Map<String, dynamic>? session;
   bool restored = false;
@@ -269,7 +272,19 @@ class AttendanceController extends ChangeNotifier {
 
     try {
       server = await attendance.endDayPreview();
-    } catch (_) {
+    } catch (error) {
+      unawaited(
+        diagnostics.report(
+          area: 'attendance.end_day_preview',
+          severity: 'warning',
+          code: error is ApiException
+              ? error.code
+              : error.runtimeType.toString(),
+          message: friendlyAttendanceError(error),
+          screen: 'home',
+          operation: 'end_day_preview',
+        ),
+      );
       // The End Day screen must remain usable offline.
     }
 
@@ -419,6 +434,17 @@ class AttendanceController extends ChangeNotifier {
       _scheduleBoundary();
     } catch (error) {
       message = friendlyAttendanceError(error);
+      unawaited(
+        diagnostics.report(
+          area: 'attendance.end_day',
+          code: error is ApiException
+              ? error.code
+              : error.runtimeType.toString(),
+          message: message!,
+          screen: 'home',
+          operation: 'end_day',
+        ),
+      );
       await reconcile();
     } finally {
       busy = false;
