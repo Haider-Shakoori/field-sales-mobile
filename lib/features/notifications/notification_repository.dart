@@ -39,7 +39,9 @@ class NotificationRepository {
 
     return (data as List? ?? const [])
         .whereType<Map>()
-        .map((row) => MobileNotification.fromJson(Map<String, dynamic>.from(row)))
+        .map(
+          (row) => MobileNotification.fromJson(Map<String, dynamic>.from(row)),
+        )
         .toList();
   }
 
