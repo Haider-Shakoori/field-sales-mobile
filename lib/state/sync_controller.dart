@@ -90,7 +90,9 @@ class SyncController extends ChangeNotifier {
 
   Future<SyncCycleReport?> retryFailures() async {
     final tenantId = appState.session?.tenantId;
-    if (tenantId == null || busy) return null;
+    if (tenantId == null || appState.session?.isSalesman != true || busy) {
+      return null;
+    }
 
     await retryStore.retryAll(tenantId);
     await refreshHealth();
