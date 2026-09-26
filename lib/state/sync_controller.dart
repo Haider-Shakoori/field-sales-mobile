@@ -32,7 +32,7 @@ class SyncController extends ChangeNotifier {
 
   Future<void> refreshHealth() async {
     final tenantId = appState.session?.tenantId;
-    if (tenantId == null) {
+    if (tenantId == null || appState.session?.isSalesman != true) {
       issueCount = 0;
       waitingCount = 0;
       blockedCount = 0;
@@ -54,7 +54,9 @@ class SyncController extends ChangeNotifier {
 
   Future<SyncCycleReport?> run({String triggerSource = 'manual'}) async {
     final tenantId = appState.session?.tenantId;
-    if (tenantId == null || busy) return null;
+    if (tenantId == null || appState.session?.isSalesman != true || busy) {
+      return null;
+    }
 
     busy = true;
     message = null;
