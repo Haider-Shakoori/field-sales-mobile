@@ -22,11 +22,7 @@ class _FieldPulseSplashBody extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF031733),
-              Color(0xFF082B56),
-              Color(0xFF0B3768),
-            ],
+            colors: [Color(0xFF031733), Color(0xFF082B56), Color(0xFF0B3768)],
           ),
         ),
       ),
@@ -163,11 +159,7 @@ class _FieldPulseMarkPainter extends CustomPainter {
       ..shader = const LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [
-          Color(0xFF2F7DFF),
-          Color(0xFF2FC6E8),
-          Color(0xFF38D39F),
-        ],
+        colors: [Color(0xFF2F7DFF), Color(0xFF2FC6E8), Color(0xFF38D39F)],
       ).createShader(Offset.zero & size);
 
     canvas.drawPath(path, paint);
