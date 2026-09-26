@@ -28,6 +28,7 @@ import 'features/leads/lead_repository.dart';
 import 'features/mileage/mileage_repository.dart';
 import 'features/gamification/gamification_repository.dart';
 import 'features/notifications/notification_repository.dart';
+import 'features/notifications/push_service.dart';
 import 'features/master_data/master_data_repository.dart';
 import 'features/master_data/master_data_source.dart';
 import 'features/orders/order_repository.dart';
@@ -63,6 +64,8 @@ Future<void> main() async {
 
   final secrets = SecretStore();
   final api = ApiClient(secrets);
+  final push = PushService(api);
+  await push.initialize();
   final auth = AuthRepository(api: api, secrets: secrets);
   final settings = SettingsRepository(api: api, db: db);
   final appointments = AppointmentRepository(api: api, db: db);
@@ -188,6 +191,9 @@ Future<void> main() async {
   );
 
   await appState.restore();
+  if (appState.signedIn) {
+    await push.registerCurrentToken();
+  }
   notificationController.start();
   if (appState.isSalesman) {
     await attendanceController.restore();
