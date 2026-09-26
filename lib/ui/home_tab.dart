@@ -125,7 +125,9 @@ class HomeTab extends StatelessWidget {
     if (closing.activeVisits > 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Complete the active customer visit before ending the day.'),
+          content: Text(
+            'Complete the active customer visit before ending the day.',
+          ),
         ),
       );
       return;
@@ -150,9 +152,15 @@ class HomeTab extends StatelessWidget {
                   const Text('Review today before ending the day.'),
                   const SizedBox(height: 8),
                   Text('Visits: ${closing.visits}'),
-                  Text('Orders: ${closing.orders} · AFN ${closing.orderTotal.toStringAsFixed(0)}'),
-                  Text('Collections: ${closing.collections} · AFN ${closing.collectionTotal.toStringAsFixed(0)}'),
-                  Text('Expenses: ${closing.expenses} · AFN ${closing.expenseTotal.toStringAsFixed(0)}'),
+                  Text(
+                    'Orders: ${closing.orders} · AFN ${closing.orderTotal.toStringAsFixed(0)}',
+                  ),
+                  Text(
+                    'Collections: ${closing.collections} · AFN ${closing.collectionTotal.toStringAsFixed(0)}',
+                  ),
+                  Text(
+                    'Expenses: ${closing.expenses} · AFN ${closing.expenseTotal.toStringAsFixed(0)}',
+                  ),
                   Text('Pending sync: ${closing.pendingSync}'),
                   const SizedBox(height: 12),
                   TextField(
