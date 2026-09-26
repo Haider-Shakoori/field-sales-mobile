@@ -4,9 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('GPS tracking serializes slow position persistence', () {
-    final source = File(
-      'lib/features/gps/tracking_service.dart',
-    ).readAsStringSync();
+    final source = File('lib/features/gps/tracking_service.dart')
+        .readAsStringSync();
 
     expect(source, contains('bool _processingPosition = false'));
     expect(source, contains('Position? _queuedPosition'));
