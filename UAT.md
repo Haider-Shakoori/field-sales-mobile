@@ -35,14 +35,19 @@ If the default Android application icon is still present, stop and mark UAT-01 *
 
 Expected: clean launch with production branding and no debug configuration exposure.
 
-## UAT-02 — Login and device binding
+## UAT-02 — Login, tenant selection, leadership and device binding
 
-1. Sign in with the UAT salesman.
+1. Sign in with the UAT salesman whose email belongs to one company.
 2. Verify tenant, salesman identity and expected permissions.
-3. Sign out and sign in again on the same installation.
-4. Attempt to register a second active device for the same salesman.
+3. Sign out and sign in with an assigned supervisor on the same installation.
+4. Confirm the supervisor reaches the leadership dashboard and sees only the assigned team.
+5. If a UAT email exists in more than one company, omit the Company / Tenant code once and confirm the app asks for it instead of showing a generic server error.
+6. Enter the correct tenant slug/UUID and confirm the intended company is selected.
+7. Sign out and confirm the last successful tenant code is prefilled but remains editable.
+8. Enter an incorrect tenant code/password and confirm a user-friendly credential error is shown.
+9. Attempt to register a second active device for the same salesman.
 
-Expected: same device is reusable; second active device is rejected according to policy.
+Expected: same installation can switch safely between salesman and supervisor accounts; tenant ambiguity is explicitly resolved; the last successful company is remembered; leadership scope is correct; second active salesman device is rejected according to policy.
 
 ## UAT-03 — Privacy and permissions
 
@@ -131,11 +136,15 @@ With an active session and required permissions granted:
 
 Expected: tracking follows configured policy without duplicate/out-of-order current-location regression. Record any OEM battery-optimization warning/behavior.
 
-## UAT-10 — End Day behavior
+## UAT-10 — End Day, accidental close recovery and final stop
 
-End the work session and leave the app backgrounded.
+1. End the active work session.
+2. Confirm the same-day completed session offers **Reopen Day**.
+3. Reopen it and verify the original Start Day time and existing visits/orders/collections remain unchanged.
+4. Confirm tracking resumes without creating a second attendance session.
+5. End Day again and leave the app backgrounded.
 
-Expected: active-session state is cleared and tracking stops according to policy; no later GPS points are attributed as active-session tracking.
+Expected: accidental close recovery reactivates the same attendance session exactly once; the final End Day clears active-session state and tracking stops according to policy; no later GPS points are attributed as active-session tracking.
 
 ## UAT-11 — Device revocation
 
