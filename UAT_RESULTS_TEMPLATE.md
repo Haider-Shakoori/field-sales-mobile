@@ -50,7 +50,7 @@ Use only: `PASS`, `FAIL`, `BLOCKED`, or `NOT EXECUTED`.
 | ID | Scenario | Result | UTC time | Evidence | Defect ID | Retest |
 |---|---|---|---|---|---|---|
 | UAT-01 | Clean install and launch | NOT EXECUTED | | | | |
-| UAT-02 | Login and device binding | NOT EXECUTED | | | | |
+| UAT-02 | Login, tenant selection, leadership and device binding | NOT EXECUTED | | | | |
 | UAT-03 | Privacy and permissions | NOT EXECUTED | | | | |
 | UAT-04 | Start Day and online GPS | NOT EXECUTED | | | | |
 | UAT-05 | Full offline field workflow | NOT EXECUTED | | | | |
@@ -58,7 +58,7 @@ Use only: `PASS`, `FAIL`, `BLOCKED`, or `NOT EXECUTED`.
 | UAT-07 | Reconnect and synchronize | NOT EXECUTED | | | | |
 | UAT-08 | Admin review round-trip | NOT EXECUTED | | | | |
 | UAT-09 | Background GPS | NOT EXECUTED | | | | |
-| UAT-10 | End Day behavior | NOT EXECUTED | | | | |
+| UAT-10 | End Day, accidental close recovery and final stop | NOT EXECUTED | | | | |
 | UAT-11 | Device revocation | NOT EXECUTED | | | | |
 | UAT-12 | Notifications/preferences | NOT EXECUTED | | | | |
 | UAT-13 | Reports/CSV | NOT EXECUTED | | | | |
@@ -80,6 +80,9 @@ Record the local/server identifiers used to prove retry safety without exposing 
 | Expense | | | 1 | |
 
 Record:
+- tenant code used / ambiguity behavior:
+- supervisor same-installation login result:
+- remembered tenant prefill result:
 - airplane-mode start/end time:
 - application force-stop/restart time:
 - reconnect time:
@@ -96,8 +99,10 @@ Record:
 - admin live-map last-location time:
 - oldest/newest GPS timestamps:
 - out-of-order or duplicate points observed:
-- End Day time:
-- any GPS point received after End Day:
+- accidental End Day time:
+- Reopen Day time / same-session verification:
+- final End Day time:
+- any GPS point received after final End Day:
 - OEM battery-optimization behavior:
 
 ## Admin round-trip evidence
