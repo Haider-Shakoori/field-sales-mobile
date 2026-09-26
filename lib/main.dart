@@ -26,6 +26,8 @@ import 'features/gps/tracking_service.dart';
 import 'features/maps/offline_map_cache.dart';
 import 'features/leads/lead_repository.dart';
 import 'features/mileage/mileage_repository.dart';
+import 'features/gamification/gamification_repository.dart';
+import 'features/notifications/notification_repository.dart';
 import 'features/master_data/master_data_repository.dart';
 import 'features/master_data/master_data_source.dart';
 import 'features/orders/order_repository.dart';
@@ -44,6 +46,7 @@ import 'state/attendance_controller.dart';
 import 'state/master_data_controller.dart';
 import 'state/lead_controller.dart';
 import 'state/order_controller.dart';
+import 'state/notification_controller.dart';
 import 'state/sync_controller.dart';
 import 'state/target_controller.dart';
 import 'state/team_controller.dart';
@@ -77,6 +80,8 @@ Future<void> main() async {
   final statements = CustomerStatementRepository(api: api, db: db);
   final mileage = MileageRepository(api: api, db: db);
   final leads = LeadRepository(api: api, db: db);
+  final notifications = NotificationRepository(api);
+  final gamification = GamificationRepository(api);
 
   final masterSource = ApiMasterDataSource(api);
   final masterData = MasterDataRepository(database: db, source: masterSource);
@@ -170,6 +175,11 @@ Future<void> main() async {
     db: db,
   );
 
+  final notificationController = NotificationController(
+    appState: appState,
+    repository: notifications,
+  );
+
   final syncController = SyncController(
     appState: appState,
     db: db,
@@ -178,6 +188,7 @@ Future<void> main() async {
   );
 
   await appState.restore();
+  notificationController.start();
   if (appState.isSalesman) {
     await attendanceController.restore();
     await syncController.initialize();
@@ -207,6 +218,7 @@ Future<void> main() async {
         ChangeNotifierProvider.value(value: targetController),
         ChangeNotifierProvider.value(value: teamController),
         ChangeNotifierProvider.value(value: syncController),
+        ChangeNotifierProvider.value(value: notificationController),
         Provider.value(value: masterData),
         Provider.value(value: appointments),
         Provider.value(value: leads),
@@ -222,6 +234,7 @@ Future<void> main() async {
         Provider.value(value: targets),
         Provider.value(value: team),
         Provider.value(value: mileage),
+        Provider.value(value: gamification),
         Provider.value(value: retryStore),
         Provider.value(value: syncCoordinator),
       ],

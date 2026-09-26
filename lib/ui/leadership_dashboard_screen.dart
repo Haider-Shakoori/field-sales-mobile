@@ -8,6 +8,9 @@ import 'package:provider/provider.dart';
 import '../core/config.dart';
 import '../state/app_state.dart';
 import '../state/team_controller.dart';
+import '../features/team/team_repository.dart';
+import '../state/notification_controller.dart';
+import 'notifications_screen.dart';
 
 const _kabul = LatLng(34.5553, 69.2075);
 
@@ -51,6 +54,24 @@ class _LeadershipDashboardScreenState extends State<LeadershipDashboardScreen> {
       appBar: AppBar(
         title: Text('$roleLabel · FieldPulse'),
         actions: [
+          Consumer<NotificationController>(
+            builder: (context, notifications, _) => IconButton(
+              tooltip: 'Notifications',
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => Scaffold(
+                    appBar: AppBar(title: const Text('Notifications')),
+                    body: const NotificationsScreen(),
+                  ),
+                ),
+              ),
+              icon: Badge(
+                isLabelVisible: notifications.unreadCount > 0,
+                label: Text('${notifications.unreadCount}'),
+                child: const Icon(Icons.notifications_outlined),
+              ),
+            ),
+          ),
           IconButton(
             tooltip: 'Refresh team',
             onPressed: team.busy ? null : _refresh,
@@ -427,11 +448,69 @@ class _HierarchyCard extends StatelessWidget {
                       )
                       .join(' · '),
                 ),
+                trailing: IconButton(
+                  tooltip: 'Send notification',
+                  icon: const Icon(Icons.campaign_outlined),
+                  onPressed: () => _sendNudge(context, salesman),
+                ),
               ),
             )
             .toList(),
       ),
     );
+  }
+}
+
+Future<void> _sendNudge(
+  BuildContext context,
+  Map<String, dynamic> salesman,
+) async {
+  final controller = TextEditingController(
+    text: 'Please continue with your assigned route and update your visit status.',
+  );
+  final message = await showDialog<String>(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      title: Text('Notify ${salesman['salesman_name'] ?? 'salesman'}'),
+      content: TextField(
+        controller: controller,
+        autofocus: true,
+        maxLength: 500,
+        minLines: 2,
+        maxLines: 5,
+        decoration: const InputDecoration(labelText: 'Message'),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(dialogContext),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(dialogContext, controller.text.trim()),
+          child: const Text('Send'),
+        ),
+      ],
+    ),
+  );
+  controller.dispose();
+
+  if (message == null || message.length < 2 || !context.mounted) return;
+
+  try {
+    await context.read<TeamRepository>().nudge(
+      '${salesman['salesman_id']}',
+      message,
+    );
+    if (context.mounted) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Notification sent.')));
+    }
+  } catch (error) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not send notification: $error')),
+      );
+    }
   }
 }
 

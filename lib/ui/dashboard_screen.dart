@@ -12,6 +12,7 @@ import '../state/expense_controller.dart';
 import '../state/master_data_controller.dart';
 import '../state/lead_controller.dart';
 import '../state/order_controller.dart';
+import '../state/notification_controller.dart';
 import '../state/sync_controller.dart';
 import '../state/target_controller.dart';
 import '../state/team_controller.dart';
@@ -21,6 +22,7 @@ import 'home_tab.dart';
 import 'leadership_dashboard_screen.dart';
 import 'more_screen.dart';
 import 'orders_screen.dart';
+import 'notifications_screen.dart';
 import 'sync_refresh.dart';
 import 'sync_screen.dart';
 import 'visits_screen.dart';
@@ -129,6 +131,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
       appBar: AppBar(
         title: Text(_titles[_index]),
         actions: [
+          Consumer<NotificationController>(
+            builder: (context, notifications, _) => IconButton(
+              tooltip: 'Notifications',
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => Scaffold(
+                    appBar: AppBar(title: const Text('Notifications')),
+                    body: const NotificationsScreen(),
+                  ),
+                ),
+              ),
+              icon: Badge(
+                isLabelVisible: notifications.unreadCount > 0,
+                label: Text('${notifications.unreadCount}'),
+                child: const Icon(Icons.notifications_outlined),
+              ),
+            ),
+          ),
           if (pending > 0)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
