@@ -197,9 +197,7 @@ class AttendanceRepository {
         'entity_type': 'attendance',
         'entity_uuid': session['offline_uuid'],
         'action': 'reopen',
-        'payload': jsonEncode({
-          'reopened_at': at.toUtc().toIso8601String(),
-        }),
+        'payload': jsonEncode({'reopened_at': at.toUtc().toIso8601String()}),
         'priority': 30,
         'status': 'pending',
         'created_at': now,
