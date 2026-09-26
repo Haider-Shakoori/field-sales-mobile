@@ -53,8 +53,8 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> login(String email, String password) async {
-    session = await auth.login(email, password);
+  Future<void> login(String email, String password, {String? tenant}) async {
+    session = await auth.login(email, password, tenant: tenant);
     policy = await settings.refresh(session!.tenantId);
     _syncHeartbeat();
     notifyListeners();
