@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../state/app_state.dart';
 import '../state/appointment_controller.dart';
 import '../state/attendance_controller.dart';
 import '../state/call_activity_controller.dart';
@@ -13,9 +14,11 @@ import '../state/lead_controller.dart';
 import '../state/order_controller.dart';
 import '../state/sync_controller.dart';
 import '../state/target_controller.dart';
+import '../state/team_controller.dart';
 import '../state/visit_controller.dart';
 import 'customers_screen.dart';
 import 'home_tab.dart';
+import 'leadership_dashboard_screen.dart';
 import 'more_screen.dart';
 import 'orders_screen.dart';
 import 'sync_refresh.dart';
@@ -60,6 +63,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> _initializeData() async {
+    if (context.read<AppState>().isLeadership) {
+      await context.read<TeamController>().refresh(silent: true);
+      return;
+    }
+
     await Future.wait([
       context.read<MasterDataController>().reloadLocal(),
       context.read<LeadController>().reloadLocal(),
@@ -93,6 +101,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (context.watch<AppState>().isLeadership) {
+      return const LeadershipDashboardScreen();
+    }
+
     final master = context.watch<MasterDataController>();
     final appointments = context.watch<AppointmentController>();
     final leads = context.watch<LeadController>();
