@@ -118,6 +118,19 @@ class HomeTab extends StatelessWidget {
     BuildContext context,
     AttendanceController controller,
   ) async {
+    final closing = await controller.dayClosingSummary();
+
+    if (!context.mounted) return;
+
+    if (closing.activeVisits > 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Complete the active customer visit before ending the day.'),
+        ),
+      );
+      return;
+    }
+
     var syncBeforeEnd = true;
     final vehicle = TextEditingController(
       text: controller.session?['vehicle_reference']?.toString() ?? '',
