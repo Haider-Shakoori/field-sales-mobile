@@ -20,9 +20,16 @@ void main() {
     expect(screen, contains('longitude: _shopLocation!.longitude'));
     expect(screen, contains('Select the exact shop location on the map'));
     expect(customers, contains('CustomerCreateScreen'));
+    expect(customers, contains('CustomerCreateScreen(customer: customer)'));
+    expect(screen, contains('Detected territory:'));
+    expect(screen, contains('widget.editing'));
+    expect(controller, contains('Future<void> updateCustomer'));
+    expect(controller, contains('territories = await masterData.list'));
     expect(controller, contains('double? latitude'));
     expect(controller, contains('double? longitude'));
     expect(repository, contains("'latitude': ?latitude"));
     expect(repository, contains("'longitude': ?longitude"));
+    expect(repository, contains('updateOffline'));
+    expect(repository, contains("action: 'update'"));
   });
 }
