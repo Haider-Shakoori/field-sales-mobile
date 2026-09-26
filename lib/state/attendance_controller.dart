@@ -68,6 +68,7 @@ class AttendanceController extends ChangeNotifier {
   final AppDatabase db;
 
   Map<String, dynamic>? session;
+  Map<String, dynamic>? todaySession;
   bool restored = false;
   bool busy = false;
   String? message;
@@ -77,12 +78,18 @@ class AttendanceController extends ChangeNotifier {
 
   bool get working => session?['status'] == 'active';
 
+  bool get canReopenToday =>
+      !working &&
+      todaySession?['status'] == 'completed' &&
+      todaySession?['date']?.toString() == tenantDate;
+
   Future<void> restore() async {
     final tenantId = appState.session?.tenantId;
     session = tenantId == null ? null : await attendance.active(tenantId);
     restored = true;
     if (appState.signedIn) {
       await appState.refreshPolicy();
+      await _reloadTodaySession();
       await _flushPending();
       await reconcile();
       await evaluateAutomaticPolicy();
@@ -122,6 +129,17 @@ class AttendanceController extends ChangeNotifier {
   }
 
   String? get tenantDate => _tenantNow()?.toIso8601String().substring(0, 10);
+
+  Future<void> _reloadTodaySession() async {
+    final tenantId = appState.session?.tenantId;
+    final date = tenantDate;
+    if (tenantId == null || date == null) {
+      todaySession = null;
+      return;
+    }
+
+    todaySession = await attendance.forDate(tenantId, date);
+  }
 
   bool _insideWindow(tz.TZDateTime now, AttendanceTrackingSettings policy) {
     int minutes(String value) {
@@ -246,6 +264,7 @@ class AttendanceController extends ChangeNotifier {
         odometerStartKm: odometerStartKm,
       );
       session = await attendance.active(tenantId);
+      todaySession = session;
       await reconcile();
       unawaited(_flushPending());
     } catch (error) {
@@ -409,6 +428,10 @@ class AttendanceController extends ChangeNotifier {
       // If anything above fails, the active work day remains intact.
       tracking.stop();
       _stopUploader();
+      todaySession = await attendance.forDate(
+        tenantId,
+        currentSession['date'].toString(),
+      );
       session = null;
       message = null;
 
@@ -419,6 +442,47 @@ class AttendanceController extends ChangeNotifier {
       _scheduleBoundary();
     } catch (error) {
       message = friendlyAttendanceError(error);
+      await reconcile();
+    } finally {
+      busy = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> reopenDay() async {
+    if (busy || working || !canReopenToday) return;
+
+    busy = true;
+    message = null;
+    notifyListeners();
+
+    try {
+      final tenantId = appState.session?.tenantId;
+      final date = tenantDate;
+      if (tenantId == null) {
+        throw StateError('Signed-in tenant is unavailable.');
+      }
+      if (date == null) {
+        throw StateError('Company timezone is unavailable.');
+      }
+
+      final completed = await attendance.forDate(tenantId, date);
+      if (completed == null || completed['status'] != 'completed') {
+        throw StateError('Today\'s closed work day could not be found.');
+      }
+
+      await attendance.reopen(session: completed, at: DateTime.now());
+
+      session = await attendance.active(tenantId);
+      todaySession = session;
+      if (session == null) {
+        throw StateError('The work day could not be reopened locally.');
+      }
+
+      await reconcile();
+      unawaited(_flushPending());
+    } catch (error) {
+      message = '$error'.replaceFirst('Bad state: ', '');
       await reconcile();
     } finally {
       busy = false;
@@ -529,6 +593,7 @@ class AttendanceController extends ChangeNotifier {
     if (tenantId != null && session == null) {
       session = await attendance.active(tenantId);
     }
+    await _reloadTodaySession();
     await _flushPending();
     await reconcile();
     await evaluateAutomaticPolicy();
@@ -599,6 +664,7 @@ class AttendanceController extends ChangeNotifier {
     _boundary = null;
     await appState.logout();
     session = null;
+    todaySession = null;
     notifyListeners();
   }
 
