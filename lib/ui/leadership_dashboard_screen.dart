@@ -502,9 +502,8 @@ Future<void> _sendNudge(
       message,
     );
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Notification sent.')),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Notification sent.')));
     }
   } catch (error) {
     if (context.mounted) {
