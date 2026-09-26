@@ -26,9 +26,8 @@ void main() {
       isTrue,
     );
     expect(
-      File(
-        'android/app/src/main/res/drawable/fieldpulse_splash_vector.xml',
-      ).existsSync(),
+      File('android/app/src/main/res/drawable/fieldpulse_splash_vector.xml')
+          .existsSync(),
       isTrue,
     );
     expect(
