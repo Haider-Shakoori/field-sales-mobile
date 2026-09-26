@@ -299,7 +299,7 @@ class CustomersScreen extends StatelessWidget {
                 ],
               )
             : ListView.separated(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
                 itemCount: rows.length,
                 separatorBuilder: (_, _) => const SizedBox(height: 8),
                 itemBuilder: (_, index) {
@@ -307,79 +307,148 @@ class CustomersScreen extends StatelessWidget {
                   final offline = customer['offline_uuid'] != null;
                   final phone = customer['phone']?.toString().trim() ?? '';
 
+                  final rawName =
+                      customer['name']?.toString().trim() ?? '';
+                  final displayName =
+                      rawName.isEmpty ? 'Customer' : rawName;
+                  final details = [
+                    customer['code'],
+                    customer['phone'],
+                    if (offline) 'Offline-created',
+                  ]
+                      .where(
+                        (value) =>
+                            value != null &&
+                            value.toString().trim().isNotEmpty,
+                      )
+                      .map((value) => value.toString().trim())
+                      .join(' · ');
+
                   return Card(
-                    child: ListTile(
+                    clipBehavior: Clip.antiAlias,
+                    child: InkWell(
                       onTap: () => _edit(context, customer),
-                      leading: CircleAvatar(
-                        child: Text(
-                          (customer['name'] ?? '?')
-                              .toString()
-                              .characters
-                              .first
-                              .toUpperCase(),
-                        ),
-                      ),
-                      title: Text(customer['name']?.toString() ?? 'Customer'),
-                      subtitle: Text(
-                        [
-                              customer['code'],
-                              customer['phone'],
-                              if (offline) 'Offline-created',
-                            ]
-                            .where(
-                              (value) =>
-                                  value != null &&
-                                  value.toString().trim().isNotEmpty,
-                            )
-                            .join(' · '),
-                      ),
-                      trailing: Wrap(
-                        spacing: 0,
-                        children: [
-                          IconButton(
-                            tooltip: 'Reorder recommendations',
-                            onPressed: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => ReorderRecommendationsScreen(
-                                  customer: customer,
-                                  products: state.products,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(14, 14, 10, 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CircleAvatar(
+                                  radius: 24,
+                                  child: Text(
+                                    displayName.characters.first.toUpperCase(),
+                                  ),
                                 ),
-                              ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        displayName,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                      ),
+                                      if (details.isNotEmpty) ...[
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          details,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.bodyMedium,
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                const Padding(
+                                  padding: EdgeInsets.only(top: 8),
+                                  child: Icon(Icons.chevron_right),
+                                ),
+                              ],
                             ),
-                            icon: const Icon(Icons.auto_awesome_outlined),
-                          ),
-                          IconButton(
-                            tooltip: 'Statement',
-                            onPressed: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    CustomerStatementScreen(customer: customer),
-                              ),
+                            const SizedBox(height: 10),
+                            const Divider(height: 1),
+                            const SizedBox(height: 4),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                IconButton(
+                                  tooltip: 'Reorder recommendations',
+                                  visualDensity: VisualDensity.compact,
+                                  onPressed: () => Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          ReorderRecommendationsScreen(
+                                            customer: customer,
+                                            products: state.products,
+                                          ),
+                                    ),
+                                  ),
+                                  icon: const Icon(
+                                    Icons.auto_awesome_outlined,
+                                  ),
+                                ),
+                                IconButton(
+                                  tooltip: 'Statement',
+                                  visualDensity: VisualDensity.compact,
+                                  onPressed: () => Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          CustomerStatementScreen(
+                                            customer: customer,
+                                          ),
+                                    ),
+                                  ),
+                                  icon: const Icon(
+                                    Icons.account_balance_wallet_outlined,
+                                  ),
+                                ),
+                                IconButton(
+                                  tooltip: 'Call history',
+                                  visualDensity: VisualDensity.compact,
+                                  onPressed: () =>
+                                      _showHistory(context, customer),
+                                  icon: const Icon(Icons.history),
+                                ),
+                                IconButton(
+                                  tooltip:
+                                      phone.isEmpty ? 'No phone' : 'Message',
+                                  visualDensity: VisualDensity.compact,
+                                  onPressed: phone.isEmpty
+                                      ? null
+                                      : () => _messageCustomer(
+                                            context,
+                                            customer,
+                                          ),
+                                  icon: const Icon(Icons.chat_bubble_outline),
+                                ),
+                                IconButton(
+                                  tooltip: phone.isEmpty ? 'No phone' : 'Call',
+                                  visualDensity: VisualDensity.compact,
+                                  onPressed: phone.isEmpty || callState.busy
+                                      ? null
+                                      : () =>
+                                          _callCustomer(context, customer),
+                                  icon: const Icon(Icons.call_outlined),
+                                ),
+                              ],
                             ),
-                            icon: const Icon(
-                              Icons.account_balance_wallet_outlined,
-                            ),
-                          ),
-                          IconButton(
-                            tooltip: 'Call history',
-                            onPressed: () => _showHistory(context, customer),
-                            icon: const Icon(Icons.history),
-                          ),
-                          IconButton(
-                            tooltip: phone.isEmpty ? 'No phone' : 'Message',
-                            onPressed: phone.isEmpty
-                                ? null
-                                : () => _messageCustomer(context, customer),
-                            icon: const Icon(Icons.chat_bubble_outline),
-                          ),
-                          IconButton(
-                            tooltip: phone.isEmpty ? 'No phone' : 'Call',
-                            onPressed: phone.isEmpty || callState.busy
-                                ? null
-                                : () => _callCustomer(context, customer),
-                            icon: const Icon(Icons.call_outlined),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   );
