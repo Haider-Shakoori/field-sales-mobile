@@ -247,6 +247,61 @@ void main() {
     },
   );
 
+  test('server-backed customer edits stay offline-first then PATCH', () async {
+    final customers = CustomerRepository(
+      database: database,
+      transactions: LocalFirstTransaction(database),
+      masterData: masterData,
+      source: source,
+    );
+
+    await masterData.cacheServerRow(
+      table: 'customers',
+      tenantId: 'tenant-a',
+      row: {
+        'id': 'customer-server-1',
+        'code': 'C-1',
+        'name': 'Old Shop',
+        'phone': '0700000000',
+        'latitude': 34.55,
+        'longitude': 69.20,
+        'geofence_radius_meters': 100,
+        'is_active': true,
+      },
+    );
+
+    await customers.updateOffline(
+      tenantId: 'tenant-a',
+      customerId: 'customer-server-1',
+      name: 'Updated Shop',
+      code: 'C-1',
+      phone: '0799999999',
+      address: 'New address',
+      latitude: 34.56,
+      longitude: 69.21,
+      territoryId: 'territory-1',
+    );
+
+    final cachedBeforeSync = await masterData.list('customers', 'tenant-a');
+    expect(cachedBeforeSync.single['name'], 'Updated Shop');
+    expect(cachedBeforeSync.single['territory_id'], 'territory-1');
+
+    final queue = await database.db.query(
+      'sync_queue',
+      where: 'tenant_id = ? AND entity_type = ?',
+      whereArgs: ['tenant-a', 'customer'],
+    );
+    expect(queue.single['action'], 'update');
+    expect(queue.single['status'], 'pending');
+
+    final result = await customers.syncPending('tenant-a');
+
+    expect(result.synced, 1);
+    expect(result.failed, 0);
+    expect(source.patches.single['path'], 'customers/customer-server-1');
+    expect(source.patches.single['name'], 'Updated Shop');
+  });
+
   test('delta refresh records a tenant-specific sync cursor', () async {
     await masterData.refreshAll('tenant-a');
     final firstProductCall = source.calls.firstWhere(
