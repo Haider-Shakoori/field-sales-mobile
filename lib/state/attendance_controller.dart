@@ -464,17 +464,14 @@ class AttendanceController extends ChangeNotifier {
       String table,
       String dateColumn, {
       String? amountColumn,
-      String? extraWhere,
-      List<Object?> extraArgs = const [],
     }) async {
       final amountSql = amountColumn == null
           ? ''
           : ', COALESCE(SUM($amountColumn), 0) AS amount';
       final rows = await db.db.rawQuery(
         'SELECT COUNT(*) AS total$amountSql FROM $table '
-        'WHERE tenant_id=? AND $dateColumn>=? AND $dateColumn<?'
-        ${extraWhere == null ? "''" : "' AND '+extraWhere"},
-        [tenantId, from, to, ...extraArgs],
+        'WHERE tenant_id=? AND $dateColumn>=? AND $dateColumn<?',
+        [tenantId, from, to],
       );
 
       return rows.first;
