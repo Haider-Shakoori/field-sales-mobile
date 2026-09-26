@@ -110,15 +110,13 @@ class _CustomerCreateScreenState extends State<CustomerCreateScreen> {
       final point = LatLng(position.latitude, position.longitude);
       setState(() {
         _shopLocation = point;
-        _locationMessage =
-            'Current location selected. Tap the exact shop entrance if adjustment is needed.';
+        _locationMessage = 'Current location selected. Tap the exact shop entrance if adjustment is needed.';
       });
       _mapController.move(point, 18);
     } on TimeoutException {
       if (mounted) {
         setState(() {
-          _locationMessage =
-              'Could not get a precise GPS fix. Move to an open area or tap the shop on the map.';
+          _locationMessage = 'Could not get a precise GPS fix. Move to an open area or tap the shop on the map.';
         });
       }
     } catch (error) {
@@ -184,8 +182,7 @@ class _CustomerCreateScreenState extends State<CustomerCreateScreen> {
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _locationMessage =
-            'The customer could not be saved. Your changes are still on this screen; please try again.';
+        _locationMessage = 'The customer could not be saved. Your changes are still on this screen; please try again.';
       });
     } finally {
       if (mounted) setState(() => _saving = false);
