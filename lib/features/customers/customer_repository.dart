@@ -82,6 +82,118 @@ class CustomerRepository {
     return payload;
   }
 
+  Future<Map<String, dynamic>> updateOffline({
+    required String tenantId,
+    required String customerUuid,
+    required String name,
+    String? code,
+    String? phone,
+    String? address,
+    required double latitude,
+    required double longitude,
+  }) async {
+    final rows = await database.db.query(
+      'customers',
+      where: 'tenant_id = ? AND uuid = ?',
+      whereArgs: [tenantId, customerUuid],
+      limit: 1,
+    );
+
+    if (rows.isEmpty) {
+      throw StateError('Customer is not available offline.');
+    }
+
+    final existing = Map<String, dynamic>.from(
+      jsonDecode(rows.first['payload'] as String) as Map,
+    );
+    final now = DateTime.now().toUtc().toIso8601String();
+    final updated = <String, dynamic>{
+      ...existing,
+      'name': name.trim(),
+      'code': code?.trim().isEmpty == true ? existing['code'] : code?.trim(),
+      'phone': phone?.trim().isEmpty == true ? null : phone?.trim(),
+      'address': address?.trim().isEmpty == true ? null : address?.trim(),
+      'latitude': latitude,
+      'longitude': longitude,
+      'geofence_radius_meters': existing['geofence_radius_meters'] ?? 100,
+      'updated_at': now,
+    };
+
+    final syncPayload = <String, dynamic>{
+      'name': updated['name'],
+      if (updated['code'] != null) 'code': updated['code'],
+      'phone': updated['phone'],
+      'address': updated['address'],
+      'latitude': latitude,
+      'longitude': longitude,
+      'geofence_radius_meters': updated['geofence_radius_meters'],
+    };
+
+    await transactions.run((transaction) async {
+      await transaction.update(
+        'customers',
+        {
+          'payload': jsonEncode(updated),
+          'cached_at': now,
+          'source': 'local',
+          'sync_status': 'pending',
+        },
+        where: 'tenant_id = ? AND uuid = ?',
+        whereArgs: [tenantId, customerUuid],
+      );
+
+      final pendingCreates = await transaction.query(
+        'sync_queue',
+        where:
+            'tenant_id = ? AND entity_type = ? AND entity_uuid = ? '
+            'AND action = ? AND status IN (?,?,?)',
+        whereArgs: [
+          tenantId,
+          'customer',
+          customerUuid,
+          'create',
+          'pending',
+          'failed',
+          'blocked',
+        ],
+        orderBy: 'id ASC',
+        limit: 1,
+      );
+
+      if (pendingCreates.isNotEmpty) {
+        final createPayload = Map<String, dynamic>.from(
+          jsonDecode(pendingCreates.first['payload'] as String) as Map,
+        );
+
+        await transaction.update(
+          'sync_queue',
+          {
+            'payload': jsonEncode({...createPayload, ...syncPayload}),
+            'status': 'pending',
+            'attempts': 0,
+            'error_message': null,
+            'next_retry_at': null,
+            'updated_at': now,
+          },
+          where: 'id = ?',
+          whereArgs: [pendingCreates.first['id']],
+        );
+      } else {
+        await transactions.enqueue(
+          transaction,
+          tenantId: tenantId,
+          entityType: 'customer',
+          entityUuid: customerUuid,
+          action: 'update',
+          payload: jsonEncode(syncPayload),
+          priority: 21,
+        );
+      }
+    });
+
+    return updated;
+  }
+
   Future<CustomerSyncResult> syncPending(String tenantId) async {
     if (!await ConnectivityGate.instance.isOnline()) {
       return const CustomerSyncResult(synced: 0, failed: 0);
@@ -90,12 +202,13 @@ class CustomerRepository {
     final rows = await database.db.query(
       'sync_queue',
       where:
-          'tenant_id = ? AND entity_type = ? AND action = ? '
-          'AND status IN (?,?,?)',
+          'tenant_id = ? AND entity_type = ? '
+          'AND action IN (?,?) AND status IN (?,?,?)',
       whereArgs: [
         tenantId,
         'customer',
         'create',
+        'update',
         'pending',
         'failed',
         'blocked',
@@ -109,11 +222,13 @@ class CustomerRepository {
     for (final queueRow in rows) {
       final id = queueRow['id'] as int;
       final entityUuid = queueRow['entity_uuid'].toString();
+      final action = queueRow['action']?.toString() ?? 'create';
+      final retryUuid = '$entityUuid:$action';
 
       if (!await retry.shouldAttempt(
         tenantId: tenantId,
         entityType: 'customer',
-        entityUuid: entityUuid,
+        entityUuid: retryUuid,
       )) {
         continue;
       }
@@ -123,7 +238,9 @@ class CustomerRepository {
       );
 
       try {
-        final server = await source.post('customers', payload);
+        final server = action == 'update'
+            ? await source.patch('customers/$entityUuid', payload)
+            : await source.post('customers', payload);
 
         await database.db.transaction((transaction) async {
           await masterData.cacheServerRow(
@@ -150,14 +267,14 @@ class CustomerRepository {
         await retry.clear(
           tenantId: tenantId,
           entityType: 'customer',
-          entityUuid: entityUuid,
+          entityUuid: retryUuid,
         );
         synced++;
       } catch (error) {
         final failure = await retry.recordFailure(
           tenantId: tenantId,
           entityType: 'customer',
-          entityUuid: entityUuid,
+          entityUuid: retryUuid,
           error: error,
         );
         await _markFailure(id, failure);
