@@ -75,7 +75,7 @@ class DailyRoutePlanRepository {
     double? latitude,
     double? longitude,
     double? accuracy,
-    double nearbyRadiusKm = 5,
+    double? nearbyRadiusKm,
   }) async {
     final includedIds = await includedOpportunityIds(tenantId);
     final result = await api.get(
