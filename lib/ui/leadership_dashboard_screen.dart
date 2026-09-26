@@ -75,9 +75,8 @@ class _LeadershipDashboardScreenState extends State<LeadershipDashboardScreen> {
           children: [
             Text(
               'Hello, ${app.session?.name ?? ''}',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
             Text(
@@ -93,16 +92,12 @@ class _LeadershipDashboardScreenState extends State<LeadershipDashboardScreen> {
             const SizedBox(height: 18),
             _SummaryGrid(summary: team.summary),
             const SizedBox(height: 18),
-            _TeamMap(
-              mapController: _mapController,
-              locations: team.locations,
-            ),
+            _TeamMap(mapController: _mapController, locations: team.locations),
             const SizedBox(height: 18),
             Text(
               'Reporting hierarchy',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             if (team.hierarchy.isEmpty)
@@ -115,9 +110,8 @@ class _LeadershipDashboardScreenState extends State<LeadershipDashboardScreen> {
             const SizedBox(height: 18),
             Text(
               'Recent field activity',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             if (team.recentActivity.isEmpty)
@@ -126,7 +120,9 @@ class _LeadershipDashboardScreenState extends State<LeadershipDashboardScreen> {
                 text: 'No recent team activity.',
               )
             else
-              ...team.recentActivity.take(12).map(
+              ...team.recentActivity
+                  .take(12)
+                  .map(
                     (row) => Card(
                       margin: const EdgeInsets.only(bottom: 8),
                       child: ListTile(
@@ -138,10 +134,10 @@ class _LeadershipDashboardScreenState extends State<LeadershipDashboardScreen> {
                         ),
                         subtitle: Text(
                           [
-                            row['subtitle'],
-                            row['status'],
-                            _compactTimestamp(row['at']),
-                          ]
+                                row['subtitle'],
+                                row['status'],
+                                _compactTimestamp(row['at']),
+                              ]
                               .where(
                                 (value) =>
                                     value != null &&
@@ -294,10 +290,7 @@ class _TeamMap extends StatelessWidget {
           final longitude = _number(location['longitude']);
           if (latitude == null || longitude == null) return null;
 
-          return (
-            row: row,
-            point: LatLng(latitude, longitude),
-          );
+          return (row: row, point: LatLng(latitude, longitude));
         })
         .whereType<({Map<String, dynamic> row, LatLng point})>()
         .toList();
@@ -424,14 +417,13 @@ class _HierarchyCard extends StatelessWidget {
                 ),
                 subtitle: Text(
                   [
-                    salesman['employee_code'],
-                    salesman['territory'],
-                    salesman['route'],
-                  ]
+                        salesman['employee_code'],
+                        salesman['territory'],
+                        salesman['route'],
+                      ]
                       .where(
                         (value) =>
-                            value != null &&
-                            value.toString().trim().isNotEmpty,
+                            value != null && value.toString().trim().isNotEmpty,
                       )
                       .join(' · '),
                 ),
