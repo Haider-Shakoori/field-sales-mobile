@@ -132,8 +132,7 @@ class CustomerRepository {
       'address': updated['address'],
       'latitude': latitude,
       'longitude': longitude,
-      'geofence_radius_meters':
-          updated['geofence_radius_meters'] is num
+      'geofence_radius_meters': updated['geofence_radius_meters'] is num
           ? (updated['geofence_radius_meters'] as num).toInt()
           : 100,
     };
@@ -180,8 +179,7 @@ class CustomerRepository {
               if (updated['address'] != null) 'address': updated['address'],
               'latitude': latitude,
               'longitude': longitude,
-              'geofence_radius_meters':
-                  serverPayload['geofence_radius_meters'],
+              'geofence_radius_meters': serverPayload['geofence_radius_meters'],
             }),
             'status': 'pending',
             'attempts': 0,
