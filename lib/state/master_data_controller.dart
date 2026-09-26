@@ -22,6 +22,7 @@ class MasterDataController extends ChangeNotifier {
   int pending = 0;
 
   List<Map<String, dynamic>> customers = const [];
+  List<Map<String, dynamic>> territories = const [];
   List<Map<String, dynamic>> routes = const [];
   List<Map<String, dynamic>> routeCustomers = const [];
   List<Map<String, dynamic>> products = const [];
@@ -49,6 +50,7 @@ class MasterDataController extends ChangeNotifier {
     }
 
     customers = await masterData.list('customers', tenantId);
+    territories = await masterData.list('territories', tenantId);
     routes = await masterData.list('routes', tenantId);
     routeCustomers = await masterData.list('route_customers', tenantId);
     products = await masterData.list('products', tenantId);
@@ -122,9 +124,42 @@ class MasterDataController extends ChangeNotifier {
     await sync(silent: true);
   }
 
+  Future<void> updateCustomer({
+    required String customerUuid,
+    required String name,
+    String? code,
+    String? phone,
+    String? address,
+    required double latitude,
+    required double longitude,
+  }) async {
+    final tenantId = appState.session?.tenantId;
+    if (tenantId == null) {
+      return;
+    }
+
+    await customersRepository.updateOffline(
+      tenantId: tenantId,
+      customerUuid: customerUuid,
+      name: name,
+      code: code,
+      phone: phone,
+      address: address,
+      latitude: latitude,
+      longitude: longitude,
+    );
+
+    await reloadLocal();
+    message = 'Customer changes saved locally. They will sync when online.';
+    notifyListeners();
+
+    await sync(silent: true);
+  }
+
   void _clear() {
     loadedTenantId = null;
     customers = const [];
+    territories = const [];
     routes = const [];
     routeCustomers = const [];
     products = const [];
