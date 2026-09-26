@@ -4,10 +4,7 @@ import '../features/management/management_repository.dart';
 import 'app_state.dart';
 
 class ManagementController extends ChangeNotifier {
-  ManagementController({
-    required this.appState,
-    required this.repository,
-  });
+  ManagementController({required this.appState, required this.repository});
 
   final AppState appState;
   final ManagementRepository repository;
@@ -30,8 +27,7 @@ class ManagementController extends ChangeNotifier {
       message = null;
     } catch (_) {
       if (!silent) {
-        message =
-            'Team data could not be refreshed. Check connectivity and try again.';
+        message = 'Team data could not be refreshed. Check connectivity and try again.';
       }
     } finally {
       busy = false;
