@@ -64,6 +64,20 @@ class _LoginScreenState extends State<LoginScreen> {
   String? error;
 
   @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted || tenant.text.trim().isNotEmpty) return;
+
+      final remembered = await context.read<AppState>().lastTenantCode();
+      if (!mounted || remembered == null || remembered.trim().isEmpty) return;
+
+      tenant.text = remembered.trim();
+    });
+  }
+
+  @override
   void dispose() {
     tenant.dispose();
     email.dispose();
