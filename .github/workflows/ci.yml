@@ -3,7 +3,7 @@ name: mobile-ci
 on: [push, pull_request]
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: mobile-ci-${{ github.workflow }}-${{ github.ref }}
@@ -22,7 +22,10 @@ jobs:
           channel: stable
           cache: true
 
-      - run: flutter pub get
+      - name: Refresh Firebase lockfile
+        shell: bash
+        run: |
+          flutter pub get
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add pubspec.lock
