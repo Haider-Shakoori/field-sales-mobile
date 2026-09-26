@@ -7,6 +7,7 @@ import '../state/master_data_controller.dart';
 import 'sync_refresh.dart';
 import 'call_history_screen.dart';
 import 'customer_statement_screen.dart';
+import 'customer_create_screen.dart';
 import 'reorder_recommendations_screen.dart';
 
 class CustomersScreen extends StatelessWidget {
@@ -23,73 +24,17 @@ class CustomersScreen extends StatelessWidget {
   };
 
   Future<void> _create(BuildContext context) async {
-    final name = TextEditingController();
-    final code = TextEditingController();
-    final phone = TextEditingController();
-    final address = TextEditingController();
-
-    final save =
-        await showDialog<bool>(
-          context: context,
-          builder: (dialogContext) => AlertDialog(
-            title: const Text('New customer'),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: name,
-                    autofocus: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Customer name',
-                    ),
-                  ),
-                  TextField(
-                    controller: code,
-                    decoration: const InputDecoration(
-                      labelText: 'Code (optional)',
-                    ),
-                  ),
-                  TextField(
-                    controller: phone,
-                    keyboardType: TextInputType.phone,
-                    decoration: const InputDecoration(labelText: 'Phone'),
-                  ),
-                  TextField(
-                    controller: address,
-                    decoration: const InputDecoration(labelText: 'Address'),
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialogContext, false),
-                child: const Text('Cancel'),
-              ),
-              FilledButton(
-                onPressed: () {
-                  if (name.text.trim().isNotEmpty) {
-                    Navigator.pop(dialogContext, true);
-                  }
-                },
-                child: const Text('Save offline'),
-              ),
-            ],
-          ),
-        ) ??
-        false;
-
-    if (!save || !context.mounted) {
-      return;
-    }
-
-    await context.read<MasterDataController>().createCustomer(
-      name: name.text,
-      code: code.text,
-      phone: phone.text,
-      address: address.text,
+    final created = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(builder: (_) => const CustomerCreateScreen()),
     );
+
+    if (created == true && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Customer saved with shop location.'),
+        ),
+      );
+    }
   }
 
   Future<void> _callCustomer(
