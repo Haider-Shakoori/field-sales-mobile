@@ -59,10 +59,7 @@ void main() {
       ],
     };
 
-    expect(
-      territoryContainsPoint(multi, const LatLng(34.25, 69.25)),
-      isTrue,
-    );
+    expect(territoryContainsPoint(multi, const LatLng(34.25, 69.25)), isTrue);
 
     final legacy = [
       [34.50, 69.10],
@@ -71,10 +68,7 @@ void main() {
       [34.70, 69.10],
     ];
 
-    expect(
-      territoryContainsPoint(legacy, const LatLng(34.60, 69.20)),
-      isTrue,
-    );
+    expect(territoryContainsPoint(legacy, const LatLng(34.60, 69.20)), isTrue);
   });
 
   test('polygon holes are excluded', () {
