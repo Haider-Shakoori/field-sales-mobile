@@ -54,7 +54,7 @@ class AuthRepository {
   Future<AuthSession> login(
     String email,
     String password, {
-    String? tenant,
+    String? tenantCode,
   }) async {
     await secrets.installationUuid();
     final deviceUuid = await secrets.deviceUuid();
@@ -77,7 +77,8 @@ class AuthRepository {
         data: {
           'email': email,
           'password': password,
-          if (tenant?.trim().isNotEmpty == true) 'tenant': tenant!.trim(),
+          if (tenantCode?.trim().isNotEmpty == true)
+            'tenant': tenantCode!.trim(),
           'device_uuid': deviceUuid,
           'device_model': deviceModel,
           'manufacturer': manufacturer,
