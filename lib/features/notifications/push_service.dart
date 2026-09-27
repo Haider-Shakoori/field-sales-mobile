@@ -45,7 +45,9 @@ class PushService {
       if (Platform.isAndroid) {
         await Firebase.initializeApp();
       } else if (FieldPulseFirebaseOptions.configured) {
-        await Firebase.initializeApp(options: FieldPulseFirebaseOptions.current);
+        await Firebase.initializeApp(
+          options: FieldPulseFirebaseOptions.current,
+        );
       } else {
         return;
       }
