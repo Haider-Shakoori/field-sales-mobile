@@ -61,8 +61,11 @@ class _SalesmanAccountScreenState extends State<SalesmanAccountScreen> {
 
       setState(() {
         _data = result;
-        _page = int.tryParse('${pagination['current_page'] ?? nextPage}') ?? nextPage;
-        _lastPage = int.tryParse('${pagination['last_page'] ?? _page}') ?? _page;
+        _page =
+            int.tryParse('${pagination['current_page'] ?? nextPage}') ??
+            nextPage;
+        _lastPage =
+            int.tryParse('${pagination['last_page'] ?? _page}') ?? _page;
       });
     } catch (error) {
       if (mounted) {
@@ -139,14 +142,16 @@ class _SalesmanAccountScreenState extends State<SalesmanAccountScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          salesman['name']?.toString() ?? session?.name ?? 'Salesman',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                          salesman['name']?.toString() ??
+                              session?.name ??
+                              'Salesman',
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 3),
                         Text(
-                          salesman['employee_code']?.toString() ?? 'FieldPulse account',
+                          salesman['employee_code']?.toString() ??
+                              'FieldPulse account',
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ],
@@ -193,9 +198,8 @@ class _SalesmanAccountScreenState extends State<SalesmanAccountScreen> {
             children: [
               Text(
                 'My referred customers',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
               const Spacer(),
               Text(
@@ -209,7 +213,9 @@ class _SalesmanAccountScreenState extends State<SalesmanAccountScreen> {
             const Card(
               child: Padding(
                 padding: EdgeInsets.all(20),
-                child: Text('No customers are currently attributed to you as referrals.'),
+                child: Text(
+                  'No customers are currently attributed to you as referrals.',
+                ),
               ),
             )
           else
@@ -269,9 +275,8 @@ class _MetricCard extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   value,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).textTheme.titleLarge
+                      ?.copyWith(fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -291,9 +296,9 @@ class _CustomerCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final balances = customer['balances'] is List
         ? (customer['balances'] as List)
-            .whereType<Map>()
-            .map((row) => Map<String, dynamic>.from(row))
-            .toList()
+              .whereType<Map>()
+              .map((row) => Map<String, dynamic>.from(row))
+              .toList()
         : const <Map<String, dynamic>>[];
 
     return Card(
@@ -312,16 +317,16 @@ class _CustomerCard extends StatelessWidget {
                     children: [
                       Text(
                         customer['name']?.toString() ?? 'Customer',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        [
-                          customer['code'],
-                          customer['territory'],
-                        ].where((value) => value != null && '$value'.isNotEmpty).join(' · '),
+                        [customer['code'], customer['territory']]
+                            .where(
+                              (value) => value != null && '$value'.isNotEmpty,
+                            )
+                            .join(' · '),
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
@@ -336,19 +341,22 @@ class _CustomerCard extends StatelessWidget {
             const SizedBox(height: 12),
             Row(
               children: [
-                _SmallMetric(label: 'Orders', value: '${customer['orders'] ?? 0}'),
+                _SmallMetric(
+                  label: 'Orders',
+                  value: '${customer['orders'] ?? 0}',
+                ),
                 _SmallMetric(
                   label: 'Collections',
                   value: '${customer['collections'] ?? 0}',
                 ),
-                _SmallMetric(label: 'Visits', value: '${customer['visits'] ?? 0}'),
+                _SmallMetric(
+                  label: 'Visits',
+                  value: '${customer['visits'] ?? 0}',
+                ),
               ],
             ),
             const SizedBox(height: 12),
-            Text(
-              'Outstanding',
-              style: Theme.of(context).textTheme.labelMedium,
-            ),
+            Text('Outstanding', style: Theme.of(context).textTheme.labelMedium),
             const SizedBox(height: 6),
             if (balances.isEmpty)
               const Text('No credit outstanding')
@@ -396,9 +404,8 @@ class _SmallMetric extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             value,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(context).textTheme.titleMedium
+                ?.copyWith(fontWeight: FontWeight.bold),
           ),
         ],
       ),
