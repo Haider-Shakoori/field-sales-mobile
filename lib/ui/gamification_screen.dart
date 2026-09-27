@@ -110,7 +110,8 @@ class _GamificationScreenState extends State<GamificationScreen> {
                             );
                           },
                         ),
-                    ],                  ],
+                    ],
+                  ],
                 ),
               ),
             ),
