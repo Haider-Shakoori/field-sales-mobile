@@ -103,6 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final appState = context.read<AppState>();
     final attendance = context.read<AttendanceController>();
+    final push = context.read<PushService>();
 
     setState(() {
       busy = true;
@@ -115,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
         passwordValue,
         tenant: tenantValue.isEmpty ? null : tenantValue,
       );
-      await context.read<PushService>().registerCurrentToken();
+      await push.registerCurrentToken();
 
       if (appState.isSalesman) {
         await attendance.restore();
