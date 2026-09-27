@@ -273,9 +273,10 @@ class _VisitsScreenState extends State<VisitsScreen> {
                     ? Map<String, dynamic>.from(assignment['customer'] as Map)
                     : const <String, dynamic>{};
                 final time = assignment['time']?.toString();
-                final purpose = assignment['purpose']
-                    ?.toString()
-                    .replaceAll('_', ' ');
+                final purpose = assignment['purpose']?.toString().replaceAll(
+                  '_',
+                  ' ',
+                );
                 final priority = assignment['priority']?.toString() ?? 'normal';
 
                 return SizedBox(
@@ -304,8 +305,13 @@ class _VisitsScreenState extends State<VisitsScreen> {
                           ),
                           Text(
                             [
-                              if (time != null && time.isNotEmpty) time.substring(0, time.length >= 5 ? 5 : time.length),
-                              if (purpose != null && purpose.isNotEmpty) purpose,
+                              if (time != null && time.isNotEmpty)
+                                time.substring(
+                                  0,
+                                  time.length >= 5 ? 5 : time.length,
+                                ),
+                              if (purpose != null && purpose.isNotEmpty)
+                                purpose,
                             ].join(' · '),
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
@@ -323,17 +329,17 @@ class _VisitsScreenState extends State<VisitsScreen> {
                               onPressed: state.busy
                                   ? null
                                   : () async {
-                                      final attendance =
-                                          context.read<AttendanceController>();
+                                      final attendance = context
+                                          .read<AttendanceController>();
                                       if (!attendance.working) {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                              'Start your work day before checking in.',
-                                            ),
-                                          ),
-                                        );
+                                              const SnackBar(
+                                                content: Text(
+                                                  'Start your work day before checking in.',
+                                                ),
+                                              ),
+                                            );
                                         return;
                                       }
                                       await state.checkInScheduled(assignment);
