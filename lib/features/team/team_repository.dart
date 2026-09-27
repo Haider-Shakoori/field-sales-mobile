@@ -13,6 +13,22 @@ class TeamRepository {
         : Map<String, dynamic>.from(data as Map);
   }
 
+  Future<Map<String, dynamic>> referralPortfolio({
+    int page = 1,
+    int perPage = 30,
+  }) async {
+    final envelope = await api.getEnvelope(
+      'referrals/me',
+      query: {'page': page, 'per_page': perPage},
+    );
+    final data = envelope.data is Map<String, dynamic>
+        ? Map<String, dynamic>.from(envelope.data as Map<String, dynamic>)
+        : Map<String, dynamic>.from(envelope.data as Map);
+
+    data['_meta'] = envelope.meta;
+    return data;
+  }
+
   Future<void> nudge(String salesmanId, String message) async {
     await api.post(
       'team/salesmen/$salesmanId/nudge',
