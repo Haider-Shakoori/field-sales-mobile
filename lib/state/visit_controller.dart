@@ -67,7 +67,8 @@ class VisitController extends ChangeNotifier {
       notifyListeners();
     } catch (_) {
       if (!silent) {
-        message = 'Could not refresh assigned visits. Showing local visit history.';
+        message =
+            'Could not refresh assigned visits. Showing local visit history.';
         notifyListeners();
       }
     }
