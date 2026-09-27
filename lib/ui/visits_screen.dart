@@ -230,6 +230,133 @@ class _VisitsScreenState extends State<VisitsScreen> {
     );
   }
 
+  Widget _buildScheduledVisits(BuildContext context, VisitController state) {
+    if (state.scheduledVisits.isEmpty || _showMap) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.fromLTRB(12, 4, 12, 4),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainer,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.today_outlined),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  "Today's assigned visits",
+                  style: Theme.of(context).textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+              ),
+              Chip(label: Text(state.scheduledVisits.length.toString())),
+            ],
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            height: 168,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: state.scheduledVisits.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 10),
+              itemBuilder: (_, index) {
+                final assignment = state.scheduledVisits[index];
+                final customer = assignment['customer'] is Map
+                    ? Map<String, dynamic>.from(assignment['customer'] as Map)
+                    : const <String, dynamic>{};
+                final time = assignment['time']?.toString();
+                final purpose = assignment['purpose']
+                    ?.toString()
+                    .replaceAll('_', ' ');
+                final priority = assignment['priority']?.toString() ?? 'normal';
+
+                return SizedBox(
+                  width: 270,
+                  child: Card(
+                    margin: EdgeInsets.zero,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  customer['name']?.toString() ?? 'Customer',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              Chip(label: Text(priority.toUpperCase())),
+                            ],
+                          ),
+                          Text(
+                            [
+                              if (time != null && time.isNotEmpty) time.substring(0, time.length >= 5 ? 5 : time.length),
+                              if (purpose != null && purpose.isNotEmpty) purpose,
+                            ].join(' · '),
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            customer['address']?.toString() ?? 'No address',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                          const Spacer(),
+                          SizedBox(
+                            width: double.infinity,
+                            child: FilledButton.icon(
+                              onPressed: state.busy
+                                  ? null
+                                  : () async {
+                                      final attendance =
+                                          context.read<AttendanceController>();
+                                      if (!attendance.working) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              'Start your work day before checking in.',
+                                            ),
+                                          ),
+                                        );
+                                        return;
+                                      }
+                                      await state.checkInScheduled(assignment);
+                                      if (!context.mounted) return;
+                                      _showVisitMessage(context, state);
+                                    },
+                              icon: const Icon(Icons.play_arrow_rounded),
+                              label: const Text('Start visit'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildList(BuildContext context, VisitController state) =>
       state.visits.isEmpty
       ? ListView(
@@ -496,6 +623,7 @@ class _VisitsScreenState extends State<VisitsScreen> {
                   setState(() => _showMap = selection.first),
             ),
           ),
+          _buildScheduledVisits(context, state),
           Expanded(
             child: _showMap
                 ? _buildMap(context, state)
