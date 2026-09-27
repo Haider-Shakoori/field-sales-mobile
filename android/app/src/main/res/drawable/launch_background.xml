@@ -3,6 +3,6 @@
     <item>
         <bitmap
             android:gravity="center"
-            android:src="@drawable/fieldpulse_splash_mark" />
+            android:src="@drawable/fieldpulse_splash_vector" />
     </item>
 </layer-list>
