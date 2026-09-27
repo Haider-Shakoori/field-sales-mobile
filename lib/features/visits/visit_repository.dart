@@ -31,6 +31,15 @@ class VisitRepository {
     return rows.map(Map<String, dynamic>.from).toList();
   }
 
+  Future<List<Map<String, dynamic>>> scheduledToday() async {
+    final result = await api.get('visits/scheduled');
+    if (result is! List) return const [];
+    return result
+        .whereType<Map>()
+        .map((row) => Map<String, dynamic>.from(row))
+        .toList();
+  }
+
   Future<Map<String, dynamic>?> active(String tenantId) async {
     final rows = await db.db.query(
       'local_visits',
