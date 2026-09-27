@@ -25,11 +25,13 @@ class VisitController extends ChangeNotifier {
   String? loadedTenantId;
   int pending = 0;
   List<Map<String, dynamic>> visits = const [];
+  List<Map<String, dynamic>> scheduledVisits = const [];
 
   Future<void> initialize() async {
     await reloadLocal();
     if (appState.signedIn) {
       await sync(silent: true);
+      await refreshScheduled(silent: true);
     }
   }
 
@@ -51,6 +53,36 @@ class VisitController extends ChangeNotifier {
     visits = await repository.list(tenantId);
     pending = await repository.pendingCount(tenantId);
     notifyListeners();
+  }
+
+  Future<void> refreshScheduled({bool silent = false}) async {
+    if (!appState.signedIn) {
+      scheduledVisits = const [];
+      notifyListeners();
+      return;
+    }
+
+    try {
+      scheduledVisits = await repository.scheduledToday();
+      notifyListeners();
+    } catch (_) {
+      if (!silent) {
+        message = 'Could not refresh assigned visits. Showing local visit history.';
+        notifyListeners();
+      }
+    }
+  }
+
+  Future<void> checkInScheduled(Map<String, dynamic> assignment) async {
+    final rawCustomer = assignment['customer'];
+    if (rawCustomer is! Map) {
+      message = 'This assigned visit has no customer data.';
+      notifyListeners();
+      return;
+    }
+
+    await checkIn(Map<String, dynamic>.from(rawCustomer));
+    await refreshScheduled(silent: true);
   }
 
   Future<void> checkIn(Map<String, dynamic> customer) async {
