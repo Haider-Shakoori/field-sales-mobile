@@ -144,11 +144,7 @@ class _FieldPulseMarkPainter extends CustomPainter {
       ..shader = ui.Gradient.linear(
         const Offset(30, 25),
         const Offset(165, 175),
-        const [
-          Color(0xFF0B5EFF),
-          Color(0xFF15E4D7),
-          Color(0xFF0B64FF),
-        ],
+        const [Color(0xFF0B5EFF), Color(0xFF15E4D7), Color(0xFF0B64FF)],
         const [0, 0.48, 1],
       );
 
