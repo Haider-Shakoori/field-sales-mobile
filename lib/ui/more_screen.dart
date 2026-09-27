@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../state/app_state.dart';
 import 'gamification_screen.dart';
 import 'notifications_screen.dart';
+import 'salesman_account_screen.dart';
 import 'collections_screen.dart';
 import 'expenses_screen.dart';
 import 'mileage_screen.dart';
@@ -40,6 +41,22 @@ class MoreScreen extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          if (context.watch<AppState>().isSalesman)
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.account_circle_outlined),
+                title: const Text('My Account'),
+                subtitle: const Text(
+                  'Referral customers, orders, collections and visit activity',
+                ),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => _open(
+                  context,
+                  'My Account',
+                  const SalesmanAccountScreen(),
+                ),
+              ),
+            ),
           Card(
             child: ListTile(
               leading: const Icon(Icons.notifications_outlined),
