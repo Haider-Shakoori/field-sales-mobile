@@ -50,11 +50,8 @@ class MoreScreen extends StatelessWidget {
                   'Referral customers, orders, collections and visit activity',
                 ),
                 trailing: const Icon(Icons.chevron_right),
-                onTap: () => _open(
-                  context,
-                  'My Account',
-                  const SalesmanAccountScreen(),
-                ),
+                onTap: () =>
+                    _open(context, 'My Account', const SalesmanAccountScreen()),
               ),
             ),
           Card(
