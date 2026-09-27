@@ -19,7 +19,10 @@ Future<void> reloadAllLocal(BuildContext context) async {
   if (!context.mounted) return;
   await context.read<AppointmentController>().reloadLocal();
   if (!context.mounted) return;
-  await context.read<VisitController>().reloadLocal();
+  final visitController = context.read<VisitController>();
+  await visitController.reloadLocal();
+  if (!context.mounted) return;
+  await visitController.refreshScheduled(silent: true);
   if (!context.mounted) return;
   await context.read<CallActivityController>().reloadLocal();
   if (!context.mounted) return;
