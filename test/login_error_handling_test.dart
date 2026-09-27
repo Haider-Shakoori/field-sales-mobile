@@ -10,8 +10,8 @@ void main() {
     final auth = File('lib/features/auth/auth_repository.dart')
         .readAsStringSync();
 
-    expect(login, contains('Company / Tenant code'));
-    expect(login, contains('Optional unless your email is used'));
+    expect(login, contains('Company / Tenant ID'));
+    expect(login, contains('Saved on this device after a successful sign-in.'));
     expect(auth, contains("'tenant': tenant!.trim()"));
   });
 
@@ -25,7 +25,10 @@ void main() {
     expect(auth, contains("tenantData['slug']"));
     expect(appState, contains('Future<String?> lastTenantCode()'));
     expect(login, contains('lastTenantCode()'));
-    expect(login, contains('tenant.text = remembered.trim()'));
+    expect(login, contains('rememberedTenant = value'));
+    expect(login, contains('showTenantField = false'));
+    expect(login, contains('Switch company'));
+    expect(login, contains('Use saved company'));
   });
 
   test('tenant ambiguity is explained without exposing raw API errors', () {
@@ -38,7 +41,7 @@ void main() {
     );
 
     expect(message, contains('more than one company'));
-    expect(message, contains('Company / Tenant code'));
+    expect(message, contains('Company / Tenant ID'));
   });
 
   test('server failures have a recoverable user-facing login message', () {
