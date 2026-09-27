@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../state/app_state.dart';
 import '../state/attendance_controller.dart';
 import '../state/sync_controller.dart';
+import '../state/visit_controller.dart';
 import 'history_screen.dart';
 import 'privacy_dialog.dart';
 import 'sync_refresh.dart';
@@ -465,7 +466,14 @@ class HomeTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
     final controller = context.watch<AttendanceController>();
+    final visits = context.watch<VisitController>();
     final policy = app.policy;
+    final nextAssignment = visits.scheduledVisits.isEmpty
+        ? null
+        : visits.scheduledVisits.first;
+    final nextCustomer = nextAssignment?['customer'] is Map
+        ? Map<String, dynamic>.from(nextAssignment!['customer'] as Map)
+        : const <String, dynamic>{};
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -615,6 +623,86 @@ class HomeTab extends StatelessWidget {
               ),
             ),
           ),
+          if (nextAssignment != null) ...[
+            const SizedBox(height: 16),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.route_outlined),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Next assigned visit',
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        const Spacer(),
+                        Chip(
+                          label: Text(
+                            (nextAssignment['priority'] ?? 'normal')
+                                .toString()
+                                .toUpperCase(),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      nextCustomer['name']?.toString() ?? 'Customer',
+                      style: Theme.of(context).textTheme.titleLarge
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      [
+                        if (nextAssignment['time'] != null)
+                          nextAssignment['time'].toString().substring(
+                            0,
+                            nextAssignment['time'].toString().length >= 5 ? 5 : nextAssignment['time'].toString().length,
+                          ),
+                        if (nextAssignment['purpose'] != null)
+                          nextAssignment['purpose']
+                              .toString()
+                              .replaceAll('_', ' '),
+                        if (nextCustomer['address'] != null)
+                          nextCustomer['address'].toString(),
+                      ].join(' · '),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 14),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton.icon(
+                        onPressed: visits.busy || !controller.working
+                            ? null
+                            : () async {
+                                await visits.checkInScheduled(nextAssignment);
+                                if (!context.mounted) return;
+                                final text = visits.message?.trim();
+                                if (text != null && text.isNotEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(text)),
+                                  );
+                                }
+                              },
+                        icon: const Icon(Icons.play_arrow_rounded),
+                        label: Text(
+                          controller.working
+                              ? 'Start visit'
+                              : 'Start work day first',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
           const SizedBox(height: 16),
           Card(
             child: ListTile(
