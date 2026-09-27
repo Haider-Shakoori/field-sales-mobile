@@ -246,8 +246,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           decoration: const InputDecoration(
                             labelText: 'Company / Tenant ID',
                             hintText: 'e.g. shahab-demo',
-                            helperText:
-                                'Saved on this device after a successful sign-in.',
+                            helperText: 'Saved on this device after a successful sign-in.',
                             border: OutlineInputBorder(),
                             prefixIcon: Icon(Icons.business_outlined),
                           ),
