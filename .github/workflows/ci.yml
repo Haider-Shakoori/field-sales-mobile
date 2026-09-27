@@ -33,50 +33,24 @@ jobs:
       - run: flutter analyze
       - run: flutter test --concurrency=1
 
-      - name: Build debug APK
-        run: flutter build apk --debug --dart-define=API_BASE_URL=http://10.0.2.2:8001/api/v1
-
-      - name: Create ephemeral CI release keystore
-        shell: bash
-        run: |
-          keytool -genkeypair -noprompt \
-            -keystore android/ci-release.jks \
-            -storepass ci-release-password \
-            -keypass ci-release-password \
-            -alias ci-release \
-            -keyalg RSA \
-            -keysize 2048 \
-            -validity 1 \
-            -dname "CN=FieldPulse CI, OU=CI, O=WeSoft, L=CI, ST=CI, C=AF"
-
-      - name: Build signed release AAB
+      - name: Restore production Android keystore
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         shell: bash
         env:
-          FIELD_SALES_KEYSTORE_FILE: ${{ github.workspace }}/android/ci-release.jks
-          FIELD_SALES_KEYSTORE_PASSWORD: ci-release-password
-          FIELD_SALES_KEY_ALIAS: ci-release
-          FIELD_SALES_KEY_PASSWORD: ci-release-password
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: |
-          APP_VERSION="$(awk '/^version:/ {split($2, v, "+"); print v[1]}' pubspec.yaml)"
-          flutter build appbundle --release \
-            --dart-define=API_BASE_URL=https://release-ci.invalid/api/v1 \
-            --dart-define=APP_VERSION="${APP_VERSION}"
-
-      - name: Verify release artifact
-        shell: bash
-        run: |
-          test -s build/app/outputs/bundle/release/app-release.aab
-          jarsigner -verify build/app/outputs/bundle/release/app-release.aab
-          sha256sum build/app/outputs/bundle/release/app-release.aab
+          test -n "${ANDROID_KEYSTORE_BASE64}" || { echo "Missing ANDROID_KEYSTORE_BASE64 secret."; exit 1; }
+          printf '%s' "${ANDROID_KEYSTORE_BASE64}" | base64 --decode > android/field-sales-upload.jks
+          chmod 600 android/field-sales-upload.jks
 
       - name: Build FieldPulse production APK
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         shell: bash
         env:
-          FIELD_SALES_KEYSTORE_FILE: ${{ github.workspace }}/android/ci-release.jks
-          FIELD_SALES_KEYSTORE_PASSWORD: ci-release-password
-          FIELD_SALES_KEY_ALIAS: ci-release
-          FIELD_SALES_KEY_PASSWORD: ci-release-password
+          FIELD_SALES_KEYSTORE_FILE: ${{ github.workspace }}/android/field-sales-upload.jks
+          FIELD_SALES_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          FIELD_SALES_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          FIELD_SALES_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           APP_VERSION="$(awk '/^version:/ {print $2}' pubspec.yaml)"
           APP_VERSION_NAME="${APP_VERSION%%+*}"
