@@ -1,9 +1,13 @@
 package com.businessos.fieldpulse
 
 import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.content.pm.PackageManager
 import android.media.MediaRecorder
 import android.os.Build
+import android.os.Bundle
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -12,6 +16,7 @@ import java.io.File
 class MainActivity : FlutterActivity() {
     companion object {
         private const val notificationChannel = "field_sales/notifications"
+        private const val operationalNotificationChannelId = "fieldpulse_operational"
         private const val audioChannel = "field_sales/voice_recorder"
         private const val notificationPermissionRequestCode = 9101
         private const val audioPermissionRequestCode = 9102
@@ -22,6 +27,30 @@ class MainActivity : FlutterActivity() {
     private var recorder: MediaRecorder? = null
     private var recordingFile: File? = null
     private var recordingStartedAtMs: Long? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        createOperationalNotificationChannel()
+    }
+
+    private fun createOperationalNotificationChannel() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return
+        }
+
+        val manager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val channel = NotificationChannel(
+            operationalNotificationChannelId,
+            "FieldPulse alerts",
+            NotificationManager.IMPORTANCE_HIGH,
+        ).apply {
+            description = "Operational alerts, supervisor messages, and sales updates."
+            enableVibration(true)
+        }
+
+        manager.createNotificationChannel(channel)
+    }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
