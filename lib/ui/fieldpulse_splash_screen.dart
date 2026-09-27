@@ -13,11 +13,7 @@ class FieldPulseSplashScreen extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF05234D),
-            Color(0xFF031733),
-            Color(0xFF020E22),
-          ],
+          colors: [Color(0xFF05234D), Color(0xFF031733), Color(0xFF020E22)],
           stops: [0, 0.48, 1],
         ),
       ),
@@ -52,10 +48,7 @@ class FieldPulseSplashScreen extends StatelessWidget {
                       ShaderMask(
                         blendMode: BlendMode.srcIn,
                         shaderCallback: (bounds) => const LinearGradient(
-                          colors: [
-                            Color(0xFF1C65FF),
-                            Color(0xFF16E2DF),
-                          ],
+                          colors: [Color(0xFF1C65FF), Color(0xFF16E2DF)],
                         ).createShader(bounds),
                         child: const Text(
                           'FieldPulse',
@@ -124,9 +117,7 @@ class _SplashGlow extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: RadialGradient(
-          colors: [color, color.withValues(alpha: 0)],
-        ),
+        gradient: RadialGradient(colors: [color, color.withValues(alpha: 0)]),
       ),
     ),
   );
@@ -173,10 +164,7 @@ class _FieldPulseMarkPainter extends CustomPainter {
       ..cubicTo(157, 61, 136, 38, 100, 38)
       ..close();
 
-    canvas.drawPath(
-      inner,
-      Paint()..color = const Color(0xFF062346),
-    );
+    canvas.drawPath(inner, Paint()..color = const Color(0xFF062346));
 
     final road = Path()
       ..moveTo(38, 145)
