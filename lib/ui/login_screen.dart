@@ -23,9 +23,9 @@ String friendlyLoginError(Object error) {
   }
 
   return switch (error.code) {
-    'TENANT_REQUIRED' => 'This email is used in more than one company. Enter your Company / Tenant code and try again.',
+    'TENANT_REQUIRED' => 'This email is used in more than one company. Enter your Company / Tenant ID and try again.',
     'INVALID_CREDENTIALS' =>
-      'The email, password, or Company / Tenant code is incorrect.',
+      'The email, password, or Company / Tenant ID is incorrect.',
     'MOBILE_ROLE_REQUIRED' => 'This account is not enabled for the FieldPulse mobile app. Ask your administrator to assign Salesman, Supervisor, or Sales Manager access.',
     'TENANT_SUSPENDED' =>
       'This company account is suspended. Please contact your administrator.',
@@ -62,6 +62,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool busy = false;
   bool obscurePassword = true;
+  bool showTenantField = true;
+  String? rememberedTenant;
   String? error;
 
   @override
@@ -74,7 +76,12 @@ class _LoginScreenState extends State<LoginScreen> {
       final remembered = await context.read<AppState>().lastTenantCode();
       if (!mounted || remembered == null || remembered.trim().isEmpty) return;
 
-      tenant.text = remembered.trim();
+      final value = remembered.trim();
+      setState(() {
+        rememberedTenant = value;
+        tenant.text = value;
+        showTenantField = false;
+      });
     });
   }
 
@@ -129,6 +136,7 @@ class _LoginScreenState extends State<LoginScreen> {
       });
 
       if (exception is ApiException && exception.code == 'TENANT_REQUIRED') {
+        setState(() => showTenantField = true);
         tenantFocus.requestFocus();
       }
     } finally {
@@ -153,6 +161,38 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      if (rememberedTenant != null)
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton.icon(
+                            onPressed: busy
+                                ? null
+                                : () {
+                                    setState(() {
+                                      if (showTenantField) {
+                                        tenant.text = rememberedTenant!;
+                                        showTenantField = false;
+                                      } else {
+                                        showTenantField = true;
+                                      }
+                                    });
+                                    if (showTenantField) {
+                                      tenantFocus.requestFocus();
+                                    }
+                                  },
+                            icon: Icon(
+                              showTenantField
+                                  ? Icons.check_circle_outline
+                                  : Icons.swap_horiz_rounded,
+                              size: 18,
+                            ),
+                            label: Text(
+                              showTenantField
+                                  ? 'Use saved company'
+                                  : 'Switch company',
+                            ),
+                          ),
+                        ),
                       const Icon(Icons.route_rounded, size: 52),
                       const SizedBox(height: 20),
                       Text(
@@ -167,21 +207,53 @@ class _LoginScreenState extends State<LoginScreen> {
                         'Salesmen, supervisors, and sales managers can sign in.',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
-                      const SizedBox(height: 28),
-                      TextField(
-                        controller: tenant,
-                        focusNode: tenantFocus,
-                        textInputAction: TextInputAction.next,
-                        autocorrect: false,
-                        decoration: const InputDecoration(
-                          labelText: 'Company / Tenant code',
-                          hintText: 'e.g. shahab-demo',
-                          helperText: 'Optional unless your email is used in more than one company.',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.business_outlined),
+                      const SizedBox(height: 20),
+                      if (!showTenantField && rememberedTenant != null) ...[
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 11,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .surfaceContainerHighest,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.business_outlined, size: 20),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  'Company: $rememberedTenant',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 14),
+                        const SizedBox(height: 14),
+                      ],
+                      if (showTenantField) ...[
+                        TextField(
+                          controller: tenant,
+                          focusNode: tenantFocus,
+                          textInputAction: TextInputAction.next,
+                          autocorrect: false,
+                          decoration: const InputDecoration(
+                            labelText: 'Company / Tenant ID',
+                            hintText: 'e.g. shahab-demo',
+                            helperText:
+                                'Saved on this device after a successful sign-in.',
+                            border: OutlineInputBorder(),
+                            prefixIcon: Icon(Icons.business_outlined),
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                      ],
                       TextField(
                         controller: email,
                         keyboardType: TextInputType.emailAddress,
