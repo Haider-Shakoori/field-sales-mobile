@@ -65,33 +65,52 @@ class _GamificationScreenState extends State<GamificationScreen> {
                     const SizedBox(height: 8),
                     Text('${me['points']} points · Rank #${me['rank']}'),
                     const SizedBox(height: 8),
-                    Text('Achievements', style: Theme.of(context).textTheme.titleSmall),
+                    Text(
+                      'Achievements',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
                     const SizedBox(height: 6),
                     Wrap(
                       spacing: 6,
                       runSpacing: 6,
-                      children: (me['achievements'] as List? ?? const []).isEmpty
-                          ? [const Chip(label: Text('Keep going — achievements unlock from verified results'))]
+                      children:
+                          (me['achievements'] as List? ?? const []).isEmpty
+                          ? [
+                              const Chip(
+                                label: Text(
+                                  'Keep going — achievements unlock from verified results',
+                                ),
+                              ),
+                            ]
                           : (me['achievements'] as List)
-                              .map((a) => Chip(
-                                    avatar: const Icon(Icons.emoji_events_outlined, size: 18),
+                                .map(
+                                  (a) => Chip(
+                                    avatar: const Icon(
+                                      Icons.emoji_events_outlined,
+                                      size: 18,
+                                    ),
                                     label: Text('$a'),
-                                  ))
-                              .toList(),
+                                  ),
+                                )
+                                .toList(),
                     ),
                     if ((me['bonuses'] as List? ?? const []).isNotEmpty) ...[
                       const SizedBox(height: 14),
-                      Text('Earned bonuses', style: Theme.of(context).textTheme.titleSmall),
+                      Text(
+                        'Earned bonuses',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
                       const SizedBox(height: 6),
                       for (final raw in (me['bonuses'] as List))
-                        Builder(builder: (_) {
-                          final bonus = Map<String, dynamic>.from(raw as Map);
-                          return Text(
-                            "${bonus['milestone_percent']}% target · ${bonus['amount']} ${bonus['currency']} · ${bonus['status']}",
-                          );
-                        }),
-                    ],
-                  ],
+                        Builder(
+                          builder: (_) {
+                            final bonus = Map<String, dynamic>.from(raw as Map);
+                            return Text(
+                              "${bonus['milestone_percent']}% target · ${bonus['amount']} ${bonus['currency']} · ${bonus['status']}",
+                            );
+                          },
+                        ),
+                    ],                  ],
                 ),
               ),
             ),
