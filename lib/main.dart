@@ -182,6 +182,9 @@ Future<void> main() async {
     appState: appState,
     repository: notifications,
   );
+  push.received.listen(
+    (_) => unawaited(notificationController.refresh(silent: true)),
+  );
 
   final syncController = SyncController(
     appState: appState,

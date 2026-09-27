@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../core/api/api_exception.dart';
+import '../features/notifications/push_service.dart';
 import '../state/app_state.dart';
 import '../state/attendance_controller.dart';
 
@@ -102,6 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final appState = context.read<AppState>();
     final attendance = context.read<AttendanceController>();
+    final push = context.read<PushService>();
 
     setState(() {
       busy = true;
@@ -114,6 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
         passwordValue,
         tenant: tenantValue.isEmpty ? null : tenantValue,
       );
+      await push.registerCurrentToken();
 
       if (appState.isSalesman) {
         await attendance.restore();

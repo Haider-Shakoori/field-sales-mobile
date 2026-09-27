@@ -7,40 +7,26 @@ import '../../core/api/api_client.dart';
 
 @pragma('vm:entry-point')
 Future<void> fieldPulseFirebaseBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp(options: FieldPulseFirebaseOptions.current);
-}
-
-class FieldPulseFirebaseOptions {
-  static const apiKey = String.fromEnvironment('FCM_API_KEY');
-  static const appId = String.fromEnvironment('FCM_APP_ID');
-  static const senderId = String.fromEnvironment('FCM_MESSAGING_SENDER_ID');
-  static const projectId = String.fromEnvironment('FCM_PROJECT_ID');
-
-  static bool get configured =>
-      apiKey.isNotEmpty &&
-      appId.isNotEmpty &&
-      senderId.isNotEmpty &&
-      projectId.isNotEmpty;
-
-  static FirebaseOptions get current => const FirebaseOptions(
-    apiKey: apiKey,
-    appId: appId,
-    messagingSenderId: senderId,
-    projectId: projectId,
-  );
+  await Firebase.initializeApp();
 }
 
 class PushService {
   PushService(this.api);
   final _opened = StreamController<Map<String, dynamic>>.broadcast();
+  final _received = StreamController<Map<String, dynamic>>.broadcast();
   Stream<Map<String, dynamic>> get opened => _opened.stream;
+  Stream<Map<String, dynamic>> get received => _received.stream;
   final ApiClient api;
   StreamSubscription<String>? _tokenSubscription;
+  bool _initialized = false;
 
   Future<void> initialize() async {
-    if (!FieldPulseFirebaseOptions.configured) return;
-
-    await Firebase.initializeApp(options: FieldPulseFirebaseOptions.current);
+    try {
+      await Firebase.initializeApp();
+      _initialized = true;
+    } catch (_) {
+      return;
+    }
     FirebaseMessaging.onBackgroundMessage(fieldPulseFirebaseBackgroundHandler);
 
     await FirebaseMessaging.instance.requestPermission(
@@ -52,6 +38,10 @@ class PushService {
     _tokenSubscription = FirebaseMessaging.instance.onTokenRefresh.listen(
       (token) => unawaited(registerToken(token)),
     );
+
+    FirebaseMessaging.onMessage.listen((message) {
+      _received.add(Map<String, dynamic>.from(message.data));
+    });
 
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
       _opened.add(Map<String, dynamic>.from(message.data));
@@ -66,10 +56,15 @@ class PushService {
   }
 
   Future<void> registerCurrentToken() async {
-    if (!FieldPulseFirebaseOptions.configured) return;
-    final token = await FirebaseMessaging.instance.getToken();
-    if (token != null && token.isNotEmpty) {
-      await registerToken(token);
+    if (!_initialized) return;
+
+    try {
+      final token = await FirebaseMessaging.instance.getToken();
+      if (token != null && token.isNotEmpty) {
+        await registerToken(token);
+      }
+    } catch (_) {
+      // Firebase/token availability must never block normal field work.
     }
   }
 
@@ -84,5 +79,6 @@ class PushService {
   Future<void> dispose() async {
     await _tokenSubscription?.cancel();
     await _opened.close();
+    await _received.close();
   }
 }
