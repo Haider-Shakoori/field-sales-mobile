@@ -662,12 +662,15 @@ class HomeTab extends StatelessWidget {
                         if (nextAssignment['time'] != null)
                           nextAssignment['time'].toString().substring(
                             0,
-                            nextAssignment['time'].toString().length >= 5 ? 5 : nextAssignment['time'].toString().length,
+                            nextAssignment['time'].toString().length >= 5
+                                ? 5
+                                : nextAssignment['time'].toString().length,
                           ),
                         if (nextAssignment['purpose'] != null)
-                          nextAssignment['purpose']
-                              .toString()
-                              .replaceAll('_', ' '),
+                          nextAssignment['purpose'].toString().replaceAll(
+                            '_',
+                            ' ',
+                          ),
                         if (nextCustomer['address'] != null)
                           nextCustomer['address'].toString(),
                       ].join(' · '),
@@ -685,9 +688,9 @@ class HomeTab extends StatelessWidget {
                                 if (!context.mounted) return;
                                 final text = visits.message?.trim();
                                 if (text != null && text.isNotEmpty) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(text)),
-                                  );
+                                  ScaffoldMessenger.of(
+                                    context,
+                                  ).showSnackBar(SnackBar(content: Text(text)));
                                 }
                               },
                         icon: const Icon(Icons.play_arrow_rounded),
