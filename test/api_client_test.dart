@@ -33,10 +33,7 @@ void main() {
       classifyAuthFailure(403, 'DEVICE_REVOKED'),
       AuthFailureKind.deviceRevoked,
     );
-    expect(
-      classifyAuthFailure(401, null),
-      AuthFailureKind.sessionExpired,
-    );
+    expect(classifyAuthFailure(401, null), AuthFailureKind.sessionExpired);
     expect(
       classifyAuthFailure(403, 'DEVICE_TOKEN_REQUIRED'),
       AuthFailureKind.sessionExpired,
