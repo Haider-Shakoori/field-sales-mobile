@@ -7,6 +7,23 @@ import '../config.dart';
 import '../storage/secret_store.dart';
 import 'api_exception.dart';
 
+enum AuthFailureKind { deviceRevoked, sessionExpired }
+
+AuthFailureKind? classifyAuthFailure(int? status, String? code) {
+  if (code == 'DEVICE_REVOKED') {
+    return AuthFailureKind.deviceRevoked;
+  }
+
+  if (status == 401 ||
+      code == 'DEVICE_TOKEN_REQUIRED' ||
+      code == 'DEVICE_TOKEN_MISMATCH' ||
+      code == 'DEVICE_NOT_REGISTERED') {
+    return AuthFailureKind.sessionExpired;
+  }
+
+  return null;
+}
+
 class ApiClient {
   ApiClient(this.secrets)
     : dio = Dio(
@@ -51,7 +68,8 @@ class ApiClient {
   final SecretStore secrets;
   final Dio dio;
 
-  void Function()? onAuthRevoked;
+  Future<void> Function()? onDeviceRevoked;
+  Future<void> Function()? onSessionExpired;
 
   String path(String raw) {
     final base = dio.options.baseUrl.replaceFirst(RegExp(r'/+$'), '');
@@ -186,8 +204,15 @@ class ApiClient {
                 : 'Request failed.');
       final status = error.response?.statusCode;
 
-      if (status == 401 || code == 'DEVICE_REVOKED') {
-        onAuthRevoked?.call();
+      final authFailure = classifyAuthFailure(status, code);
+      try {
+        if (authFailure == AuthFailureKind.deviceRevoked) {
+          await onDeviceRevoked?.call();
+        } else if (authFailure == AuthFailureKind.sessionExpired) {
+          await onSessionExpired?.call();
+        }
+      } catch (_) {
+        // Authentication cleanup must never hide the original API error.
       }
 
       throw ApiException(
