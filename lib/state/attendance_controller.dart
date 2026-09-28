@@ -639,17 +639,26 @@ class AttendanceController extends ChangeNotifier {
   Future<void> handleRevocation() => _invalidateAuthorization(
     'This device was revoked for this account. Contact your administrator. '
     'Local unsynced data remains safely stored on this phone.',
+    stopTracking: true,
   );
 
   Future<void> handleSessionExpiration() => _invalidateAuthorization(
     'Your FieldPulse session expired or changed. Sign in again to continue. '
-    'Local unsynced data remains safely stored on this phone.',
+    'Location tracking will continue locally until you sign in again.',
+    stopTracking: false,
   );
 
-  Future<void> _invalidateAuthorization(String notice) async {
+  Future<void> _invalidateAuthorization(
+    String notice, {
+    required bool stopTracking,
+  }) async {
     if (_invalidatingAuthorization) return;
     _invalidatingAuthorization = true;
-    tracking.stop();
+
+    if (stopTracking) {
+      tracking.stop();
+    }
+
     _stopUploader();
     _boundary?.cancel();
     _boundary = null;
