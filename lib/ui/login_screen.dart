@@ -212,9 +212,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.tertiaryContainer,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .tertiaryContainer,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Row(
@@ -222,18 +222,18 @@ class _LoginScreenState extends State<LoginScreen> {
                             children: [
                               Icon(
                                 Icons.info_outline,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onTertiaryContainer,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onTertiaryContainer,
                               ),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
                                   context.watch<AppState>().authNotice!,
                                   style: TextStyle(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onTertiaryContainer,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onTertiaryContainer,
                                   ),
                                 ),
                               ),
