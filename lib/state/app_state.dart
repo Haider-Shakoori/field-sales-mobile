@@ -14,6 +14,7 @@ class AppState extends ChangeNotifier {
   AuthSession? session;
   AttendanceTrackingSettings? policy;
   bool gamificationEnabled = false;
+  String? authNotice;
   bool get signedIn => session != null;
   bool get isSalesman => session?.isSalesman == true;
   bool get isSupervisor => session?.isSupervisor == true;
@@ -62,6 +63,7 @@ class AppState extends ChangeNotifier {
 
   Future<void> login(String email, String password, {String? tenant}) async {
     session = await auth.login(email, password, tenant: tenant);
+    authNotice = null;
     policy = await settings.refresh(session!.tenantId);
     final features = await settings.features();
     gamificationEnabled = features['gamification_enabled'] == true;
@@ -76,20 +78,23 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> logout() async {
-    _syncHeartbeat();
     await auth.logout();
     session = null;
     policy = null;
     gamificationEnabled = false;
+    authNotice = null;
+    _syncHeartbeat();
     notifyListeners();
   }
 
-  Future<void> revokeLocal() async {
-    _syncHeartbeat();
+  Future<void> revokeLocal({String? notice}) async {
+    _heartbeat?.cancel();
+    _heartbeat = null;
     await auth.clearLocalAuth();
     session = null;
     policy = null;
     gamificationEnabled = false;
+    authNotice = notice;
     notifyListeners();
   }
 
