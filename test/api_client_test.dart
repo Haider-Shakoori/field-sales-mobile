@@ -27,4 +27,28 @@ void main() {
     expect(client.path('customers'), endsWith('/api/v1/customers'));
     expect(client.path('/customers'), endsWith('/api/v1/customers'));
   });
+
+  test('auth failures distinguish revocation from expired sessions', () {
+    expect(
+      classifyAuthFailure(403, 'DEVICE_REVOKED'),
+      AuthFailureKind.deviceRevoked,
+    );
+    expect(
+      classifyAuthFailure(401, null),
+      AuthFailureKind.sessionExpired,
+    );
+    expect(
+      classifyAuthFailure(403, 'DEVICE_TOKEN_REQUIRED'),
+      AuthFailureKind.sessionExpired,
+    );
+    expect(
+      classifyAuthFailure(403, 'DEVICE_TOKEN_MISMATCH'),
+      AuthFailureKind.sessionExpired,
+    );
+    expect(
+      classifyAuthFailure(403, 'DEVICE_NOT_REGISTERED'),
+      AuthFailureKind.sessionExpired,
+    );
+    expect(classifyAuthFailure(403, 'FORBIDDEN'), isNull);
+  });
 }
