@@ -207,6 +207,40 @@ class _LoginScreenState extends State<LoginScreen> {
                         'Salesmen, supervisors, and sales managers can sign in.',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
+                      if (context.watch<AppState>().authNotice != null) ...[
+                        const SizedBox(height: 16),
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.tertiaryContainer,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(
+                                Icons.info_outline,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onTertiaryContainer,
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  context.watch<AppState>().authNotice!,
+                                  style: TextStyle(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onTertiaryContainer,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                       const SizedBox(height: 20),
                       if (!showTenantField && rememberedTenant != null) ...[
                         Container(
