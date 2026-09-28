@@ -57,7 +57,8 @@ class AttendanceController extends ChangeNotifier {
     required this.settings,
     required this.db,
   }) {
-    attendance.api.onAuthRevoked = handleRevocation;
+    attendance.api.onDeviceRevoked = handleRevocation;
+    attendance.api.onSessionExpired = handleSessionExpiration;
   }
 
   final AppState appState;
@@ -74,7 +75,7 @@ class AttendanceController extends ChangeNotifier {
   String? message;
   Timer? _uploader;
   Timer? _boundary;
-  bool _revoking = false;
+  bool _invalidatingAuthorization = false;
 
   bool get working => session?['status'] == 'active';
 
@@ -84,6 +85,7 @@ class AttendanceController extends ChangeNotifier {
       todaySession?['date']?.toString() == tenantDate;
 
   Future<void> restore() async {
+    message = null;
     final tenantId = appState.session?.tenantId;
     session = tenantId == null ? null : await attendance.active(tenantId);
     restored = true;
@@ -634,17 +636,31 @@ class AttendanceController extends ChangeNotifier {
     }
   }
 
-  Future<void> handleRevocation() async {
-    if (_revoking) return;
-    _revoking = true;
+  Future<void> handleRevocation() => _invalidateAuthorization(
+    'This device was revoked for this account. Contact your administrator. '
+    'Local unsynced data remains safely stored on this phone.',
+  );
+
+  Future<void> handleSessionExpiration() => _invalidateAuthorization(
+    'Your FieldPulse session expired or changed. Sign in again to continue. '
+    'Local unsynced data remains safely stored on this phone.',
+  );
+
+  Future<void> _invalidateAuthorization(String notice) async {
+    if (_invalidatingAuthorization) return;
+    _invalidatingAuthorization = true;
     tracking.stop();
     _stopUploader();
     _boundary?.cancel();
     _boundary = null;
-    message = 'This device is no longer authorized. Local unsynced data has been preserved.';
-    await appState.revokeLocal();
-    _revoking = false;
-    notifyListeners();
+    message = null;
+
+    try {
+      await appState.revokeLocal(notice: notice);
+    } finally {
+      _invalidatingAuthorization = false;
+      notifyListeners();
+    }
   }
 
   Future<void> logout() async {

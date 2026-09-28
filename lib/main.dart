@@ -104,7 +104,6 @@ Future<void> main() async {
   );
 
   final appState = AppState(auth: auth, settings: settings);
-  api.onAuthRevoked = appState.revokeLocal;
 
   final syncCoordinator = SyncCoordinator(
     db: db,
