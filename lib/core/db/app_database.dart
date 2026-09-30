@@ -998,3 +998,37 @@ class AppDatabase {
   Future<bool> _hasColumn(
     Database database,
     String table,
+    String column,
+  ) async {
+    final rows = await database.rawQuery('PRAGMA table_info($table)');
+
+    return rows.any((row) => row['name'] == column);
+  }
+
+  Future<void> setting(String key, Object value) => db.insert(
+    'local_settings',
+    {'key': key, 'value': jsonEncode(value)},
+    conflictAlgorithm: ConflictAlgorithm.replace,
+  );
+
+  Future<dynamic> readSetting(String key) async {
+    final rows = await db.query(
+      'local_settings',
+      where: 'key=?',
+      whereArgs: [key],
+      limit: 1,
+    );
+
+    return rows.isEmpty ? null : jsonDecode(rows.first['value'] as String);
+  }
+
+  static const masterTables = [
+    'customers',
+    'territories',
+    'routes',
+    'route_customers',
+    'products',
+    'price_lists',
+    'price_list_items',
+  ];
+}
