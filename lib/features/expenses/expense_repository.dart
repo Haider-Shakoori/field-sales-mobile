@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:uuid/uuid.dart';
 
 import '../../core/api/api_client.dart';
@@ -58,6 +60,9 @@ class ExpenseRepository {
     double? fuelLiters,
     double? fuelUnitPrice,
     double? odometerKm,
+    String? vehicleReference,
+    bool fullTank = false,
+    String? receiptLocalPath,
     String? merchant,
     String? referenceNumber,
     String? notes,
@@ -87,6 +92,25 @@ class ExpenseRepository {
       throw StateError('Odometer cannot be negative.');
     }
 
+    if (category == 'fuel') {
+      if (fuelLiters == null || fuelLiters <= 0) {
+        throw StateError('Fuel liters are required.');
+      }
+      if (odometerKm == null || odometerKm < 0) {
+        throw StateError('Odometer reading is required.');
+      }
+      if (_clean(vehicleReference) == null) {
+        throw StateError('Vehicle / plate is required.');
+      }
+      if (_clean(merchant) == null) {
+        throw StateError('Fuel station is required.');
+      }
+      final receipt = _clean(receiptLocalPath);
+      if (receipt == null || !await File(receipt).exists()) {
+        throw StateError('Receipt photo is required.');
+      }
+    }
+
     final normalizedCurrency = currency.trim().toUpperCase();
     if (!RegExp(r'^[A-Z]{3}$').hasMatch(normalizedCurrency)) {
       throw StateError('Currency must be a three-letter code.');
@@ -112,6 +136,13 @@ class ExpenseRepository {
                 (fuelLiters != null ? _round4(amount / fuelLiters) : null))
           : null,
       'odometer_km': category == 'fuel' ? odometerKm : null,
+      'vehicle_reference': category == 'fuel' ? _clean(vehicleReference) : null,
+      'full_tank': category == 'fuel' && fullTank ? 1 : 0,
+      'receipt_local_path': category == 'fuel'
+          ? _clean(receiptLocalPath)
+          : null,
+      'receipt_uploaded': 0,
+      'receipt_uploaded_at': null,
       'merchant': _clean(merchant),
       'reference_number': _clean(referenceNumber),
       'latitude': latitude,
@@ -167,6 +198,9 @@ class ExpenseRepository {
               if (row['fuel_unit_price'] != null)
                 'fuel_unit_price': row['fuel_unit_price'],
               if (row['odometer_km'] != null) 'odometer_km': row['odometer_km'],
+              if (row['vehicle_reference'] != null)
+                'vehicle_reference': row['vehicle_reference'],
+              'full_tank': row['full_tank'] == 1,
               if (row['merchant'] != null) 'merchant': row['merchant'],
               if (row['reference_number'] != null)
                 'reference_number': row['reference_number'],
@@ -179,6 +213,27 @@ class ExpenseRepository {
         );
 
         await _applyServerExpense(tenantId, server);
+
+        final receiptPath = row['receipt_local_path']?.toString();
+        if (row['category'] == 'fuel' &&
+            receiptPath != null &&
+            receiptPath.isNotEmpty &&
+            server['receipt_uploaded'] != true) {
+          final receipt = File(receiptPath);
+          if (!await receipt.exists()) {
+            throw StateError('Fuel receipt file is unavailable.');
+          }
+
+          final uploaded = Map<String, dynamic>.from(
+            await api.postMultipart(
+              'expenses/$offlineUuid/receipt',
+              filePath: receipt.path,
+              field: 'receipt',
+            ) as Map,
+          );
+          await _applyServerExpense(tenantId, uploaded);
+        }
+
         await retry.clear(
           tenantId: tenantId,
           entityType: 'expense',
@@ -246,6 +301,10 @@ class ExpenseRepository {
       'fuel_liters': _nullableNumber(server['fuel_liters']),
       'fuel_unit_price': _nullableNumber(server['fuel_unit_price']),
       'odometer_km': _nullableNumber(server['odometer_km']),
+      'vehicle_reference': server['vehicle_reference']?.toString(),
+      'full_tank': server['full_tank'] == true ? 1 : 0,
+      'receipt_uploaded': server['receipt_uploaded'] == true ? 1 : 0,
+      'receipt_uploaded_at': server['receipt_uploaded_at']?.toString(),
       'merchant': server['merchant']?.toString(),
       'reference_number': server['reference_number']?.toString(),
       'latitude': _number(server['latitude']),

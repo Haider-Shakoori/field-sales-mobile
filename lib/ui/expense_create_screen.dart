@@ -21,7 +21,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
   final _odometer = TextEditingController();
   final _notes = TextEditingController();
 
-  String _category = ExpenseRepository.categories.first;
+  String _category = 'transport';
   bool _saving = false;
 
   @override
@@ -130,6 +130,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
             initialValue: _category,
             decoration: const InputDecoration(labelText: 'Category'),
             items: ExpenseRepository.categories
+                .where((value) => value != 'fuel')
                 .map(
                   (value) => DropdownMenuItem(
                     value: value,

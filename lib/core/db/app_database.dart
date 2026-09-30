@@ -4,7 +4,7 @@ import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
 class AppDatabase {
-  static const version = 18;
+  static const version = 19;
 
   Database? _db;
 
@@ -567,6 +567,11 @@ class AppDatabase {
       'fuel_liters REAL, '
       'fuel_unit_price REAL, '
       'odometer_km REAL, '
+      'vehicle_reference TEXT, '
+      'full_tank INTEGER NOT NULL DEFAULT 0, '
+      'receipt_local_path TEXT, '
+      'receipt_uploaded INTEGER NOT NULL DEFAULT 0, '
+      'receipt_uploaded_at TEXT, '
       'merchant TEXT, '
       'reference_number TEXT, '
       'latitude REAL NOT NULL, '
@@ -913,6 +918,22 @@ class AppDatabase {
       }
     }
 
+    if (oldVersion < 19) {
+      for (final column in const {
+        'vehicle_reference': 'TEXT',
+        'full_tank': 'INTEGER NOT NULL DEFAULT 0',
+        'receipt_local_path': 'TEXT',
+        'receipt_uploaded': 'INTEGER NOT NULL DEFAULT 0',
+        'receipt_uploaded_at': 'TEXT',
+      }.entries) {
+        if (!await _hasColumn(database, 'local_expenses', column.key)) {
+          await database.execute(
+            'ALTER TABLE local_expenses ADD COLUMN ${column.key} ${column.value}',
+          );
+        }
+      }
+    }
+
     if (oldVersion < 4 &&
         !await _hasColumn(database, 'local_work_sessions', 'start_source')) {
       await database.execute(
@@ -977,37 +998,3 @@ class AppDatabase {
   Future<bool> _hasColumn(
     Database database,
     String table,
-    String column,
-  ) async {
-    final rows = await database.rawQuery('PRAGMA table_info($table)');
-
-    return rows.any((row) => row['name'] == column);
-  }
-
-  Future<void> setting(String key, Object value) => db.insert(
-    'local_settings',
-    {'key': key, 'value': jsonEncode(value)},
-    conflictAlgorithm: ConflictAlgorithm.replace,
-  );
-
-  Future<dynamic> readSetting(String key) async {
-    final rows = await db.query(
-      'local_settings',
-      where: 'key=?',
-      whereArgs: [key],
-      limit: 1,
-    );
-
-    return rows.isEmpty ? null : jsonDecode(rows.first['value'] as String);
-  }
-
-  static const masterTables = [
-    'customers',
-    'territories',
-    'routes',
-    'route_customers',
-    'products',
-    'price_lists',
-    'price_list_items',
-  ];
-}

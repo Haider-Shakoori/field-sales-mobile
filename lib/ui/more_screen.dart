@@ -10,6 +10,7 @@ import 'notifications_screen.dart';
 import 'salesman_account_screen.dart';
 import 'collections_screen.dart';
 import 'expenses_screen.dart';
+import 'fuel_screen.dart';
 import 'mileage_screen.dart';
 import 'leads_screen.dart';
 import 'products_screen.dart';
@@ -125,13 +126,24 @@ class MoreScreen extends StatelessWidget {
           Card(
             child: ListTile(
               leading: const Icon(Icons.local_gas_station_outlined),
-              title: const Text('Mileage & Fuel'),
+              title: const Text('Fuel Management'),
+              subtitle: const Text(
+                'Vehicle refueling, odometer, GPS and receipt evidence',
+              ),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () =>
+                  _open(context, 'Fuel Management', const FuelScreen()),
+            ),
+          ),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.route_outlined),
+              title: const Text('Mileage'),
               subtitle: const Text(
                 'GPS distance, odometer variance and fuel efficiency',
               ),
               trailing: const Icon(Icons.chevron_right),
-              onTap: () =>
-                  _open(context, 'Mileage & Fuel', const MileageScreen()),
+              onTap: () => _open(context, 'Mileage', const MileageScreen()),
             ),
           ),
           Card(

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:field_sales_mobile/core/api/api_client.dart';
 import 'package:field_sales_mobile/core/db/app_database.dart';
 import 'package:field_sales_mobile/core/storage/secret_store.dart';
@@ -24,6 +26,10 @@ void main() {
     await db.open();
 
     final repository = ExpenseRepository(api: ApiClient(SecretStore()), db: db);
+    final receipt = File(
+      p.join(Directory.systemTemp.path, 'fieldpulse-fuel-receipt.jpg'),
+    );
+    await receipt.writeAsBytes([1, 2, 3, 4]);
 
     final uuid = await repository.createOffline(
       tenantId: 'tenant-expense-test',
@@ -33,6 +39,9 @@ void main() {
       amount: 450.125,
       fuelLiters: 10,
       odometerKm: 1001.5,
+      vehicleReference: 'CAR-01',
+      fullTank: true,
+      receiptLocalPath: receipt.path,
       merchant: 'Fuel Station',
       referenceNumber: 'FUEL-001',
       latitude: 34.5553,
@@ -56,12 +65,17 @@ void main() {
     expect(row['fuel_liters'], 10);
     expect(row['fuel_unit_price'], 45.0125);
     expect(row['odometer_km'], 1001.5);
+    expect(row['vehicle_reference'], 'CAR-01');
+    expect(row['full_tank'], 1);
+    expect(row['receipt_local_path'], receipt.path);
+    expect(row['receipt_uploaded'], 0);
     expect(row['status'], 'pending');
     expect(row['sync_status'], 'pending');
     expect(row['latitude'], 34.5553);
     expect(row['longitude'], 69.2075);
 
     await db.db.close();
+    if (await receipt.exists()) await receipt.delete();
   });
 
   test('expense validation rejects invalid amount and category', () async {
