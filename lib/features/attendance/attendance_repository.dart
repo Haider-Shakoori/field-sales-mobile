@@ -135,6 +135,7 @@ class AttendanceRepository {
           if (_clean(vehicleReference) != null)
             'vehicle_reference': _clean(vehicleReference),
           'odometer_end_km': odometerEndKm,
+          'notes': _clean(notes),
           'updated_at': now,
         },
         where: 'tenant_id=? AND id=?',
@@ -267,6 +268,7 @@ class AttendanceRepository {
                 'odometer_end_km': result['odometer_end_km'],
               if (result['gps_distance_km'] != null)
                 'gps_distance_km': result['gps_distance_km'],
+              if (result.containsKey('notes')) 'notes': result['notes'],
               'updated_at': DateTime.now().toUtc().toIso8601String(),
             },
             where: 'tenant_id=? AND offline_uuid=?',

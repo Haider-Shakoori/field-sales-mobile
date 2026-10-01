@@ -27,11 +27,20 @@ class CustomerRepository {
     required String tenantId,
     required String name,
     String? code,
+    String? contactPerson,
     String? phone,
+    String? alternatePhone,
+    String? email,
     String? address,
     double? latitude,
     double? longitude,
+    int geofenceRadiusMeters = 100,
+    String? priceListId,
   }) async {
+    if (geofenceRadiusMeters < 25 || geofenceRadiusMeters > 1000) {
+      throw StateError('Geofence radius must be between 25 and 1000 meters.');
+    }
+
     final uuid = const Uuid().v4();
     final now = DateTime.now().toUtc().toIso8601String();
     final payload = <String, dynamic>{
@@ -39,11 +48,15 @@ class CustomerRepository {
       'offline_uuid': uuid,
       'code': code?.trim().isEmpty == true ? null : code?.trim(),
       'name': name.trim(),
-      'phone': phone?.trim().isEmpty == true ? null : phone?.trim(),
-      'address': address?.trim().isEmpty == true ? null : address?.trim(),
+      'contact_person': _clean(contactPerson),
+      'phone': _clean(phone),
+      'alternate_phone': _clean(alternatePhone),
+      'email': _clean(email),
+      'address': _clean(address),
       'latitude': latitude,
       'longitude': longitude,
-      'geofence_radius_meters': 100,
+      'geofence_radius_meters': geofenceRadiusMeters,
+      'price_list_id': _clean(priceListId),
       'route_ids': <String>[],
       'is_active': true,
       'updated_at': now,
@@ -69,11 +82,18 @@ class CustomerRepository {
           'offline_uuid': uuid,
           if (payload['code'] != null) 'code': payload['code'],
           'name': payload['name'],
+          if (payload['contact_person'] != null)
+            'contact_person': payload['contact_person'],
           if (payload['phone'] != null) 'phone': payload['phone'],
+          if (payload['alternate_phone'] != null)
+            'alternate_phone': payload['alternate_phone'],
+          if (payload['email'] != null) 'email': payload['email'],
           if (payload['address'] != null) 'address': payload['address'],
           'latitude': ?latitude,
           'longitude': ?longitude,
-          'geofence_radius_meters': 100,
+          'geofence_radius_meters': geofenceRadiusMeters,
+          if (payload['price_list_id'] != null)
+            'price_list_id': payload['price_list_id'],
         }),
         priority: 20,
       );
@@ -87,11 +107,20 @@ class CustomerRepository {
     required String customerUuid,
     required String name,
     String? code,
+    String? contactPerson,
     String? phone,
+    String? alternatePhone,
+    String? email,
     String? address,
     required double latitude,
     required double longitude,
+    int geofenceRadiusMeters = 100,
+    String? priceListId,
   }) async {
+    if (geofenceRadiusMeters < 25 || geofenceRadiusMeters > 1000) {
+      throw StateError('Geofence radius must be between 25 and 1000 meters.');
+    }
+
     final rows = await database.db.query(
       'customers',
       where: 'tenant_id = ? AND uuid = ?',
@@ -111,22 +140,30 @@ class CustomerRepository {
       ...existing,
       'name': name.trim(),
       'code': code?.trim().isEmpty == true ? existing['code'] : code?.trim(),
-      'phone': phone?.trim().isEmpty == true ? null : phone?.trim(),
-      'address': address?.trim().isEmpty == true ? null : address?.trim(),
+      'contact_person': _clean(contactPerson),
+      'phone': _clean(phone),
+      'alternate_phone': _clean(alternatePhone),
+      'email': _clean(email),
+      'address': _clean(address),
       'latitude': latitude,
       'longitude': longitude,
-      'geofence_radius_meters': existing['geofence_radius_meters'] ?? 100,
+      'geofence_radius_meters': geofenceRadiusMeters,
+      'price_list_id': _clean(priceListId),
       'updated_at': now,
     };
 
     final syncPayload = <String, dynamic>{
       'name': updated['name'],
       if (updated['code'] != null) 'code': updated['code'],
+      'contact_person': updated['contact_person'],
       'phone': updated['phone'],
+      'alternate_phone': updated['alternate_phone'],
+      'email': updated['email'],
       'address': updated['address'],
       'latitude': latitude,
       'longitude': longitude,
       'geofence_radius_meters': updated['geofence_radius_meters'],
+      'price_list_id': updated['price_list_id'],
     };
 
     await transactions.run((transaction) async {
@@ -317,6 +354,11 @@ class CustomerRepository {
     }
 
     return CustomerSyncResult(synced: synced, failed: failed);
+  }
+
+  String? _clean(String? value) {
+    final trimmed = value?.trim();
+    return trimmed == null || trimmed.isEmpty ? null : trimmed;
   }
 
   Future<void> _markFailure(int id, SyncFailureState failure) async {

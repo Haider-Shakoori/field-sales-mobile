@@ -505,21 +505,31 @@ class HomeTab extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Row(
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 8,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    alignment: WrapAlignment.spaceBetween,
                     children: [
-                      Icon(
-                        controller.working ? Icons.location_on : Icons.schedule,
-                        color: controller.working
-                            ? Colors.green
-                            : Colors.indigo,
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            controller.working
+                                ? Icons.location_on
+                                : Icons.schedule,
+                            color: controller.working
+                                ? Colors.green
+                                : Colors.indigo,
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            controller.working ? 'Working' : 'Work day',
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 10),
-                      Text(
-                        controller.working ? 'Working' : 'Work day',
-                        style: Theme.of(context).textTheme.titleLarge
-                            ?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      const Spacer(),
                       Chip(
                         label: Text(
                           controller.working

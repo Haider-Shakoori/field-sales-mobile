@@ -11,6 +11,7 @@ import 'salesman_account_screen.dart';
 import 'collections_screen.dart';
 import 'expenses_screen.dart';
 import 'fuel_screen.dart';
+import 'follow_ups_screen.dart';
 import 'mileage_screen.dart';
 import 'leads_screen.dart';
 import 'products_screen.dart';
@@ -102,6 +103,18 @@ class MoreScreen extends StatelessWidget {
               trailing: const Icon(Icons.chevron_right),
               onTap: () =>
                   _open(context, 'Calendar', const AppointmentsScreen()),
+            ),
+          ),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.follow_the_signs_outlined),
+              title: const Text('Follow-ups'),
+              subtitle: const Text(
+                'Assigned customer actions, due dates and completion',
+              ),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () =>
+                  _open(context, 'Follow-ups', const FollowUpsScreen()),
             ),
           ),
           Card(

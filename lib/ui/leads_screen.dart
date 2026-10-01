@@ -220,11 +220,13 @@ class _LeadsScreenState extends State<LeadsScreen> {
     final contact = TextEditingController();
     final phone = TextEditingController();
     final email = TextEditingController();
+    final address = TextEditingController();
     final value = TextEditingController();
     final currency = TextEditingController(text: 'AFN');
     final notes = TextEditingController();
     var source = 'field';
     var priority = 'normal';
+    DateTime? expectedCloseDate;
 
     final save =
         await showModalBottomSheet<bool>(
@@ -278,10 +280,17 @@ class _LeadsScreenState extends State<LeadsScreen> {
                       decoration: const InputDecoration(labelText: 'Email'),
                     ),
                     const SizedBox(height: 10),
+                    TextField(
+                      controller: address,
+                      maxLines: 2,
+                      decoration: const InputDecoration(labelText: 'Address'),
+                    ),
+                    const SizedBox(height: 10),
                     Row(
                       children: [
                         Expanded(
                           child: DropdownButtonFormField<String>(
+                            isExpanded: true,
                             initialValue: source,
                             decoration: const InputDecoration(
                               labelText: 'Source',
@@ -301,6 +310,7 @@ class _LeadsScreenState extends State<LeadsScreen> {
                         const SizedBox(width: 10),
                         Expanded(
                           child: DropdownButtonFormField<String>(
+                            isExpanded: true,
                             initialValue: priority,
                             decoration: const InputDecoration(
                               labelText: 'Priority',
@@ -349,6 +359,37 @@ class _LeadsScreenState extends State<LeadsScreen> {
                       ],
                     ),
                     const SizedBox(height: 10),
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.event_outlined),
+                      title: const Text('Expected close date'),
+                      subtitle: Text(_dateLabel(expectedCloseDate)),
+                      trailing: expectedCloseDate == null
+                          ? const Icon(Icons.add)
+                          : IconButton(
+                              onPressed: () =>
+                                  setModalState(() => expectedCloseDate = null),
+                              icon: const Icon(Icons.clear),
+                            ),
+                      onTap: () async {
+                        final selected = await showDatePicker(
+                          context: context,
+                          initialDate:
+                              expectedCloseDate ??
+                              DateTime.now().add(const Duration(days: 7)),
+                          firstDate: DateTime.now().subtract(
+                            const Duration(days: 365),
+                          ),
+                          lastDate: DateTime.now().add(
+                            const Duration(days: 3650),
+                          ),
+                        );
+                        if (selected != null) {
+                          setModalState(() => expectedCloseDate = selected);
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 10),
                     TextField(
                       controller: notes,
                       maxLines: 3,
@@ -377,10 +418,12 @@ class _LeadsScreenState extends State<LeadsScreen> {
       contactPerson: contact.text,
       phone: phone.text,
       email: email.text,
+      address: address.text,
       source: source,
       priority: priority,
       estimatedValue: double.tryParse(value.text.trim()),
       currency: currency.text.trim().isEmpty ? 'AFN' : currency.text.trim(),
+      expectedCloseDate: expectedCloseDate,
       notes: notes.text,
     );
   }
@@ -392,6 +435,38 @@ class _LeadsScreenState extends State<LeadsScreen> {
     var activityRows = await controller.activities(uuid);
     if (!context.mounted) return;
     var selectedStage = lead['stage']?.toString() ?? 'new';
+    var selectedSource = lead['source']?.toString() ?? 'field';
+    var selectedPriority = lead['priority']?.toString() ?? 'normal';
+    var expectedCloseDate = _parseDate(lead['expected_close_date']);
+    final nameEditor = TextEditingController(
+      text: lead['name']?.toString() ?? '',
+    );
+    final contactEditor = TextEditingController(
+      text: lead['contact_person']?.toString() ?? '',
+    );
+    final phoneEditor = TextEditingController(
+      text: lead['phone']?.toString() ?? '',
+    );
+    final emailEditor = TextEditingController(
+      text: lead['email']?.toString() ?? '',
+    );
+    final addressEditor = TextEditingController(
+      text: lead['address']?.toString() ?? '',
+    );
+    final valueEditor = TextEditingController(
+      text: lead['estimated_value'] == null
+          ? ''
+          : _number(lead['estimated_value']),
+    );
+    final currencyEditor = TextEditingController(
+      text: lead['currency']?.toString() ?? 'AFN',
+    );
+    final lostReasonEditor = TextEditingController(
+      text: lead['lost_reason']?.toString() ?? '',
+    );
+    final notesEditor = TextEditingController(
+      text: lead['notes']?.toString() ?? '',
+    );
 
     await showModalBottomSheet<void>(
       context: context,
@@ -446,6 +521,88 @@ class _LeadsScreenState extends State<LeadsScreen> {
                 ),
               ],
               const SizedBox(height: 16),
+              TextField(
+                controller: nameEditor,
+                enabled: lead['converted_customer_uuid'] == null,
+                decoration: const InputDecoration(
+                  labelText: 'Business or prospect name',
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: contactEditor,
+                enabled: lead['converted_customer_uuid'] == null,
+                decoration: const InputDecoration(labelText: 'Contact person'),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: phoneEditor,
+                enabled: lead['converted_customer_uuid'] == null,
+                keyboardType: TextInputType.phone,
+                decoration: const InputDecoration(labelText: 'Phone'),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: emailEditor,
+                enabled: lead['converted_customer_uuid'] == null,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(labelText: 'Email'),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: addressEditor,
+                enabled: lead['converted_customer_uuid'] == null,
+                maxLines: 2,
+                decoration: const InputDecoration(labelText: 'Address'),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: DropdownButtonFormField<String>(
+                      isExpanded: true,
+                      initialValue: selectedSource,
+                      decoration: const InputDecoration(labelText: 'Source'),
+                      items: sources
+                          .map(
+                            (item) => DropdownMenuItem(
+                              value: item,
+                              child: Text(_label(item)),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: lead['converted_customer_uuid'] != null
+                          ? null
+                          : (value) => setModalState(
+                              () => selectedSource = value ?? selectedSource,
+                            ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: DropdownButtonFormField<String>(
+                      isExpanded: true,
+                      initialValue: selectedPriority,
+                      decoration: const InputDecoration(labelText: 'Priority'),
+                      items: priorities
+                          .map(
+                            (item) => DropdownMenuItem(
+                              value: item,
+                              child: Text(_label(item)),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: lead['converted_customer_uuid'] != null
+                          ? null
+                          : (value) => setModalState(
+                              () =>
+                                  selectedPriority = value ?? selectedPriority,
+                            ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
               DropdownButtonFormField<String>(
                 initialValue: selectedStage,
                 decoration: const InputDecoration(labelText: 'Pipeline stage'),
@@ -464,14 +621,139 @@ class _LeadsScreenState extends State<LeadsScreen> {
                       ),
               ),
               const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: valueEditor,
+                      enabled: lead['converted_customer_uuid'] == null,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      decoration: const InputDecoration(
+                        labelText: 'Estimated value',
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  SizedBox(
+                    width: 90,
+                    child: TextField(
+                      controller: currencyEditor,
+                      enabled: lead['converted_customer_uuid'] == null,
+                      maxLength: 3,
+                      textCapitalization: TextCapitalization.characters,
+                      decoration: const InputDecoration(
+                        labelText: 'Currency',
+                        counterText: '',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.event_outlined),
+                title: const Text('Expected close date'),
+                subtitle: Text(_dateLabel(expectedCloseDate)),
+                trailing: expectedCloseDate == null
+                    ? const Icon(Icons.add)
+                    : IconButton(
+                        onPressed: lead['converted_customer_uuid'] != null
+                            ? null
+                            : () =>
+                                  setModalState(() => expectedCloseDate = null),
+                        icon: const Icon(Icons.clear),
+                      ),
+                onTap: lead['converted_customer_uuid'] != null
+                    ? null
+                    : () async {
+                        final selected = await showDatePicker(
+                          context: context,
+                          initialDate:
+                              expectedCloseDate ??
+                              DateTime.now().add(const Duration(days: 7)),
+                          firstDate: DateTime.now().subtract(
+                            const Duration(days: 365),
+                          ),
+                          lastDate: DateTime.now().add(
+                            const Duration(days: 3650),
+                          ),
+                        );
+                        if (selected != null) {
+                          setModalState(() => expectedCloseDate = selected);
+                        }
+                      },
+              ),
+              if (selectedStage == 'lost') ...[
+                const SizedBox(height: 10),
+                TextField(
+                  controller: lostReasonEditor,
+                  enabled: lead['converted_customer_uuid'] == null,
+                  maxLines: 2,
+                  decoration: const InputDecoration(
+                    labelText: 'Lost reason',
+                    helperText: 'Required when the opportunity is marked lost.',
+                  ),
+                ),
+              ],
+              const SizedBox(height: 10),
+              TextField(
+                controller: notesEditor,
+                enabled: lead['converted_customer_uuid'] == null,
+                maxLines: 3,
+                decoration: const InputDecoration(labelText: 'Notes'),
+              ),
+              const SizedBox(height: 12),
               FilledButton.tonal(
                 onPressed: lead['converted_customer_uuid'] != null
                     ? null
                     : () async {
-                        await controller.updateStage(lead, selectedStage);
-                        if (sheetContext.mounted) Navigator.pop(sheetContext);
+                        if (nameEditor.text.trim().isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Lead name is required.'),
+                            ),
+                          );
+                          return;
+                        }
+                        if (selectedStage == 'lost' &&
+                            lostReasonEditor.text.trim().isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Enter a reason before marking this lead lost.',
+                              ),
+                            ),
+                          );
+                          return;
+                        }
+                        await controller.updateOpportunity(
+                          lead,
+                          name: nameEditor.text,
+                          contactPerson: contactEditor.text,
+                          phone: phoneEditor.text,
+                          email: emailEditor.text,
+                          address: addressEditor.text,
+                          source: selectedSource,
+                          stage: selectedStage,
+                          priority: selectedPriority,
+                          estimatedValue: double.tryParse(
+                            valueEditor.text.trim(),
+                          ),
+                          currency: currencyEditor.text.trim().isEmpty
+                              ? 'AFN'
+                              : currencyEditor.text,
+                          expectedCloseDate: expectedCloseDate,
+                          lostReason: lostReasonEditor.text,
+                          notes: notesEditor.text,
+                        );
+                        if (sheetContext.mounted) {
+                          Navigator.pop(sheetContext);
+                        }
                       },
-                child: const Text('Save stage'),
+                child: const Text('Save changes'),
               ),
               const SizedBox(height: 8),
               OutlinedButton.icon(
@@ -519,6 +801,16 @@ class _LeadsScreenState extends State<LeadsScreen> {
         ),
       ),
     );
+
+    nameEditor.dispose();
+    contactEditor.dispose();
+    phoneEditor.dispose();
+    emailEditor.dispose();
+    addressEditor.dispose();
+    valueEditor.dispose();
+    currencyEditor.dispose();
+    lostReasonEditor.dispose();
+    notesEditor.dispose();
   }
 
   Future<void> _activity(
@@ -581,6 +873,19 @@ class _LeadsScreenState extends State<LeadsScreen> {
         false;
     if (!save || !context.mounted) return;
     await context.read<LeadController>().addActivity(lead, type, notes.text);
+  }
+
+  static DateTime? _parseDate(dynamic value) {
+    final raw = value?.toString().trim();
+    if (raw == null || raw.isEmpty) return null;
+    return DateTime.tryParse(raw);
+  }
+
+  static String _dateLabel(DateTime? value) {
+    if (value == null) return 'Not set';
+    final month = value.month.toString().padLeft(2, '0');
+    final day = value.day.toString().padLeft(2, '0');
+    return '${value.year}-$month-$day';
   }
 
   static String _label(String value) => value

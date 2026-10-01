@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:field_sales_mobile/core/api/api_client.dart';
 import 'package:field_sales_mobile/core/db/app_database.dart';
 import 'package:field_sales_mobile/core/storage/secret_store.dart';
@@ -228,6 +230,11 @@ void main() {
       notes: 'RC offline collection.',
     );
 
+    final receiptFile = File(
+      p.join(await getDatabasesPath(), 'rc-fuel-receipt.jpg'),
+    );
+    await receiptFile.writeAsBytes(const [0xFF, 0xD8, 0xFF, 0xD9]);
+
     final expenseUuid = await expenses.createOffline(
       tenantId: tenantId,
       spentAt: DateTime.utc(2026, 9, 19, 5, 30),
@@ -237,6 +244,10 @@ void main() {
       latitude: 34.50002,
       longitude: 69.20002,
       accuracy: 7,
+      fuelLiters: 2,
+      odometerKm: 12345,
+      vehicleReference: 'RC-VEHICLE-001',
+      receiptLocalPath: receiptFile.path,
       merchant: 'RC Fuel Station',
       referenceNumber: 'RC-FUEL-001',
     );

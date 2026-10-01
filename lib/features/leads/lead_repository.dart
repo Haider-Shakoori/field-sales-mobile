@@ -111,6 +111,59 @@ class LeadRepository {
     );
   }
 
+  Future<void> updateOpportunityLocal({
+    required String tenantId,
+    required String offlineUuid,
+    required String name,
+    String? contactPerson,
+    String? phone,
+    String? email,
+    String? address,
+    required String source,
+    required String stage,
+    required String priority,
+    double? estimatedValue,
+    required String currency,
+    DateTime? expectedCloseDate,
+    String? lostReason,
+    String? notes,
+  }) async {
+    final row = await _lead(tenantId, offlineUuid);
+    final current = row['sync_status']?.toString() ?? 'synced';
+    final next = current.contains('create')
+        ? 'pending_create'
+        : 'pending_update';
+    final now = DateTime.now().toUtc().toIso8601String();
+
+    await db.db.update(
+      'local_leads',
+      {
+        'name': name.trim(),
+        'contact_person': _nullable(contactPerson),
+        'phone': _nullable(phone),
+        'email': _nullable(email),
+        'address': _nullable(address),
+        'source': source,
+        'stage': stage,
+        'priority': priority,
+        'estimated_value': estimatedValue,
+        'currency': currency.trim().toUpperCase(),
+        'probability': _probability(stage),
+        'expected_close_date': expectedCloseDate == null
+            ? null
+            : _dateKey(expectedCloseDate),
+        'lost_reason': stage == 'lost' ? _nullable(lostReason) : null,
+        'notes': _nullable(notes),
+        'sync_status': next,
+        'last_error': null,
+        'last_activity_at': now,
+        'updated_at': now,
+      },
+      where: 'tenant_id=? AND offline_uuid=?',
+      whereArgs: [tenantId, offlineUuid],
+    );
+  }
+
   Future<String> addActivityLocal({
     required String tenantId,
     required String leadOfflineUuid,
@@ -459,15 +512,19 @@ class LeadRepository {
   };
 
   Map<String, dynamic> _updatePayload(Map<String, dynamic> row) => {
+    'name': row['name'],
+    'contact_person': row['contact_person'],
+    'phone': row['phone'],
+    'email': row['email'],
+    'address': row['address'],
+    'source': row['source'],
     'stage': row['stage'],
     'priority': row['priority'],
-    if (row['estimated_value'] != null)
-      'estimated_value': row['estimated_value'],
+    'estimated_value': row['estimated_value'],
     'currency': row['currency'],
-    if (row['expected_close_date'] != null)
-      'expected_close_date': row['expected_close_date'],
-    if (row['lost_reason'] != null) 'lost_reason': row['lost_reason'],
-    if (row['notes'] != null) 'notes': row['notes'],
+    'expected_close_date': row['expected_close_date'],
+    'lost_reason': row['lost_reason'],
+    'notes': row['notes'],
   };
 
   Future<void> _insertServerLead(

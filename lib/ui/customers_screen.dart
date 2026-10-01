@@ -8,6 +8,7 @@ import 'sync_refresh.dart';
 import 'call_history_screen.dart';
 import 'customer_statement_screen.dart';
 import 'customer_create_screen.dart';
+import 'follow_ups_screen.dart';
 import 'reorder_recommendations_screen.dart';
 
 class CustomersScreen extends StatelessWidget {
@@ -411,6 +412,19 @@ class CustomersScreen extends StatelessWidget {
                                   ),
                                   icon: const Icon(
                                     Icons.account_balance_wallet_outlined,
+                                  ),
+                                ),
+                                IconButton(
+                                  tooltip: 'Follow-ups',
+                                  visualDensity: VisualDensity.compact,
+                                  onPressed: () => Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          FollowUpsScreen(customer: customer),
+                                    ),
+                                  ),
+                                  icon: const Icon(
+                                    Icons.follow_the_signs_outlined,
                                   ),
                                 ),
                                 IconButton(

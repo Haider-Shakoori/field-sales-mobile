@@ -8,6 +8,7 @@ import '../../features/calls/call_activity_repository.dart';
 import '../../features/collections/collection_repository.dart';
 import '../../features/customers/customer_repository.dart';
 import '../../features/expenses/expense_repository.dart';
+import '../../features/followups/follow_up_repository.dart';
 import '../../features/gps/gps_repository.dart';
 import '../../features/master_data/master_data_repository.dart';
 import '../../features/leads/lead_repository.dart';
@@ -37,6 +38,7 @@ class SyncCoordinator {
     required this.collections,
     required this.expenses,
     required this.targets,
+    this.followUps,
   });
 
   final AppDatabase db;
@@ -54,6 +56,7 @@ class SyncCoordinator {
   final CollectionRepository collections;
   final ExpenseRepository expenses;
   final TargetRepository targets;
+  final FollowUpRepository? followUps;
 
   Future<SyncCycleReport> run(
     String tenantId, {
@@ -215,6 +218,18 @@ class SyncCoordinator {
         result.failed,
       );
     });
+
+    if (followUps != null) {
+      await stage('follow_ups', () async {
+        final result = await followUps!.syncPending(tenantId);
+        await followUps!.refresh(tenantId);
+        return SyncStageReport.fromCounts(
+          'follow_ups',
+          result.synced,
+          result.failed,
+        );
+      });
+    }
 
     await stage('stock', () async {
       await stock.refresh(tenantId);

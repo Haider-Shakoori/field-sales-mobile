@@ -20,6 +20,7 @@ import 'features/customers/customer_repository.dart';
 import 'features/calls/call_activity_repository.dart';
 import 'features/collections/collection_repository.dart';
 import 'features/expenses/expense_repository.dart';
+import 'features/followups/follow_up_repository.dart';
 import 'features/financial_documents/customer_statement_repository.dart';
 import 'features/gps/gps_repository.dart';
 import 'features/gps/tracking_service.dart';
@@ -43,6 +44,7 @@ import 'state/appointment_controller.dart';
 import 'state/call_activity_controller.dart';
 import 'state/collection_controller.dart';
 import 'state/expense_controller.dart';
+import 'state/follow_up_controller.dart';
 import 'state/attendance_controller.dart';
 import 'state/master_data_controller.dart';
 import 'state/lead_controller.dart';
@@ -76,6 +78,7 @@ Future<void> main() async {
   final calls = CallActivityRepository(api: api, db: db);
   final collections = CollectionRepository(api: api, db: db);
   final expenses = ExpenseRepository(api: api, db: db);
+  final followUps = FollowUpRepository(api: api, db: db);
   final targets = TargetRepository(api: api, db: db);
   final team = TeamRepository(api);
   final smartRoute = DailyRoutePlanRepository(api: api, db: db);
@@ -121,6 +124,7 @@ Future<void> main() async {
     collections: collections,
     expenses: expenses,
     targets: targets,
+    followUps: followUps,
   );
 
   final masterDataController = MasterDataController(
@@ -149,6 +153,11 @@ Future<void> main() async {
   final expenseController = ExpenseController(
     appState: appState,
     repository: expenses,
+  );
+
+  final followUpController = FollowUpController(
+    appState: appState,
+    repository: followUps,
   );
 
   final targetController = TargetController(
@@ -223,6 +232,7 @@ Future<void> main() async {
         ChangeNotifierProvider.value(value: orderController),
         ChangeNotifierProvider.value(value: collectionController),
         ChangeNotifierProvider.value(value: expenseController),
+        ChangeNotifierProvider.value(value: followUpController),
         ChangeNotifierProvider.value(value: targetController),
         ChangeNotifierProvider.value(value: teamController),
         ChangeNotifierProvider.value(value: syncController),
@@ -239,6 +249,7 @@ Future<void> main() async {
         Provider.value(value: statements),
         Provider.value(value: collections),
         Provider.value(value: expenses),
+        Provider.value(value: followUps),
         Provider.value(value: targets),
         Provider.value(value: team),
         Provider.value(value: mileage),

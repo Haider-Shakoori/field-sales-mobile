@@ -97,10 +97,15 @@ class MasterDataController extends ChangeNotifier {
   Future<void> createCustomer({
     required String name,
     String? code,
+    String? contactPerson,
     String? phone,
+    String? alternatePhone,
+    String? email,
     String? address,
     double? latitude,
     double? longitude,
+    int geofenceRadiusMeters = 100,
+    String? priceListId,
   }) async {
     final tenantId = appState.session?.tenantId;
     if (tenantId == null) {
@@ -111,10 +116,15 @@ class MasterDataController extends ChangeNotifier {
       tenantId: tenantId,
       name: name,
       code: code,
+      contactPerson: contactPerson,
       phone: phone,
+      alternatePhone: alternatePhone,
+      email: email,
       address: address,
       latitude: latitude,
       longitude: longitude,
+      geofenceRadiusMeters: geofenceRadiusMeters,
+      priceListId: priceListId,
     );
 
     await reloadLocal();
@@ -128,10 +138,15 @@ class MasterDataController extends ChangeNotifier {
     required String customerUuid,
     required String name,
     String? code,
+    String? contactPerson,
     String? phone,
+    String? alternatePhone,
+    String? email,
     String? address,
     required double latitude,
     required double longitude,
+    int geofenceRadiusMeters = 100,
+    String? priceListId,
   }) async {
     final tenantId = appState.session?.tenantId;
     if (tenantId == null) {
@@ -143,10 +158,15 @@ class MasterDataController extends ChangeNotifier {
       customerUuid: customerUuid,
       name: name,
       code: code,
+      contactPerson: contactPerson,
       phone: phone,
+      alternatePhone: alternatePhone,
+      email: email,
       address: address,
       latitude: latitude,
       longitude: longitude,
+      geofenceRadiusMeters: geofenceRadiusMeters,
+      priceListId: priceListId,
     );
 
     await reloadLocal();

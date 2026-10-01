@@ -29,8 +29,13 @@ class _CustomerCreateScreenState extends State<CustomerCreateScreen> {
 
   late final TextEditingController _name;
   late final TextEditingController _code;
+  late final TextEditingController _contactPerson;
   late final TextEditingController _phone;
+  late final TextEditingController _alternatePhone;
+  late final TextEditingController _email;
   late final TextEditingController _address;
+  late final TextEditingController _geofenceRadius;
+  String? _priceListId;
 
   LatLng? _shopLocation;
   bool _locating = false;
@@ -44,10 +49,21 @@ class _CustomerCreateScreenState extends State<CustomerCreateScreen> {
     final customer = widget.customer ?? const <String, dynamic>{};
     _name = TextEditingController(text: customer['name']?.toString() ?? '');
     _code = TextEditingController(text: customer['code']?.toString() ?? '');
+    _contactPerson = TextEditingController(
+      text: customer['contact_person']?.toString() ?? '',
+    );
     _phone = TextEditingController(text: customer['phone']?.toString() ?? '');
+    _alternatePhone = TextEditingController(
+      text: customer['alternate_phone']?.toString() ?? '',
+    );
+    _email = TextEditingController(text: customer['email']?.toString() ?? '');
     _address = TextEditingController(
       text: customer['address']?.toString() ?? '',
     );
+    _geofenceRadius = TextEditingController(
+      text: (customer['geofence_radius_meters'] ?? 100).toString(),
+    );
+    _priceListId = customer['price_list_id']?.toString();
 
     final latitude = _number(customer['latitude']);
     final longitude = _number(customer['longitude']);
@@ -64,8 +80,12 @@ class _CustomerCreateScreenState extends State<CustomerCreateScreen> {
     _mapController.dispose();
     _name.dispose();
     _code.dispose();
+    _contactPerson.dispose();
     _phone.dispose();
+    _alternatePhone.dispose();
+    _email.dispose();
     _address.dispose();
+    _geofenceRadius.dispose();
     super.dispose();
   }
 
@@ -161,19 +181,29 @@ class _CustomerCreateScreenState extends State<CustomerCreateScreen> {
           customerUuid: widget.customer!['id'].toString(),
           name: _name.text,
           code: _code.text,
+          contactPerson: _contactPerson.text,
           phone: _phone.text,
+          alternatePhone: _alternatePhone.text,
+          email: _email.text,
           address: _address.text,
           latitude: _shopLocation!.latitude,
           longitude: _shopLocation!.longitude,
+          geofenceRadiusMeters: int.parse(_geofenceRadius.text),
+          priceListId: _priceListId,
         );
       } else {
         await master.createCustomer(
           name: _name.text,
           code: _code.text,
+          contactPerson: _contactPerson.text,
           phone: _phone.text,
+          alternatePhone: _alternatePhone.text,
+          email: _email.text,
           address: _address.text,
           latitude: _shopLocation!.latitude,
           longitude: _shopLocation!.longitude,
+          geofenceRadiusMeters: int.parse(_geofenceRadius.text),
+          priceListId: _priceListId,
         );
       }
 
@@ -230,6 +260,15 @@ class _CustomerCreateScreenState extends State<CustomerCreateScreen> {
               ),
               const SizedBox(height: 12),
               TextFormField(
+                controller: _contactPerson,
+                textInputAction: TextInputAction.next,
+                decoration: const InputDecoration(
+                  labelText: 'Contact person',
+                  prefixIcon: Icon(Icons.person_outline),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
                 controller: _phone,
                 keyboardType: TextInputType.phone,
                 textInputAction: TextInputAction.next,
@@ -240,6 +279,33 @@ class _CustomerCreateScreenState extends State<CustomerCreateScreen> {
               ),
               const SizedBox(height: 12),
               TextFormField(
+                controller: _alternatePhone,
+                keyboardType: TextInputType.phone,
+                textInputAction: TextInputAction.next,
+                decoration: const InputDecoration(
+                  labelText: 'Alternate phone',
+                  prefixIcon: Icon(Icons.phone_forwarded_outlined),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _email,
+                keyboardType: TextInputType.emailAddress,
+                textInputAction: TextInputAction.next,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  prefixIcon: Icon(Icons.email_outlined),
+                ),
+                validator: (value) {
+                  final email = value?.trim() ?? '';
+                  if (email.isEmpty) return null;
+                  return RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email)
+                      ? null
+                      : 'Enter a valid email address.';
+                },
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
                 controller: _address,
                 maxLines: 2,
                 decoration: const InputDecoration(
@@ -247,6 +313,56 @@ class _CustomerCreateScreenState extends State<CustomerCreateScreen> {
                   prefixIcon: Icon(Icons.home_work_outlined),
                   alignLabelWithHint: true,
                 ),
+              ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                initialValue:
+                    master.priceLists.any(
+                      (row) => row['id']?.toString() == (_priceListId ?? ''),
+                    )
+                    ? _priceListId
+                    : '',
+                decoration: const InputDecoration(
+                  labelText: 'Price list',
+                  prefixIcon: Icon(Icons.price_change_outlined),
+                ),
+                items: [
+                  const DropdownMenuItem(value: '', child: Text('Base prices')),
+                  ...master.priceLists
+                      .where((row) => row['is_active'] != false)
+                      .map(
+                        (row) => DropdownMenuItem(
+                          value: row['id']?.toString() ?? '',
+                          child: Text(
+                            '${row['code'] ?? ''} — ${row['name'] ?? 'Price list'}',
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                ],
+                onChanged: (value) => setState(
+                  () => _priceListId = value == null || value.isEmpty
+                      ? null
+                      : value,
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _geofenceRadius,
+                keyboardType: TextInputType.number,
+                textInputAction: TextInputAction.next,
+                decoration: const InputDecoration(
+                  labelText: 'Geofence radius (meters)',
+                  prefixIcon: Icon(Icons.radar_outlined),
+                  helperText: 'Allowed range: 25–1000 meters',
+                ),
+                validator: (value) {
+                  final radius = int.tryParse(value?.trim() ?? '');
+                  if (radius == null || radius < 25 || radius > 1000) {
+                    return 'Enter a radius between 25 and 1000 meters.';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 22),
               Row(

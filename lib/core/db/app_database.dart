@@ -4,7 +4,7 @@ import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
 class AppDatabase {
-  static const version = 19;
+  static const version = 21;
 
   Database? _db;
 
@@ -33,6 +33,7 @@ class AppDatabase {
     await _createStatementTables(database);
     await _createAppointmentTables(database);
     await _createLeadTables(database);
+    await _createFollowUpTables(database);
   }
 
   Future<void> _createSyncTables(Database database) async {
@@ -177,6 +178,7 @@ class AppDatabase {
       'odometer_start_km REAL, '
       'odometer_end_km REAL, '
       'gps_distance_km REAL, '
+      'notes TEXT, '
       'created_at TEXT NOT NULL, '
       'updated_at TEXT NOT NULL'
       ')',
@@ -816,6 +818,42 @@ class AppDatabase {
     );
   }
 
+  Future<void> _createFollowUpTables(Database database) async {
+    await database.execute(
+      'CREATE TABLE IF NOT EXISTS local_customer_follow_ups ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'tenant_id TEXT NOT NULL, '
+      'offline_uuid TEXT NOT NULL, '
+      'server_uuid TEXT, '
+      'customer_uuid TEXT NOT NULL, '
+      'customer_name TEXT, '
+      'type TEXT NOT NULL DEFAULT "call", '
+      'priority TEXT NOT NULL DEFAULT "normal", '
+      'status TEXT NOT NULL DEFAULT "pending", '
+      'due_at TEXT NOT NULL, '
+      'notes TEXT, '
+      'completed_at TEXT, '
+      'completion_note TEXT, '
+      'sync_status TEXT NOT NULL DEFAULT "synced", '
+      'last_error TEXT, '
+      'created_at TEXT NOT NULL, '
+      'updated_at TEXT NOT NULL'
+      ')',
+    );
+    await database.execute(
+      'CREATE UNIQUE INDEX IF NOT EXISTS idx_followups_tenant_uuid '
+      'ON local_customer_follow_ups(tenant_id,offline_uuid)',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_followups_due '
+      'ON local_customer_follow_ups(tenant_id,status,due_at)',
+    );
+    await database.execute(
+      'CREATE INDEX IF NOT EXISTS idx_followups_sync '
+      'ON local_customer_follow_ups(tenant_id,sync_status,due_at)',
+    );
+  }
+
   Future<void> _createStatementTables(Database database) async {
     await database.execute(
       'CREATE TABLE IF NOT EXISTS local_customer_statements ('
@@ -890,6 +928,7 @@ class AppDatabase {
     await _createStatementTables(database);
     await _createAppointmentTables(database);
     await _createLeadTables(database);
+    await _createFollowUpTables(database);
 
     if (oldVersion < 16) {
       for (final column in const {
@@ -932,6 +971,13 @@ class AppDatabase {
           );
         }
       }
+    }
+
+    if (oldVersion < 20 &&
+        !await _hasColumn(database, 'local_work_sessions', 'notes')) {
+      await database.execute(
+        'ALTER TABLE local_work_sessions ADD COLUMN notes TEXT',
+      );
     }
 
     if (oldVersion < 4 &&

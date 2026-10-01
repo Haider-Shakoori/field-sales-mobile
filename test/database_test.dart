@@ -81,6 +81,7 @@ void main() {
         'odometer_start_km',
         'odometer_end_km',
         'gps_distance_km',
+        'notes',
       ]),
     );
     expect(gpsColumns, contains('tenant_id'));

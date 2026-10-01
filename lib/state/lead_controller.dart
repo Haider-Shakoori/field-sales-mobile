@@ -114,6 +114,56 @@ class LeadController extends ChangeNotifier {
     }
   }
 
+  Future<void> updateOpportunity(
+    Map<String, dynamic> lead, {
+    required String name,
+    String? contactPerson,
+    String? phone,
+    String? email,
+    String? address,
+    required String source,
+    required String stage,
+    required String priority,
+    double? estimatedValue,
+    required String currency,
+    DateTime? expectedCloseDate,
+    String? lostReason,
+    String? notes,
+  }) async {
+    final tenantId = appState.session?.tenantId;
+    final uuid = lead['offline_uuid']?.toString();
+    if (tenantId == null || uuid == null || busy || name.trim().isEmpty) return;
+    busy = true;
+    notifyListeners();
+    try {
+      await repository.updateOpportunityLocal(
+        tenantId: tenantId,
+        offlineUuid: uuid,
+        name: name,
+        contactPerson: contactPerson,
+        phone: phone,
+        email: email,
+        address: address,
+        source: source,
+        stage: stage,
+        priority: priority,
+        estimatedValue: estimatedValue,
+        currency: currency,
+        expectedCloseDate: expectedCloseDate,
+        lostReason: lostReason,
+        notes: notes,
+      );
+      await reloadLocal();
+      message = 'Lead changes saved locally.';
+      await sync(silent: true);
+    } catch (error) {
+      message = error.toString();
+    } finally {
+      busy = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> updateStage(
     Map<String, dynamic> lead,
     String stage, {

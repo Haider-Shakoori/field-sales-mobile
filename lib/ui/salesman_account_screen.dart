@@ -167,7 +167,7 @@ class _SalesmanAccountScreenState extends State<SalesmanAccountScreen> {
             crossAxisCount: 2,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            childAspectRatio: 1.8,
+            childAspectRatio: 1.0,
             mainAxisSpacing: 10,
             crossAxisSpacing: 10,
             children: [
@@ -196,12 +196,16 @@ class _SalesmanAccountScreenState extends State<SalesmanAccountScreen> {
           const SizedBox(height: 22),
           Row(
             children: [
-              Text(
-                'My referred customers',
-                style: Theme.of(context).textTheme.titleMedium
-                    ?.copyWith(fontWeight: FontWeight.bold),
+              Expanded(
+                child: Text(
+                  'My referred customers',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
               ),
-              const Spacer(),
+              const SizedBox(width: 8),
               Text(
                 '${summary['active_customers'] ?? 0} active',
                 style: Theme.of(context).textTheme.bodySmall,

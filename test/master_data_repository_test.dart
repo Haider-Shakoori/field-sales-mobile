@@ -218,7 +218,12 @@ void main() {
       final local = await customers.createOffline(
         tenantId: 'tenant-a',
         name: 'Offline Shop',
+        contactPerson: 'Shop Owner',
         phone: '0700000000',
+        alternatePhone: '0700000001',
+        email: 'shop@example.com',
+        geofenceRadiusMeters: 150,
+        priceListId: 'price-list-uuid',
       );
 
       final cached = await masterData.list('customers', 'tenant-a');
@@ -236,6 +241,11 @@ void main() {
       expect(result.synced, 1);
       expect(result.failed, 0);
       expect(source.posts.single['path'], 'customers');
+      expect(source.posts.single['contact_person'], 'Shop Owner');
+      expect(source.posts.single['alternate_phone'], '0700000001');
+      expect(source.posts.single['email'], 'shop@example.com');
+      expect(source.posts.single['geofence_radius_meters'], 150);
+      expect(source.posts.single['price_list_id'], 'price-list-uuid');
 
       final syncedQueue = await database.db.query(
         'sync_queue',
@@ -285,10 +295,15 @@ void main() {
       customerUuid: 'customer-1',
       name: 'Updated Shop Again',
       code: 'CUS-1',
+      contactPerson: 'Final Owner',
       phone: '0700111222',
+      alternatePhone: '0700999888',
+      email: 'final@example.com',
       address: 'Final address',
       latitude: 34.56,
       longitude: 69.21,
+      geofenceRadiusMeters: 250,
+      priceListId: 'price-list-uuid',
     );
 
     final queued = await database.db.query(
@@ -307,6 +322,11 @@ void main() {
     expect(source.patches, hasLength(1));
     expect(source.patches.single['path'], 'customers/customer-1');
     expect(source.patches.single['name'], 'Updated Shop Again');
+    expect(source.patches.single['contact_person'], 'Final Owner');
+    expect(source.patches.single['alternate_phone'], '0700999888');
+    expect(source.patches.single['email'], 'final@example.com');
+    expect(source.patches.single['geofence_radius_meters'], 250);
+    expect(source.patches.single['price_list_id'], 'price-list-uuid');
 
     final cached = await masterData.list('customers', 'tenant-a');
     expect(cached.single['name'], 'Updated Shop Again');

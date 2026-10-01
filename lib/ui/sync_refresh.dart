@@ -5,6 +5,7 @@ import '../state/appointment_controller.dart';
 import '../state/call_activity_controller.dart';
 import '../state/collection_controller.dart';
 import '../state/expense_controller.dart';
+import '../state/follow_up_controller.dart';
 import '../state/master_data_controller.dart';
 import '../state/lead_controller.dart';
 import '../state/order_controller.dart';
@@ -18,6 +19,8 @@ Future<void> reloadAllLocal(BuildContext context) async {
   await context.read<LeadController>().reloadLocal();
   if (!context.mounted) return;
   await context.read<AppointmentController>().reloadLocal();
+  if (!context.mounted) return;
+  await context.read<FollowUpController>().reloadLocal();
   if (!context.mounted) return;
   final visitController = context.read<VisitController>();
   await visitController.reloadLocal();

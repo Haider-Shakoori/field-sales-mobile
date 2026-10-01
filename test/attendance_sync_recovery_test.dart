@@ -133,7 +133,11 @@ void main() {
         accuracy: 5,
         vehicleReference: 'CAR-01',
         odometerEndKm: 1002,
+        notes: 'Customer follow-up pending.',
       );
+
+      final localCompleted = await attendance.forDate(tenantId, '2026-09-20');
+      expect(localCompleted!['notes'], 'Customer follow-up pending.');
 
       await attendance.drain(tenantId);
 
@@ -170,6 +174,7 @@ void main() {
       expect(startPayload['odometer_start_km'], 1000);
       expect(endPayload['vehicle_reference'], 'CAR-01');
       expect(endPayload['odometer_end_km'], 1002);
+      expect(endPayload['notes'], 'Customer follow-up pending.');
 
       await db.db.close();
     },
