@@ -6,7 +6,7 @@ class AppConfig {
   );
   static const _debugApiBaseUrl = 'http://10.0.2.2:8001/api/v1';
   static const _defaultTileUrlTemplate =
-      'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+      'https://maps.fieldpulse.businessos.af/styles/afghanistan/{z}/{x}/{y}.png';
 
   static String get apiBaseUrl => _configuredApiBaseUrl.isNotEmpty
       ? _configuredApiBaseUrl

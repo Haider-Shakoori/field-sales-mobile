@@ -22,12 +22,17 @@ void main() {
     expect(source, isNot(contains('fallbackUrl:')));
   });
 
-  test('tile source is configurable and defaults to compliant HTTPS OSM', () {
+  test('tile source is configurable and defaults to BusinessOS Afghanistan HTTPS maps', () {
     final source = File('lib/core/config.dart').readAsStringSync();
 
     expect(source, contains('String.fromEnvironment('));
     expect(source, contains("'TILE_URL_TEMPLATE'"));
-    expect(source, contains('https://tile.openstreetmap.org/{z}/{x}/{y}.png'));
+    expect(
+      source,
+      contains(
+        'https://maps.fieldpulse.businessos.af/styles/afghanistan/{z}/{x}/{y}.png',
+      ),
+    );
     expect(
       source,
       contains(

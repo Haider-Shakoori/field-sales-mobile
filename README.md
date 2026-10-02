@@ -64,7 +64,7 @@ The tile source can be changed without a new code change:
 ```bash
 flutter run \
   --dart-define=API_BASE_URL=http://10.0.2.2:8001/api/v1 \
-  --dart-define=TILE_URL_TEMPLATE=https://YOUR_TILE_PROVIDER/{z}/{x}/{y}.png
+  --dart-define=TILE_URL_TEMPLATE=https://maps.fieldpulse.businessos.af/styles/afghanistan/{z}/{x}/{y}.png
 ```
 
-If `TILE_URL_TEMPLATE` is omitted, the app uses the standard OpenStreetMap raster endpoint and honors normal interactive-view caching. FieldPulse intentionally does **not** bulk-download or prefetch public OpenStreetMap tiles. For guaranteed region downloads, configure a tile service or self-hosted source whose terms explicitly allow offline/prefetch use.
+If `TILE_URL_TEMPLATE` is omitted, the app uses the BusinessOS-hosted Afghanistan raster endpoint at `https://maps.fieldpulse.businessos.af/styles/afghanistan/{z}/{x}/{y}.png` and honors normal interactive-view caching. FieldPulse intentionally does **not** bulk-download or prefetch external public map tiles.

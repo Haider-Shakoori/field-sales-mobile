@@ -78,6 +78,12 @@ void main() {
 
     expect(workflow, contains('ANDROID_KEYSTORE_BASE64'));
     expect(workflow, contains('PRODUCTION_API_BASE_URL'));
+    expect(
+      workflow,
+      contains(
+        'https://maps.fieldpulse.businessos.af/styles/afghanistan/{z}/{x}/{y}.png',
+      ),
+    );
     expect(workflow, contains('flutter build appbundle --release'));
     expect(workflow, contains('flutter build apk --release'));
     expect(workflow, contains('SHA256SUMS.txt'));

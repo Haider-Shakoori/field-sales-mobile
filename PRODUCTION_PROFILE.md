@@ -12,13 +12,19 @@ Canonical API base URL:
 https://fieldpulse.businessos.af/api/v1
 ```
 
+Canonical production map tiles:
+
+```text
+https://maps.fieldpulse.businessos.af/styles/afghanistan/{z}/{x}/{y}.png
+```
+
 Before running the production Android release workflow, configure the GitHub Actions repository variable:
 
 ```text
 PRODUCTION_API_BASE_URL=https://fieldpulse.businessos.af/api/v1
 ```
 
-and the four external signing secrets documented in `RELEASE.md`.
+and the four external signing secrets documented in `RELEASE.md`. The Android release workflow pins the BusinessOS Afghanistan map endpoint directly, so no separate map-provider repository variable is required.
 
 The workflow must continue to fail closed when either the API variable or signing inputs are missing. Do not commit a keystore, password, token, or production secret.
 
