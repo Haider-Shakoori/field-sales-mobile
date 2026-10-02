@@ -62,7 +62,7 @@ flutter pub get --enforce-lockfile
 flutter build appbundle --release \
   --dart-define=API_BASE_URL=https://fieldpulse.businessos.af/api/v1 \
   --dart-define=APP_VERSION=1.0.0 \
-  --dart-define=TILE_URL_TEMPLATE=https://YOUR_TILE_PROVIDER/{z}/{x}/{y}.png
+  --dart-define=TILE_URL_TEMPLATE=https://maps.fieldpulse.businessos.af/styles/afghanistan/{z}/{x}/{y}.png
 
 flutter build apk --release \
   --dart-define=API_BASE_URL=https://YOUR_DOMAIN/api/v1 \
@@ -88,7 +88,7 @@ Configure the following GitHub Actions secrets:
 Configure this GitHub Actions repository variable:
 
 - `PRODUCTION_API_BASE_URL` — canonical value: `https://fieldpulse.businessos.af/api/v1`
-- `PRODUCTION_TILE_URL_TEMPLATE` — optional HTTPS tile template containing `{z}`, `{x}`, `{y}`; use a provider/self-hosted source appropriate for production and offline caching needs
+- Production map tiles are pinned by the release workflow to `https://maps.fieldpulse.businessos.af/styles/afghanistan/{z}/{x}/{y}.png`; local builds may still override `TILE_URL_TEMPLATE` explicitly when needed
 
 Generate the base64 keystore value without adding the keystore to Git:
 
@@ -166,7 +166,7 @@ The Android production API base URL is:
 https://fieldpulse.businessos.af/api/v1
 ```
 
-The GitHub Actions repository variable `PRODUCTION_API_BASE_URL` must use that exact HTTPS URL before generating the externally signed release candidate. The workflow intentionally does not contain a production fallback so a missing variable fails closed instead of silently shipping against the wrong backend.
+The GitHub Actions repository variable `PRODUCTION_API_BASE_URL` must use that exact HTTPS URL before generating the externally signed release candidate. The production map URL is pinned to `https://maps.fieldpulse.businessos.af/styles/afghanistan/{z}/{x}/{y}.png` by the release workflow. The API workflow intentionally does not contain a production fallback so a missing API variable fails closed instead of silently shipping against the wrong backend.
 
 
 ## Offline map release note
