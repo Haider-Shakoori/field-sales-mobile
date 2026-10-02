@@ -1,0 +1,173 @@
+name: iOS Ad Hoc IPA
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-adhoc-ipa:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.0'
+          channel: stable
+          cache: true
+
+      - name: Validate signing inputs
+        shell: bash
+        env:
+          IOS_CERTIFICATE_BASE64: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
+          IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+          IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+          PRODUCTION_API_BASE_URL: ${{ vars.PRODUCTION_API_BASE_URL }}
+        run: |
+          test -n "$IOS_CERTIFICATE_BASE64" || { echo "Missing IOS_CERTIFICATE_BASE64"; exit 1; }
+          test -n "$IOS_CERTIFICATE_PASSWORD" || { echo "Missing IOS_CERTIFICATE_PASSWORD"; exit 1; }
+          test -n "$IOS_PROVISIONING_PROFILE_BASE64" || { echo "Missing IOS_PROVISIONING_PROFILE_BASE64"; exit 1; }
+          test -n "$PRODUCTION_API_BASE_URL" || { echo "Missing PRODUCTION_API_BASE_URL repository variable"; exit 1; }
+
+      - name: Install Apple distribution certificate
+        shell: bash
+        env:
+          IOS_CERTIFICATE_BASE64: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
+          IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+        run: |
+          CERT_PATH="$RUNNER_TEMP/fieldpulse-distribution.p12"
+          KEYCHAIN_PATH="$RUNNER_TEMP/fieldpulse-signing.keychain-db"
+          KEYCHAIN_PASSWORD="$(uuidgen)"
+
+          printf '%s' "$IOS_CERTIFICATE_BASE64" | base64 --decode > "$CERT_PATH"
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security import "$CERT_PATH"             -P "$IOS_CERTIFICATE_PASSWORD"             -A -t cert -f pkcs12             -k "$KEYCHAIN_PATH"
+          security list-keychain -d user -s "$KEYCHAIN_PATH"
+          security default-keychain -s "$KEYCHAIN_PATH"
+          security set-key-partition-list             -S apple-tool:,apple:,codesign:             -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+          security find-identity -v -p codesigning "$KEYCHAIN_PATH"
+
+      - name: Install and validate Ad Hoc provisioning profile
+        shell: bash
+        env:
+          IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+          IOS_DEVICE_UDID: ${{ secrets.IOS_DEVICE_UDID }}
+        run: |
+          PROFILE_PATH="$RUNNER_TEMP/FieldPulse.mobileprovision"
+          PROFILE_PLIST="$RUNNER_TEMP/FieldPulse-profile.plist"
+
+          printf '%s' "$IOS_PROVISIONING_PROFILE_BASE64" | base64 --decode > "$PROFILE_PATH"
+          security cms -D -i "$PROFILE_PATH" > "$PROFILE_PLIST"
+
+          PROFILE_UUID="$(/usr/libexec/PlistBuddy -c 'Print :UUID' "$PROFILE_PLIST")"
+          PROFILE_NAME="$(/usr/libexec/PlistBuddy -c 'Print :Name' "$PROFILE_PLIST")"
+          TEAM_ID="$(/usr/libexec/PlistBuddy -c 'Print :TeamIdentifier:0' "$PROFILE_PLIST")"
+          APP_IDENTIFIER="$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:application-identifier' "$PROFILE_PLIST")"
+
+          case "$APP_IDENTIFIER" in
+            "$TEAM_ID.com.businessos.fieldpulse") ;;
+            *)
+              echo "Provisioning profile is for $APP_IDENTIFIER, expected $TEAM_ID.com.businessos.fieldpulse"
+              exit 1
+              ;;
+          esac
+
+          /usr/libexec/PlistBuddy -c 'Print :ProvisionedDevices' "$PROFILE_PLIST" >/dev/null || {
+            echo "Provisioning profile is not an Ad Hoc/development device profile."
+            exit 1
+          }
+
+          if [ -n "$IOS_DEVICE_UDID" ]; then
+            python3 - "$PROFILE_PLIST" "$IOS_DEVICE_UDID" <<'PY'
+          import plistlib, sys
+          with open(sys.argv[1], 'rb') as f:
+              profile = plistlib.load(f)
+          udid = sys.argv[2]
+          devices = profile.get('ProvisionedDevices', [])
+          if udid not in devices:
+              raise SystemExit("Configured IOS_DEVICE_UDID is not included in the provisioning profile.")
+          print("Configured iPhone UDID is included in the provisioning profile.")
+          PY
+          fi
+
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          cp "$PROFILE_PATH" "$HOME/Library/MobileDevice/Provisioning Profiles/$PROFILE_UUID.mobileprovision"
+
+          echo "IOS_PROFILE_NAME=$PROFILE_NAME" >> "$GITHUB_ENV"
+          echo "IOS_TEAM_ID=$TEAM_ID" >> "$GITHUB_ENV"
+
+      - name: Install dependencies
+        run: |
+          flutter pub get --enforce-lockfile
+          sudo gem install xcodeproj --no-document
+
+      - name: Configure manual Ad Hoc signing
+        shell: bash
+        run: |
+          ruby - "$IOS_TEAM_ID" "$IOS_PROFILE_NAME" <<'RUBY'
+          require 'xcodeproj'
+
+          team_id = ARGV[0]
+          profile_name = ARGV[1]
+          project = Xcodeproj::Project.open('ios/Runner.xcodeproj')
+          target = project.targets.find { |t| t.name == 'Runner' }
+          abort('Runner target not found') unless target
+
+          target.build_configurations.each do |config|
+            config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = 'com.businessos.fieldpulse'
+            config.build_settings['DEVELOPMENT_TEAM'] = team_id
+            config.build_settings['CODE_SIGN_STYLE'] = 'Manual'
+            config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = profile_name
+            config.build_settings['CODE_SIGN_IDENTITY'] = 'Apple Distribution'
+          end
+
+          project.save
+          RUBY
+
+      - name: Analyze and test
+        run: |
+          flutter analyze
+          flutter test --concurrency=1
+
+      - name: Build signed Ad Hoc IPA
+        shell: bash
+        env:
+          PRODUCTION_API_BASE_URL: ${{ vars.PRODUCTION_API_BASE_URL }}
+        run: |
+          VERSION="$(awk '/^version:/ {print $2}' pubspec.yaml)"
+          VERSION_NAME="${VERSION%%+*}"
+          VERSION_CODE="${VERSION##*+}"
+
+          flutter build ipa --release             --export-method ad-hoc             --build-name="$VERSION_NAME"             --build-number="$VERSION_CODE"             --dart-define=API_BASE_URL="$PRODUCTION_API_BASE_URL"             --dart-define=APP_VERSION="$VERSION_NAME"             --dart-define=TILE_URL_TEMPLATE=https://maps.fieldpulse.businessos.af/styles/afghanistan/{z}/{x}/{y}.png
+
+      - name: Verify and stage IPA
+        shell: bash
+        run: |
+          IPA="$(find build/ios/ipa -maxdepth 1 -name '*.ipa' -print -quit)"
+          test -n "$IPA" || { echo "Signed IPA was not produced."; exit 1; }
+
+          mkdir -p dist
+          cp "$IPA" dist/FieldPulse-iOS-AdHoc.ipa
+
+          rm -rf "$RUNNER_TEMP/ipa-verify"
+          mkdir -p "$RUNNER_TEMP/ipa-verify"
+          unzip -q dist/FieldPulse-iOS-AdHoc.ipa -d "$RUNNER_TEMP/ipa-verify"
+          codesign --verify --deep --strict --verbose=2 "$RUNNER_TEMP/ipa-verify/Payload/Runner.app"
+          security cms -D -i "$RUNNER_TEMP/ipa-verify/Payload/Runner.app/embedded.mobileprovision" > "$RUNNER_TEMP/embedded-profile.plist"
+          /usr/libexec/PlistBuddy -c 'Print :Name' "$RUNNER_TEMP/embedded-profile.plist"
+
+          shasum -a 256 dist/FieldPulse-iOS-AdHoc.ipa > dist/SHA256SUMS.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fieldpulse-ios-adhoc-${{ github.run_number }}
+          path: dist/
+          if-no-files-found: error
+          retention-days: 30
