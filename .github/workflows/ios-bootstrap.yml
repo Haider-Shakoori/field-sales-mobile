@@ -129,12 +129,18 @@ jobs:
 
           flutter build ios --release --no-codesign             --build-name="${VERSION_NAME}"             --build-number="${VERSION_CODE}"             --dart-define=API_BASE_URL=https://fieldpulse.businessos.af/api/v1             --dart-define=APP_VERSION="${VERSION_NAME}"             --dart-define=TILE_URL_TEMPLATE=https://maps.fieldpulse.businessos.af/styles/afghanistan/{z}/{x}/{y}.png
 
-      - name: Package unsigned build artifact
+      - name: Package unsigned IPA artifact
         shell: bash
         run: |
-          mkdir -p dist
-          ditto -c -k --sequesterRsrc --keepParent build/ios/iphoneos/Runner.app dist/FieldPulse-iOS-unsigned.zip
-          shasum -a 256 dist/FieldPulse-iOS-unsigned.zip > dist/SHA256SUMS.txt
+          rm -rf dist
+          mkdir -p dist/Payload
+          cp -R build/ios/iphoneos/Runner.app dist/Payload/
+          (
+            cd dist
+            zip -qry FieldPulse-iOS-unsigned.ipa Payload
+            rm -rf Payload
+            shasum -a 256 FieldPulse-iOS-unsigned.ipa > SHA256SUMS.txt
+          )
 
       - uses: actions/upload-artifact@v4
         with:
