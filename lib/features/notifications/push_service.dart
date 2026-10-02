@@ -22,18 +22,20 @@ class PushService {
 
   Future<void> initialize() async {
     try {
-      await Firebase.initializeApp();
-      _initialized = true;
+      await Firebase.initializeApp().timeout(const Duration(seconds: 5));
     } catch (_) {
       return;
     }
+
     FirebaseMessaging.onBackgroundMessage(fieldPulseFirebaseBackgroundHandler);
 
-    await FirebaseMessaging.instance.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+    try {
+      await FirebaseMessaging.instance
+          .requestPermission(alert: true, badge: true, sound: true)
+          .timeout(const Duration(seconds: 5));
+    } catch (_) {
+      // Push permission must never block or break normal field work.
+    }
 
     _tokenSubscription = FirebaseMessaging.instance.onTokenRefresh.listen(
       (token) => unawaited(registerToken(token)),
@@ -47,12 +49,20 @@ class PushService {
       _opened.add(Map<String, dynamic>.from(message.data));
     });
 
-    final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
-    if (initialMessage != null) {
-      scheduleMicrotask(
-        () => _opened.add(Map<String, dynamic>.from(initialMessage.data)),
-      );
+    try {
+      final initialMessage = await FirebaseMessaging.instance
+          .getInitialMessage()
+          .timeout(const Duration(seconds: 5));
+      if (initialMessage != null) {
+        scheduleMicrotask(
+          () => _opened.add(Map<String, dynamic>.from(initialMessage.data)),
+        );
+      }
+    } catch (_) {
+      // Missing/outdated Google Play services must not block startup.
     }
+
+    _initialized = true;
   }
 
   Future<void> registerCurrentToken() async {

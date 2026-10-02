@@ -67,7 +67,6 @@ Future<void> main() async {
   final secrets = SecretStore();
   final api = ApiClient(secrets);
   final push = PushService(api);
-  await push.initialize();
   final auth = AuthRepository(api: api, secrets: secrets);
   final settings = SettingsRepository(api: api, db: db);
   final appointments = AppointmentRepository(api: api, db: db);
@@ -202,9 +201,6 @@ Future<void> main() async {
   );
 
   await appState.restore();
-  if (appState.signedIn) {
-    await push.registerCurrentToken();
-  }
   notificationController.start();
   if (appState.isSalesman) {
     await attendanceController.restore();
@@ -261,4 +257,22 @@ Future<void> main() async {
       child: const FieldSalesApp(),
     ),
   );
+
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    unawaited(_initializePushAfterStartup(push, appState));
+  });
+}
+
+Future<void> _initializePushAfterStartup(
+  PushService push,
+  AppState appState,
+) async {
+  try {
+    await push.initialize().timeout(const Duration(seconds: 8));
+    if (appState.signedIn) {
+      await push.registerCurrentToken().timeout(const Duration(seconds: 8));
+    }
+  } catch (_) {
+    // Push notifications are optional and must never block app startup.
+  }
 }
