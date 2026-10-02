@@ -16,3 +16,12 @@ android/*.jks
 android/*.keystore
 android/app/*.jks
 android/app/*.keystore
+
+# Apple/iOS signing material — never commit
+*.p12
+*.p8
+*.cer
+*.crt
+*.key
+*.mobileprovision
+*.certSigningRequest
