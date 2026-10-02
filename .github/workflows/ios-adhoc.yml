@@ -11,6 +11,15 @@ jobs:
     runs-on: macos-latest
 
     steps:
+      - name: Refuse signed artifacts from a public repository
+        shell: bash
+        run: |
+          if [ "${{ github.event.repository.private }}" != "true" ]; then
+            echo "FieldPulse repository is public. A signed Ad Hoc IPA embeds registered device identifiers."
+            echo "Make the repository private before running this signing workflow."
+            exit 1
+          fi
+
       - uses: actions/checkout@v4
 
       - uses: subosito/flutter-action@v2
