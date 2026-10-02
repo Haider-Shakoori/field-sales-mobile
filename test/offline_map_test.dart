@@ -27,7 +27,12 @@ void main() {
 
     expect(source, contains('String.fromEnvironment('));
     expect(source, contains("'TILE_URL_TEMPLATE'"));
-    expect(source, contains('https://maps.fieldpulse.businessos.af/styles/afghanistan/{z}/{x}/{y}.png'));
+    expect(
+      source,
+      contains(
+        'https://maps.fieldpulse.businessos.af/styles/afghanistan/{z}/{x}/{y}.png',
+      ),
+    );
     expect(
       source,
       contains(
