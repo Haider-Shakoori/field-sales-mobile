@@ -46,6 +46,10 @@ jobs:
           cp -R "$BOOTSTRAP_DIR/ios" ./ios
           rm -rf "$BOOTSTRAP_DIR"
 
+          # Flutter may rewrite analysis_options.yaml while resolving the temporary
+          # project. Restore all tracked non-iOS files before continuing.
+          git checkout -- analysis_options.yaml
+
           python3 - <<'PY'
           from pathlib import Path
 
