@@ -22,7 +22,7 @@ class _StockReturnsScreenState extends State<StockReturnsScreen> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(_load);
+    Future.microtask(() => _load(refresh: true));
   }
 
   Future<void> _load({bool refresh = false}) async {
