@@ -26,7 +26,28 @@ class StockRepository {
       orderBy: 'name ASC',
     );
 
-    return rows.map(Map<String, dynamic>.from).toList();
+    final pending = await db.db.rawQuery(
+      'SELECT i.product_uuid, COALESCE(SUM(i.quantity),0) AS reserved_qty '
+      'FROM local_order_items i '
+      'JOIN local_orders o '
+      'ON o.tenant_id=i.tenant_id AND o.offline_uuid=i.order_offline_uuid '
+      'WHERE i.tenant_id=? AND o.status=? '
+      'GROUP BY i.product_uuid',
+      [tenantId, 'pending'],
+    );
+    final reservedByProduct = <String, double>{
+      for (final row in pending)
+        row['product_uuid'].toString(): _number(row['reserved_qty']),
+    };
+
+    return rows.map((raw) {
+      final row = Map<String, dynamic>.from(raw);
+      final reserved = reservedByProduct[row['product_uuid'].toString()] ?? 0;
+      row['sellable_qty'] = (_number(row['sellable_qty']) - reserved)
+          .clamp(0, double.infinity)
+          .toDouble();
+      return row;
+    }).toList();
   }
 
   Future<void> refresh(String tenantId) async {
