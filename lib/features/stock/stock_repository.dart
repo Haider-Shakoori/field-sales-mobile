@@ -31,9 +31,9 @@ class StockRepository {
       'FROM local_order_items i '
       'JOIN local_orders o '
       'ON o.tenant_id=i.tenant_id AND o.offline_uuid=i.order_offline_uuid '
-      'WHERE i.tenant_id=? AND o.status=? '
+      'WHERE i.tenant_id=? AND o.status=? AND o.sync_status<>? '
       'GROUP BY i.product_uuid',
-      [tenantId, 'pending'],
+      [tenantId, 'pending', 'synced'],
     );
     final reservedByProduct = <String, double>{
       for (final row in pending)
@@ -109,8 +109,8 @@ class StockRepository {
       'FROM local_order_items i '
       'JOIN local_orders o '
       'ON o.tenant_id=i.tenant_id AND o.offline_uuid=i.order_offline_uuid '
-      'WHERE i.tenant_id=? AND i.product_uuid=? AND o.status=?',
-      [tenantId, productUuid, 'pending'],
+      'WHERE i.tenant_id=? AND i.product_uuid=? AND o.status=? AND o.sync_status<>?',
+      [tenantId, productUuid, 'pending', 'synced'],
     );
 
     return sellable - _number(reserved.first['total']);
