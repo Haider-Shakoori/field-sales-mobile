@@ -40,7 +40,11 @@ jobs:
             exit 0
           fi
 
-          flutter create --platforms=ios --org com.businessos .
+          BOOTSTRAP_DIR="$(mktemp -d)"
+          flutter create             --platforms=ios             --org com.businessos             --project-name field_sales_mobile             "$BOOTSTRAP_DIR"
+
+          cp -R "$BOOTSTRAP_DIR/ios" ./ios
+          rm -rf "$BOOTSTRAP_DIR"
 
           python3 - <<'PY'
           from pathlib import Path
@@ -83,6 +87,19 @@ jobs:
           PY
           fi
 
+          echo "generated=true" >> "$GITHUB_OUTPUT"
+
+      - name: Ensure bootstrap touched only iOS
+        if: steps.bootstrap.outputs.generated == 'true'
+        shell: bash
+        run: |
+          NON_IOS="$(git status --porcelain | awk '{print $2}' | grep -v '^ios/' || true)"
+          if [ -n "$NON_IOS" ]; then
+            echo "Bootstrap unexpectedly changed non-iOS paths:"
+            echo "$NON_IOS"
+            exit 1
+          fi
+
       - name: Commit generated iOS platform
         if: steps.bootstrap.outputs.generated == 'true'
         shell: bash
@@ -106,12 +123,7 @@ jobs:
           VERSION_NAME="${VERSION%%+*}"
           VERSION_CODE="${VERSION##*+}"
 
-          flutter build ios --release --no-codesign \
-            --build-name="${VERSION_NAME}" \
-            --build-number="${VERSION_CODE}" \
-            --dart-define=API_BASE_URL=https://fieldpulse.businessos.af/api/v1 \
-            --dart-define=APP_VERSION="${VERSION_NAME}" \
-            --dart-define=TILE_URL_TEMPLATE=https://maps.fieldpulse.businessos.af/styles/afghanistan/{z}/{x}/{y}.png
+          flutter build ios --release --no-codesign             --build-name="${VERSION_NAME}"             --build-number="${VERSION_CODE}"             --dart-define=API_BASE_URL=https://fieldpulse.businessos.af/api/v1             --dart-define=APP_VERSION="${VERSION_NAME}"             --dart-define=TILE_URL_TEMPLATE=https://maps.fieldpulse.businessos.af/styles/afghanistan/{z}/{x}/{y}.png
 
       - name: Package unsigned build artifact
         shell: bash
