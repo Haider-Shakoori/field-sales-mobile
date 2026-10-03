@@ -1,9 +1,11 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:field_sales_mobile/l10n/localized_material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 import 'features/notifications/push_service.dart';
+import 'l10n/locale_controller.dart';
 import 'state/app_state.dart';
 import 'ui/dashboard_screen.dart';
 import 'ui/fieldpulse_splash_screen.dart';
@@ -65,20 +67,29 @@ class _FieldSalesAppState extends State<FieldSalesApp> {
   }
 
   @override
-  Widget build(BuildContext context) => MaterialApp(
-    navigatorKey: navigatorKey,
-    title: 'FieldPulse',
-    debugShowCheckedModeBanner: false,
-    theme: ThemeData(
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xFF0B74E5),
-        brightness: Brightness.light,
+  Widget build(BuildContext context) => Consumer<AppLocaleController>(
+    builder: (_, locale, _) => MaterialApp(
+      navigatorKey: navigatorKey,
+      title: 'FieldPulse',
+      debugShowCheckedModeBanner: false,
+      locale: locale.locale,
+      supportedLocales: AppLocaleController.supportedLocales,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF0B74E5),
+          brightness: Brightness.light,
+        ),
+        useMaterial3: true,
+        scaffoldBackgroundColor: const Color(0xFFF6F7FB),
+        cardTheme: const CardThemeData(elevation: 0, margin: EdgeInsets.zero),
       ),
-      useMaterial3: true,
-      scaffoldBackgroundColor: const Color(0xFFF6F7FB),
-      cardTheme: const CardThemeData(elevation: 0, margin: EdgeInsets.zero),
+      home: const _StartupGate(),
     ),
-    home: const _StartupGate(),
   );
 }
 
