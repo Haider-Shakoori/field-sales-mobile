@@ -50,7 +50,8 @@ class MoreScreen extends StatelessWidget {
         const _MoreAction(
           icon: Icons.account_circle_outlined,
           title: 'My Account',
-          subtitle: 'Referral customers, orders, collections and visit activity',
+          subtitle:
+              'Referral customers, orders, collections and visit activity',
           screen: SalesmanAccountScreen(),
         ),
       const _MoreAction(
@@ -141,7 +142,8 @@ class MoreScreen extends StatelessWidget {
       const _MoreAction(
         icon: Icons.health_and_safety_outlined,
         title: 'Mobile Diagnostics',
-        subtitle: 'Battery, GPS, background tracking, permissions and sync health',
+        subtitle:
+            'Battery, GPS, background tracking, permissions and sync health',
         screen: MobileDiagnosticsScreen(),
       ),
       const _MoreAction(
@@ -248,10 +250,7 @@ class _MoreAction {
 }
 
 class _MoreActionCard extends StatelessWidget {
-  const _MoreActionCard({
-    required this.action,
-    required this.onTap,
-  });
+  const _MoreActionCard({required this.action, required this.onTap});
 
   final _MoreAction action;
   final VoidCallback onTap;
@@ -275,9 +274,8 @@ class _MoreActionCard extends StatelessWidget {
                 action.title,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
+                style: Theme.of(context).textTheme.titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w800),
               ),
               const SizedBox(height: 3),
               Text(
