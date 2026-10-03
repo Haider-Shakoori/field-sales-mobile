@@ -11,12 +11,12 @@ class AppState extends ChangeNotifier {
   AppState({
     required this.auth,
     required this.settings,
-    required this.deviceHealth,
+    this.deviceHealth,
   });
 
   final AuthRepository auth;
   final SettingsRepository settings;
-  final DeviceHealthRepository deviceHealth;
+  final DeviceHealthRepository? deviceHealth;
   bool restored = false;
   AuthSession? session;
   AttendanceTrackingSettings? policy;
@@ -55,9 +55,10 @@ class AppState extends ChangeNotifier {
     }
 
     final tenantId = session?.tenantId;
-    if (tenantId != null) {
+    final health = deviceHealth;
+    if (tenantId != null && health != null) {
       try {
-        await deviceHealth.report(tenantId);
+        await health.report(tenantId);
       } catch (_) {
         // Health reporting must never interrupt normal FieldPulse work.
       }
