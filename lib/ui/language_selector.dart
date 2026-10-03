@@ -5,10 +5,7 @@ import '../l10n/l10n.dart';
 import '../l10n/locale_controller.dart';
 
 class LanguageSelectorButton extends StatelessWidget {
-  const LanguageSelectorButton({
-    super.key,
-    this.compact = false,
-  });
+  const LanguageSelectorButton({super.key, this.compact = false});
 
   final bool compact;
 
@@ -46,25 +43,22 @@ class LanguageSelectorButton extends StatelessWidget {
     );
   }
 
-  PopupMenuItem<String> _item(
-    String code,
-    String label,
-    String selected,
-  ) => PopupMenuItem<String>(
-    value: code,
-    child: Row(
-      children: [
-        Icon(
-          code == selected
-              ? Icons.radio_button_checked
-              : Icons.radio_button_off,
-          size: 18,
+  PopupMenuItem<String> _item(String code, String label, String selected) =>
+      PopupMenuItem<String>(
+        value: code,
+        child: Row(
+          children: [
+            Icon(
+              code == selected
+                  ? Icons.radio_button_checked
+                  : Icons.radio_button_off,
+              size: 18,
+            ),
+            const SizedBox(width: 10),
+            Text(label),
+          ],
         ),
-        const SizedBox(width: 10),
-        Text(label),
-      ],
-    ),
-  );
+      );
 
   String _label(String code) => switch (code) {
     'fa' => 'Dari',
