@@ -610,10 +610,11 @@ class _VisitsScreenState extends State<VisitsScreen> {
     final state = context.watch<VisitController>();
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 6),
             child: SegmentedButton<bool>(
               segments: const [
                 ButtonSegment(

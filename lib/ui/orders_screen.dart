@@ -6,6 +6,7 @@ import '../state/order_controller.dart';
 import 'order_create_screen.dart';
 import 'order_detail_screen.dart';
 import 'sync_refresh.dart';
+import 'widgets/fieldpulse_ui.dart';
 
 class OrdersScreen extends StatelessWidget {
   const OrdersScreen({super.key});
@@ -39,36 +40,42 @@ class OrdersScreen extends StatelessWidget {
     final state = context.watch<OrderController>();
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: RefreshIndicator(
         onRefresh: () => syncAndReload(context, triggerSource: 'pull:orders'),
         child: state.orders.isEmpty
             ? ListView(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.fromLTRB(20, 32, 20, 24),
                 children: const [
-                  SizedBox(height: 150),
-                  Icon(Icons.receipt_long_outlined, size: 52),
-                  SizedBox(height: 12),
-                  Center(child: Text('No orders recorded yet.')),
-                  SizedBox(height: 6),
-                  Center(
-                    child: Text(
-                      'Orders are stored locally first and sync when online.',
-                      textAlign: TextAlign.center,
-                    ),
+                  SizedBox(height: 80),
+                  FieldPulseEmptyState(
+                    icon: Icons.receipt_long_outlined,
+                    title: 'No orders yet',
+                    message:
+                        'Orders are stored locally first and sync when online.',
                   ),
                 ],
               )
             : ListView.separated(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
                 itemCount: state.orders.length,
                 separatorBuilder: (_, _) => const SizedBox(height: 8),
                 itemBuilder: (_, index) {
                   final order = state.orders[index];
                   final synced = order['sync_status'] == 'synced';
 
-                  return Card(
+                  return FieldPulseGlassCard(
+                    padding: EdgeInsets.zero,
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => OrderDetailScreen(order: order),
+                      ),
+                    ),
                     child: ListTile(
-                      leading: const Icon(Icons.receipt_long_outlined),
+                      leading: const FieldPulseIconBadge(
+                        icon: Icons.receipt_long_outlined,
+                        size: 42,
+                      ),
                       title: Text(
                         order['order_number']?.toString() ?? 'Offline order',
                       ),
@@ -83,11 +90,6 @@ class OrdersScreen extends StatelessWidget {
                       trailing: Text(
                         "${order['grand_total'] ?? 0} ${order['currency'] ?? ''}",
                         style: const TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => OrderDetailScreen(order: order),
-                        ),
                       ),
                     ),
                   );

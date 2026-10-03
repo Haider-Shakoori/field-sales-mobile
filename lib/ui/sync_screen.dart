@@ -9,6 +9,8 @@ import '../state/order_controller.dart';
 import '../state/sync_controller.dart';
 import '../state/target_controller.dart';
 import '../state/visit_controller.dart';
+import 'fieldpulse_theme.dart';
+import 'widgets/fieldpulse_ui.dart';
 
 class SyncScreen extends StatelessWidget {
   const SyncScreen({super.key});
@@ -90,132 +92,131 @@ class SyncScreen extends StatelessWidget {
     final latestCompleted = sync.latestCycle?['completed_at']?.toString();
 
     return ListView(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 28),
       children: [
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Offline sync',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+        FieldPulseGlassCard(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Offline sync',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+              const SizedBox(height: 12),
+              Text('Pending local changes: $pending'),
+              Text('Waiting for retry: ${sync.waitingCount}'),
+              Text('Blocked items: ${sync.blockedCount}'),
+              if (latestStatus != null) ...[
+                const SizedBox(height: 6),
+                Text(
+                  'Last cycle: $latestStatus'
+                  '${latestCompleted == null ? '' : ' · $latestCompleted'}',
                 ),
-                const SizedBox(height: 12),
-                Text('Pending local changes: $pending'),
-                Text('Waiting for retry: ${sync.waitingCount}'),
-                Text('Blocked items: ${sync.blockedCount}'),
-                if (latestStatus != null) ...[
-                  const SizedBox(height: 6),
-                  Text(
-                    'Last cycle: $latestStatus'
-                    '${latestCompleted == null ? '' : ' · $latestCompleted'}',
-                  ),
-                ],
-                const SizedBox(height: 16),
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: [
-                    FilledButton.icon(
-                      onPressed: busy ? null : () => _syncAll(context),
-                      icon: busy
-                          ? const SizedBox.square(
-                              dimension: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.sync),
-                      label: Text(busy ? 'Syncing…' : 'Sync now'),
-                    ),
-                    if (sync.issueCount > 0)
-                      OutlinedButton.icon(
-                        onPressed: busy ? null : () => _retryFailures(context),
-                        icon: const Icon(Icons.restart_alt),
-                        label: const Text('Retry failures now'),
-                      ),
-                  ],
-                ),
-                if (sync.message != null) ...[
-                  const SizedBox(height: 12),
-                  Text(sync.message!),
-                ],
               ],
-            ),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: [
+                  FilledButton.icon(
+                    onPressed: busy ? null : () => _syncAll(context),
+                    icon: busy
+                        ? const SizedBox.square(
+                            dimension: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.sync),
+                    label: Text(busy ? 'Syncing…' : 'Sync now'),
+                  ),
+                  if (sync.issueCount > 0)
+                    OutlinedButton.icon(
+                      onPressed: busy ? null : () => _retryFailures(context),
+                      icon: const Icon(Icons.restart_alt),
+                      label: const Text('Retry failures now'),
+                    ),
+                ],
+              ),
+              if (sync.message != null) ...[
+                const SizedBox(height: 12),
+                Text(sync.message!),
+              ],
+            ],
           ),
         ),
         if (sync.issues.isNotEmpty) ...[
           const SizedBox(height: 16),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Sync issues',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
-                  ),
-                  const SizedBox(height: 10),
-                  ...sync.issues.take(8).map((issue) {
-                    final type = _entityLabel(
-                      issue['entity_type']?.toString() ?? 'item',
-                    );
-                    final status = issue['status']?.toString() ?? 'retry_wait';
-                    final attempts = issue['attempts']?.toString() ?? '0';
-                    final next = issue['next_retry_at']?.toString();
+          FieldPulseGlassCard(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Sync issues',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                ),
+                const SizedBox(height: 10),
+                ...sync.issues.take(8).map((issue) {
+                  final type = _entityLabel(
+                    issue['entity_type']?.toString() ?? 'item',
+                  );
+                  final status = issue['status']?.toString() ?? 'retry_wait';
+                  final attempts = issue['attempts']?.toString() ?? '0';
+                  final next = issue['next_retry_at']?.toString();
 
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  '$type · $status · attempt $attempts',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                '$type · $status · attempt $attempts',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              Icon(
-                                status == 'blocked'
-                                    ? Icons.error_outline
-                                    : Icons.schedule,
-                                size: 20,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 3),
-                          Text(
-                            issue['error_message']?.toString() ??
-                                'Sync failed.',
-                          ),
-                          if (next != null)
-                            Text(
-                              'Next automatic retry: $next',
-                              style: TextStyle(color: Colors.grey.shade600),
                             ),
-                        ],
-                      ),
-                    );
-                  }),
-                  if (sync.issues.length > 8)
-                    Text(
-                      '+${sync.issues.length - 8} more issues',
-                      style: TextStyle(color: Colors.grey.shade600),
+                            Icon(
+                              status == 'blocked'
+                                  ? Icons.error_outline
+                                  : Icons.schedule,
+                              size: 20,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          issue['error_message']?.toString() ?? 'Sync failed.',
+                        ),
+                        if (next != null)
+                          Text(
+                            'Next automatic retry: $next',
+                            style: TextStyle(color: Colors.grey.shade600),
+                          ),
+                      ],
                     ),
-                ],
-              ),
+                  );
+                }),
+                if (sync.issues.length > 8)
+                  Text(
+                    '+${sync.issues.length - 8} more issues',
+                    style: TextStyle(color: Colors.grey.shade600),
+                  ),
+              ],
             ),
           ),
         ],
         const SizedBox(height: 16),
-        const Card(
+        const FieldPulseGlassCard(
+          padding: EdgeInsets.zero,
           child: ListTile(
-            leading: Icon(Icons.cloud_off_outlined),
+            leading: FieldPulseIconBadge(
+              icon: Icons.cloud_off_outlined,
+              color: FieldPulseTheme.cyan,
+            ),
             title: Text('Local-first by design'),
             subtitle: Text(
               'Offline changes are preserved locally. Sync runs in dependency '

@@ -29,6 +29,7 @@ import 'notifications_screen.dart';
 import 'sync_refresh.dart';
 import 'sync_screen.dart';
 import 'visits_screen.dart';
+import 'widgets/fieldpulse_ui.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -226,17 +227,19 @@ class _DashboardScreenState extends State<DashboardScreen>
           ),
         ],
       ),
-      body: IndexedStack(index: _index, children: _pages),
+      body: FieldPulsePageBackground(
+        child: IndexedStack(index: _index, children: _pages),
+      ),
       bottomNavigationBar: SafeArea(
         top: false,
         minimum: const EdgeInsets.fromLTRB(12, 0, 12, 10),
         child: Container(
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
-            gradient: FieldPulseDecor.premiumSurfaceGradient,
-            borderRadius: BorderRadius.circular(26),
-            border: Border.all(color: Colors.white),
-            boxShadow: FieldPulseDecor.premiumShadow,
+            gradient: FieldPulseDecor.glassGradient,
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(color: Colors.white.withValues(alpha: .92)),
+            boxShadow: FieldPulseDecor.glassShadow,
           ),
           child: NavigationBar(
             selectedIndex: _index,
