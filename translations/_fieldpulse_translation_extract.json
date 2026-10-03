@@ -10,6 +10,26 @@
     "placeholders": []
   },
   {
+    "english": "A usable GPS location is required.",
+    "contexts": [
+      "state.attendance_controller"
+    ],
+    "sources": [
+      "lib/state/attendance_controller.dart:277"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "A usable location is required to end the day. Turn on location services and try again.",
+    "contexts": [
+      "state.attendance_controller"
+    ],
+    "sources": [
+      "lib/state/attendance_controller.dart:446"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Add at least one product.",
     "contexts": [
       "features.orders.order_repository"
@@ -100,12 +120,143 @@
     "placeholders": []
   },
   {
+    "english": "Appointment saved locally.",
+    "contexts": [
+      "state.appointment_controller"
+    ],
+    "sources": [
+      "lib/state/appointment_controller.dart:102"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Appointment updated locally.",
+    "contexts": [
+      "state.appointment_controller"
+    ],
+    "sources": [
+      "lib/state/appointment_controller.dart:132"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Bad state:",
+    "contexts": [
+      "state.attendance_controller"
+    ],
+    "sources": [
+      "lib/state/attendance_controller.dart:32"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Calendar sync complete.",
+    "contexts": [
+      "state.appointment_controller"
+    ],
+    "sources": [
+      "lib/state/appointment_controller.dart:56"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Calendar sync completed with {failed} pending failure(s).",
+    "contexts": [
+      "state.appointment_controller"
+    ],
+    "sources": [
+      "lib/state/appointment_controller.dart:57"
+    ],
+    "placeholders": [
+      "failed"
+    ]
+  },
+  {
+    "english": "Call activity saved locally.",
+    "contexts": [
+      "state.call_activity_controller"
+    ],
+    "sources": [
+      "lib/state/call_activity_controller.dart:70"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Call activity sync complete. {synced} records processed.",
+    "contexts": [
+      "state.call_activity_controller"
+    ],
+    "sources": [
+      "lib/state/call_activity_controller.dart:96"
+    ],
+    "placeholders": [
+      "synced"
+    ]
+  },
+  {
+    "english": "Call activity sync completed with {failed} pending failures.",
+    "contexts": [
+      "state.call_activity_controller"
+    ],
+    "sources": [
+      "lib/state/call_activity_controller.dart:97"
+    ],
+    "placeholders": [
+      "failed"
+    ]
+  },
+  {
     "english": "Collection amount must be greater than zero.",
     "contexts": [
       "features.collections.collection_repository"
     ],
     "sources": [
       "lib/features/collections/collection_repository.dart:80"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Collection saved locally.",
+    "contexts": [
+      "state.collection_controller"
+    ],
+    "sources": [
+      "lib/state/collection_controller.dart:86"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Collection sync complete. {synced} pending collections processed.",
+    "contexts": [
+      "state.collection_controller"
+    ],
+    "sources": [
+      "lib/state/collection_controller.dart:114"
+    ],
+    "placeholders": [
+      "synced"
+    ]
+  },
+  {
+    "english": "Collection sync completed with {failed} pending failures.",
+    "contexts": [
+      "state.collection_controller"
+    ],
+    "sources": [
+      "lib/state/collection_controller.dart:115"
+    ],
+    "placeholders": [
+      "failed"
+    ]
+  },
+  {
+    "english": "Company timezone is unavailable.",
+    "contexts": [
+      "state.attendance_controller"
+    ],
+    "sources": [
+      "lib/state/attendance_controller.dart:268",
+      "lib/state/attendance_controller.dart:501"
     ],
     "placeholders": []
   },
@@ -252,6 +403,16 @@
     "placeholders": []
   },
   {
+    "english": "Customer changes saved locally. They will sync when online.",
+    "contexts": [
+      "state.master_data_controller"
+    ],
+    "sources": [
+      "lib/state/master_data_controller.dart:173"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Customer is not available offline.",
     "contexts": [
       "features.customers.customer_repository"
@@ -262,12 +423,32 @@
     "placeholders": []
   },
   {
+    "english": "Customer saved locally. It will sync when online.",
+    "contexts": [
+      "state.master_data_controller"
+    ],
+    "sources": [
+      "lib/state/master_data_controller.dart:131"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Customer statement response is incomplete.",
     "contexts": [
       "features.financial_documents.customer_statement_repository"
     ],
     "sources": [
       "lib/features/financial_documents/customer_statement_repository.dart:74"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Day completed or already started.",
+    "contexts": [
+      "state.attendance_controller"
+    ],
+    "sources": [
+      "lib/state/attendance_controller.dart:270"
     ],
     "placeholders": []
   },
@@ -332,6 +513,40 @@
     "placeholders": []
   },
   {
+    "english": "Expense saved locally.",
+    "contexts": [
+      "state.expense_controller"
+    ],
+    "sources": [
+      "lib/state/expense_controller.dart:84"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Expense sync complete. {synced} pending claims processed.",
+    "contexts": [
+      "state.expense_controller"
+    ],
+    "sources": [
+      "lib/state/expense_controller.dart:111"
+    ],
+    "placeholders": [
+      "synced"
+    ]
+  },
+  {
+    "english": "Expense sync completed with {failed} pending failures.",
+    "contexts": [
+      "state.expense_controller"
+    ],
+    "sources": [
+      "lib/state/expense_controller.dart:112"
+    ],
+    "placeholders": [
+      "failed"
+    ]
+  },
+  {
     "english": "failed_{phase}",
     "contexts": [
       "features.followups.follow_up_repository"
@@ -374,12 +589,54 @@
     "placeholders": []
   },
   {
+    "english": "Follow-up saved locally.",
+    "contexts": [
+      "state.follow_up_controller"
+    ],
+    "sources": [
+      "lib/state/follow_up_controller.dart:93"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Follow-up status must be completed or cancelled.",
     "contexts": [
       "features.followups.follow_up_repository"
     ],
     "sources": [
       "lib/features/followups/follow_up_repository.dart:85"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Follow-up sync complete.",
+    "contexts": [
+      "state.follow_up_controller"
+    ],
+    "sources": [
+      "lib/state/follow_up_controller.dart:53"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Follow-up sync completed with {failed} pending failure(s).",
+    "contexts": [
+      "state.follow_up_controller"
+    ],
+    "sources": [
+      "lib/state/follow_up_controller.dart:54"
+    ],
+    "placeholders": [
+      "failed"
+    ]
+  },
+  {
+    "english": "format exception",
+    "contexts": [
+      "state.attendance_controller"
+    ],
+    "sources": [
+      "lib/state/attendance_controller.dart:41"
     ],
     "placeholders": []
   },
@@ -508,6 +765,36 @@
     "placeholders": []
   },
   {
+    "english": "Lead activity saved locally.",
+    "contexts": [
+      "state.lead_controller"
+    ],
+    "sources": [
+      "lib/state/lead_controller.dart:215"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Lead changes saved locally.",
+    "contexts": [
+      "state.lead_controller"
+    ],
+    "sources": [
+      "lib/state/lead_controller.dart:157"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Lead marked for customer conversion.",
+    "contexts": [
+      "state.lead_controller"
+    ],
+    "sources": [
+      "lib/state/lead_controller.dart:234"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Lead not found.",
     "contexts": [
       "features.leads.lead_repository"
@@ -518,12 +805,64 @@
     "placeholders": []
   },
   {
+    "english": "Lead pipeline sync complete.",
+    "contexts": [
+      "state.lead_controller"
+    ],
+    "sources": [
+      "lib/state/lead_controller.dart:59"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Lead saved locally.",
+    "contexts": [
+      "state.lead_controller"
+    ],
+    "sources": [
+      "lib/state/lead_controller.dart:107"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Lead stage updated locally.",
+    "contexts": [
+      "state.lead_controller"
+    ],
+    "sources": [
+      "lib/state/lead_controller.dart:185"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Lead sync completed with {failed} pending failure(s).",
+    "contexts": [
+      "state.lead_controller"
+    ],
+    "sources": [
+      "lib/state/lead_controller.dart:60"
+    ],
+    "placeholders": [
+      "failed"
+    ]
+  },
+  {
     "english": "Local photo file is unavailable.",
     "contexts": [
       "features.visits.visit_repository"
     ],
     "sources": [
       "lib/features/visits/visit_repository.dart:794"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Local unsynced data remains safely stored on this phone.",
+    "contexts": [
+      "state.attendance_controller"
+    ],
+    "sources": [
+      "lib/state/attendance_controller.dart:674"
     ],
     "placeholders": []
   },
@@ -538,6 +877,50 @@
     "placeholders": []
   },
   {
+    "english": "Location permission is required for collections.",
+    "contexts": [
+      "state.collection_controller"
+    ],
+    "sources": [
+      "lib/state/collection_controller.dart:142"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Location permission is required for customer visits.",
+    "contexts": [
+      "state.visit_controller"
+    ],
+    "sources": [
+      "lib/state/visit_controller.dart:364"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Location permission is required for expenses.",
+    "contexts": [
+      "state.expense_controller"
+    ],
+    "sources": [
+      "lib/state/expense_controller.dart:139"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Location services are disabled.",
+    "contexts": [
+      "state.collection_controller",
+      "state.expense_controller",
+      "state.visit_controller"
+    ],
+    "sources": [
+      "lib/state/collection_controller.dart:132",
+      "lib/state/expense_controller.dart:129",
+      "lib/state/visit_controller.dart:354"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "location TEXT,",
     "contexts": [
       "core.db.app_database"
@@ -548,12 +931,42 @@
     "placeholders": []
   },
   {
+    "english": "Location tracking will continue locally until you sign in again.",
+    "contexts": [
+      "state.attendance_controller"
+    ],
+    "sources": [
+      "lib/state/attendance_controller.dart:680"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "message TEXT,",
     "contexts": [
       "core.db.app_database"
     ],
     "sources": [
       "lib/core/db/app_database.dart:121"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Microphone permission is required for voice notes.",
+    "contexts": [
+      "state.visit_controller"
+    ],
+    "sources": [
+      "lib/state/visit_controller.dart:234"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No active work day was found.",
+    "contexts": [
+      "state.attendance_controller"
+    ],
+    "sources": [
+      "lib/state/attendance_controller.dart:372"
     ],
     "placeholders": []
   },
@@ -594,6 +1007,116 @@
     ],
     "sources": [
       "lib/features/expenses/expense_repository.dart:100"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Offline mode: cached appointments remain available.",
+    "contexts": [
+      "state.appointment_controller"
+    ],
+    "sources": [
+      "lib/state/appointment_controller.dart:62"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Offline mode: cached follow-ups remain available.",
+    "contexts": [
+      "state.follow_up_controller"
+    ],
+    "sources": [
+      "lib/state/follow_up_controller.dart:59"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Offline mode: cached leads remain available.",
+    "contexts": [
+      "state.lead_controller"
+    ],
+    "sources": [
+      "lib/state/lead_controller.dart:64"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Offline mode: cached targets remain available.",
+    "contexts": [
+      "state.target_controller"
+    ],
+    "sources": [
+      "lib/state/target_controller.dart:54"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Offline mode: call activities remain stored locally.",
+    "contexts": [
+      "state.call_activity_controller"
+    ],
+    "sources": [
+      "lib/state/call_activity_controller.dart:102"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Offline mode: changes are saved locally and will sync when online.",
+    "contexts": [
+      "state.sync_controller"
+    ],
+    "sources": [
+      "lib/state/sync_controller.dart:73"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Offline mode: collections remain stored locally.",
+    "contexts": [
+      "state.collection_controller"
+    ],
+    "sources": [
+      "lib/state/collection_controller.dart:120"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Offline mode: expenses remain stored locally.",
+    "contexts": [
+      "state.expense_controller"
+    ],
+    "sources": [
+      "lib/state/expense_controller.dart:117"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Offline mode: orders remain stored locally.",
+    "contexts": [
+      "state.order_controller"
+    ],
+    "sources": [
+      "lib/state/order_controller.dart:142"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Offline mode: showing the latest local data.",
+    "contexts": [
+      "state.master_data_controller"
+    ],
+    "sources": [
+      "lib/state/master_data_controller.dart:89"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Offline mode: visit changes remain stored locally.",
+    "contexts": [
+      "state.visit_controller"
+    ],
+    "sources": [
+      "lib/state/visit_controller.dart:340"
     ],
     "placeholders": []
   },
@@ -739,6 +1262,50 @@
     "placeholders": []
   },
   {
+    "english": "Order saved locally.",
+    "contexts": [
+      "state.order_controller"
+    ],
+    "sources": [
+      "lib/state/order_controller.dart:102"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Order sync complete. {synced} pending orders processed.",
+    "contexts": [
+      "state.order_controller"
+    ],
+    "sources": [
+      "lib/state/order_controller.dart:136"
+    ],
+    "placeholders": [
+      "synced"
+    ]
+  },
+  {
+    "english": "Order sync completed with {failed} pending failures.",
+    "contexts": [
+      "state.order_controller"
+    ],
+    "sources": [
+      "lib/state/order_controller.dart:137"
+    ],
+    "placeholders": [
+      "failed"
+    ]
+  },
+  {
+    "english": "Photo saved locally.",
+    "contexts": [
+      "state.visit_controller"
+    ],
+    "sources": [
+      "lib/state/visit_controller.dart:202"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Quantity must be greater than zero.",
     "contexts": [
       "features.orders.order_repository"
@@ -755,6 +1322,16 @@
     ],
     "sources": [
       "lib/features/expenses/expense_repository.dart:110"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Recording voice note… tap Stop voice when finished.",
+    "contexts": [
+      "state.visit_controller"
+    ],
+    "sources": [
+      "lib/state/visit_controller.dart:240"
     ],
     "placeholders": []
   },
@@ -823,6 +1400,16 @@
     "placeholders": []
   },
   {
+    "english": "requestNotificationPermission",
+    "contexts": [
+      "state.attendance_controller"
+    ],
+    "sources": [
+      "lib/state/attendance_controller.dart:640"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "requestPermission",
     "contexts": [
       "features.visits.visit_voice_recorder"
@@ -859,6 +1446,26 @@
     ],
     "sources": [
       "lib/features/stock/stock_repository.dart:184"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Review tracking policy before automatic Start Day.",
+    "contexts": [
+      "state.attendance_controller"
+    ],
+    "sources": [
+      "lib/state/attendance_controller.dart:566"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Review tracking policy before starting.",
+    "contexts": [
+      "state.attendance_controller"
+    ],
+    "sources": [
+      "lib/state/attendance_controller.dart:273"
     ],
     "placeholders": []
   },
@@ -917,11 +1524,15 @@
     "english": "SELECT COUNT(*) AS total FROM sync_queue",
     "contexts": [
       "core.sync.local_dependency_guard",
-      "features.master_data.master_data_repository"
+      "features.master_data.master_data_repository",
+      "state.attendance_controller",
+      "state.sync_controller"
     ],
     "sources": [
       "lib/core/sync/local_dependency_guard.dart:43",
-      "lib/features/master_data/master_data_repository.dart:88"
+      "lib/features/master_data/master_data_repository.dart:88",
+      "lib/state/attendance_controller.dart:331",
+      "lib/state/sync_controller.dart:101"
     ],
     "placeholders": []
   },
@@ -946,6 +1557,20 @@
     "placeholders": []
   },
   {
+    "english": "Signed-in tenant is unavailable.",
+    "contexts": [
+      "state.attendance_controller",
+      "state.order_controller"
+    ],
+    "sources": [
+      "lib/state/attendance_controller.dart:266",
+      "lib/state/attendance_controller.dart:367",
+      "lib/state/attendance_controller.dart:498",
+      "lib/state/order_controller.dart:65"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Smart Route",
     "contexts": [
       "app"
@@ -964,6 +1589,74 @@
       "lib/core/sync/sync_retry_store.dart:111"
     ],
     "placeholders": []
+  },
+  {
+    "english": "Stop the current voice note before starting another one.",
+    "contexts": [
+      "state.visit_controller"
+    ],
+    "sources": [
+      "lib/state/visit_controller.dart:221"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Sync complete. {synced} pending customers uploaded.",
+    "contexts": [
+      "state.master_data_controller"
+    ],
+    "sources": [
+      "lib/state/master_data_controller.dart:83"
+    ],
+    "placeholders": [
+      "synced"
+    ]
+  },
+  {
+    "english": "Sync completed successfully.",
+    "contexts": [
+      "state.sync_controller"
+    ],
+    "sources": [
+      "lib/state/sync_controller.dart:71"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Sync completed with {failed} customer upload failures.",
+    "contexts": [
+      "state.master_data_controller"
+    ],
+    "sources": [
+      "lib/state/master_data_controller.dart:84"
+    ],
+    "placeholders": [
+      "failed"
+    ]
+  },
+  {
+    "english": "Sync completed with {issues} items needing retry or attention.",
+    "contexts": [
+      "state.sync_controller"
+    ],
+    "sources": [
+      "lib/state/sync_controller.dart:75"
+    ],
+    "placeholders": [
+      "issues"
+    ]
+  },
+  {
+    "english": "Sync could not complete: {error}",
+    "contexts": [
+      "state.sync_controller"
+    ],
+    "sources": [
+      "lib/state/sync_controller.dart:80"
+    ],
+    "placeholders": [
+      "error"
+    ]
   },
   {
     "english": "sync_status TEXT NOT NULL DEFAULT \"pending_checkin\",",
@@ -1034,6 +1727,16 @@
     ],
     "sources": [
       "lib/core/db/app_database.dart:98"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Targets refreshed.",
+    "contexts": [
+      "state.target_controller"
+    ],
+    "sources": [
+      "lib/state/target_controller.dart:51"
     ],
     "placeholders": []
   },
@@ -1122,6 +1825,36 @@
     "placeholders": []
   },
   {
+    "english": "The saved attendance data could not be read safely. Refresh the page and try End Day again.",
+    "contexts": [
+      "state.attendance_controller"
+    ],
+    "sources": [
+      "lib/state/attendance_controller.dart:43"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "The work day could not be reopened locally.",
+    "contexts": [
+      "state.attendance_controller"
+    ],
+    "sources": [
+      "lib/state/attendance_controller.dart:514"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "This assigned visit has no customer data.",
+    "contexts": [
+      "state.visit_controller"
+    ],
+    "sources": [
+      "lib/state/visit_controller.dart:80"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "This visit form has already been submitted.",
     "contexts": [
       "features.visits.visit_repository"
@@ -1152,12 +1885,96 @@
     "placeholders": []
   },
   {
+    "english": "Today's closed work day could not be found.",
+    "contexts": [
+      "state.attendance_controller"
+    ],
+    "sources": [
+      "lib/state/attendance_controller.dart:506"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Vehicle / plate is required.",
     "contexts": [
       "features.expenses.expense_repository"
     ],
     "sources": [
       "lib/features/expenses/expense_repository.dart:103"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Visit check-in saved locally.",
+    "contexts": [
+      "state.visit_controller"
+    ],
+    "sources": [
+      "lib/state/visit_controller.dart:110"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Visit check-out saved locally.",
+    "contexts": [
+      "state.visit_controller"
+    ],
+    "sources": [
+      "lib/state/visit_controller.dart:147"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Visit sync complete. {synced} visits processed.",
+    "contexts": [
+      "state.visit_controller"
+    ],
+    "sources": [
+      "lib/state/visit_controller.dart:334"
+    ],
+    "placeholders": [
+      "synced"
+    ]
+  },
+  {
+    "english": "Visit sync completed with {failed} pending failures.",
+    "contexts": [
+      "state.visit_controller"
+    ],
+    "sources": [
+      "lib/state/visit_controller.dart:335"
+    ],
+    "placeholders": [
+      "failed"
+    ]
+  },
+  {
+    "english": "Voice note recording cancelled.",
+    "contexts": [
+      "state.visit_controller"
+    ],
+    "sources": [
+      "lib/state/visit_controller.dart:313"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Voice note saved locally.",
+    "contexts": [
+      "state.visit_controller"
+    ],
+    "sources": [
+      "lib/state/visit_controller.dart:293"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Voice notes are limited to 5 minutes.",
+    "contexts": [
+      "state.visit_controller"
+    ],
+    "sources": [
+      "lib/state/visit_controller.dart:278"
     ],
     "placeholders": []
   },
@@ -1202,7 +2019,9 @@
       "features.followups.follow_up_repository",
       "features.leads.lead_repository",
       "features.orders.order_repository",
-      "features.visits.visit_repository"
+      "features.visits.visit_repository",
+      "state.attendance_controller",
+      "state.sync_controller"
     ],
     "sources": [
       "lib/features/appointments/appointment_repository.dart:124",
@@ -1215,7 +2034,19 @@
       "lib/features/visits/visit_repository.dart:408",
       "lib/features/visits/visit_repository.dart:413",
       "lib/features/visits/visit_repository.dart:418",
-      "lib/features/visits/visit_repository.dart:423"
+      "lib/features/visits/visit_repository.dart:423",
+      "lib/state/attendance_controller.dart:337",
+      "lib/state/sync_controller.dart:112"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "WHERE tenant_id=? AND sync_status=?",
+    "contexts": [
+      "state.sync_controller"
+    ],
+    "sources": [
+      "lib/state/sync_controller.dart:107"
     ],
     "placeholders": []
   },
