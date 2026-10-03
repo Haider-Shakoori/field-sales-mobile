@@ -1,0 +1,85 @@
+name: ios-unsigned-ipa
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/ios-ipa.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build-ipa:
+    runs-on: macos-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.0'
+          channel: stable
+          cache: true
+
+      - name: Install Flutter dependencies
+        run: flutter pub get --enforce-lockfile
+
+      - name: Generate iOS runner
+        shell: bash
+        run: |
+          flutter create             --platforms=ios             --org com.businessos             --project-name fieldpulse             .
+
+          # Keep the iOS identity aligned with the existing FieldPulse app.
+          sed -i '' 's/com\.businessos\.fieldpulse/com.businessos.fieldpulse/g' ios/Runner.xcodeproj/project.pbxproj || true
+          sed -i '' 's/com\.businessos\.fieldSalesMobile/com.businessos.fieldpulse/g' ios/Runner.xcodeproj/project.pbxproj || true
+          sed -i '' 's/com\.businessos\.fieldSalesMobileTests/com.businessos.fieldpulseTests/g' ios/Runner.xcodeproj/project.pbxproj || true
+
+      - name: Add required iOS usage descriptions
+        shell: bash
+        run: |
+          PLIST="ios/Runner/Info.plist"
+          /usr/libexec/PlistBuddy -c "Add :NSLocationWhenInUseUsageDescription string FieldPulse uses your location for assigned visits, attendance, routes, and field activity." "$PLIST" 2>/dev/null ||             /usr/libexec/PlistBuddy -c "Set :NSLocationWhenInUseUsageDescription FieldPulse uses your location for assigned visits, attendance, routes, and field activity." "$PLIST"
+          /usr/libexec/PlistBuddy -c "Add :NSLocationAlwaysAndWhenInUseUsageDescription string FieldPulse uses background location during an active work session when company policy enables it." "$PLIST" 2>/dev/null ||             /usr/libexec/PlistBuddy -c "Set :NSLocationAlwaysAndWhenInUseUsageDescription FieldPulse uses background location during an active work session when company policy enables it." "$PLIST"
+          /usr/libexec/PlistBuddy -c "Add :NSCameraUsageDescription string FieldPulse uses the camera for visit evidence, receipts, and field documentation." "$PLIST" 2>/dev/null ||             /usr/libexec/PlistBuddy -c "Set :NSCameraUsageDescription FieldPulse uses the camera for visit evidence, receipts, and field documentation." "$PLIST"
+          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string FieldPulse accesses selected photos only when you attach field evidence." "$PLIST" 2>/dev/null ||             /usr/libexec/PlistBuddy -c "Set :NSPhotoLibraryUsageDescription FieldPulse accesses selected photos only when you attach field evidence." "$PLIST"
+          /usr/libexec/PlistBuddy -c "Add :NSMicrophoneUsageDescription string FieldPulse uses the microphone only when you record a field voice note." "$PLIST" 2>/dev/null ||             /usr/libexec/PlistBuddy -c "Set :NSMicrophoneUsageDescription FieldPulse uses the microphone only when you record a field voice note." "$PLIST"
+
+      - name: Build unsigned iOS app
+        shell: bash
+        run: |
+          APP_VERSION="$(awk '/^version:/ {print $2}' pubspec.yaml)"
+          APP_VERSION_NAME="${APP_VERSION%%+*}"
+          APP_VERSION_CODE="${APP_VERSION##*+}"
+
+          flutter build ios --release --no-codesign             --build-name="${APP_VERSION_NAME}"             --build-number="${APP_VERSION_CODE}"             --dart-define=API_BASE_URL=https://fieldpulse.businessos.af/api/v1             --dart-define=APP_VERSION="${APP_VERSION_NAME}"
+
+      - name: Package unsigned IPA
+        shell: bash
+        run: |
+          test -d build/ios/iphoneos/Runner.app
+          rm -rf dist
+          mkdir -p dist/Payload
+          cp -R build/ios/iphoneos/Runner.app dist/Payload/
+          (
+            cd dist
+            zip -qry FieldPulse-iOS-Unsigned.ipa Payload
+            shasum -a 256 FieldPulse-iOS-Unsigned.ipa > SHA256SUMS.txt
+            rm -rf Payload
+          )
+          file dist/FieldPulse-iOS-Unsigned.ipa
+          ls -lh dist/FieldPulse-iOS-Unsigned.ipa
+          cat dist/SHA256SUMS.txt
+
+      - name: Upload unsigned IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: FieldPulse-iOS-Unsigned
+          path: |
+            dist/FieldPulse-iOS-Unsigned.ipa
+            dist/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 30
