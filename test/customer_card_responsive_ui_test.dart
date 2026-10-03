@@ -19,7 +19,7 @@ void main() {
       );
       expect(source, contains('maxLines: 2'));
       expect(source, contains('overflow: TextOverflow.ellipsis'));
-      expect(source, contains('EdgeInsets.fromLTRB(16, 16, 16, 96)'));
+      expect(source, contains('EdgeInsets.fromLTRB(16, 14, 16, 24)'));
     },
   );
 }
