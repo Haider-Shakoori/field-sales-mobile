@@ -7,7 +7,9 @@ import 'package:provider/provider.dart';
 
 import '../l10n/locale_controller.dart';
 import '../state/app_state.dart';
+import 'fieldpulse_theme.dart';
 import 'gamification_screen.dart';
+import 'widgets/fieldpulse_ui.dart';
 import 'notifications_screen.dart';
 import 'salesman_account_screen.dart';
 import 'collections_screen.dart';
@@ -48,6 +50,48 @@ class MoreScreen extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          const FieldPulseHeroCard(
+            child: Row(
+              children: [
+                FieldPulseIconBadge(
+                  icon: Icons.grid_view_rounded,
+                  color: Color(0xFF7CC7FF),
+                  size: 50,
+                ),
+                SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Field tools',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'Sales, routes, collections, stock and device tools in one place.',
+                        style: TextStyle(
+                          color: Color(0xFFBBD0E8),
+                          fontSize: 13,
+                          height: 1.35,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          const FieldPulseSectionHeader(
+            title: 'Preferences',
+            subtitle: 'Language and personal app settings',
+          ),
+          const SizedBox(height: 10),
           const Card(child: LanguageSelectorButton()),
           const SizedBox(height: 8),
           if (context.watch<AppState>().isSalesman)
