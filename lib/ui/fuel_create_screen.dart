@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import '../l10n/l10n.dart';
 
 import 'package:field_sales_mobile/l10n/localized_material.dart';
@@ -173,7 +174,9 @@ class _FuelCreateScreenState extends State<FuelCreateScreen> {
             textCapitalization: TextCapitalization.characters,
             decoration: InputDecoration(
               labelText: L10n.text('Vehicle / plate *'),
-              helperText: L10n.text('Prefilled from the active shift when available.'),
+              helperText: L10n.text(
+                'Prefilled from the active shift when available.',
+              ),
             ),
           ),
           const SizedBox(height: 12),
@@ -200,7 +203,9 @@ class _FuelCreateScreenState extends State<FuelCreateScreen> {
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
                   ),
-                  decoration: InputDecoration(labelText: L10n.text('Odometer km *')),
+                  decoration: InputDecoration(
+                    labelText: L10n.text('Odometer km *'),
+                  ),
                 ),
               ),
             ],
@@ -240,7 +245,9 @@ class _FuelCreateScreenState extends State<FuelCreateScreen> {
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             decoration: InputDecoration(
               labelText: L10n.text('Price per liter (optional)'),
-              helperText: L10n.text('Derived automatically from amount ÷ liters if blank.'),
+              helperText: L10n.text(
+                'Derived automatically from amount ÷ liters if blank.',
+              ),
             ),
           ),
           const SizedBox(height: 12),
