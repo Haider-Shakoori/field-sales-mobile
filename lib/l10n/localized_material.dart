@@ -59,6 +59,9 @@ class Text extends material.StatelessWidget {
 
   @override
   material.Widget build(material.BuildContext context) {
+    // Establish a Localizations dependency so visible text refreshes immediately
+    // when the user switches between English, Dari, and Pashto.
+    material.Localizations.localeOf(context);
     final span = textSpan;
     if (span != null) {
       return material.Text.rich(
