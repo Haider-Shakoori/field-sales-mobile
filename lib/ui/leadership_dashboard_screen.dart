@@ -111,10 +111,11 @@ class _LeadershipDashboardScreenState extends State<LeadershipDashboardScreen> {
                       children: [
                         Text(
                           'Hello, ${app.session?.name ?? ''}',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w800,
-                          ),
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w800,
+                              ),
                         ),
                         const SizedBox(height: 4),
                         Text(
