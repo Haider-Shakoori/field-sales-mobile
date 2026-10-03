@@ -81,7 +81,7 @@ abstract final class FieldPulseTheme {
       ),
       cardTheme: CardThemeData(
         elevation: 0,
-        margin: EdgeInsets.zero,
+        margin: const EdgeInsets.only(bottom: 12),
         color: surface,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
