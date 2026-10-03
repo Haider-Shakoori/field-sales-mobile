@@ -9,6 +9,7 @@ import 'l10n/locale_controller.dart';
 import 'state/app_state.dart';
 import 'ui/dashboard_screen.dart';
 import 'ui/fieldpulse_splash_screen.dart';
+import 'ui/fieldpulse_theme.dart';
 import 'ui/login_screen.dart';
 import 'ui/notifications_screen.dart';
 import 'ui/smart_route_screen.dart';
@@ -79,15 +80,7 @@ class _FieldSalesAppState extends State<FieldSalesApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF0B74E5),
-          brightness: Brightness.light,
-        ),
-        useMaterial3: true,
-        scaffoldBackgroundColor: const Color(0xFFF6F7FB),
-        cardTheme: const CardThemeData(elevation: 0, margin: EdgeInsets.zero),
-      ),
+      theme: FieldPulseTheme.light(),
       home: const _StartupGate(),
     ),
   );
