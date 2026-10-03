@@ -157,7 +157,7 @@ class MoreScreen extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: () => syncAndReload(context, triggerSource: 'pull:more'),
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 28),
         children: [
           const FieldPulseHeroCard(
             child: Row(

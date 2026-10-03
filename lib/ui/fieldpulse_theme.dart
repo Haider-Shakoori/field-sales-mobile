@@ -5,11 +5,15 @@ abstract final class FieldPulseTheme {
   static const navySoft = Color(0xFF0D2747);
   static const blue = Color(0xFF176BFF);
   static const cyan = Color(0xFF14CFE0);
-  static const canvas = Color(0xFFF4F7FB);
+  static const canvas = Color(0xFFF3F6FA);
   static const surface = Color(0xFFFFFFFF);
-  static const text = Color(0xFF122033);
+  static const surfaceSoft = Color(0xFFF8FAFD);
+  static const text = Color(0xFF0F1E31);
   static const muted = Color(0xFF66758A);
-  static const border = Color(0xFFE4EAF1);
+  static const border = Color(0xFFE2E8F0);
+  static const success = Color(0xFF18B981);
+  static const warning = Color(0xFFF59E0B);
+  static const danger = Color(0xFFE5484D);
 
   static ThemeData light() {
     final scheme =
@@ -73,20 +77,22 @@ abstract final class FieldPulseTheme {
       appBarTheme: const AppBarTheme(
         elevation: 0,
         scrolledUnderElevation: 0,
-        backgroundColor: canvas,
+        backgroundColor: Color(0xFFF7F9FC),
         foregroundColor: text,
         centerTitle: false,
         titleSpacing: 20,
-        toolbarHeight: 68,
+        toolbarHeight: 70,
         surfaceTintColor: Colors.transparent,
+        shadowColor: Colors.transparent,
       ),
       cardTheme: CardThemeData(
         elevation: 0,
         margin: const EdgeInsets.only(bottom: 12),
         color: surface,
         surfaceTintColor: Colors.transparent,
+        shadowColor: const Color(0xFF142A44).withValues(alpha: .08),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(22),
           side: const BorderSide(color: border),
         ),
       ),
@@ -169,13 +175,13 @@ abstract final class FieldPulseTheme {
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        height: 70,
+        height: 72,
         elevation: 0,
         backgroundColor: Colors.white,
-        indicatorColor: const Color(0xFFE6F0FF),
+        indicatorColor: const Color(0xFFEAF2FF),
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         indicatorShape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(18),
         ),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           return IconThemeData(
@@ -239,7 +245,7 @@ abstract final class FieldPulseTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        elevation: 2,
+        elevation: 4,
         backgroundColor: blue,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(
@@ -249,6 +255,21 @@ abstract final class FieldPulseTheme {
       progressIndicatorTheme: const ProgressIndicatorThemeData(
         color: blue,
         linearTrackColor: Color(0xFFE5EDF5),
+      ),
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+          TargetPlatform.iOS: FadeUpwardsPageTransitionsBuilder(),
+        },
+      ),
+      popupMenuTheme: PopupMenuThemeData(
+        color: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+          side: const BorderSide(color: border),
+        ),
       ),
       checkboxTheme: CheckboxThemeData(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
@@ -273,20 +294,45 @@ class FieldPulseDecor {
   static const appGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFF071C36), Color(0xFF0A3157), Color(0xFF0B6785)],
+    colors: [Color(0xFF07182E), Color(0xFF0B2F55), Color(0xFF0B6282)],
   );
 
   static const accentGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [FieldPulseTheme.blue, FieldPulseTheme.cyan],
+    colors: [FieldPulseTheme.blue, Color(0xFF288CF7), FieldPulseTheme.cyan],
+  );
+
+  static const premiumSurfaceGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFFFFFFFF), Color(0xFFF8FBFF)],
+  );
+
+  static const subtleCanvasGradient = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [Color(0xFFF8FAFD), FieldPulseTheme.canvas],
   );
 
   static List<BoxShadow> softShadow = [
     BoxShadow(
-      color: const Color(0xFF15314F).withValues(alpha: .08),
-      blurRadius: 24,
-      offset: const Offset(0, 8),
+      color: const Color(0xFF15314F).withValues(alpha: .065),
+      blurRadius: 26,
+      offset: const Offset(0, 10),
+    ),
+  ];
+
+  static List<BoxShadow> premiumShadow = [
+    BoxShadow(
+      color: const Color(0xFF0A2540).withValues(alpha: .10),
+      blurRadius: 34,
+      offset: const Offset(0, 14),
+    ),
+    BoxShadow(
+      color: Colors.white.withValues(alpha: .65),
+      blurRadius: 1,
+      offset: const Offset(0, -1),
     ),
   ];
 }

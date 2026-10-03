@@ -57,7 +57,7 @@ class _MobileDiagnosticsScreenState extends State<MobileDiagnosticsScreen> {
     return RefreshIndicator(
       onRefresh: () => _load(report: true),
       child: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 28),
         children: [
           _StatusCard(
             status: result?.status ?? 'unknown',
@@ -211,10 +211,7 @@ class _MobileDiagnosticsScreenState extends State<MobileDiagnosticsScreen> {
             ),
           ],
           if (_loading && result == null)
-            const Padding(
-              padding: EdgeInsets.all(32),
-              child: Center(child: CircularProgressIndicator()),
-            ),
+            const FieldPulsePremiumLoading(label: 'Checking…'),
         ],
       ),
     );

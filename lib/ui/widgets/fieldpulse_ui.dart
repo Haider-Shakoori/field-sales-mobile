@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 import '../fieldpulse_theme.dart';
@@ -111,12 +113,41 @@ class FieldPulseHeroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
+    clipBehavior: Clip.antiAlias,
     decoration: BoxDecoration(
       gradient: FieldPulseDecor.appGradient,
-      borderRadius: BorderRadius.circular(24),
-      boxShadow: FieldPulseDecor.softShadow,
+      borderRadius: BorderRadius.circular(26),
+      boxShadow: FieldPulseDecor.premiumShadow,
     ),
-    child: Padding(padding: padding, child: child),
+    child: Stack(
+      children: [
+        Positioned(
+          top: -54,
+          right: -34,
+          child: Container(
+            width: 150,
+            height: 150,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white.withValues(alpha: .055),
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: -74,
+          left: -42,
+          child: Container(
+            width: 180,
+            height: 180,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: FieldPulseTheme.cyan.withValues(alpha: .07),
+            ),
+          ),
+        ),
+        Padding(padding: padding, child: child),
+      ],
+    ),
   );
 }
 
@@ -133,12 +164,130 @@ class FieldPulseInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     decoration: BoxDecoration(
-      color: Colors.white,
+      gradient: FieldPulseDecor.premiumSurfaceGradient,
+      borderRadius: BorderRadius.circular(22),
+      border: Border.all(color: Colors.white),
+      boxShadow: FieldPulseDecor.softShadow,
+    ),
+    child: Padding(padding: padding, child: child),
+  );
+}
+
+class FieldPulseGlassPanel extends StatelessWidget {
+  const FieldPulseGlassPanel({
+    super.key,
+    required this.child,
+    this.padding = const EdgeInsets.all(16),
+    this.blur = 16,
+  });
+
+  final Widget child;
+  final EdgeInsets padding;
+  final double blur;
+
+  @override
+  Widget build(BuildContext context) => ClipRRect(
+    borderRadius: BorderRadius.circular(22),
+    child: BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: .86),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: Colors.white.withValues(alpha: .9)),
+          boxShadow: FieldPulseDecor.softShadow,
+        ),
+        child: Padding(padding: padding, child: child),
+      ),
+    ),
+  );
+}
+
+class FieldPulseMetricTile extends StatelessWidget {
+  const FieldPulseMetricTile({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.value,
+    this.color = FieldPulseTheme.blue,
+    this.caption,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color color;
+  final String? caption;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.all(15),
+    decoration: BoxDecoration(
+      gradient: FieldPulseDecor.premiumSurfaceGradient,
       borderRadius: BorderRadius.circular(20),
       border: Border.all(color: FieldPulseTheme.border),
       boxShadow: FieldPulseDecor.softShadow,
     ),
-    child: Padding(padding: padding, child: child),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        FieldPulseIconBadge(icon: icon, color: color, size: 40),
+        const SizedBox(height: 14),
+        Text(
+          value,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.titleLarge
+              ?.copyWith(fontSize: 23, fontWeight: FontWeight.w800),
+        ),
+        const SizedBox(height: 3),
+        Text(label, style: Theme.of(context).textTheme.bodySmall),
+        if (caption != null) ...[
+          const SizedBox(height: 7),
+          Text(
+            caption!,
+            style: Theme.of(context).textTheme.labelSmall
+                ?.copyWith(color: color, fontWeight: FontWeight.w700),
+          ),
+        ],
+      ],
+    ),
+  );
+}
+
+class FieldPulsePremiumLoading extends StatelessWidget {
+  const FieldPulsePremiumLoading({super.key, this.label});
+
+  final String? label;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 42),
+    child: Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 52,
+            height: 52,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              gradient: FieldPulseDecor.accentGradient,
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: FieldPulseDecor.softShadow,
+            ),
+            child: const CircularProgressIndicator(
+              strokeWidth: 2.4,
+              color: Colors.white,
+            ),
+          ),
+          if (label != null) ...[
+            const SizedBox(height: 14),
+            Text(label!, style: Theme.of(context).textTheme.bodySmall),
+          ],
+        ],
+      ),
+    ),
   );
 }
 
