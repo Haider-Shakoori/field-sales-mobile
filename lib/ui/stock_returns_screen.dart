@@ -1,5 +1,6 @@
 import 'package:field_sales_mobile/l10n/localized_material.dart';
 import 'package:provider/provider.dart';
+
 import '../l10n/l10n.dart';
 
 import '../features/master_data/master_data_repository.dart';
@@ -374,7 +375,9 @@ class _ReturnCreateScreenState extends State<ReturnCreateScreen> {
               Expanded(
                 child: DropdownButtonFormField<String>(
                   initialValue: _condition,
-                  decoration: InputDecoration(labelText: L10n.text('Condition')),
+                  decoration: InputDecoration(
+                    labelText: L10n.text('Condition'),
+                  ),
                   items: const [
                     DropdownMenuItem(
                       value: 'resalable',
@@ -392,7 +395,9 @@ class _ReturnCreateScreenState extends State<ReturnCreateScreen> {
           const SizedBox(height: 12),
           TextField(
             controller: _reason,
-            decoration: InputDecoration(labelText: L10n.text('Reason (optional)')),
+            decoration: InputDecoration(
+              labelText: L10n.text('Reason (optional)'),
+            ),
           ),
           const SizedBox(height: 12),
           OutlinedButton.icon(
@@ -418,7 +423,9 @@ class _ReturnCreateScreenState extends State<ReturnCreateScreen> {
           TextField(
             controller: _notes,
             maxLines: 3,
-            decoration: InputDecoration(labelText: L10n.text('Notes (optional)')),
+            decoration: InputDecoration(
+              labelText: L10n.text('Notes (optional)'),
+            ),
           ),
           const SizedBox(height: 20),
           FilledButton.icon(
