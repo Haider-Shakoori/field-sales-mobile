@@ -309,7 +309,7 @@ class CustomersScreen extends StatelessWidget {
                 ],
               )
             : ListView.separated(
-                padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
                 itemCount: rows.length,
                 separatorBuilder: (_, _) => const SizedBox(height: 8),
                 itemBuilder: (_, index) {
