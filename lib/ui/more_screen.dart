@@ -76,7 +76,7 @@ class MoreScreen extends StatelessWidget {
         icon: Icons.calendar_month_outlined,
         title: 'Calendar',
         subtitle: 'Appointments, reminders and offline schedule',
-        screen: Appointments, reminders and offline scheduleScreen(),
+        screen: AppointmentsScreen(),
       ),
       const _MoreAction(
         icon: Icons.follow_the_signs_outlined,
@@ -117,7 +117,7 @@ class MoreScreen extends StatelessWidget {
       const _MoreAction(
         icon: Icons.alt_route_rounded,
         title: 'Smart Route',
-        subtitle: 'Today's optimized customer order, priorities and distance',
+        subtitle: "Today's optimized customer order, priorities and distance",
         screen: SmartRouteScreen(),
       ),
       const _MoreAction(
