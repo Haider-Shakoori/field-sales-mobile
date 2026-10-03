@@ -1,5 +1,113 @@
 [
   {
+    "english": "{customerName} · Calls",
+    "contexts": [
+      "ui.call_history_screen"
+    ],
+    "sources": [
+      "lib/ui/call_history_screen.dart:35"
+    ],
+    "placeholders": [
+      "customerName"
+    ]
+  },
+  {
+    "english": "{latitude}, {longitude} · ±{accuracy} m",
+    "contexts": [
+      "ui.collection_detail_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_detail_screen.dart:100"
+    ],
+    "placeholders": [
+      "latitude",
+      "longitude",
+      "accuracy"
+    ]
+  },
+  {
+    "english": "\\D",
+    "contexts": [
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/customers_screen.dart:235"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:302"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "${collection['distance_meters'] == null ? '' : ' · customer {distance_meters} m'}",
+    "contexts": [
+      "ui.collection_detail_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_detail_screen.dart:101"
+    ],
+    "placeholders": [
+      "collection['distance_meters'] == null ? '' : ' · customer {distance_meters"
+    ]
+  },
+  {
+    "english": "1 day before",
+    "contexts": [
+      "ui.appointments_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:224"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "1 hour before",
+    "contexts": [
+      "ui.appointments_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:216"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "15 minutes before",
+    "contexts": [
+      "ui.appointments_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:208"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "2 hours before",
+    "contexts": [
+      "ui.appointments_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:220"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "30 minutes before",
+    "contexts": [
+      "ui.appointments_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:212"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "A product can appear only once in an order.",
     "contexts": [
       "features.orders.order_repository"
@@ -60,12 +168,76 @@
     "placeholders": []
   },
   {
+    "english": "Add fuel entry",
+    "contexts": [
+      "ui.fuel_create_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_create_screen.dart:166"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Address",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:312"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "All",
+    "contexts": [
+      "ui.appointments_screen",
+      "ui.follow_ups_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:363",
+      "lib/ui/follow_ups_screen.dart:365"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "All products in an order must use one currency.",
     "contexts": [
       "features.orders.order_repository"
     ],
     "sources": [
       "lib/features/orders/order_repository.dart:344"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Allowed range: 25–1000 meters",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:357"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Alternate phone",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:286"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Amount",
+    "contexts": [
+      "ui.collection_create_screen",
+      "ui.expense_create_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_create_screen.dart:232",
+      "lib/ui/expense_create_screen.dart:149"
     ],
     "placeholders": []
   },
@@ -90,6 +262,18 @@
     "placeholders": []
   },
   {
+    "english": "Answered",
+    "contexts": [
+      "ui.call_history_screen",
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/call_history_screen.dart:18",
+      "lib/ui/customers_screen.dart:18"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "API_BASE_URL must be a valid absolute URL.",
     "contexts": [
       "core.config"
@@ -100,12 +284,25 @@
     "placeholders": []
   },
   {
-    "english": "Appointment",
+    "english": "Apply",
     "contexts": [
-      "features.appointments.appointment_repository"
+      "ui.customer_statement_screen"
     ],
     "sources": [
-      "lib/features/appointments/appointment_repository.dart:292"
+      "lib/ui/customer_statement_screen.dart:189"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Appointment",
+    "contexts": [
+      "features.appointments.appointment_repository",
+      "ui.appointments_screen"
+    ],
+    "sources": [
+      "lib/features/appointments/appointment_repository.dart:292",
+      "lib/ui/appointments_screen.dart:480",
+      "lib/ui/appointments_screen.dart:581"
     ],
     "placeholders": []
   },
@@ -140,12 +337,143 @@
     "placeholders": []
   },
   {
-    "english": "Bad state:",
+    "english": "Assigned actions stay available offline.",
     "contexts": [
-      "state.attendance_controller"
+      "ui.follow_ups_screen"
     ],
     "sources": [
-      "lib/state/attendance_controller.dart:32"
+      "lib/ui/follow_ups_screen.dart:339"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "At start time",
+    "contexts": [
+      "ui.appointments_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:204"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Available to collect: {outstanding_balance} {currency}",
+    "contexts": [
+      "ui.collection_create_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_create_screen.dart:210"
+    ],
+    "placeholders": [
+      "outstanding_balance",
+      "currency"
+    ]
+  },
+  {
+    "english": "Back",
+    "contexts": [
+      "ui.follow_ups_screen"
+    ],
+    "sources": [
+      "lib/ui/follow_ups_screen.dart:272"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Bad state:",
+    "contexts": [
+      "state.attendance_controller",
+      "ui.customer_create_screen",
+      "ui.customer_statement_screen"
+    ],
+    "sources": [
+      "lib/state/attendance_controller.dart:32",
+      "lib/ui/customer_create_screen.dart:147",
+      "lib/ui/customer_statement_screen.dart:61"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Bal {balance}",
+    "contexts": [
+      "ui.customer_statement_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_statement_screen.dart:284"
+    ],
+    "placeholders": [
+      "balance"
+    ]
+  },
+  {
+    "english": "Balance at capture",
+    "contexts": [
+      "ui.collection_detail_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_detail_screen.dart:76"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Bank transfer",
+    "contexts": [
+      "ui.collection_create_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_create_screen.dart:34"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Base prices",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:330"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "BusinessOS",
+    "contexts": [
+      "ui.fieldpulse_splash_screen"
+    ],
+    "sources": [
+      "lib/ui/fieldpulse_splash_screen.dart:79"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Busy",
+    "contexts": [
+      "ui.call_history_screen",
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/call_history_screen.dart:20",
+      "lib/ui/customers_screen.dart:20"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Cached customer balance",
+    "contexts": [
+      "ui.collection_create_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_create_screen.dart:199"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Calendar & appointments",
+    "contexts": [
+      "ui.appointments_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:330"
     ],
     "placeholders": []
   },
@@ -170,6 +498,18 @@
     "placeholders": [
       "failed"
     ]
+  },
+  {
+    "english": "Call",
+    "contexts": [
+      "ui.appointments_screen",
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:109",
+      "lib/ui/customers_screen.dart:449"
+    ],
+    "placeholders": []
   },
   {
     "english": "Call activity saved locally.",
@@ -206,6 +546,187 @@
     ]
   },
   {
+    "english": "Call back later",
+    "contexts": [
+      "ui.call_history_screen",
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/call_history_screen.dart:21",
+      "lib/ui/customers_screen.dart:21"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Call history",
+    "contexts": [
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/customers_screen.dart:431"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Camera",
+    "contexts": [
+      "ui.fuel_create_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_create_screen.dart:280"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Cancel",
+    "contexts": [
+      "ui.appointments_screen",
+      "ui.customers_screen",
+      "ui.follow_ups_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:561",
+      "lib/ui/customers_screen.dart:213",
+      "lib/ui/follow_ups_screen.dart:276",
+      "lib/ui/follow_ups_screen.dart:499"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Cancel follow-up?",
+    "contexts": [
+      "ui.follow_ups_screen"
+    ],
+    "sources": [
+      "lib/ui/follow_ups_screen.dart:258"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Card",
+    "contexts": [
+      "ui.collection_create_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_create_screen.dart:36"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Cash",
+    "contexts": [
+      "ui.collection_create_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_create_screen.dart:33"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Category",
+    "contexts": [
+      "ui.expense_create_screen"
+    ],
+    "sources": [
+      "lib/ui/expense_create_screen.dart:131"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Category: {category}",
+    "contexts": [
+      "ui.expenses_screen"
+    ],
+    "sources": [
+      "lib/ui/expenses_screen.dart:45"
+    ],
+    "placeholders": [
+      "category"
+    ]
+  },
+  {
+    "english": "Changes are saved offline first and synchronized when connectivity is available.",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:523"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Channel",
+    "contexts": [
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/customers_screen.dart:184"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Cheque",
+    "contexts": [
+      "ui.collection_create_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_create_screen.dart:35"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Closing",
+    "contexts": [
+      "ui.customer_statement_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_statement_screen.dart:233"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Code (optional)",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:257"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Collect",
+    "contexts": [
+      "ui.collections_screen"
+    ],
+    "sources": [
+      "lib/ui/collections_screen.dart:122"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Collected: {collected_at}",
+    "contexts": [
+      "ui.collection_detail_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_detail_screen.dart:49"
+    ],
+    "placeholders": [
+      "collected_at"
+    ]
+  },
+  {
+    "english": "Collection",
+    "contexts": [
+      "ui.appointments_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:112"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Collection amount must be greater than zero.",
     "contexts": [
       "features.collections.collection_repository"
@@ -216,12 +737,25 @@
     "placeholders": []
   },
   {
-    "english": "Collection saved locally.",
+    "english": "Collection receipt",
     "contexts": [
-      "state.collection_controller"
+      "ui.collection_detail_screen"
     ],
     "sources": [
-      "lib/state/collection_controller.dart:86"
+      "lib/ui/collection_detail_screen.dart:15",
+      "lib/ui/collection_detail_screen.dart:28"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Collection saved locally.",
+    "contexts": [
+      "state.collection_controller",
+      "ui.collection_create_screen"
+    ],
+    "sources": [
+      "lib/state/collection_controller.dart:86",
+      "lib/ui/collection_create_screen.dart:121"
     ],
     "placeholders": []
   },
@@ -257,6 +791,59 @@
     "sources": [
       "lib/state/attendance_controller.dart:268",
       "lib/state/attendance_controller.dart:501"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Complete",
+    "contexts": [
+      "ui.appointments_screen",
+      "ui.follow_ups_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:551",
+      "lib/ui/follow_ups_screen.dart:276",
+      "lib/ui/follow_ups_screen.dart:488"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Complete follow-up?",
+    "contexts": [
+      "ui.follow_ups_screen"
+    ],
+    "sources": [
+      "lib/ui/follow_ups_screen.dart:257"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Completion note",
+    "contexts": [
+      "ui.follow_ups_screen"
+    ],
+    "sources": [
+      "lib/ui/follow_ups_screen.dart:265"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Contact person",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:266"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Could not get a precise GPS fix. Move to an open area or tap the shop on the map.",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:139"
     ],
     "placeholders": []
   },
@@ -391,6 +978,22 @@
     "placeholders": []
   },
   {
+    "english": "Currency",
+    "contexts": [
+      "ui.collection_create_screen",
+      "ui.customer_statement_screen",
+      "ui.expense_create_screen",
+      "ui.fuel_create_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_create_screen.dart:179",
+      "lib/ui/customer_statement_screen.dart:160",
+      "lib/ui/expense_create_screen.dart:207",
+      "lib/ui/fuel_create_screen.dart:229"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Currency must be a three-letter code.",
     "contexts": [
       "features.collections.collection_repository",
@@ -399,6 +1002,61 @@
     "sources": [
       "lib/features/collections/collection_repository.dart:92",
       "lib/features/expenses/expense_repository.dart:116"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Current location selected. Tap the exact shop entrance if adjustment is needed.",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:133"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Customer",
+    "contexts": [
+      "ui.appointments_screen",
+      "ui.collection_create_screen",
+      "ui.collections_screen",
+      "ui.customers_screen",
+      "ui.follow_ups_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:125",
+      "lib/ui/appointments_screen.dart:137",
+      "lib/ui/collection_create_screen.dart:157",
+      "lib/ui/collection_create_screen.dart:162",
+      "lib/ui/collections_screen.dart:59",
+      "lib/ui/customers_screen.dart:270",
+      "lib/ui/customers_screen.dart:312",
+      "lib/ui/customers_screen.dart:469",
+      "lib/ui/follow_ups_screen.dart:122",
+      "lib/ui/follow_ups_screen.dart:130",
+      "lib/ui/follow_ups_screen.dart:329",
+      "lib/ui/follow_ups_screen.dart:412"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Customer / shop name",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:245"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Customer balances",
+    "contexts": [
+      "ui.collections_screen"
+    ],
+    "sources": [
+      "lib/ui/collections_screen.dart:42"
     ],
     "placeholders": []
   },
@@ -413,12 +1071,52 @@
     "placeholders": []
   },
   {
+    "english": "Customer changes saved.",
+    "contexts": [
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/customers_screen.dart:52"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Customer creation remains offline-first. The location will sync with the customer when connectivity is available.",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:524"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Customer follow-ups",
+    "contexts": [
+      "ui.follow_ups_screen"
+    ],
+    "sources": [
+      "lib/ui/follow_ups_screen.dart:328"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Customer is not available offline.",
     "contexts": [
       "features.customers.customer_repository"
     ],
     "sources": [
       "lib/features/customers/customer_repository.dart:132"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Customer name is required.",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:249"
     ],
     "placeholders": []
   },
@@ -433,12 +1131,45 @@
     "placeholders": []
   },
   {
+    "english": "Customer saved with shop location.",
+    "contexts": [
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/customers_screen.dart:34"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Customer statement response is incomplete.",
     "contexts": [
       "features.financial_documents.customer_statement_repository"
     ],
     "sources": [
       "lib/features/financial_documents/customer_statement_repository.dart:74"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Customer: {customer_name}",
+    "contexts": [
+      "ui.collection_detail_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_detail_screen.dart:43"
+    ],
+    "placeholders": [
+      "customer_name"
+    ]
+  },
+  {
+    "english": "Customers",
+    "contexts": [
+      "ui.dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/dashboard_screen.dart:51",
+      "lib/ui/dashboard_screen.dart:223"
     ],
     "placeholders": []
   },
@@ -451,6 +1182,29 @@
       "lib/state/attendance_controller.dart:270"
     ],
     "placeholders": []
+  },
+  {
+    "english": "Derived automatically from amount ÷ liters if blank.",
+    "contexts": [
+      "ui.fuel_create_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_create_screen.dart:243"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Detected territory: {code} — {name}",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:464"
+    ],
+    "placeholders": [
+      "code",
+      "name"
+    ]
   },
   {
     "english": "Device is offline; changes stay queued locally.",
@@ -469,6 +1223,132 @@
     ],
     "sources": [
       "lib/features/orders/order_repository.dart:305"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Due",
+    "contexts": [
+      "ui.follow_ups_screen"
+    ],
+    "sources": [
+      "lib/ui/follow_ups_screen.dart:197"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Due {due_at}",
+    "contexts": [
+      "ui.follow_ups_screen"
+    ],
+    "sources": [
+      "lib/ui/follow_ups_screen.dart:448"
+    ],
+    "placeholders": [
+      "due_at"
+    ]
+  },
+  {
+    "english": "Edit customer",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:232"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Email",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:296"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Ends",
+    "contexts": [
+      "ui.appointments_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:170"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Enter a radius between 25 and 1000 meters.",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:362"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Enter a valid {label}.",
+    "contexts": [
+      "ui.expense_create_screen",
+      "ui.fuel_create_screen"
+    ],
+    "sources": [
+      "lib/ui/expense_create_screen.dart:60",
+      "lib/ui/fuel_create_screen.dart:89"
+    ],
+    "placeholders": [
+      "label"
+    ]
+  },
+  {
+    "english": "Enter a valid collection amount.",
+    "contexts": [
+      "ui.collection_create_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_create_screen.dart:91"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Enter a valid email address.",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:304"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Enter a valid expense amount.",
+    "contexts": [
+      "ui.expense_create_screen"
+    ],
+    "sources": [
+      "lib/ui/expense_create_screen.dart:44"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Enter a valid odometer reading.",
+    "contexts": [
+      "ui.fuel_create_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_create_screen.dart:102"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Enter a valid unit price.",
+    "contexts": [
+      "ui.fuel_create_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_create_screen.dart:131"
     ],
     "placeholders": []
   },
@@ -503,6 +1383,17 @@
     "placeholders": []
   },
   {
+    "english": "Expense",
+    "contexts": [
+      "ui.expenses_screen"
+    ],
+    "sources": [
+      "lib/ui/expenses_screen.dart:35",
+      "lib/ui/expenses_screen.dart:157"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Expense amount must be greater than zero.",
     "contexts": [
       "features.expenses.expense_repository"
@@ -513,12 +1404,26 @@
     "placeholders": []
   },
   {
-    "english": "Expense saved locally.",
+    "english": "Expense claims are saved locally first and can sync when connectivity returns.",
     "contexts": [
-      "state.expense_controller"
+      "ui.expenses_screen"
     ],
     "sources": [
-      "lib/state/expense_controller.dart:84"
+      "lib/ui/expenses_screen.dart:111"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Expense saved locally.",
+    "contexts": [
+      "state.expense_controller",
+      "ui.expense_create_screen",
+      "ui.fuel_create_screen"
+    ],
+    "sources": [
+      "lib/state/expense_controller.dart:84",
+      "lib/ui/expense_create_screen.dart:103",
+      "lib/ui/fuel_create_screen.dart:155"
     ],
     "placeholders": []
   },
@@ -569,12 +1474,42 @@
     "placeholders": []
   },
   {
+    "english": "Field Sales",
+    "contexts": [
+      "ui.dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/dashboard_screen.dart:50"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Filled to full tank",
+    "contexts": [
+      "ui.fuel_create_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_create_screen.dart:249"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "first_failed_at TEXT NOT NULL,",
     "contexts": [
       "core.db.app_database"
     ],
     "sources": [
       "lib/core/db/app_database.dart:80"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Follow-up",
+    "contexts": [
+      "ui.follow_ups_screen"
+    ],
+    "sources": [
+      "lib/ui/follow_ups_screen.dart:514"
     ],
     "placeholders": []
   },
@@ -631,12 +1566,52 @@
     ]
   },
   {
+    "english": "Follow-ups",
+    "contexts": [
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/customers_screen.dart:418"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Follow-ups for this customer.",
+    "contexts": [
+      "ui.follow_ups_screen"
+    ],
+    "sources": [
+      "lib/ui/follow_ups_screen.dart:340"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "format exception",
     "contexts": [
       "state.attendance_controller"
     ],
     "sources": [
       "lib/state/attendance_controller.dart:41"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "From",
+    "contexts": [
+      "ui.customer_statement_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_statement_screen.dart:141"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Fuel details",
+    "contexts": [
+      "ui.expense_create_screen"
+    ],
+    "sources": [
+      "lib/ui/expense_create_screen.dart:160"
     ],
     "placeholders": []
   },
@@ -671,6 +1646,18 @@
     "placeholders": []
   },
   {
+    "english": "fuel quantity",
+    "contexts": [
+      "ui.expense_create_screen",
+      "ui.fuel_create_screen"
+    ],
+    "sources": [
+      "lib/ui/expense_create_screen.dart:73",
+      "lib/ui/fuel_create_screen.dart:97"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Fuel receipt file is unavailable.",
     "contexts": [
       "features.expenses.expense_repository"
@@ -681,12 +1668,34 @@
     "placeholders": []
   },
   {
-    "english": "Fuel station is required.",
+    "english": "Fuel station *",
     "contexts": [
-      "features.expenses.expense_repository"
+      "ui.fuel_create_screen"
     ],
     "sources": [
-      "lib/features/expenses/expense_repository.dart:106"
+      "lib/ui/fuel_create_screen.dart:181"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Fuel station is required.",
+    "contexts": [
+      "features.expenses.expense_repository",
+      "ui.fuel_create_screen"
+    ],
+    "sources": [
+      "lib/features/expenses/expense_repository.dart:106",
+      "lib/ui/fuel_create_screen.dart:114"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "fuel unit price",
+    "contexts": [
+      "ui.expense_create_screen"
+    ],
+    "sources": [
+      "lib/ui/expense_create_screen.dart:74"
     ],
     "placeholders": []
   },
@@ -701,6 +1710,48 @@
     "placeholders": []
   },
   {
+    "english": "Fuel: {fuel_liters} L",
+    "contexts": [
+      "ui.expenses_screen"
+    ],
+    "sources": [
+      "lib/ui/expenses_screen.dart:53"
+    ],
+    "placeholders": [
+      "fuel_liters"
+    ]
+  },
+  {
+    "english": "Full-tank entries are used for vehicle km/L calculations.",
+    "contexts": [
+      "ui.fuel_create_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_create_screen.dart:251"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Gallery",
+    "contexts": [
+      "ui.fuel_create_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_create_screen.dart:285"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Geofence radius (meters)",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:355"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Geofence radius must be between 25 and 1000 meters.",
     "contexts": [
       "features.customers.customer_repository"
@@ -708,6 +1759,64 @@
     "sources": [
       "lib/features/customers/customer_repository.dart:41",
       "lib/features/customers/customer_repository.dart:121"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "GPS captured automatically",
+    "contexts": [
+      "ui.fuel_create_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_create_screen.dart:313"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "GPS evidence",
+    "contexts": [
+      "ui.collection_detail_screen",
+      "ui.expense_create_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_detail_screen.dart:98",
+      "lib/ui/expense_create_screen.dart:238"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "GPS: {latitude}, {longitude} · ±{accuracy} m",
+    "contexts": [
+      "ui.expenses_screen"
+    ],
+    "sources": [
+      "lib/ui/expenses_screen.dart:70"
+    ],
+    "placeholders": [
+      "latitude",
+      "longitude",
+      "accuracy"
+    ]
+  },
+  {
+    "english": "Hello {name},",
+    "contexts": [
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/customers_screen.dart:169"
+    ],
+    "placeholders": [
+      "name"
+    ]
+  },
+  {
+    "english": "Home",
+    "contexts": [
+      "ui.dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/dashboard_screen.dart:218"
     ],
     "placeholders": []
   },
@@ -761,6 +1870,16 @@
     ],
     "sources": [
       "lib/core/db/app_database.dart:81"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Latitude",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:475"
     ],
     "placeholders": []
   },
@@ -847,6 +1966,36 @@
     ]
   },
   {
+    "english": "Leave blank to derive it from amount ÷ liters.",
+    "contexts": [
+      "ui.expense_create_screen"
+    ],
+    "sources": [
+      "lib/ui/expense_create_screen.dart:183"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Liters (optional)",
+    "contexts": [
+      "ui.expense_create_screen"
+    ],
+    "sources": [
+      "lib/ui/expense_create_screen.dart:170"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Liters *",
+    "contexts": [
+      "ui.fuel_create_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_create_screen.dart:192"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Local photo file is unavailable.",
     "contexts": [
       "features.visits.visit_repository"
@@ -877,6 +2026,36 @@
     "placeholders": []
   },
   {
+    "english": "Locating…",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:395"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Location",
+    "contexts": [
+      "ui.appointments_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:234"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Location permission is permanently denied. Enable it in phone settings or tap the shop on the map.",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:112"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Location permission is required for collections.",
     "contexts": [
       "state.collection_controller"
@@ -903,6 +2082,16 @@
     ],
     "sources": [
       "lib/state/expense_controller.dart:139"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Location permission was denied. Allow it or tap the shop on the map.",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:118"
     ],
     "placeholders": []
   },
@@ -941,6 +2130,69 @@
     "placeholders": []
   },
   {
+    "english": "Longitude",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:482"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Meeting",
+    "contexts": [
+      "ui.appointments_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:106"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Merchant / supplier (optional)",
+    "contexts": [
+      "ui.expense_create_screen"
+    ],
+    "sources": [
+      "lib/ui/expense_create_screen.dart:215"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Merchant: {merchant}",
+    "contexts": [
+      "ui.expenses_screen"
+    ],
+    "sources": [
+      "lib/ui/expenses_screen.dart:62"
+    ],
+    "placeholders": [
+      "merchant"
+    ]
+  },
+  {
+    "english": "Message",
+    "contexts": [
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/customers_screen.dart:203",
+      "lib/ui/customers_screen.dart:440"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Message customer",
+    "contexts": [
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/customers_screen.dart:177"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "message TEXT,",
     "contexts": [
       "core.db.app_database"
@@ -961,12 +2213,115 @@
     "placeholders": []
   },
   {
+    "english": "Mobile money",
+    "contexts": [
+      "ui.collection_create_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_create_screen.dart:37"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "More",
+    "contexts": [
+      "ui.dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/dashboard_screen.dart:54",
+      "lib/ui/dashboard_screen.dart:238"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "My location",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:395"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "New appointment",
+    "contexts": [
+      "ui.appointments_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:73"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "New collection",
+    "contexts": [
+      "ui.collection_create_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_create_screen.dart:151"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "New customer",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:232"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "New expense",
+    "contexts": [
+      "ui.expense_create_screen"
+    ],
+    "sources": [
+      "lib/ui/expense_create_screen.dart:125"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "New follow-up",
+    "contexts": [
+      "ui.follow_ups_screen"
+    ],
+    "sources": [
+      "lib/ui/follow_ups_screen.dart:111"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "No active work day was found.",
     "contexts": [
       "state.attendance_controller"
     ],
     "sources": [
       "lib/state/attendance_controller.dart:372"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No answer",
+    "contexts": [
+      "ui.call_history_screen",
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/call_history_screen.dart:19",
+      "lib/ui/customers_screen.dart:19"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No appointments cached yet.",
+    "contexts": [
+      "ui.appointments_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:397"
     ],
     "placeholders": []
   },
@@ -981,12 +2336,218 @@
     "placeholders": []
   },
   {
-    "english": "Notifications",
+    "english": "No cached receivable balance is available. The collection can still be saved offline and will be reviewed by the server on sync.",
     "contexts": [
-      "app"
+      "ui.collection_create_screen"
     ],
     "sources": [
-      "lib/app.dart:52"
+      "lib/ui/collection_create_screen.dart:223"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No cached receivable balances yet.",
+    "contexts": [
+      "ui.collections_screen"
+    ],
+    "sources": [
+      "lib/ui/collections_screen.dart:50"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No cached territory boundary contains this point. The server will check all mapped territories when this customer syncs.",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:463"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No call activity recorded yet.",
+    "contexts": [
+      "ui.call_history_screen"
+    ],
+    "sources": [
+      "lib/ui/call_history_screen.dart:45"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No collections recorded yet.",
+    "contexts": [
+      "ui.collections_screen"
+    ],
+    "sources": [
+      "lib/ui/collections_screen.dart:81"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No customer",
+    "contexts": [
+      "ui.appointments_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:131"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No customers are available offline yet.",
+    "contexts": [
+      "ui.follow_ups_screen"
+    ],
+    "sources": [
+      "lib/ui/follow_ups_screen.dart:80"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No customers cached yet. Pull down to sync.",
+    "contexts": [
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/customers_screen.dart:298"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No expenses recorded yet.",
+    "contexts": [
+      "ui.expenses_screen"
+    ],
+    "sources": [
+      "lib/ui/expenses_screen.dart:107"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No follow-ups in this view.",
+    "contexts": [
+      "ui.follow_ups_screen"
+    ],
+    "sources": [
+      "lib/ui/follow_ups_screen.dart:389"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No phone",
+    "contexts": [
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/customers_screen.dart:439",
+      "lib/ui/customers_screen.dart:449"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No receipt attached.",
+    "contexts": [
+      "ui.fuel_create_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_create_screen.dart:270"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No transactions in this period.",
+    "contexts": [
+      "ui.customer_statement_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_statement_screen.dart:250"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "None",
+    "contexts": [
+      "ui.appointments_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:200"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Not selected",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:561"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Not set",
+    "contexts": [
+      "ui.appointments_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:172"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Notes",
+    "contexts": [
+      "ui.appointments_screen",
+      "ui.follow_ups_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:244",
+      "lib/ui/follow_ups_screen.dart:212"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Notes (optional)",
+    "contexts": [
+      "ui.collection_create_screen",
+      "ui.customers_screen",
+      "ui.expense_create_screen",
+      "ui.fuel_create_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_create_screen.dart:262",
+      "lib/ui/customers_screen.dart:117",
+      "lib/ui/expense_create_screen.dart:230",
+      "lib/ui/fuel_create_screen.dart:305"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Notes: {notes}",
+    "contexts": [
+      "ui.collection_detail_screen",
+      "ui.expenses_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_detail_screen.dart:55",
+      "lib/ui/expenses_screen.dart:65"
+    ],
+    "placeholders": [
+      "notes"
+    ]
+  },
+  {
+    "english": "Notifications",
+    "contexts": [
+      "app",
+      "ui.dashboard_screen"
+    ],
+    "sources": [
+      "lib/app.dart:52",
+      "lib/ui/dashboard_screen.dart:168",
+      "lib/ui/dashboard_screen.dart:172"
     ],
     "placeholders": []
   },
@@ -1001,12 +2562,64 @@
     "placeholders": []
   },
   {
+    "english": "Odometer km (optional)",
+    "contexts": [
+      "ui.expense_create_screen"
+    ],
+    "sources": [
+      "lib/ui/expense_create_screen.dart:193"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Odometer km *",
+    "contexts": [
+      "ui.fuel_create_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_create_screen.dart:202"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "odometer reading",
+    "contexts": [
+      "ui.expense_create_screen"
+    ],
+    "sources": [
+      "lib/ui/expense_create_screen.dart:77"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Odometer reading is required.",
     "contexts": [
       "features.expenses.expense_repository"
     ],
     "sources": [
       "lib/features/expenses/expense_repository.dart:100"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Odometer: {odometer_km} km",
+    "contexts": [
+      "ui.expenses_screen"
+    ],
+    "sources": [
+      "lib/ui/expenses_screen.dart:59"
+    ],
+    "placeholders": [
+      "odometer_km"
+    ]
+  },
+  {
+    "english": "Offline expense",
+    "contexts": [
+      "ui.expenses_screen"
+    ],
+    "sources": [
+      "lib/ui/expenses_screen.dart:131"
     ],
     "placeholders": []
   },
@@ -1117,6 +2730,28 @@
     ],
     "sources": [
       "lib/state/visit_controller.dart:340"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Offline receipt",
+    "contexts": [
+      "ui.collection_detail_screen",
+      "ui.collections_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_detail_screen.dart:34",
+      "lib/ui/collections_screen.dart:91"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Offline-created",
+    "contexts": [
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/customers_screen.dart:317"
     ],
     "placeholders": []
   },
@@ -1262,6 +2897,48 @@
     "placeholders": []
   },
   {
+    "english": "Open app",
+    "contexts": [
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/customers_screen.dart:221"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Opening",
+    "contexts": [
+      "ui.customer_statement_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_statement_screen.dart:218"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Order",
+    "contexts": [
+      "ui.appointments_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:114"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Order discussion",
+    "contexts": [
+      "ui.call_history_screen",
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/call_history_screen.dart:22",
+      "lib/ui/customers_screen.dart:22"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Order saved locally.",
     "contexts": [
       "state.order_controller"
@@ -1296,12 +2973,232 @@
     ]
   },
   {
+    "english": "Orders",
+    "contexts": [
+      "ui.dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/dashboard_screen.dart:53",
+      "lib/ui/dashboard_screen.dart:233"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Other",
+    "contexts": [
+      "ui.appointments_screen",
+      "ui.call_history_screen",
+      "ui.collection_create_screen",
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:115",
+      "lib/ui/call_history_screen.dart:24",
+      "lib/ui/collection_create_screen.dart:38",
+      "lib/ui/customers_screen.dart:24"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Outcome",
+    "contexts": [
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/customers_screen.dart:101"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Outcome (optional)",
+    "contexts": [
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/customers_screen.dart:100"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Outcome not recorded",
+    "contexts": [
+      "ui.call_history_screen"
+    ],
+    "sources": [
+      "lib/ui/call_history_screen.dart:61"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Outstanding: {outstanding_balance} {currency}",
+    "contexts": [
+      "ui.collection_create_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_create_screen.dart:204"
+    ],
+    "placeholders": [
+      "outstanding_balance",
+      "currency"
+    ]
+  },
+  {
+    "english": "Payment follow-up",
+    "contexts": [
+      "ui.call_history_screen",
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/call_history_screen.dart:23",
+      "lib/ui/customers_screen.dart:23"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Payment method",
+    "contexts": [
+      "ui.collection_create_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_create_screen.dart:237"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Payment: {payment_method}",
+    "contexts": [
+      "ui.collection_detail_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_detail_screen.dart:46"
+    ],
+    "placeholders": [
+      "payment_method"
+    ]
+  },
+  {
+    "english": "Payments",
+    "contexts": [
+      "ui.customer_statement_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_statement_screen.dart:228"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Pending",
+    "contexts": [
+      "ui.follow_ups_screen"
+    ],
+    "sources": [
+      "lib/ui/follow_ups_screen.dart:360"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Pending collections: {pending_collections} {currency}",
+    "contexts": [
+      "ui.collection_create_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_create_screen.dart:207"
+    ],
+    "placeholders": [
+      "pending_collections",
+      "currency"
+    ]
+  },
+  {
+    "english": "Pending sync",
+    "contexts": [
+      "ui.dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/dashboard_screen.dart:192"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Pending: {pending_collections} {currency}",
+    "contexts": [
+      "ui.collections_screen"
+    ],
+    "sources": [
+      "lib/ui/collections_screen.dart:62"
+    ],
+    "placeholders": [
+      "pending_collections",
+      "currency"
+    ]
+  },
+  {
+    "english": "Phone",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:276"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Photo saved locally.",
     "contexts": [
       "state.visit_controller"
     ],
     "sources": [
       "lib/state/visit_controller.dart:202"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Prefilled from the active shift when available.",
+    "contexts": [
+      "ui.fuel_create_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_create_screen.dart:175"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Price list",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:326"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Price per liter (optional)",
+    "contexts": [
+      "ui.fuel_create_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_create_screen.dart:241"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Priority",
+    "contexts": [
+      "ui.follow_ups_screen"
+    ],
+    "sources": [
+      "lib/ui/follow_ups_screen.dart:175"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Pull down to sync or create one for later.",
+    "contexts": [
+      "ui.appointments_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:400"
     ],
     "placeholders": []
   },
@@ -1316,12 +3213,52 @@
     "placeholders": []
   },
   {
+    "english": "Receipt / reference number (optional)",
+    "contexts": [
+      "ui.fuel_create_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_create_screen.dart:297"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Receipt attached and stored offline.",
+    "contexts": [
+      "ui.fuel_create_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_create_screen.dart:271"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Receipt evidence *",
+    "contexts": [
+      "ui.fuel_create_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_create_screen.dart:264"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Receipt photo is required.",
     "contexts": [
       "features.expenses.expense_repository"
     ],
     "sources": [
       "lib/features/expenses/expense_repository.dart:110"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Recent collections",
+    "contexts": [
+      "ui.collections_screen"
+    ],
+    "sources": [
+      "lib/ui/collections_screen.dart:73"
     ],
     "placeholders": []
   },
@@ -1334,6 +3271,50 @@
       "lib/state/visit_controller.dart:240"
     ],
     "placeholders": []
+  },
+  {
+    "english": "Reference number",
+    "contexts": [
+      "ui.collection_create_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_create_screen.dart:254"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Reference number (optional)",
+    "contexts": [
+      "ui.expense_create_screen"
+    ],
+    "sources": [
+      "lib/ui/expense_create_screen.dart:222"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Reference number is required for non-cash payments.",
+    "contexts": [
+      "ui.collection_create_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_create_screen.dart:99"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Reference: {reference_number}",
+    "contexts": [
+      "ui.collection_detail_screen",
+      "ui.expenses_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_detail_screen.dart:51",
+      "lib/ui/expenses_screen.dart:64"
+    ],
+    "placeholders": [
+      "reference_number"
+    ]
   },
   {
     "english": "rejected: {code} ({reason})",
@@ -1389,6 +3370,26 @@
     "placeholders": []
   },
   {
+    "english": "Reminder",
+    "contexts": [
+      "ui.appointments_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:194"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Reorder recommendations",
+    "contexts": [
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/customers_screen.dart:390"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Request failed.",
     "contexts": [
       "core.api.api_client"
@@ -1430,6 +3431,16 @@
     "placeholders": []
   },
   {
+    "english": "Requires review",
+    "contexts": [
+      "ui.collection_detail_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_detail_screen.dart:87"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Return condition must be resalable or damaged.",
     "contexts": [
       "features.stock.stock_repository"
@@ -1450,6 +3461,18 @@
     "placeholders": []
   },
   {
+    "english": "Review note: {review_note}",
+    "contexts": [
+      "ui.expenses_screen"
+    ],
+    "sources": [
+      "lib/ui/expenses_screen.dart:67"
+    ],
+    "placeholders": [
+      "review_note"
+    ]
+  },
+  {
     "english": "Review tracking policy before automatic Start Day.",
     "contexts": [
       "state.attendance_controller"
@@ -1466,6 +3489,152 @@
     ],
     "sources": [
       "lib/state/attendance_controller.dart:273"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Sales",
+    "contexts": [
+      "ui.customer_statement_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_statement_screen.dart:223"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Save appointment",
+    "contexts": [
+      "ui.appointments_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:257"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Save call activity?",
+    "contexts": [
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/customers_screen.dart:93"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Save changes",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:515"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Save collection",
+    "contexts": [
+      "ui.collection_create_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_create_screen.dart:281"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Save customer",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:516"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Save expense",
+    "contexts": [
+      "ui.expense_create_screen"
+    ],
+    "sources": [
+      "lib/ui/expense_create_screen.dart:254"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Save follow-up",
+    "contexts": [
+      "ui.follow_ups_screen"
+    ],
+    "sources": [
+      "lib/ui/follow_ups_screen.dart:223"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Save fuel entry",
+    "contexts": [
+      "ui.fuel_create_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_create_screen.dart:328"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Save offline",
+    "contexts": [
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/customers_screen.dart:131"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Saved shop location loaded. Tap the map to adjust it.",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:74"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Saving…",
+    "contexts": [
+      "ui.collection_create_screen",
+      "ui.customer_create_screen",
+      "ui.expense_create_screen",
+      "ui.fuel_create_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_create_screen.dart:281",
+      "lib/ui/customer_create_screen.dart:513",
+      "lib/ui/expense_create_screen.dart:254",
+      "lib/ui/fuel_create_screen.dart:328"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Scheduled",
+    "contexts": [
+      "ui.appointments_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:358"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Select a customer.",
+    "contexts": [
+      "ui.collection_create_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_create_screen.dart:84"
     ],
     "placeholders": []
   },
@@ -1537,6 +3706,16 @@
     "placeholders": []
   },
   {
+    "english": "Select the exact shop location on the map before saving.",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:169"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Selected customer is missing an ID.",
     "contexts": [
       "features.collections.collection_repository"
@@ -1557,6 +3736,46 @@
     "placeholders": []
   },
   {
+    "english": "Shop location",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:375"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Shop location selected.",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:159"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Showing cached statement",
+    "contexts": [
+      "ui.customer_statement_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_statement_screen.dart:199"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Sign out",
+    "contexts": [
+      "ui.dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/dashboard_screen.dart:201"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Signed-in tenant is unavailable.",
     "contexts": [
       "state.attendance_controller",
@@ -1571,6 +3790,16 @@
     "placeholders": []
   },
   {
+    "english": "Skip",
+    "contexts": [
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/customers_screen.dart:127"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Smart Route",
     "contexts": [
       "app"
@@ -1581,6 +3810,50 @@
     "placeholders": []
   },
   {
+    "english": "Spent: {spent_at}",
+    "contexts": [
+      "ui.expenses_screen"
+    ],
+    "sources": [
+      "lib/ui/expenses_screen.dart:50"
+    ],
+    "placeholders": [
+      "spent_at"
+    ]
+  },
+  {
+    "english": "Starts",
+    "contexts": [
+      "ui.appointments_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:159"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Statement",
+    "contexts": [
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/customers_screen.dart:404"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Statement · {name}",
+    "contexts": [
+      "ui.customer_statement_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_statement_screen.dart:110"
+    ],
+    "placeholders": [
+      "name"
+    ]
+  },
+  {
     "english": "status DESC, last_failed_at DESC",
     "contexts": [
       "core.sync.sync_retry_store"
@@ -1589,6 +3862,32 @@
       "lib/core/sync/sync_retry_store.dart:111"
     ],
     "placeholders": []
+  },
+  {
+    "english": "Status note: {status_note}",
+    "contexts": [
+      "ui.collection_detail_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_detail_screen.dart:57"
+    ],
+    "placeholders": [
+      "status_note"
+    ]
+  },
+  {
+    "english": "Status: {status}",
+    "contexts": [
+      "ui.collection_detail_screen",
+      "ui.expenses_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_detail_screen.dart:48",
+      "lib/ui/expenses_screen.dart:48"
+    ],
+    "placeholders": [
+      "status"
+    ]
   },
   {
     "english": "Stop the current voice note before starting another one.",
@@ -1659,6 +3958,26 @@
     ]
   },
   {
+    "english": "Sync customers before collecting.",
+    "contexts": [
+      "ui.collections_screen"
+    ],
+    "sources": [
+      "lib/ui/collections_screen.dart:18"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Sync issues need attention",
+    "contexts": [
+      "ui.dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/dashboard_screen.dart:191"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "sync_status TEXT NOT NULL DEFAULT \"pending_checkin\",",
     "contexts": [
       "core.db.app_database"
@@ -1721,12 +4040,62 @@
     "placeholders": []
   },
   {
+    "english": "Sync: {sync_status}",
+    "contexts": [
+      "ui.call_history_screen",
+      "ui.collection_detail_screen",
+      "ui.collections_screen",
+      "ui.expenses_screen"
+    ],
+    "sources": [
+      "lib/ui/call_history_screen.dart:70",
+      "lib/ui/collection_detail_screen.dart:60",
+      "lib/ui/collections_screen.dart:99",
+      "lib/ui/expenses_screen.dart:75"
+    ],
+    "placeholders": [
+      "sync_status"
+    ]
+  },
+  {
+    "english": "Sync: {syncStatus}",
+    "contexts": [
+      "ui.expenses_screen"
+    ],
+    "sources": [
+      "lib/ui/expenses_screen.dart:137"
+    ],
+    "placeholders": [
+      "syncStatus"
+    ]
+  },
+  {
     "english": "synced_count INTEGER NOT NULL DEFAULT 0,",
     "contexts": [
       "core.db.app_database"
     ],
     "sources": [
       "lib/core/db/app_database.dart:98"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Take or attach a receipt photo.",
+    "contexts": [
+      "ui.fuel_create_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_create_screen.dart:120"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Tap the exact shop on the map. Latitude, longitude and territory are handled automatically.",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:380"
     ],
     "placeholders": []
   },
@@ -1815,6 +4184,56 @@
     "placeholders": []
   },
   {
+    "english": "The claim is stored locally first and can sync later.",
+    "contexts": [
+      "ui.expense_create_screen"
+    ],
+    "sources": [
+      "lib/ui/expense_create_screen.dart:241"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "The customer could not be saved. Your changes are still on this screen; please try again.",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:215"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "The customer phone number is invalid.",
+    "contexts": [
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/customers_screen.dart:239"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "The entry, receipt and GPS evidence are saved offline first and sync when internet returns.",
+    "contexts": [
+      "ui.fuel_create_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_create_screen.dart:315"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "The phone dialer could not be opened.",
+    "contexts": [
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/customers_screen.dart:78"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "The recorded voice note could not be saved.",
     "contexts": [
       "features.visits.visit_voice_recorder"
@@ -1835,6 +4254,16 @@
     "placeholders": []
   },
   {
+    "english": "The SMS app could not be opened.",
+    "contexts": [
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/customers_screen.dart:258"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "The work day could not be reopened locally.",
     "contexts": [
       "state.attendance_controller"
@@ -1845,12 +4274,43 @@
     "placeholders": []
   },
   {
+    "english": "This amount was above the cached outstanding balance at capture time. It cannot be verified above the authoritative server balance.",
+    "contexts": [
+      "ui.collection_detail_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_detail_screen.dart:89"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "This assigned visit has no customer data.",
     "contexts": [
       "state.visit_controller"
     ],
     "sources": [
       "lib/state/visit_controller.dart:80"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "This collection will be linked to the current customer visit.",
+    "contexts": [
+      "ui.collection_create_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_create_screen.dart:269"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "This customer has no phone number.",
+    "contexts": [
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/customers_screen.dart:63",
+      "lib/ui/customers_screen.dart:162"
     ],
     "placeholders": []
   },
@@ -1875,12 +4335,32 @@
     "placeholders": []
   },
   {
+    "english": "Title",
+    "contexts": [
+      "ui.appointments_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:92"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "title TEXT NOT NULL,",
     "contexts": [
       "core.db.app_database"
     ],
     "sources": [
       "lib/core/db/app_database.dart:715"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "To",
+    "contexts": [
+      "ui.customer_statement_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_statement_screen.dart:148"
     ],
     "placeholders": []
   },
@@ -1895,12 +4375,109 @@
     "placeholders": []
   },
   {
-    "english": "Vehicle / plate is required.",
+    "english": "Total amount *",
     "contexts": [
-      "features.expenses.expense_repository"
+      "ui.fuel_create_screen"
     ],
     "sources": [
-      "lib/features/expenses/expense_repository.dart:103"
+      "lib/ui/fuel_create_screen.dart:217"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Transactions",
+    "contexts": [
+      "ui.customer_statement_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_statement_screen.dart:242"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Turn on location services and try again.",
+    "contexts": [
+      "ui.customer_create_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:102"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Type",
+    "contexts": [
+      "ui.appointments_screen",
+      "ui.follow_ups_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:100",
+      "lib/ui/follow_ups_screen.dart:154"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Unit price (optional)",
+    "contexts": [
+      "ui.expense_create_screen"
+    ],
+    "sources": [
+      "lib/ui/expense_create_screen.dart:181"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Unit price: {fuel_unit_price} {currency}",
+    "contexts": [
+      "ui.expenses_screen"
+    ],
+    "sources": [
+      "lib/ui/expenses_screen.dart:56"
+    ],
+    "placeholders": [
+      "fuel_unit_price",
+      "currency"
+    ]
+  },
+  {
+    "english": "Used for km/L fuel-efficiency reporting.",
+    "contexts": [
+      "ui.expense_create_screen"
+    ],
+    "sources": [
+      "lib/ui/expense_create_screen.dart:171"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Vehicle / plate *",
+    "contexts": [
+      "ui.fuel_create_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_create_screen.dart:174"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Vehicle / plate is required.",
+    "contexts": [
+      "features.expenses.expense_repository",
+      "ui.fuel_create_screen"
+    ],
+    "sources": [
+      "lib/features/expenses/expense_repository.dart:103",
+      "lib/ui/fuel_create_screen.dart:108"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Visit",
+    "contexts": [
+      "ui.appointments_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:108"
     ],
     "placeholders": []
   },
@@ -1949,6 +4526,29 @@
     ]
   },
   {
+    "english": "Visit: {visit_uuid}",
+    "contexts": [
+      "ui.collection_detail_screen"
+    ],
+    "sources": [
+      "lib/ui/collection_detail_screen.dart:53"
+    ],
+    "placeholders": [
+      "visit_uuid"
+    ]
+  },
+  {
+    "english": "Visits",
+    "contexts": [
+      "ui.dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/dashboard_screen.dart:52",
+      "lib/ui/dashboard_screen.dart:228"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Voice note recording cancelled.",
     "contexts": [
       "state.visit_controller"
@@ -1986,6 +4586,28 @@
     "sources": [
       "lib/core/sync/sync_coordinator.dart:181",
       "lib/core/sync/sync_coordinator.dart:187"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Waiting to sync",
+    "contexts": [
+      "ui.appointments_screen",
+      "ui.follow_ups_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:488",
+      "lib/ui/follow_ups_screen.dart:420"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "WhatsApp could not be opened.",
+    "contexts": [
+      "ui.customers_screen"
+    ],
+    "sources": [
+      "lib/ui/customers_screen.dart:257"
     ],
     "placeholders": []
   },
@@ -2078,6 +4700,26 @@
     ],
     "sources": [
       "lib/features/gps/tracking_service.dart:34"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Your current location is captured with the expense claim.",
+    "contexts": [
+      "ui.expense_create_screen"
+    ],
+    "sources": [
+      "lib/ui/expense_create_screen.dart:240"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Your schedule stays cached for offline use.",
+    "contexts": [
+      "ui.appointments_screen"
+    ],
+    "sources": [
+      "lib/ui/appointments_screen.dart:338"
     ],
     "placeholders": []
   }
