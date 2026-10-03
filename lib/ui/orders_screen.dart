@@ -52,7 +52,8 @@ class OrdersScreen extends StatelessWidget {
                   FieldPulseEmptyState(
                     icon: Icons.receipt_long_outlined,
                     title: 'No orders yet',
-                    message: 'Orders are stored locally first and sync when online.',
+                    message:
+                        'Orders are stored locally first and sync when online.',
                   ),
                 ],
               )
