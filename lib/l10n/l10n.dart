@@ -102,9 +102,7 @@ class L10n {
   static Future<Map<String, String>> _loadCatalog(String code) async {
     final raw = await rootBundle.loadString('assets/lang/$code.json');
     final decoded = jsonDecode(raw) as Map<String, dynamic>;
-    return decoded.map(
-      (key, value) => MapEntry(key, value?.toString() ?? ''),
-    );
+    return decoded.map((key, value) => MapEntry(key, value?.toString() ?? ''));
   }
 }
 
