@@ -1,5 +1,6 @@
 import 'package:field_sales_mobile/l10n/localized_material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/l10n.dart';
 
 import '../core/api/api_exception.dart';
 import '../features/notifications/push_service.dart';
@@ -283,10 +284,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           focusNode: tenantFocus,
                           textInputAction: TextInputAction.next,
                           autocorrect: false,
-                          decoration: const InputDecoration(
-                            labelText: 'Company / Tenant ID',
-                            hintText: 'e.g. shahab-demo',
-                            helperText: 'Saved on this device after a successful sign-in.',
+                          decoration: InputDecoration(
+                            labelText: L10n.text('Company / Tenant ID'),
+                            hintText: L10n.text('e.g. shahab-demo'),
+                            helperText: L10n.text('Saved on this device after a successful sign-in.'),
                             border: OutlineInputBorder(),
                             prefixIcon: Icon(Icons.business_outlined),
                           ),
@@ -299,8 +300,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         textInputAction: TextInputAction.next,
                         autofillHints: const [AutofillHints.username],
                         autocorrect: false,
-                        decoration: const InputDecoration(
-                          labelText: 'Email',
+                        decoration: InputDecoration(
+                          labelText: L10n.text('Email'),
                           border: OutlineInputBorder(),
                           prefixIcon: Icon(Icons.email_outlined),
                         ),
@@ -313,7 +314,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         autofillHints: const [AutofillHints.password],
                         onSubmitted: (_) => submit(),
                         decoration: InputDecoration(
-                          labelText: 'Password',
+                          labelText: L10n.text('Password'),
                           border: const OutlineInputBorder(),
                           prefixIcon: const Icon(Icons.lock_outline),
                           suffixIcon: IconButton(
