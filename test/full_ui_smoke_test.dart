@@ -1,4 +1,5 @@
 import 'package:field_sales_mobile/core/api/api_client.dart';
+import 'package:field_sales_mobile/l10n/locale_controller.dart';
 import 'package:field_sales_mobile/core/db/app_database.dart';
 import 'package:field_sales_mobile/core/db/local_first_transaction.dart';
 import 'package:field_sales_mobile/core/storage/secret_store.dart';
@@ -131,6 +132,7 @@ class FakeApiClient extends ApiClient {
 late AppDatabase db;
 late FakeApiClient api;
 late AppState appState;
+late AppLocaleController localeController;
 late MasterDataRepository masterData;
 late AppointmentRepository appointments;
 late AttendanceRepository attendance;
@@ -187,6 +189,7 @@ void useRole(String role) {
 Widget wrap(Widget child) => MultiProvider(
   providers: [
     ChangeNotifierProvider.value(value: appState),
+    ChangeNotifierProvider.value(value: localeController),
     ChangeNotifierProvider.value(value: attendanceController),
     ChangeNotifierProvider.value(value: appointmentController),
     ChangeNotifierProvider.value(value: leadController),
@@ -236,6 +239,7 @@ Future<void> setUpHarness() async {
   final settings = SettingsRepository(api: api, db: db);
   final auth = AuthRepository(api: api, secrets: SecretStore());
   appState = AppState(auth: auth, settings: settings);
+  localeController = AppLocaleController();
 
   appointments = AppointmentRepository(api: api, db: db);
   attendance = AttendanceRepository(api: api, db: db);
@@ -355,6 +359,7 @@ Future<void> tearDownHarness() async {
   targetController.dispose();
   teamController.dispose();
   syncController.dispose();
+  localeController.dispose();
   appState.dispose();
   await db.db.close();
   await deleteDatabase('${await getDatabasesPath()}/field_sales.db');
