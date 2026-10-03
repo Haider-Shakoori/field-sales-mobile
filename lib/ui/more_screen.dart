@@ -7,7 +7,6 @@ import 'package:provider/provider.dart';
 
 import '../l10n/locale_controller.dart';
 import '../state/app_state.dart';
-import 'fieldpulse_theme.dart';
 import 'gamification_screen.dart';
 import 'widgets/fieldpulse_ui.dart';
 import 'notifications_screen.dart';
