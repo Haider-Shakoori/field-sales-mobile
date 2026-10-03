@@ -9,6 +9,8 @@ import '../state/order_controller.dart';
 import '../state/sync_controller.dart';
 import '../state/target_controller.dart';
 import '../state/visit_controller.dart';
+import 'fieldpulse_theme.dart';
+import 'widgets/fieldpulse_ui.dart';
 
 class SyncScreen extends StatelessWidget {
   const SyncScreen({super.key});
@@ -90,12 +92,11 @@ class SyncScreen extends StatelessWidget {
     final latestCompleted = sync.latestCycle?['completed_at']?.toString();
 
     return ListView(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 28),
       children: [
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
+        FieldPulseGlassCard(
+          padding: const EdgeInsets.all(20),
+          child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
@@ -142,14 +143,12 @@ class SyncScreen extends StatelessWidget {
                 ],
               ],
             ),
-          ),
         ),
         if (sync.issues.isNotEmpty) ...[
           const SizedBox(height: 16),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
+          FieldPulseGlassCard(
+            padding: const EdgeInsets.all(16),
+            child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
@@ -209,13 +208,16 @@ class SyncScreen extends StatelessWidget {
                     ),
                 ],
               ),
-            ),
           ),
         ],
         const SizedBox(height: 16),
-        const Card(
+        const FieldPulseGlassCard(
+          padding: EdgeInsets.zero,
           child: ListTile(
-            leading: Icon(Icons.cloud_off_outlined),
+            leading: FieldPulseIconBadge(
+              icon: Icons.cloud_off_outlined,
+              color: FieldPulseTheme.cyan,
+            ),
             title: Text('Local-first by design'),
             subtitle: Text(
               'Offline changes are preserved locally. Sync runs in dependency '
