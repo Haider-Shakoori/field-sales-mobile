@@ -237,10 +237,8 @@ class FieldPulseMetricTile extends StatelessWidget {
           value,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontSize: 23,
-            fontWeight: FontWeight.w800,
-          ),
+          style: Theme.of(context).textTheme.titleLarge
+              ?.copyWith(fontSize: 23, fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 3),
         Text(label, style: Theme.of(context).textTheme.bodySmall),
@@ -248,10 +246,8 @@ class FieldPulseMetricTile extends StatelessWidget {
           const SizedBox(height: 7),
           Text(
             caption!,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w700,
-            ),
+            style: Theme.of(context).textTheme.labelSmall
+                ?.copyWith(color: color, fontWeight: FontWeight.w700),
           ),
         ],
       ],
