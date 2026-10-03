@@ -12,17 +12,18 @@ abstract final class FieldPulseTheme {
   static const border = Color(0xFFE4EAF1);
 
   static ThemeData light() {
-    final scheme = ColorScheme.fromSeed(
-      seedColor: blue,
-      brightness: Brightness.light,
-    ).copyWith(
-      primary: blue,
-      secondary: cyan,
-      surface: surface,
-      onSurface: text,
-      outline: border,
-      surfaceContainerHighest: const Color(0xFFEDF3F9),
-    );
+    final scheme =
+        ColorScheme.fromSeed(
+          seedColor: blue,
+          brightness: Brightness.light,
+        ).copyWith(
+          primary: blue,
+          secondary: cyan,
+          surface: surface,
+          onSurface: text,
+          outline: border,
+          surfaceContainerHighest: const Color(0xFFEDF3F9),
+        );
 
     final base = ThemeData(
       useMaterial3: true,
@@ -207,21 +208,14 @@ abstract final class FieldPulseTheme {
         backgroundColor: const Color(0xFFF1F5F9),
         selectedColor: const Color(0xFFE6F0FF),
         side: const BorderSide(color: border),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        labelStyle: const TextStyle(
-          color: text,
-          fontWeight: FontWeight.w600,
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        labelStyle: const TextStyle(color: text, fontWeight: FontWeight.w600),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: surface,
         surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         titleTextStyle: const TextStyle(
           color: text,
           fontSize: 20,
@@ -242,9 +236,7 @@ abstract final class FieldPulseTheme {
         behavior: SnackBarBehavior.floating,
         backgroundColor: navy,
         contentTextStyle: const TextStyle(color: Colors.white),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         elevation: 2,
