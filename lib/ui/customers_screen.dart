@@ -12,6 +12,7 @@ import 'customer_statement_screen.dart';
 import 'customer_create_screen.dart';
 import 'follow_ups_screen.dart';
 import 'reorder_recommendations_screen.dart';
+import 'widgets/fieldpulse_ui.dart';
 
 class CustomersScreen extends StatelessWidget {
   const CustomersScreen({super.key});
@@ -291,22 +292,24 @@ class CustomersScreen extends StatelessWidget {
       );
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: RefreshIndicator(
         onRefresh: () =>
             syncAndReload(context, triggerSource: 'pull:customers'),
         child: rows.isEmpty
             ? ListView(
+                padding: const EdgeInsets.fromLTRB(20, 32, 20, 24),
                 children: const [
-                  SizedBox(height: 180),
-                  Icon(Icons.storefront_outlined, size: 48),
-                  SizedBox(height: 12),
-                  Center(
-                    child: Text('No customers cached yet. Pull down to sync.'),
+                  SizedBox(height: 80),
+                  FieldPulseEmptyState(
+                    icon: Icons.storefront_outlined,
+                    title: 'No customers yet',
+                    message: 'Pull down to sync customers or add your first customer.',
                   ),
                 ],
               )
             : ListView.separated(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
                 itemCount: rows.length,
                 separatorBuilder: (_, _) => const SizedBox(height: 8),
                 itemBuilder: (_, index) {
@@ -330,13 +333,10 @@ class CustomersScreen extends StatelessWidget {
                           .map((value) => value.toString().trim())
                           .join(' · ');
 
-                  return Card(
-                    clipBehavior: Clip.antiAlias,
-                    child: InkWell(
-                      onTap: () => _edit(context, customer),
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(14, 14, 10, 8),
-                        child: Column(
+                  return FieldPulseGlassCard(
+                    onTap: () => _edit(context, customer),
+                    padding: const EdgeInsets.fromLTRB(14, 14, 10, 8),
+                    child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             Row(
@@ -463,8 +463,6 @@ class CustomersScreen extends StatelessWidget {
                             ),
                           ],
                         ),
-                      ),
-                    ),
                   );
                 },
               ),
