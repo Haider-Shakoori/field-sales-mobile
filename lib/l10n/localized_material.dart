@@ -1,5 +1,3 @@
-library localized_material;
-
 import 'package:flutter/material.dart' as material;
 
 import 'l10n.dart';
