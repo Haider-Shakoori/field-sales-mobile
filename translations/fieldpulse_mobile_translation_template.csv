@@ -119,6 +119,7 @@ common_enter_a_valid_label,Enter a valid {label}.,,,ui.expense_create_screen; ui
 common_enter_a_valid_odometer_reading,Enter a valid odometer reading.,,,ui.fuel_create_screen; ui.home_tab,lib/ui/fuel_create_screen.dart:102; lib/ui/home_tab.dart:131; lib/ui/home_tab.dart:405,,
 common_expense_saved_locally,Expense saved locally.,,,state.expense_controller; ui.expense_create_screen; ui.fuel_create_screen,lib/state/expense_controller.dart:84; lib/ui/expense_create_screen.dart:103; lib/ui/fuel_create_screen.dart:155,,
 common_expenses,Expenses,,,ui.home_tab; ui.more_screen,lib/ui/home_tab.dart:292; lib/ui/more_screen.dart:133; lib/ui/more_screen.dart:136; lib/ui/more_screen.dart:134; lib/ui/more_screen.dart:137,,
+common_field_tools,Field tools,,,ui.more_screen,lib/ui/more_screen.dart:67,,
 common_follow_ups,Follow-ups,,,ui.customers_screen; ui.more_screen,lib/ui/customers_screen.dart:418; lib/ui/more_screen.dart:111; lib/ui/more_screen.dart:117; lib/ui/more_screen.dart:112; lib/ui/more_screen.dart:118,,
 common_fuel,Fuel,,,ui.fuel_screen; ui.mileage_screen,lib/ui/fuel_screen.dart:119; lib/ui/mileage_screen.dart:139,,
 common_fuel_liters_l,{fuel_liters} L,,,ui.fuel_screen; ui.mileage_screen,lib/ui/fuel_screen.dart:94; lib/ui/mileage_screen.dart:141,fuel_liters,Keep these placeholders unchanged: {fuel_liters}
@@ -138,6 +139,7 @@ common_notifications,Notifications,,,app; ui.dashboard_screen; ui.leadership_das
 common_offline_estimate,Offline estimate,,,ui.mileage_screen; ui.order_create_screen,lib/ui/mileage_screen.dart:118; lib/ui/order_create_screen.dart:212,,
 common_offline_order,Offline order,,,ui.order_detail_screen; ui.orders_screen,lib/ui/order_detail_screen.dart:16; lib/ui/orders_screen.dart:73,,
 common_offline_receipt,Offline receipt,,,ui.collection_detail_screen; ui.collections_screen,lib/ui/collection_detail_screen.dart:34; lib/ui/collections_screen.dart:91,,
+common_on_duty,On duty,,,ui.home_tab,lib/ui/home_tab.dart:537,,
 common_order,Order,,,ui.appointments_screen; ui.orders_screen; ui.visits_screen,lib/ui/appointments_screen.dart:114; lib/ui/orders_screen.dart:100; lib/ui/visits_screen.dart:509,,
 common_order_discussion,Order discussion,,,ui.call_history_screen; ui.customers_screen,lib/ui/call_history_screen.dart:22; lib/ui/customers_screen.dart:22,,
 common_order_saved_locally,Order saved locally.,,,state.order_controller; ui.order_create_screen,lib/state/order_controller.dart:102; lib/ui/order_create_screen.dart:255,,
@@ -149,10 +151,12 @@ common_payment_follow_up,Payment follow-up,,,ui.call_history_screen; ui.customer
 common_pending_count_pending,{pending_count} pending,,,ui.home_tab; ui.leadership_dashboard_screen,lib/ui/home_tab.dart:299; lib/ui/leadership_dashboard_screen.dart:234; lib/ui/leadership_dashboard_screen.dart:240,pending_count,Keep these placeholders unchanged: {pending_count}
 common_phone,Phone,,,ui.customer_create_screen; ui.leads_screen,lib/ui/customer_create_screen.dart:276; lib/ui/leads_screen.dart:274; lib/ui/leads_screen.dart:542,,
 common_planned,Planned,,,ui.home_tab; ui.visits_screen,lib/ui/home_tab.dart:271; lib/ui/visits_screen.dart:406,,
+common_preferences,Preferences,,,ui.more_screen,lib/ui/more_screen.dart:91,,
 common_priority,Priority,,,ui.follow_ups_screen; ui.leads_screen,lib/ui/follow_ups_screen.dart:175; lib/ui/leads_screen.dart:316; lib/ui/leads_screen.dart:586,,
 common_product,Product,,,ui.invoice_screen; ui.order_create_screen; ui.order_detail_screen; ui.products_screen; ui.reorder_recommendations_screen; ui.stock_returns_screen,lib/ui/invoice_screen.dart:54; lib/ui/order_create_screen.dart:96; lib/ui/order_create_screen.dart:365; lib/ui/order_detail_screen.dart:76; lib/ui/products_screen.dart:45; lib/ui/reorder_recommendations_screen.dart:167; lib/ui/stock_returns_screen.dart:148; lib/ui/stock_returns_screen.dart:349; lib/ui/stock_returns_screen.dart:354; lib/ui/stock_returns_screen.dart:406,,
 common_products,Products,,,ui.more_screen; ui.order_create_screen,lib/ui/more_screen.dart:207; lib/ui/more_screen.dart:210; lib/ui/order_create_screen.dart:332; lib/ui/more_screen.dart:208; lib/ui/more_screen.dart:211,,
 common_quantity,Quantity,,,ui.order_create_screen; ui.stock_returns_screen,lib/ui/order_create_screen.dart:392; lib/ui/stock_returns_screen.dart:369,,
+common_ready,Ready,,,ui.home_tab,lib/ui/home_tab.dart:537,,
 common_reference_reference_number,Reference: {reference_number},,,ui.collection_detail_screen; ui.expenses_screen,lib/ui/collection_detail_screen.dart:51; lib/ui/expenses_screen.dart:64,reference_number,Keep these placeholders unchanged: {reference_number}
 common_reorder_recommendations,Reorder recommendations,,,ui.customers_screen; ui.reorder_recommendations_screen,lib/ui/customers_screen.dart:390; lib/ui/reorder_recommendations_screen.dart:101,,
 common_salesman,Salesman,,,ui.leadership_dashboard_screen; ui.salesman_account_screen,lib/ui/leadership_dashboard_screen.dart:370; lib/ui/leadership_dashboard_screen.dart:437; lib/ui/salesman_account_screen.dart:147,,
@@ -560,6 +564,7 @@ mobile_diagnostics_enabled,Enabled,,,ui.mobile_diagnostics_screen,lib/ui/mobile_
 mobile_diagnostics_exempt,Exempt,,,ui.mobile_diagnostics_screen,lib/ui/mobile_diagnostics_screen.dart:244,,
 mobile_diagnostics_failed_sync,Failed sync,,,ui.mobile_diagnostics_screen,lib/ui/mobile_diagnostics_screen.dart:161,,
 mobile_diagnostics_free_storage,Free storage,,,ui.mobile_diagnostics_screen,lib/ui/mobile_diagnostics_screen.dart:191,,
+mobile_diagnostics_inspect_this_phone_and_its_field_work_readiness,Inspect this phone and its field-work readiness.,,,ui.mobile_diagnostics_screen,lib/ui/mobile_diagnostics_screen.dart:326,,
 mobile_diagnostics_integrity_and_mock_location_checks_are_diagnostic_signals,Integrity and mock-location checks are diagnostic signals only.,,,ui.mobile_diagnostics_screen,lib/ui/mobile_diagnostics_screen.dart:205,,
 mobile_diagnostics_last_checked_first,Last checked {first},,,ui.mobile_diagnostics_screen,lib/ui/mobile_diagnostics_screen.dart:323,first,Keep these placeholders unchanged: {first}.
 mobile_diagnostics_last_gps_fix,Last GPS fix,,,ui.mobile_diagnostics_screen,lib/ui/mobile_diagnostics_screen.dart:136,,Keep product/technical names unchanged unless a standard localized form is required.
@@ -594,6 +599,7 @@ more_current_goals_and_authoritative_progress,Current goals and authoritative pr
 more_customer_balances_receipts_and_payments,"Customer balances, receipts and payments",,,ui.more_screen,lib/ui/more_screen.dart:124; lib/ui/more_screen.dart:125,,
 more_fuel_management,Fuel Management,,,ui.more_screen,lib/ui/more_screen.dart:142; lib/ui/more_screen.dart:148; lib/ui/more_screen.dart:143; lib/ui/more_screen.dart:149,,
 more_gps_distance_odometer_variance_and_fuel_efficiency,"GPS distance, odometer variance and fuel efficiency",,,ui.more_screen,lib/ui/more_screen.dart:156; lib/ui/more_screen.dart:157,,Keep product/technical names unchanged unless a standard localized form is required.
+more_language_and_personal_app_settings,Language and personal app settings,,,ui.more_screen,lib/ui/more_screen.dart:92,,
 more_leads_and_pipeline,Leads & Pipeline,,,ui.more_screen,lib/ui/more_screen.dart:87; lib/ui/more_screen.dart:93; lib/ui/more_screen.dart:88; lib/ui/more_screen.dart:94,,
 more_mileage,Mileage,,,ui.more_screen,lib/ui/more_screen.dart:154; lib/ui/more_screen.dart:159; lib/ui/more_screen.dart:155; lib/ui/more_screen.dart:160,,
 more_mobile_diagnostics,Mobile Diagnostics,,,ui.more_screen,lib/ui/more_screen.dart:217; lib/ui/more_screen.dart:224,,
@@ -606,6 +612,7 @@ more_referral_customers_orders_collections_and_visit_activity,"Referral customer
 more_review_and_upload_pending_offline_work,Review and upload pending offline work,,,ui.more_screen,lib/ui/more_screen.dart:217; lib/ui/more_screen.dart:233,,
 more_route_alerts_supervisor_messages_and_updates,"Route alerts, supervisor messages and updates",,,ui.more_screen,lib/ui/more_screen.dart:64; lib/ui/more_screen.dart:65,,
 more_routes,Routes,,,ui.more_screen,lib/ui/more_screen.dart:186; lib/ui/more_screen.dart:189; lib/ui/more_screen.dart:187; lib/ui/more_screen.dart:190,,
+more_sales_routes_collections_stock_and_device_tools_in_one_place,"Sales, routes, collections, stock and device tools in one place.",,,ui.more_screen,lib/ui/more_screen.dart:76,,
 more_stock_and_returns,Stock & Returns,,,ui.more_screen,lib/ui/more_screen.dart:195; lib/ui/more_screen.dart:201; lib/ui/more_screen.dart:196; lib/ui/more_screen.dart:202,,
 more_sync,Sync,,,ui.more_screen,lib/ui/more_screen.dart:216; lib/ui/more_screen.dart:219; lib/ui/more_screen.dart:232; lib/ui/more_screen.dart:235,,
 more_targets,Targets,,,ui.more_screen,lib/ui/more_screen.dart:165; lib/ui/more_screen.dart:168; lib/ui/more_screen.dart:166; lib/ui/more_screen.dart:169,,
