@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:field_sales_mobile/l10n/localized_material.dart';
 import 'package:provider/provider.dart';
+
+import '../l10n/l10n.dart';
 
 import '../state/lead_controller.dart';
 import 'sync_refresh.dart';
@@ -256,34 +258,40 @@ class _LeadsScreenState extends State<LeadsScreen> {
                     TextField(
                       controller: name,
                       autofocus: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Business or prospect name',
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Business or prospect name'),
                       ),
                     ),
                     const SizedBox(height: 10),
                     TextField(
                       controller: contact,
-                      decoration: const InputDecoration(
-                        labelText: 'Contact person',
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Contact person'),
                       ),
                     ),
                     const SizedBox(height: 10),
                     TextField(
                       controller: phone,
                       keyboardType: TextInputType.phone,
-                      decoration: const InputDecoration(labelText: 'Phone'),
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Phone'),
+                      ),
                     ),
                     const SizedBox(height: 10),
                     TextField(
                       controller: email,
                       keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(labelText: 'Email'),
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Email'),
+                      ),
                     ),
                     const SizedBox(height: 10),
                     TextField(
                       controller: address,
                       maxLines: 2,
-                      decoration: const InputDecoration(labelText: 'Address'),
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Address'),
+                      ),
                     ),
                     const SizedBox(height: 10),
                     Row(
@@ -292,8 +300,8 @@ class _LeadsScreenState extends State<LeadsScreen> {
                           child: DropdownButtonFormField<String>(
                             isExpanded: true,
                             initialValue: source,
-                            decoration: const InputDecoration(
-                              labelText: 'Source',
+                            decoration: InputDecoration(
+                              labelText: L10n.text('Source'),
                             ),
                             items: sources
                                 .map(
@@ -312,8 +320,8 @@ class _LeadsScreenState extends State<LeadsScreen> {
                           child: DropdownButtonFormField<String>(
                             isExpanded: true,
                             initialValue: priority,
-                            decoration: const InputDecoration(
-                              labelText: 'Priority',
+                            decoration: InputDecoration(
+                              labelText: L10n.text('Priority'),
                             ),
                             items: priorities
                                 .map(
@@ -338,8 +346,8 @@ class _LeadsScreenState extends State<LeadsScreen> {
                             keyboardType: const TextInputType.numberWithOptions(
                               decimal: true,
                             ),
-                            decoration: const InputDecoration(
-                              labelText: 'Estimated value',
+                            decoration: InputDecoration(
+                              labelText: L10n.text('Estimated value'),
                             ),
                           ),
                         ),
@@ -350,8 +358,8 @@ class _LeadsScreenState extends State<LeadsScreen> {
                             controller: currency,
                             maxLength: 3,
                             textCapitalization: TextCapitalization.characters,
-                            decoration: const InputDecoration(
-                              labelText: 'Currency',
+                            decoration: InputDecoration(
+                              labelText: L10n.text('Currency'),
                               counterText: '',
                             ),
                           ),
@@ -393,7 +401,9 @@ class _LeadsScreenState extends State<LeadsScreen> {
                     TextField(
                       controller: notes,
                       maxLines: 3,
-                      decoration: const InputDecoration(labelText: 'Notes'),
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Notes'),
+                      ),
                     ),
                     const SizedBox(height: 18),
                     FilledButton(
@@ -524,36 +534,38 @@ class _LeadsScreenState extends State<LeadsScreen> {
               TextField(
                 controller: nameEditor,
                 enabled: lead['converted_customer_uuid'] == null,
-                decoration: const InputDecoration(
-                  labelText: 'Business or prospect name',
+                decoration: InputDecoration(
+                  labelText: L10n.text('Business or prospect name'),
                 ),
               ),
               const SizedBox(height: 10),
               TextField(
                 controller: contactEditor,
                 enabled: lead['converted_customer_uuid'] == null,
-                decoration: const InputDecoration(labelText: 'Contact person'),
+                decoration: InputDecoration(
+                  labelText: L10n.text('Contact person'),
+                ),
               ),
               const SizedBox(height: 10),
               TextField(
                 controller: phoneEditor,
                 enabled: lead['converted_customer_uuid'] == null,
                 keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(labelText: 'Phone'),
+                decoration: InputDecoration(labelText: L10n.text('Phone')),
               ),
               const SizedBox(height: 10),
               TextField(
                 controller: emailEditor,
                 enabled: lead['converted_customer_uuid'] == null,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(labelText: 'Email'),
+                decoration: InputDecoration(labelText: L10n.text('Email')),
               ),
               const SizedBox(height: 10),
               TextField(
                 controller: addressEditor,
                 enabled: lead['converted_customer_uuid'] == null,
                 maxLines: 2,
-                decoration: const InputDecoration(labelText: 'Address'),
+                decoration: InputDecoration(labelText: L10n.text('Address')),
               ),
               const SizedBox(height: 10),
               Row(
@@ -562,7 +574,9 @@ class _LeadsScreenState extends State<LeadsScreen> {
                     child: DropdownButtonFormField<String>(
                       isExpanded: true,
                       initialValue: selectedSource,
-                      decoration: const InputDecoration(labelText: 'Source'),
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Source'),
+                      ),
                       items: sources
                           .map(
                             (item) => DropdownMenuItem(
@@ -583,7 +597,9 @@ class _LeadsScreenState extends State<LeadsScreen> {
                     child: DropdownButtonFormField<String>(
                       isExpanded: true,
                       initialValue: selectedPriority,
-                      decoration: const InputDecoration(labelText: 'Priority'),
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Priority'),
+                      ),
                       items: priorities
                           .map(
                             (item) => DropdownMenuItem(
@@ -605,7 +621,9 @@ class _LeadsScreenState extends State<LeadsScreen> {
               const SizedBox(height: 10),
               DropdownButtonFormField<String>(
                 initialValue: selectedStage,
-                decoration: const InputDecoration(labelText: 'Pipeline stage'),
+                decoration: InputDecoration(
+                  labelText: L10n.text('Pipeline stage'),
+                ),
                 items: stages
                     .map(
                       (stage) => DropdownMenuItem(
@@ -630,8 +648,8 @@ class _LeadsScreenState extends State<LeadsScreen> {
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
-                      decoration: const InputDecoration(
-                        labelText: 'Estimated value',
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Estimated value'),
                       ),
                     ),
                   ),
@@ -643,8 +661,8 @@ class _LeadsScreenState extends State<LeadsScreen> {
                       enabled: lead['converted_customer_uuid'] == null,
                       maxLength: 3,
                       textCapitalization: TextCapitalization.characters,
-                      decoration: const InputDecoration(
-                        labelText: 'Currency',
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Currency'),
                         counterText: '',
                       ),
                     ),
@@ -692,9 +710,11 @@ class _LeadsScreenState extends State<LeadsScreen> {
                   controller: lostReasonEditor,
                   enabled: lead['converted_customer_uuid'] == null,
                   maxLines: 2,
-                  decoration: const InputDecoration(
-                    labelText: 'Lost reason',
-                    helperText: 'Required when the opportunity is marked lost.',
+                  decoration: InputDecoration(
+                    labelText: L10n.text('Lost reason'),
+                    helperText: L10n.text(
+                      'Required when the opportunity is marked lost.',
+                    ),
                   ),
                 ),
               ],
@@ -703,7 +723,7 @@ class _LeadsScreenState extends State<LeadsScreen> {
                 controller: notesEditor,
                 enabled: lead['converted_customer_uuid'] == null,
                 maxLines: 3,
-                decoration: const InputDecoration(labelText: 'Notes'),
+                decoration: InputDecoration(labelText: L10n.text('Notes')),
               ),
               const SizedBox(height: 12),
               FilledButton.tonal(
@@ -847,8 +867,8 @@ class _LeadsScreenState extends State<LeadsScreen> {
                     controller: notes,
                     autofocus: true,
                     maxLines: 4,
-                    decoration: const InputDecoration(
-                      labelText: 'What happened?',
+                    decoration: InputDecoration(
+                      labelText: L10n.text('What happened?'),
                     ),
                   ),
                 ],

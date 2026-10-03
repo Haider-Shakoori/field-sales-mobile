@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:field_sales_mobile/l10n/localized_material.dart';
 import 'package:provider/provider.dart';
+
+import '../l10n/l10n.dart';
 
 import '../features/visits/visit_map_data.dart';
 import '../state/attendance_controller.dart';
@@ -125,7 +127,9 @@ class _VisitsScreenState extends State<VisitsScreen> {
                   children: [
                     DropdownButtonFormField<String>(
                       initialValue: outcome,
-                      decoration: const InputDecoration(labelText: 'Outcome'),
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Outcome'),
+                      ),
                       items: outcomes.entries
                           .map(
                             (entry) => DropdownMenuItem(
@@ -142,8 +146,8 @@ class _VisitsScreenState extends State<VisitsScreen> {
                     TextField(
                       controller: notes,
                       maxLines: 4,
-                      decoration: const InputDecoration(
-                        labelText: 'Notes',
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Notes'),
                         alignLabelWithHint: true,
                       ),
                     ),

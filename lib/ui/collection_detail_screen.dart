@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:field_sales_mobile/l10n/localized_material.dart';
 
 class CollectionDetailScreen extends StatelessWidget {
   const CollectionDetailScreen({required this.collection, super.key});

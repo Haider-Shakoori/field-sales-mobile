@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:field_sales_mobile/l10n/localized_material.dart';
 import 'package:provider/provider.dart';
+
+import '../l10n/l10n.dart';
 
 import '../features/expenses/expense_repository.dart';
 import '../state/expense_controller.dart';
@@ -128,7 +130,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
         children: [
           DropdownButtonFormField<String>(
             initialValue: _category,
-            decoration: const InputDecoration(labelText: 'Category'),
+            decoration: InputDecoration(labelText: L10n.text('Category')),
             items: ExpenseRepository.categories
                 .where((value) => value != 'fuel')
                 .map(
@@ -146,7 +148,7 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
           TextField(
             controller: _amount,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: const InputDecoration(labelText: 'Amount'),
+            decoration: InputDecoration(labelText: L10n.text('Amount')),
           ),
           if (_category == 'fuel') ...[
             const SizedBox(height: 12),
@@ -166,9 +168,11 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
-                      decoration: const InputDecoration(
-                        labelText: 'Liters (optional)',
-                        helperText: 'Used for km/L fuel-efficiency reporting.',
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Liters (optional)'),
+                        helperText: L10n.text(
+                          'Used for km/L fuel-efficiency reporting.',
+                        ),
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -177,10 +181,11 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
-                      decoration: const InputDecoration(
-                        labelText: 'Unit price (optional)',
-                        helperText:
-                            'Leave blank to derive it from amount ÷ liters.',
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Unit price (optional)'),
+                        helperText: L10n.text(
+                          'Leave blank to derive it from amount ÷ liters.',
+                        ),
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -189,8 +194,8 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
-                      decoration: const InputDecoration(
-                        labelText: 'Odometer km (optional)',
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Odometer km (optional)'),
                       ),
                     ),
                   ],
@@ -203,31 +208,31 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
             controller: _currency,
             textCapitalization: TextCapitalization.characters,
             maxLength: 3,
-            decoration: const InputDecoration(
-              labelText: 'Currency',
+            decoration: InputDecoration(
+              labelText: L10n.text('Currency'),
               counterText: '',
             ),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _merchant,
-            decoration: const InputDecoration(
-              labelText: 'Merchant / supplier (optional)',
+            decoration: InputDecoration(
+              labelText: L10n.text('Merchant / supplier (optional)'),
             ),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _reference,
-            decoration: const InputDecoration(
-              labelText: 'Reference number (optional)',
+            decoration: InputDecoration(
+              labelText: L10n.text('Reference number (optional)'),
             ),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _notes,
             maxLines: 3,
-            decoration: const InputDecoration(
-              labelText: 'Notes (optional)',
+            decoration: InputDecoration(
+              labelText: L10n.text('Notes (optional)'),
               alignLabelWithHint: true,
             ),
           ),

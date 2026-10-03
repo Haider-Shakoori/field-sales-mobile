@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:field_sales_mobile/l10n/localized_material.dart';
 import 'package:provider/provider.dart';
+
+import '../l10n/l10n.dart';
 
 import '../state/appointment_controller.dart';
 import '../state/master_data_controller.dart';
@@ -88,16 +90,16 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
                       controller: title,
                       autofocus: true,
                       maxLength: 160,
-                      decoration: const InputDecoration(
-                        labelText: 'Title',
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Title'),
                         border: OutlineInputBorder(),
                       ),
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
                       initialValue: type,
-                      decoration: const InputDecoration(
-                        labelText: 'Type',
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Type'),
                         border: OutlineInputBorder(),
                       ),
                       items: const [
@@ -121,8 +123,8 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String?>(
                       initialValue: null,
-                      decoration: const InputDecoration(
-                        labelText: 'Customer',
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Customer'),
                         border: OutlineInputBorder(),
                       ),
                       items: [
@@ -190,8 +192,8 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
                     const SizedBox(height: 6),
                     DropdownButtonFormField<int?>(
                       initialValue: reminder,
-                      decoration: const InputDecoration(
-                        labelText: 'Reminder',
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Reminder'),
                         border: OutlineInputBorder(),
                       ),
                       items: const [
@@ -230,8 +232,8 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
                     TextField(
                       controller: location,
                       maxLength: 255,
-                      decoration: const InputDecoration(
-                        labelText: 'Location',
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Location'),
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -240,8 +242,8 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
                       controller: notes,
                       maxLines: 3,
                       maxLength: 5000,
-                      decoration: const InputDecoration(
-                        labelText: 'Notes',
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Notes'),
                         alignLabelWithHint: true,
                         border: OutlineInputBorder(),
                       ),

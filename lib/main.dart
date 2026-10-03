@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:field_sales_mobile/l10n/localized_material.dart';
 import 'package:provider/provider.dart';
 import 'package:timezone/data/latest_10y.dart' as tz;
 
@@ -40,6 +40,7 @@ import 'features/stock/stock_repository.dart';
 import 'features/targets/target_repository.dart';
 import 'features/team/team_repository.dart';
 import 'features/visits/visit_repository.dart';
+import 'l10n/locale_controller.dart';
 import 'state/app_state.dart';
 import 'state/appointment_controller.dart';
 import 'state/call_activity_controller.dart';
@@ -61,6 +62,9 @@ Future<void> main() async {
   AppConfig.validateForStartup();
   tz.initializeTimeZones();
   await OfflineMapCache.initialize();
+
+  final localeController = AppLocaleController();
+  await localeController.restore();
 
   final db = AppDatabase();
   await db.open();
@@ -244,6 +248,7 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider.value(value: localeController),
         ChangeNotifierProvider.value(value: appState),
         ChangeNotifierProvider.value(value: attendanceController),
         ChangeNotifierProvider.value(value: appointmentController),

@@ -1,10 +1,14 @@
-import 'package:flutter/material.dart';
+import 'package:field_sales_mobile/l10n/localized_material.dart';
 import 'package:provider/provider.dart';
+
+import '../l10n/l10n.dart';
+import '../l10n/locale_controller.dart';
 
 import '../core/api/api_exception.dart';
 import '../features/notifications/push_service.dart';
 import '../state/app_state.dart';
 import '../state/attendance_controller.dart';
+import 'language_selector.dart';
 
 String friendlyLoginError(Object error) {
   if (error is! ApiException) {
@@ -147,225 +151,238 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    body: SafeArea(
-      child: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 480),
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(28),
-                child: AutofillGroup(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      if (rememberedTenant != null)
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton.icon(
-                            onPressed: busy
-                                ? null
-                                : () {
-                                    setState(() {
+  Widget build(BuildContext context) {
+    context.watch<AppLocaleController>();
+
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 480),
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(28),
+                  child: AutofillGroup(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const Align(
+                          alignment: AlignmentDirectional.centerEnd,
+                          child: LanguageSelectorButton(compact: true),
+                        ),
+                        const SizedBox(height: 8),
+                        if (rememberedTenant != null)
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton.icon(
+                              onPressed: busy
+                                  ? null
+                                  : () {
+                                      setState(() {
+                                        if (showTenantField) {
+                                          tenant.text = rememberedTenant!;
+                                          showTenantField = false;
+                                        } else {
+                                          showTenantField = true;
+                                        }
+                                      });
                                       if (showTenantField) {
-                                        tenant.text = rememberedTenant!;
-                                        showTenantField = false;
-                                      } else {
-                                        showTenantField = true;
+                                        tenantFocus.requestFocus();
                                       }
-                                    });
-                                    if (showTenantField) {
-                                      tenantFocus.requestFocus();
-                                    }
-                                  },
-                            icon: Icon(
-                              showTenantField
-                                  ? Icons.check_circle_outline
-                                  : Icons.swap_horiz_rounded,
-                              size: 18,
-                            ),
-                            label: Text(
-                              showTenantField
-                                  ? 'Use saved company'
-                                  : 'Switch company',
+                                    },
+                              icon: Icon(
+                                showTenantField
+                                    ? Icons.check_circle_outline
+                                    : Icons.swap_horiz_rounded,
+                                size: 18,
+                              ),
+                              label: Text(
+                                showTenantField
+                                    ? 'Use saved company'
+                                    : 'Switch company',
+                              ),
                             ),
                           ),
+                        const Icon(Icons.route_rounded, size: 52),
+                        const SizedBox(height: 20),
+                        Text(
+                          'FieldPulse',
+                          style: Theme.of(context).textTheme.headlineMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
-                      const Icon(Icons.route_rounded, size: 52),
-                      const SizedBox(height: 20),
-                      Text(
-                        'FieldPulse',
-                        style: Theme.of(context).textTheme.headlineMedium
-                            ?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 4),
-                      const Text('Your offline-first work companion'),
-                      const SizedBox(height: 6),
-                      Text(
-                        'Salesmen, supervisors, and sales managers can sign in.',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                      if (context.watch<AppState>().authNotice != null) ...[
-                        const SizedBox(height: 16),
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .tertiaryContainer,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Icon(
-                                Icons.info_outline,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onTertiaryContainer,
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Text(
-                                  context.watch<AppState>().authNotice!,
-                                  style: TextStyle(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onTertiaryContainer,
+                        const SizedBox(height: 4),
+                        const Text('Your offline-first work companion'),
+                        const SizedBox(height: 6),
+                        Text(
+                          'Salesmen, supervisors, and sales managers can sign in.',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        if (context.watch<AppState>().authNotice != null) ...[
+                          const SizedBox(height: 16),
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .tertiaryContainer,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(
+                                  Icons.info_outline,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onTertiaryContainer,
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    context.watch<AppState>().authNotice!,
+                                    style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onTertiaryContainer,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                      const SizedBox(height: 20),
-                      if (!showTenantField && rememberedTenant != null) ...[
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 11,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .surfaceContainerHighest,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.business_outlined, size: 20),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Text(
-                                  'Company: $rememberedTenant',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w600,
+                        ],
+                        const SizedBox(height: 20),
+                        if (!showTenantField && rememberedTenant != null) ...[
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 11,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerHighest,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.business_outlined, size: 20),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    'Company: $rememberedTenant',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 14),
-                      ],
-                      if (showTenantField) ...[
+                          const SizedBox(height: 14),
+                        ],
+                        if (showTenantField) ...[
+                          TextField(
+                            controller: tenant,
+                            focusNode: tenantFocus,
+                            textInputAction: TextInputAction.next,
+                            autocorrect: false,
+                            decoration: InputDecoration(
+                              labelText: L10n.text('Company / Tenant ID'),
+                              hintText: L10n.text('e.g. shahab-demo'),
+                              helperText: L10n.text(
+                                'Saved on this device after a successful sign-in.',
+                              ),
+                              border: OutlineInputBorder(),
+                              prefixIcon: Icon(Icons.business_outlined),
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                        ],
                         TextField(
-                          controller: tenant,
-                          focusNode: tenantFocus,
+                          controller: email,
+                          keyboardType: TextInputType.emailAddress,
                           textInputAction: TextInputAction.next,
+                          autofillHints: const [AutofillHints.username],
                           autocorrect: false,
-                          decoration: const InputDecoration(
-                            labelText: 'Company / Tenant ID',
-                            hintText: 'e.g. shahab-demo',
-                            helperText: 'Saved on this device after a successful sign-in.',
+                          decoration: InputDecoration(
+                            labelText: L10n.text('Email'),
                             border: OutlineInputBorder(),
-                            prefixIcon: Icon(Icons.business_outlined),
+                            prefixIcon: Icon(Icons.email_outlined),
                           ),
                         ),
                         const SizedBox(height: 14),
-                      ],
-                      TextField(
-                        controller: email,
-                        keyboardType: TextInputType.emailAddress,
-                        textInputAction: TextInputAction.next,
-                        autofillHints: const [AutofillHints.username],
-                        autocorrect: false,
-                        decoration: const InputDecoration(
-                          labelText: 'Email',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.email_outlined),
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      TextField(
-                        controller: password,
-                        obscureText: obscurePassword,
-                        textInputAction: TextInputAction.done,
-                        autofillHints: const [AutofillHints.password],
-                        onSubmitted: (_) => submit(),
-                        decoration: InputDecoration(
-                          labelText: 'Password',
-                          border: const OutlineInputBorder(),
-                          prefixIcon: const Icon(Icons.lock_outline),
-                          suffixIcon: IconButton(
-                            tooltip: obscurePassword
-                                ? 'Show password'
-                                : 'Hide password',
-                            onPressed: () => setState(
-                              () => obscurePassword = !obscurePassword,
-                            ),
-                            icon: Icon(
-                              obscurePassword
-                                  ? Icons.visibility_outlined
-                                  : Icons.visibility_off_outlined,
-                            ),
-                          ),
-                        ),
-                      ),
-                      if (error != null) ...[
-                        const SizedBox(height: 14),
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.errorContainer,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Icon(
-                                Icons.error_outline,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onErrorContainer,
+                        TextField(
+                          controller: password,
+                          obscureText: obscurePassword,
+                          textInputAction: TextInputAction.done,
+                          autofillHints: const [AutofillHints.password],
+                          onSubmitted: (_) => submit(),
+                          decoration: InputDecoration(
+                            labelText: L10n.text('Password'),
+                            border: const OutlineInputBorder(),
+                            prefixIcon: const Icon(Icons.lock_outline),
+                            suffixIcon: IconButton(
+                              tooltip: obscurePassword
+                                  ? 'Show password'
+                                  : 'Hide password',
+                              onPressed: () => setState(
+                                () => obscurePassword = !obscurePassword,
                               ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Text(
-                                  error!,
-                                  style: TextStyle(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onErrorContainer,
+                              icon: Icon(
+                                obscurePassword
+                                    ? Icons.visibility_outlined
+                                    : Icons.visibility_off_outlined,
+                              ),
+                            ),
+                          ),
+                        ),
+                        if (error != null) ...[
+                          const SizedBox(height: 14),
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .errorContainer,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(
+                                  Icons.error_outline,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onErrorContainer,
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    error!,
+                                    style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onErrorContainer,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
+                          ),
+                        ],
+                        const SizedBox(height: 20),
+                        FilledButton(
+                          onPressed: busy ? null : submit,
+                          child: Padding(
+                            padding: const EdgeInsets.all(14),
+                            child: Text(busy ? 'Signing in…' : 'Sign in'),
                           ),
                         ),
                       ],
-                      const SizedBox(height: 20),
-                      FilledButton(
-                        onPressed: busy ? null : submit,
-                        child: Padding(
-                          padding: const EdgeInsets.all(14),
-                          child: Text(busy ? 'Signing in…' : 'Sign in'),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -373,6 +390,6 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }

@@ -1,9 +1,11 @@
-import 'package:flutter/material.dart';
+import 'package:field_sales_mobile/l10n/localized_material.dart';
 
 import 'appointments_screen.dart';
+import 'language_selector.dart';
 
 import 'package:provider/provider.dart';
 
+import '../l10n/locale_controller.dart';
 import '../state/app_state.dart';
 import 'gamification_screen.dart';
 import 'notifications_screen.dart';
@@ -39,11 +41,15 @@ class MoreScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<AppLocaleController>();
+
     return RefreshIndicator(
       onRefresh: () => syncAndReload(context, triggerSource: 'pull:more'),
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          const Card(child: LanguageSelectorButton()),
+          const SizedBox(height: 8),
           if (context.watch<AppState>().isSalesman)
             Card(
               child: ListTile(

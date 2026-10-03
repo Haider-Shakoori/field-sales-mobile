@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:field_sales_mobile/l10n/localized_material.dart';
 import 'package:provider/provider.dart';
 
 import '../state/appointment_controller.dart';

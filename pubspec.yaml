@@ -7,6 +7,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   battery_plus: ^7.0.0
   connectivity_plus: ^7.0.0
   device_info_plus: ^12.1.0
@@ -34,3 +36,5 @@ dev_dependencies:
   sqflite_common_ffi: ^2.3.6
 flutter:
   uses-material-design: true
+  assets:
+    - assets/lang/

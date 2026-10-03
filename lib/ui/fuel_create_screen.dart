@@ -1,6 +1,8 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import '../l10n/l10n.dart';
+
+import 'package:field_sales_mobile/l10n/localized_material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -170,15 +172,17 @@ class _FuelCreateScreenState extends State<FuelCreateScreen> {
           TextField(
             controller: _vehicle,
             textCapitalization: TextCapitalization.characters,
-            decoration: const InputDecoration(
-              labelText: 'Vehicle / plate *',
-              helperText: 'Prefilled from the active shift when available.',
+            decoration: InputDecoration(
+              labelText: L10n.text('Vehicle / plate *'),
+              helperText: L10n.text(
+                'Prefilled from the active shift when available.',
+              ),
             ),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _station,
-            decoration: const InputDecoration(labelText: 'Fuel station *'),
+            decoration: InputDecoration(labelText: L10n.text('Fuel station *')),
           ),
           const SizedBox(height: 12),
           Row(
@@ -189,7 +193,7 @@ class _FuelCreateScreenState extends State<FuelCreateScreen> {
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
                   ),
-                  decoration: const InputDecoration(labelText: 'Liters *'),
+                  decoration: InputDecoration(labelText: L10n.text('Liters *')),
                 ),
               ),
               const SizedBox(width: 12),
@@ -199,7 +203,9 @@ class _FuelCreateScreenState extends State<FuelCreateScreen> {
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
                   ),
-                  decoration: const InputDecoration(labelText: 'Odometer km *'),
+                  decoration: InputDecoration(
+                    labelText: L10n.text('Odometer km *'),
+                  ),
                 ),
               ),
             ],
@@ -213,8 +219,8 @@ class _FuelCreateScreenState extends State<FuelCreateScreen> {
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
                   ),
-                  decoration: const InputDecoration(
-                    labelText: 'Total amount *',
+                  decoration: InputDecoration(
+                    labelText: L10n.text('Total amount *'),
                   ),
                 ),
               ),
@@ -225,8 +231,8 @@ class _FuelCreateScreenState extends State<FuelCreateScreen> {
                   controller: _currency,
                   textCapitalization: TextCapitalization.characters,
                   maxLength: 3,
-                  decoration: const InputDecoration(
-                    labelText: 'Currency',
+                  decoration: InputDecoration(
+                    labelText: L10n.text('Currency'),
                     counterText: '',
                   ),
                 ),
@@ -237,10 +243,11 @@ class _FuelCreateScreenState extends State<FuelCreateScreen> {
           TextField(
             controller: _unitPrice,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: const InputDecoration(
-              labelText: 'Price per liter (optional)',
-              helperText:
-                  'Derived automatically from amount ÷ liters if blank.',
+            decoration: InputDecoration(
+              labelText: L10n.text('Price per liter (optional)'),
+              helperText: L10n.text(
+                'Derived automatically from amount ÷ liters if blank.',
+              ),
             ),
           ),
           const SizedBox(height: 12),
@@ -293,16 +300,16 @@ class _FuelCreateScreenState extends State<FuelCreateScreen> {
           const SizedBox(height: 12),
           TextField(
             controller: _reference,
-            decoration: const InputDecoration(
-              labelText: 'Receipt / reference number (optional)',
+            decoration: InputDecoration(
+              labelText: L10n.text('Receipt / reference number (optional)'),
             ),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _notes,
             maxLines: 3,
-            decoration: const InputDecoration(
-              labelText: 'Notes (optional)',
+            decoration: InputDecoration(
+              labelText: L10n.text('Notes (optional)'),
               alignLabelWithHint: true,
             ),
           ),

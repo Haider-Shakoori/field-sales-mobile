@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:field_sales_mobile/l10n/localized_material.dart';
 import 'package:provider/provider.dart';
+
+import '../l10n/l10n.dart';
 
 import '../features/followups/follow_up_repository.dart';
 import '../state/follow_up_controller.dart';
@@ -118,8 +120,8 @@ class _FollowUpsScreenState extends State<FollowUpsScreen> {
                     DropdownButtonFormField<String>(
                       initialValue: customer?['id']?.toString(),
                       isExpanded: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Customer',
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Customer'),
                         border: OutlineInputBorder(),
                       ),
                       items: customers
@@ -150,8 +152,8 @@ class _FollowUpsScreenState extends State<FollowUpsScreen> {
                           child: DropdownButtonFormField<String>(
                             initialValue: type,
                             isExpanded: true,
-                            decoration: const InputDecoration(
-                              labelText: 'Type',
+                            decoration: InputDecoration(
+                              labelText: L10n.text('Type'),
                               border: OutlineInputBorder(),
                             ),
                             items: FollowUpRepository.types
@@ -171,8 +173,8 @@ class _FollowUpsScreenState extends State<FollowUpsScreen> {
                           child: DropdownButtonFormField<String>(
                             initialValue: priority,
                             isExpanded: true,
-                            decoration: const InputDecoration(
-                              labelText: 'Priority',
+                            decoration: InputDecoration(
+                              labelText: L10n.text('Priority'),
                               border: OutlineInputBorder(),
                             ),
                             items: FollowUpRepository.priorities
@@ -208,8 +210,8 @@ class _FollowUpsScreenState extends State<FollowUpsScreen> {
                       controller: notes,
                       maxLines: 3,
                       maxLength: 5000,
-                      decoration: const InputDecoration(
-                        labelText: 'Notes',
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Notes'),
                         alignLabelWithHint: true,
                         border: OutlineInputBorder(),
                       ),
@@ -261,8 +263,8 @@ class _FollowUpsScreenState extends State<FollowUpsScreen> {
               controller: note,
               maxLines: 3,
               maxLength: 5000,
-              decoration: const InputDecoration(
-                labelText: 'Completion note',
+              decoration: InputDecoration(
+                labelText: L10n.text('Completion note'),
                 alignLabelWithHint: true,
               ),
             ),

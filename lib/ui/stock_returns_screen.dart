@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:field_sales_mobile/l10n/localized_material.dart';
 import 'package:provider/provider.dart';
+
+import '../l10n/l10n.dart';
 
 import '../features/master_data/master_data_repository.dart';
 import '../features/stock/stock_repository.dart';
@@ -332,7 +334,7 @@ class _ReturnCreateScreenState extends State<ReturnCreateScreen> {
         children: [
           DropdownButtonFormField<String>(
             initialValue: _customerId,
-            decoration: const InputDecoration(labelText: 'Customer'),
+            decoration: InputDecoration(labelText: L10n.text('Customer')),
             items: widget.customers
                 .map(
                   (customer) => DropdownMenuItem(
@@ -346,7 +348,7 @@ class _ReturnCreateScreenState extends State<ReturnCreateScreen> {
           const SizedBox(height: 12),
           DropdownButtonFormField<String>(
             initialValue: _productId,
-            decoration: const InputDecoration(labelText: 'Product'),
+            decoration: InputDecoration(labelText: L10n.text('Product')),
             items: widget.products
                 .map(
                   (product) => DropdownMenuItem(
@@ -366,14 +368,16 @@ class _ReturnCreateScreenState extends State<ReturnCreateScreen> {
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
                   ),
-                  decoration: const InputDecoration(labelText: 'Quantity'),
+                  decoration: InputDecoration(labelText: L10n.text('Quantity')),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: DropdownButtonFormField<String>(
                   initialValue: _condition,
-                  decoration: const InputDecoration(labelText: 'Condition'),
+                  decoration: InputDecoration(
+                    labelText: L10n.text('Condition'),
+                  ),
                   items: const [
                     DropdownMenuItem(
                       value: 'resalable',
@@ -391,7 +395,9 @@ class _ReturnCreateScreenState extends State<ReturnCreateScreen> {
           const SizedBox(height: 12),
           TextField(
             controller: _reason,
-            decoration: const InputDecoration(labelText: 'Reason (optional)'),
+            decoration: InputDecoration(
+              labelText: L10n.text('Reason (optional)'),
+            ),
           ),
           const SizedBox(height: 12),
           OutlinedButton.icon(
@@ -417,7 +423,9 @@ class _ReturnCreateScreenState extends State<ReturnCreateScreen> {
           TextField(
             controller: _notes,
             maxLines: 3,
-            decoration: const InputDecoration(labelText: 'Notes (optional)'),
+            decoration: InputDecoration(
+              labelText: L10n.text('Notes (optional)'),
+            ),
           ),
           const SizedBox(height: 20),
           FilledButton.icon(

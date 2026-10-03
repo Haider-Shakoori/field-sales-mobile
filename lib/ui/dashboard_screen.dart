@@ -1,6 +1,8 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import '../l10n/l10n.dart';
+
+import 'package:field_sales_mobile/l10n/localized_material.dart';
 import 'package:provider/provider.dart';
 
 import '../state/app_state.dart';
@@ -165,7 +167,7 @@ class _DashboardScreenState extends State<DashboardScreen>
         actions: [
           Consumer<NotificationController>(
             builder: (context, notifications, _) => IconButton(
-              tooltip: 'Notifications',
+              tooltip: L10n.text('Notifications'),
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (_) => Scaffold(
@@ -188,8 +190,8 @@ class _DashboardScreenState extends State<DashboardScreen>
                 label: Text('$pending'),
                 child: IconButton(
                   tooltip: sync.blockedCount > 0
-                      ? 'Sync issues need attention'
-                      : 'Pending sync',
+                      ? L10n.text('Sync issues need attention')
+                      : L10n.text('Pending sync'),
                   onPressed: () => Navigator.of(
                     context,
                   ).push(MaterialPageRoute(builder: (_) => const SyncScreen())),
@@ -198,7 +200,7 @@ class _DashboardScreenState extends State<DashboardScreen>
               ),
             ),
           IconButton(
-            tooltip: 'Sign out',
+            tooltip: L10n.text('Sign out'),
             onPressed: () => context.read<AttendanceController>().logout(),
             icon: const Icon(Icons.logout),
           ),
@@ -211,31 +213,31 @@ class _DashboardScreenState extends State<DashboardScreen>
           setState(() => _index = value);
           unawaited(syncAndReload(context, triggerSource: 'tab'));
         },
-        destinations: const [
+        destinations: [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home),
-            label: 'Home',
+            label: L10n.text('Home'),
           ),
           NavigationDestination(
             icon: Icon(Icons.storefront_outlined),
             selectedIcon: Icon(Icons.storefront),
-            label: 'Customers',
+            label: L10n.text('Customers'),
           ),
           NavigationDestination(
             icon: Icon(Icons.location_on_outlined),
             selectedIcon: Icon(Icons.location_on),
-            label: 'Visits',
+            label: L10n.text('Visits'),
           ),
           NavigationDestination(
             icon: Icon(Icons.receipt_long_outlined),
             selectedIcon: Icon(Icons.receipt_long),
-            label: 'Orders',
+            label: L10n.text('Orders'),
           ),
           NavigationDestination(
             icon: Icon(Icons.more_horiz),
             selectedIcon: Icon(Icons.more),
-            label: 'More',
+            label: L10n.text('More'),
           ),
         ],
       ),

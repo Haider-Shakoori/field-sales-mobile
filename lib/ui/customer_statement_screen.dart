@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:field_sales_mobile/l10n/localized_material.dart';
 import 'package:provider/provider.dart';
+
+import '../l10n/l10n.dart';
 
 import '../features/financial_documents/customer_statement_repository.dart';
 import '../state/app_state.dart';
@@ -156,8 +158,8 @@ class _CustomerStatementScreenState extends State<CustomerStatementScreen> {
                               Expanded(
                                 child: DropdownButtonFormField<String>(
                                   initialValue: _currency,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Currency',
+                                  decoration: InputDecoration(
+                                    labelText: L10n.text('Currency'),
                                   ),
                                   items: const [
                                     DropdownMenuItem(
