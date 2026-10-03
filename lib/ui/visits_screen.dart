@@ -1,5 +1,6 @@
 import 'package:field_sales_mobile/l10n/localized_material.dart';
 import 'package:provider/provider.dart';
+
 import '../l10n/l10n.dart';
 
 import '../features/visits/visit_map_data.dart';
@@ -126,7 +127,9 @@ class _VisitsScreenState extends State<VisitsScreen> {
                   children: [
                     DropdownButtonFormField<String>(
                       initialValue: outcome,
-                      decoration: InputDecoration(labelText: L10n.text('Outcome')),
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Outcome'),
+                      ),
                       items: outcomes.entries
                           .map(
                             (entry) => DropdownMenuItem(
