@@ -99,6 +99,41 @@ class AttendanceController extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> refreshLivePresence({
+    Duration locationTimeout = const Duration(seconds: 10),
+  }) async {
+    await appState.heartbeatNow();
+
+    final tenantId = appState.session?.tenantId;
+    final policy = appState.policy;
+    if (tenantId == null ||
+        !working ||
+        policy?.gpsTrackingEnabled != true) {
+      return;
+    }
+
+    final position = await tracking.oneShot(timeout: locationTimeout);
+    if (position == null) return;
+
+    await gps.store(
+      tenantId: tenantId,
+      latitude: position.latitude,
+      longitude: position.longitude,
+      accuracy: position.accuracy,
+      altitude: position.altitude,
+      speed: position.speed,
+      heading: position.heading,
+      isMock: position.isMocked,
+      recordedAt: position.timestamp,
+    );
+
+    try {
+      await gps.upload(tenantId);
+    } catch (_) {
+      // The fresh point stays queued locally and will upload on the next sync.
+    }
+  }
+
   Future<void> reconcile() async {
     final policy = appState.policy;
     final tenantId = appState.session?.tenantId;
