@@ -266,8 +266,12 @@ class FieldPulseGlassCard extends StatelessWidget {
             ? content
             : InkWell(
                 onTap: onTap,
-                splashColor: (tint ?? FieldPulseTheme.blue).withValues(alpha: .07),
-                highlightColor: (tint ?? FieldPulseTheme.blue).withValues(alpha: .035),
+                splashColor: (tint ?? FieldPulseTheme.blue).withValues(
+                  alpha: .07,
+                ),
+                highlightColor: (tint ?? FieldPulseTheme.blue).withValues(
+                  alpha: .035,
+                ),
                 child: content,
               ),
       ),
