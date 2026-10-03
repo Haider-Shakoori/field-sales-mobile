@@ -3,13 +3,20 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../features/auth/auth_repository.dart';
+import '../features/devices/device_health_repository.dart';
 import '../features/settings/attendance_tracking_settings.dart';
 import '../features/settings/settings_repository.dart';
 
 class AppState extends ChangeNotifier {
-  AppState({required this.auth, required this.settings});
+  AppState({
+    required this.auth,
+    required this.settings,
+    required this.deviceHealth,
+  });
+
   final AuthRepository auth;
   final SettingsRepository settings;
+  final DeviceHealthRepository deviceHealth;
   bool restored = false;
   AuthSession? session;
   AttendanceTrackingSettings? policy;
@@ -44,9 +51,19 @@ class AppState extends ChangeNotifier {
     try {
       await auth.me();
     } catch (_) {
-    } finally {
-      _beatInFlight = false;
+      // Presence heartbeat is best-effort while offline.
     }
+
+    final tenantId = session?.tenantId;
+    if (tenantId != null) {
+      try {
+        await deviceHealth.report(tenantId);
+      } catch (_) {
+        // Health reporting must never interrupt normal FieldPulse work.
+      }
+    }
+
+    _beatInFlight = false;
   }
 
   Future<void> restore() async {
