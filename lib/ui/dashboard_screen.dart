@@ -271,9 +271,9 @@ class _DashboardScreenState extends State<DashboardScreen>
             label: L10n.text('More'),
           ),
         ],
-      ),,
+      ),
         ),
-      )
+      ),
     );
   }
 }
