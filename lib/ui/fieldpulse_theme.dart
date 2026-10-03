@@ -46,7 +46,7 @@ abstract final class FieldPulseTheme {
         ),
         titleLarge: base.textTheme.titleLarge?.copyWith(
           color: text,
-          fontWeight: FontWeight.w750,
+          fontWeight: FontWeight.w700,
           letterSpacing: -.25,
         ),
         titleMedium: base.textTheme.titleMedium?.copyWith(
@@ -132,7 +132,7 @@ abstract final class FieldPulseTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
-          textStyle: const TextStyle(fontWeight: FontWeight.w750),
+          textStyle: const TextStyle(fontWeight: FontWeight.w700),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -188,7 +188,7 @@ abstract final class FieldPulseTheme {
           return TextStyle(
             fontSize: 11.5,
             fontWeight: states.contains(WidgetState.selected)
-                ? FontWeight.w750
+                ? FontWeight.w700
                 : FontWeight.w600,
             color: states.contains(WidgetState.selected)
                 ? blue
@@ -212,7 +212,7 @@ abstract final class FieldPulseTheme {
         ),
         labelStyle: const TextStyle(
           color: text,
-          fontWeight: FontWeight.w650,
+          fontWeight: FontWeight.w600,
         ),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       ),
