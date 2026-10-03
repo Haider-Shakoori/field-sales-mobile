@@ -1,1 +1,691 @@
-[]
+[
+  {
+    "english": "ADD COLUMN sync_status TEXT NOT NULL DEFAULT \"synced\"",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:1021"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "API_BASE_URL must be a valid absolute URL.",
+    "contexts": [
+      "core.config"
+    ],
+    "sources": [
+      "lib/core/config.dart:32"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Appointment",
+    "contexts": [
+      "features.appointments.appointment_repository"
+    ],
+    "sources": [
+      "lib/features/appointments/appointment_repository.dart:292"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Appointment not found.",
+    "contexts": [
+      "features.appointments.appointment_repository"
+    ],
+    "sources": [
+      "lib/features/appointments/appointment_repository.dart:96"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "CREATE INDEX IF NOT EXISTS idx_appointments_sync",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:739"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "CREATE INDEX IF NOT EXISTS idx_collections_sync",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:532"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "CREATE INDEX IF NOT EXISTS idx_expenses_sync",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:598"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "CREATE INDEX IF NOT EXISTS idx_followups_sync",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:852"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "CREATE INDEX IF NOT EXISTS idx_lead_activities_sync",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:816"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "CREATE INDEX IF NOT EXISTS idx_leads_sync",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:787"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "CREATE INDEX IF NOT EXISTS idx_orders_sync",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:459"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "CREATE INDEX IF NOT EXISTS idx_returns_sync",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:679"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "CREATE INDEX IF NOT EXISTS idx_sync_cycles_recent",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:108"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "CREATE INDEX IF NOT EXISTS idx_sync_entity",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:65"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "CREATE INDEX IF NOT EXISTS idx_sync_failures_status",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:86"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "CREATE INDEX IF NOT EXISTS idx_sync_status_priority",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:61"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "CREATE INDEX IF NOT EXISTS idx_visit_form_sub_sync",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:389"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Device is offline; changes stay queued locally.",
+    "contexts": [
+      "core.sync.sync_coordinator"
+    ],
+    "sources": [
+      "lib/core/sync/sync_coordinator.dart:88"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "error_code TEXT,",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:77"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "error_message TEXT NOT NULL,",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:78"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "error_message TEXT,",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:52"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "failed_count INTEGER NOT NULL DEFAULT 0,",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:99"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "first_failed_at TEXT NOT NULL,",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:80"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Invalid server response.",
+    "contexts": [
+      "core.api.api_client"
+    ],
+    "sources": [
+      "lib/core/api/api_client.dart:188"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "is_mock_location INTEGER NOT NULL DEFAULT 0,",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:204"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "last_error TEXT,",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:210",
+      "lib/core/db/app_database.dart:268",
+      "lib/core/db/app_database.dart:295",
+      "lib/core/db/app_database.dart:323",
+      "lib/core/db/app_database.dart:373",
+      "lib/core/db/app_database.dart:406",
+      "lib/core/db/app_database.dart:445",
+      "lib/core/db/app_database.dart:518",
+      "lib/core/db/app_database.dart:588",
+      "lib/core/db/app_database.dart:669",
+      "lib/core/db/app_database.dart:725",
+      "lib/core/db/app_database.dart:773",
+      "lib/core/db/app_database.dart:802",
+      "lib/core/db/app_database.dart:838"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "last_failed_at TEXT NOT NULL,",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:81"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "location TEXT,",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:721"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "message TEXT,",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:121"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Notifications",
+    "contexts": [
+      "app"
+    ],
+    "sources": [
+      "lib/app.dart:52"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "ON local_appointments(tenant_id,sync_status,starts_at)",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:740"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "ON local_collections(tenant_id,sync_status,collected_at)",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:533"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "ON local_customer_follow_ups(tenant_id,sync_status,due_at)",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:853"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "ON local_expenses(tenant_id,sync_status,spent_at)",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:599"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "ON local_gps_points(tenant_id,sync_status,id)",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:217"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "ON local_lead_activities(tenant_id,sync_status,occurred_at)",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:817"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "ON local_leads(tenant_id,sync_status,pending_conversion)",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:788"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "ON local_orders(tenant_id,sync_status,ordered_at)",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:460"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "ON local_sales_returns(tenant_id,sync_status,returned_at)",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:680"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "ON local_sync_cycles(tenant_id,started_at)",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:109"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "ON local_sync_failures(tenant_id,status,next_retry_at)",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:87"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "ON local_visit_form_submissions(tenant_id,sync_status,created_at)",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:390"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "ON sync_queue(tenant_id,status,priority,created_at)",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:62"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Release builds require an HTTPS API_BASE_URL.",
+    "contexts": [
+      "core.config"
+    ],
+    "sources": [
+      "lib/core/config.dart:69"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Release builds require an HTTPS TILE_URL_TEMPLATE.",
+    "contexts": [
+      "core.config"
+    ],
+    "sources": [
+      "lib/core/config.dart:77"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Release builds require API_BASE_URL.",
+    "contexts": [
+      "core.config"
+    ],
+    "sources": [
+      "lib/core/config.dart:65"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Release builds require APP_VERSION.",
+    "contexts": [
+      "core.config"
+    ],
+    "sources": [
+      "lib/core/config.dart:73"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Request failed.",
+    "contexts": [
+      "core.api.api_client"
+    ],
+    "sources": [
+      "lib/core/api/api_client.dart:214",
+      "lib/core/api/api_client.dart:230"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "SELECT COUNT(*) AS total FROM local_sync_failures",
+    "contexts": [
+      "core.sync.sync_retry_store"
+    ],
+    "sources": [
+      "lib/core/sync/sync_retry_store.dart:128",
+      "lib/core/sync/sync_retry_store.dart:138"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "SELECT COUNT(*) AS total FROM local_sync_failures WHERE tenant_id=?",
+    "contexts": [
+      "core.sync.sync_retry_store"
+    ],
+    "sources": [
+      "lib/core/sync/sync_retry_store.dart:119"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "SELECT COUNT(*) AS total FROM sync_queue",
+    "contexts": [
+      "core.sync.local_dependency_guard"
+    ],
+    "sources": [
+      "lib/core/sync/local_dependency_guard.dart:43"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Smart Route",
+    "contexts": [
+      "app"
+    ],
+    "sources": [
+      "lib/app.dart:49"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "status DESC, last_failed_at DESC",
+    "contexts": [
+      "core.sync.sync_retry_store"
+    ],
+    "sources": [
+      "lib/core/sync/sync_retry_store.dart:111"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "sync_status TEXT NOT NULL DEFAULT \"pending_checkin\",",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:267"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "sync_status TEXT NOT NULL DEFAULT \"pending\",",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:209",
+      "lib/core/db/app_database.dart:232",
+      "lib/core/db/app_database.dart:294",
+      "lib/core/db/app_database.dart:322",
+      "lib/core/db/app_database.dart:372",
+      "lib/core/db/app_database.dart:405",
+      "lib/core/db/app_database.dart:444",
+      "lib/core/db/app_database.dart:517",
+      "lib/core/db/app_database.dart:587",
+      "lib/core/db/app_database.dart:668"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "sync_status TEXT NOT NULL DEFAULT \"synced\"",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:143"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "sync_status TEXT NOT NULL DEFAULT \"synced\",",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:724",
+      "lib/core/db/app_database.dart:771",
+      "lib/core/db/app_database.dart:801",
+      "lib/core/db/app_database.dart:837"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "sync_status TEXT NOT NULL,",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:174"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "synced_count INTEGER NOT NULL DEFAULT 0,",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:98"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Team",
+    "contexts": [
+      "app"
+    ],
+    "sources": [
+      "lib/app.dart:51"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "tenant_id=? AND sync_status<>?",
+    "contexts": [
+      "features.appointments.appointment_repository"
+    ],
+    "sources": [
+      "lib/features/appointments/appointment_repository.dart:138"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "TILE_URL_TEMPLATE must be a valid absolute URL.",
+    "contexts": [
+      "core.config"
+    ],
+    "sources": [
+      "lib/core/config.dart:60"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "title TEXT NOT NULL,",
+    "contexts": [
+      "core.db.app_database"
+    ],
+    "sources": [
+      "lib/core/db/app_database.dart:715"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Waiting for attendance to synchronize.",
+    "contexts": [
+      "core.sync.sync_coordinator"
+    ],
+    "sources": [
+      "lib/core/sync/sync_coordinator.dart:181",
+      "lib/core/sync/sync_coordinator.dart:187"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "WHERE tenant_id=? AND sync_status<>?",
+    "contexts": [
+      "features.appointments.appointment_repository"
+    ],
+    "sources": [
+      "lib/features/appointments/appointment_repository.dart:124"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Work session tenant is unavailable.",
+    "contexts": [
+      "features.attendance.attendance_repository"
+    ],
+    "sources": [
+      "lib/features/attendance/attendance_repository.dart:120",
+      "lib/features/attendance/attendance_repository.dart:173"
+    ],
+    "placeholders": []
+  }
+]
