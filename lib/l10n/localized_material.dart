@@ -74,8 +74,9 @@ class Text extends material.StatelessWidget {
         overflow: overflow,
         textScaler: textScaler,
         maxLines: maxLines,
-        semanticsLabel:
-            semanticsLabel == null ? null : L10n.text(semanticsLabel!),
+        semanticsLabel: semanticsLabel == null
+            ? null
+            : L10n.text(semanticsLabel!),
         textWidthBasis: textWidthBasis,
         textHeightBehavior: textHeightBehavior,
         selectionColor: selectionColor,
@@ -93,7 +94,9 @@ class Text extends material.StatelessWidget {
       overflow: overflow,
       textScaler: textScaler,
       maxLines: maxLines,
-      semanticsLabel: semanticsLabel == null ? null : L10n.text(semanticsLabel!),
+      semanticsLabel: semanticsLabel == null
+          ? null
+          : L10n.text(semanticsLabel!),
       textWidthBasis: textWidthBasis,
       textHeightBehavior: textHeightBehavior,
       selectionColor: selectionColor,
@@ -110,8 +113,9 @@ class Text extends material.StatelessWidget {
         mouseCursor: span.mouseCursor,
         onEnter: span.onEnter,
         onExit: span.onExit,
-        semanticsLabel:
-            span.semanticsLabel == null ? null : L10n.text(span.semanticsLabel!),
+        semanticsLabel: span.semanticsLabel == null
+            ? null
+            : L10n.text(span.semanticsLabel!),
         locale: span.locale,
         spellOut: span.spellOut,
       );
