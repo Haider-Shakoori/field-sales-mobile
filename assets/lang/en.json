@@ -263,11 +263,7 @@
   "device_health_location_services_are_disabled_during_the_active_work_day": "Location services are disabled during the active work day.",
   "device_health_notification_permission_is_disabled": "Notification permission is disabled.",
   "device_health_pending_items_are_waiting_to_synchronize": "{pending} items are waiting to synchronize.",
-  "device_health_select_count_from_local_sync_failures": "SELECT COUNT(*) FROM local_sync_failures",
-  "device_health_select_count_from_sync_queue": "SELECT COUNT(*) FROM sync_queue",
   "device_health_the_latest_gps_fix_is_delayed": "The latest GPS fix is delayed.",
-  "device_health_where_tenant_id_and_is_mock_location_1_and_recorded_at": "WHERE tenant_id=? AND is_mock_location=1 AND recorded_at>=?",
-  "device_health_where_tenant_id_and_sync_status_not_in": "WHERE tenant_id=? AND sync_status NOT IN (?,?)",
   "expense_create_category": "Category",
   "expense_create_enter_a_valid_expense_amount": "Enter a valid expense amount.",
   "expense_create_fuel_details": "Fuel details",
@@ -856,5 +852,9 @@
   "visits_sync_master_data_or_add_coordinates_to_customers_to_see": "Sync master data or add coordinates to customers to see them on the map.",
   "visits_today_s_assigned_visits": "Today's assigned visits",
   "visits_unplanned": "Unplanned",
-  "visits_voice_note": "Voice note"
+  "visits_voice_note": "Voice note",
+  "common_language": "Language",
+  "common_english": "English",
+  "common_dari": "Dari",
+  "common_pashto": "Pashto"
 }
