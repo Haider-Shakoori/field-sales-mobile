@@ -1,5 +1,6 @@
 import 'package:field_sales_mobile/l10n/localized_material.dart';
 import 'package:provider/provider.dart';
+
 import '../l10n/l10n.dart';
 
 import '../core/api/api_exception.dart';
@@ -287,7 +288,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           decoration: InputDecoration(
                             labelText: L10n.text('Company / Tenant ID'),
                             hintText: L10n.text('e.g. shahab-demo'),
-                            helperText: L10n.text('Saved on this device after a successful sign-in.'),
+                            helperText: L10n.text(
+                              'Saved on this device after a successful sign-in.',
+                            ),
                             border: OutlineInputBorder(),
                             prefixIcon: Icon(Icons.business_outlined),
                           ),
