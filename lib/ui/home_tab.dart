@@ -7,7 +7,9 @@ import '../state/app_state.dart';
 import '../state/attendance_controller.dart';
 import '../state/sync_controller.dart';
 import '../state/visit_controller.dart';
+import 'fieldpulse_theme.dart';
 import 'history_screen.dart';
+import 'widgets/fieldpulse_ui.dart';
 import 'privacy_dialog.dart';
 import 'sync_refresh.dart';
 
@@ -489,19 +491,61 @@ class HomeTab extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          Text(
-            'Good day, ${app.session?.name ?? ''}',
-            style: Theme.of(context).textTheme.headlineSmall
-                ?.copyWith(fontWeight: FontWeight.bold),
+          FieldPulseHeroCard(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: 52,
+                  height: 52,
+                  decoration: BoxDecoration(
+                    gradient: FieldPulseDecor.accentGradient,
+                    borderRadius: BorderRadius.circular(17),
+                  ),
+                  child: const Icon(
+                    Icons.route_rounded,
+                    color: Colors.white,
+                    size: 27,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Good day, ${app.session?.name ?? ''}',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        policy?.trusted == true
+                            ? 'Company policy synced'
+                            : 'Using safe offline policy',
+                        style: const TextStyle(
+                          color: Color(0xFFBBD0E8),
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                FieldPulseStatusPill(
+                  label: controller.working ? 'On duty' : 'Ready',
+                  color: controller.working
+                      ? const Color(0xFF27D7A1)
+                      : const Color(0xFF76B8FF),
+                  icon: controller.working
+                      ? Icons.location_on_rounded
+                      : Icons.schedule_rounded,
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 6),
-          Text(
-            policy?.trusted == true
-                ? 'Company policy synced'
-                : 'Using safe offline policy',
-            style: TextStyle(color: Colors.grey.shade600),
-          ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 18),
           Card(
             child: Padding(
               padding: const EdgeInsets.all(22),
