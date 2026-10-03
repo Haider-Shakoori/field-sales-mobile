@@ -199,8 +199,24 @@ Future<void> main() async {
     appState: appState,
     repository: notifications,
   );
-  push.received.listen(
-    (_) => unawaited(notificationController.refresh(silent: true)),
+  push.received.listen((data) {
+    unawaited(notificationController.refresh(silent: true));
+    unawaited(
+      _handleDeviceControlMessage(
+        data,
+        appState: appState,
+        deviceHealth: deviceHealth,
+      ),
+    );
+  });
+  push.opened.listen(
+    (data) => unawaited(
+      _handleDeviceControlMessage(
+        data,
+        appState: appState,
+        deviceHealth: deviceHealth,
+      ),
+    ),
   );
 
   final syncController = SyncController(
@@ -272,6 +288,27 @@ Future<void> main() async {
   WidgetsBinding.instance.addPostFrameCallback((_) {
     unawaited(_initializePushAfterStartup(push, appState));
   });
+}
+
+Future<void> _handleDeviceControlMessage(
+  Map<String, dynamic> data, {
+  required AppState appState,
+  required DeviceHealthRepository deviceHealth,
+}) async {
+  if (data['action']?.toString() != 'request_device_health') {
+    return;
+  }
+
+  final tenantId = appState.session?.tenantId;
+  if (tenantId == null || tenantId.isEmpty) {
+    return;
+  }
+
+  try {
+    await deviceHealth.report(tenantId).timeout(const Duration(seconds: 10));
+  } catch (_) {
+    // Remote diagnostics are optional and must never interrupt field work.
+  }
 }
 
 Future<void> _initializePushAfterStartup(
