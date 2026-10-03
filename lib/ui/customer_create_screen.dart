@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../l10n/l10n.dart';
 
 import 'package:field_sales_mobile/l10n/localized_material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -241,8 +242,8 @@ class _CustomerCreateScreenState extends State<CustomerCreateScreen> {
                 controller: _name,
                 autofocus: !widget.editing,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(
-                  labelText: 'Customer / shop name',
+                decoration: InputDecoration(
+                  labelText: L10n.text('Customer / shop name'),
                   prefixIcon: Icon(Icons.storefront_outlined),
                 ),
                 validator: (value) => value == null || value.trim().isEmpty
@@ -253,8 +254,8 @@ class _CustomerCreateScreenState extends State<CustomerCreateScreen> {
               TextFormField(
                 controller: _code,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(
-                  labelText: 'Code (optional)',
+                decoration: InputDecoration(
+                  labelText: L10n.text('Code (optional)'),
                   prefixIcon: Icon(Icons.tag_outlined),
                 ),
               ),
@@ -262,8 +263,8 @@ class _CustomerCreateScreenState extends State<CustomerCreateScreen> {
               TextFormField(
                 controller: _contactPerson,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(
-                  labelText: 'Contact person',
+                decoration: InputDecoration(
+                  labelText: L10n.text('Contact person'),
                   prefixIcon: Icon(Icons.person_outline),
                 ),
               ),
@@ -272,8 +273,8 @@ class _CustomerCreateScreenState extends State<CustomerCreateScreen> {
                 controller: _phone,
                 keyboardType: TextInputType.phone,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(
-                  labelText: 'Phone',
+                decoration: InputDecoration(
+                  labelText: L10n.text('Phone'),
                   prefixIcon: Icon(Icons.phone_outlined),
                 ),
               ),
@@ -282,8 +283,8 @@ class _CustomerCreateScreenState extends State<CustomerCreateScreen> {
                 controller: _alternatePhone,
                 keyboardType: TextInputType.phone,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(
-                  labelText: 'Alternate phone',
+                decoration: InputDecoration(
+                  labelText: L10n.text('Alternate phone'),
                   prefixIcon: Icon(Icons.phone_forwarded_outlined),
                 ),
               ),
@@ -292,8 +293,8 @@ class _CustomerCreateScreenState extends State<CustomerCreateScreen> {
                 controller: _email,
                 keyboardType: TextInputType.emailAddress,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
+                decoration: InputDecoration(
+                  labelText: L10n.text('Email'),
                   prefixIcon: Icon(Icons.email_outlined),
                 ),
                 validator: (value) {
@@ -308,8 +309,8 @@ class _CustomerCreateScreenState extends State<CustomerCreateScreen> {
               TextFormField(
                 controller: _address,
                 maxLines: 2,
-                decoration: const InputDecoration(
-                  labelText: 'Address',
+                decoration: InputDecoration(
+                  labelText: L10n.text('Address'),
                   prefixIcon: Icon(Icons.home_work_outlined),
                   alignLabelWithHint: true,
                 ),
@@ -322,8 +323,8 @@ class _CustomerCreateScreenState extends State<CustomerCreateScreen> {
                     )
                     ? _priceListId
                     : '',
-                decoration: const InputDecoration(
-                  labelText: 'Price list',
+                decoration: InputDecoration(
+                  labelText: L10n.text('Price list'),
                   prefixIcon: Icon(Icons.price_change_outlined),
                 ),
                 items: [
@@ -351,10 +352,10 @@ class _CustomerCreateScreenState extends State<CustomerCreateScreen> {
                 controller: _geofenceRadius,
                 keyboardType: TextInputType.number,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(
-                  labelText: 'Geofence radius (meters)',
+                decoration: InputDecoration(
+                  labelText: L10n.text('Geofence radius (meters)'),
                   prefixIcon: Icon(Icons.radar_outlined),
-                  helperText: 'Allowed range: 25–1000 meters',
+                  helperText: L10n.text('Allowed range: 25–1000 meters'),
                 ),
                 validator: (value) {
                   final radius = int.tryParse(value?.trim() ?? '');
