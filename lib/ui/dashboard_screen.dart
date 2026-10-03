@@ -233,10 +233,10 @@ class _DashboardScreenState extends State<DashboardScreen>
         child: Container(
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: FieldPulseTheme.border),
-            boxShadow: FieldPulseDecor.softShadow,
+            gradient: FieldPulseDecor.premiumSurfaceGradient,
+            borderRadius: BorderRadius.circular(26),
+            border: Border.all(color: Colors.white),
+            boxShadow: FieldPulseDecor.premiumShadow,
           ),
           child: NavigationBar(
             selectedIndex: _index,
