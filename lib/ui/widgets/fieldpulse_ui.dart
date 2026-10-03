@@ -175,10 +175,7 @@ class FieldPulseEmptyState extends StatelessWidget {
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodySmall,
         ),
-        if (action != null) ...[
-          const SizedBox(height: 18),
-          action!,
-        ],
+        if (action != null) ...[const SizedBox(height: 18), action!],
       ],
     ),
   );
