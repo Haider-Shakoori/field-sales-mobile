@@ -1,5 +1,6 @@
 import 'package:field_sales_mobile/l10n/localized_material.dart';
 import 'package:provider/provider.dart';
+
 import '../l10n/l10n.dart';
 
 import '../state/lead_controller.dart';
@@ -272,19 +273,25 @@ class _LeadsScreenState extends State<LeadsScreen> {
                     TextField(
                       controller: phone,
                       keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(labelText: L10n.text('Phone')),
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Phone'),
+                      ),
                     ),
                     const SizedBox(height: 10),
                     TextField(
                       controller: email,
                       keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(labelText: L10n.text('Email')),
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Email'),
+                      ),
                     ),
                     const SizedBox(height: 10),
                     TextField(
                       controller: address,
                       maxLines: 2,
-                      decoration: InputDecoration(labelText: L10n.text('Address')),
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Address'),
+                      ),
                     ),
                     const SizedBox(height: 10),
                     Row(
@@ -394,7 +401,9 @@ class _LeadsScreenState extends State<LeadsScreen> {
                     TextField(
                       controller: notes,
                       maxLines: 3,
-                      decoration: InputDecoration(labelText: L10n.text('Notes')),
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Notes'),
+                      ),
                     ),
                     const SizedBox(height: 18),
                     FilledButton(
@@ -533,7 +542,9 @@ class _LeadsScreenState extends State<LeadsScreen> {
               TextField(
                 controller: contactEditor,
                 enabled: lead['converted_customer_uuid'] == null,
-                decoration: InputDecoration(labelText: L10n.text('Contact person')),
+                decoration: InputDecoration(
+                  labelText: L10n.text('Contact person'),
+                ),
               ),
               const SizedBox(height: 10),
               TextField(
@@ -563,7 +574,9 @@ class _LeadsScreenState extends State<LeadsScreen> {
                     child: DropdownButtonFormField<String>(
                       isExpanded: true,
                       initialValue: selectedSource,
-                      decoration: InputDecoration(labelText: L10n.text('Source')),
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Source'),
+                      ),
                       items: sources
                           .map(
                             (item) => DropdownMenuItem(
@@ -584,7 +597,9 @@ class _LeadsScreenState extends State<LeadsScreen> {
                     child: DropdownButtonFormField<String>(
                       isExpanded: true,
                       initialValue: selectedPriority,
-                      decoration: InputDecoration(labelText: L10n.text('Priority')),
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Priority'),
+                      ),
                       items: priorities
                           .map(
                             (item) => DropdownMenuItem(
@@ -606,7 +621,9 @@ class _LeadsScreenState extends State<LeadsScreen> {
               const SizedBox(height: 10),
               DropdownButtonFormField<String>(
                 initialValue: selectedStage,
-                decoration: InputDecoration(labelText: L10n.text('Pipeline stage')),
+                decoration: InputDecoration(
+                  labelText: L10n.text('Pipeline stage'),
+                ),
                 items: stages
                     .map(
                       (stage) => DropdownMenuItem(
@@ -695,7 +712,9 @@ class _LeadsScreenState extends State<LeadsScreen> {
                   maxLines: 2,
                   decoration: InputDecoration(
                     labelText: L10n.text('Lost reason'),
-                    helperText: L10n.text('Required when the opportunity is marked lost.'),
+                    helperText: L10n.text(
+                      'Required when the opportunity is marked lost.',
+                    ),
                   ),
                 ),
               ],
