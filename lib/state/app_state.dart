@@ -8,11 +8,7 @@ import '../features/settings/attendance_tracking_settings.dart';
 import '../features/settings/settings_repository.dart';
 
 class AppState extends ChangeNotifier {
-  AppState({
-    required this.auth,
-    required this.settings,
-    this.deviceHealth,
-  });
+  AppState({required this.auth, required this.settings, this.deviceHealth});
 
   final AuthRepository auth;
   final SettingsRepository settings;
