@@ -478,6 +478,7 @@ class HomeTab extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: () async {
         await controller.refreshPolicyAndEvaluate();
+        await controller.refreshLivePresence();
 
         if (!context.mounted) return;
 

@@ -39,9 +39,19 @@ class ApiClient {
           final token = await secrets.token;
           final install = await secrets.installationUuid();
           final device = await secrets.deviceUuid();
-          var osVersion = 'unknown';
+          var platform = Platform.operatingSystem;
+          var osVersion = Platform.operatingSystemVersion;
           try {
-            osVersion = (await DeviceInfoPlugin().androidInfo).version.release;
+            final deviceInfo = DeviceInfoPlugin();
+            if (Platform.isIOS) {
+              final info = await deviceInfo.iosInfo;
+              platform = 'ios';
+              osVersion = info.systemVersion;
+            } else if (Platform.isAndroid) {
+              final info = await deviceInfo.androidInfo;
+              platform = 'android';
+              osVersion = info.version.release;
+            }
           } catch (_) {
             // Device metadata is best-effort and must never block API calls.
           }
@@ -55,7 +65,7 @@ class ApiClient {
             'X-Installation-UUID': install,
             'X-Device-UUID': device,
             'X-App-Version': AppConfig.appVersion,
-            'X-Platform': 'android',
+            'X-Platform': platform,
             'X-OS-Version': osVersion,
           });
 

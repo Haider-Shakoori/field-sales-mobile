@@ -35,6 +35,8 @@ class AppState extends ChangeNotifier {
     _beat();
   }
 
+  Future<void> heartbeatNow() => _beat();
+
   Future<void> _beat() async {
     if (_beatInFlight) return;
     _beatInFlight = true;
