@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:field_sales_mobile/l10n/localized_material.dart';
 
 import 'appointments_screen.dart';
+import 'language_selector.dart';
 
 import 'package:provider/provider.dart';
 
@@ -44,6 +45,8 @@ class MoreScreen extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          const Card(child: LanguageSelectorButton()),
+          const SizedBox(height: 8),
           if (context.watch<AppState>().isSalesman)
             Card(
               child: ListTile(
