@@ -36,10 +36,7 @@ void main() {
         active: const {'welcome': 'سلام {name}، {count} در انتظار'},
       );
 
-      expect(
-        L10n.text('Hello Ahmad, 3 pending'),
-        'سلام Ahmad، 3 در انتظار',
-      );
+      expect(L10n.text('Hello Ahmad, 3 pending'), 'سلام Ahmad، 3 در انتظار');
     });
 
     test('falls back to English when a translation is blank', () {
@@ -54,8 +51,7 @@ void main() {
 
   group('AppLocaleController', () {
     test('restores Dari and marks it RTL', () async {
-      final store = _MemorySecretStore()
-        ..values['fieldpulse.locale'] = 'fa';
+      final store = _MemorySecretStore()..values['fieldpulse.locale'] = 'fa';
       final controller = AppLocaleController(storage: store);
 
       await controller.restore();
