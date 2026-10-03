@@ -10,7 +10,9 @@ import '../state/app_state.dart';
 import '../state/team_controller.dart';
 import '../features/team/team_repository.dart';
 import '../state/notification_controller.dart';
+import 'fieldpulse_theme.dart';
 import 'notifications_screen.dart';
+import 'widgets/fieldpulse_ui.dart';
 
 const _kabul = LatLng(34.5553, 69.2075);
 
@@ -94,17 +96,46 @@ class _LeadershipDashboardScreenState extends State<LeadershipDashboardScreen> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
           children: [
-            Text(
-              'Hello, ${app.session?.name ?? ''}',
-              style: Theme.of(context).textTheme.headlineSmall
-                  ?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              app.isSalesManager
-                  ? 'Your supervisors and their field teams'
-                  : 'Your assigned field-sales team',
-              style: Theme.of(context).textTheme.bodyMedium,
+            FieldPulseHeroCard(
+              child: Row(
+                children: [
+                  const FieldPulseIconBadge(
+                    icon: Icons.groups_rounded,
+                    color: Color(0xFF7CC7FF),
+                    size: 52,
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Hello, ${app.session?.name ?? ''}',
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          app.isSalesManager
+                              ? 'Your supervisors and their field teams'
+                              : 'Your assigned field-sales team',
+                          style: const TextStyle(
+                            color: Color(0xFFBBD0E8),
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  FieldPulseStatusPill(
+                    label: roleLabel,
+                    color: const Color(0xFF27D7A1),
+                    icon: Icons.verified_user_outlined,
+                  ),
+                ],
+              ),
             ),
             if (team.message != null) ...[
               const SizedBox(height: 12),
@@ -259,8 +290,8 @@ class _SummaryGrid extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(card.$4, size: 22),
-                          const SizedBox(height: 10),
+                          FieldPulseIconBadge(icon: card.$4, size: 40),
+                          const SizedBox(height: 12),
                           Text(
                             card.$2,
                             style: Theme.of(context).textTheme.headlineSmall
