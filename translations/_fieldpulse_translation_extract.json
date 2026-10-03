@@ -558,17 +558,6 @@
     "key": "reorder_recommendations_value1_d_overdue"
   },
   {
-    "english": "© OpenStreetMap contributors",
-    "contexts": [
-      "ui.visits_map_view"
-    ],
-    "sources": [
-      "lib/ui/visits_map_view.dart:631"
-    ],
-    "placeholders": [],
-    "key": "visits_map_view_openstreetmap_contributors"
-  },
-  {
     "english": "+ {value1} more",
     "contexts": [
       "ui.home_tab"
@@ -1292,17 +1281,6 @@
     ],
     "placeholders": [],
     "key": "leads_business_or_prospect_name"
-  },
-  {
-    "english": "BusinessOS",
-    "contexts": [
-      "ui.fieldpulse_splash_screen"
-    ],
-    "sources": [
-      "lib/ui/fieldpulse_splash_screen.dart:79"
-    ],
-    "placeholders": [],
-    "key": "fieldpulse_splash_businessos"
   },
   {
     "english": "Busy",
@@ -8855,17 +8833,6 @@
     ],
     "placeholders": [],
     "key": "expense_create_used_for_km_l_fuel_efficiency_reporting"
-  },
-  {
-    "english": "User-Agent",
-    "contexts": [
-      "ui.visits_map_view"
-    ],
-    "sources": [
-      "lib/ui/visits_map_view.dart:459"
-    ],
-    "placeholders": [],
-    "key": "visits_map_view_user_agent"
   },
   {
     "english": "Using safe offline policy",
