@@ -1,5 +1,19 @@
 [
   {
+    "english": "{active} active",
+    "contexts": [
+      "ui.home_tab",
+      "ui.leadership_dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:279",
+      "lib/ui/leadership_dashboard_screen.dart:228"
+    ],
+    "placeholders": [
+      "active"
+    ]
+  },
+  {
     "english": "{customerName} · Calls",
     "contexts": [
       "ui.call_history_screen"
@@ -9,6 +23,57 @@
     ],
     "placeholders": [
       "customerName"
+    ]
+  },
+  {
+    "english": "{effective_distance_km} km",
+    "contexts": [
+      "ui.mileage_screen"
+    ],
+    "sources": [
+      "lib/ui/mileage_screen.dart:131",
+      "lib/ui/mileage_screen.dart:203"
+    ],
+    "placeholders": [
+      "effective_distance_km"
+    ]
+  },
+  {
+    "english": "{fuel_liters} L",
+    "contexts": [
+      "ui.fuel_screen",
+      "ui.mileage_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_screen.dart:94",
+      "lib/ui/mileage_screen.dart:141"
+    ],
+    "placeholders": [
+      "fuel_liters"
+    ]
+  },
+  {
+    "english": "{gps_distance_km} km",
+    "contexts": [
+      "ui.mileage_screen"
+    ],
+    "sources": [
+      "lib/ui/mileage_screen.dart:136"
+    ],
+    "placeholders": [
+      "gps_distance_km"
+    ]
+  },
+  {
+    "english": "{km_per_liter} km/L",
+    "contexts": [
+      "ui.mileage_screen"
+    ],
+    "sources": [
+      "lib/ui/mileage_screen.dart:147"
+    ],
+    "placeholders": [
+      "km_per_liter"
     ]
   },
   {
@@ -23,6 +88,186 @@
       "latitude",
       "longitude",
       "accuracy"
+    ]
+  },
+  {
+    "english": "{length} salesmen",
+    "contexts": [
+      "ui.leadership_dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/leadership_dashboard_screen.dart:431"
+    ],
+    "placeholders": [
+      "length"
+    ]
+  },
+  {
+    "english": "{length}/{length} located",
+    "contexts": [
+      "ui.leadership_dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/leadership_dashboard_screen.dart:338"
+    ],
+    "placeholders": [
+      "length"
+    ]
+  },
+  {
+    "english": "{level} · {active_days} active day(s)",
+    "contexts": [
+      "ui.gamification_screen"
+    ],
+    "sources": [
+      "lib/ui/gamification_screen.dart:134"
+    ],
+    "placeholders": [
+      "level",
+      "active_days"
+    ]
+  },
+  {
+    "english": "{local_pending} local items will be given a sync attempt before End Day.",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:362"
+    ],
+    "placeholders": [
+      "local_pending"
+    ]
+  },
+  {
+    "english": "{milestone_percent}% target · {amount} {currency} · {status}",
+    "contexts": [
+      "ui.gamification_screen"
+    ],
+    "sources": [
+      "lib/ui/gamification_screen.dart:109"
+    ],
+    "placeholders": [
+      "milestone_percent",
+      "amount",
+      "currency",
+      "status"
+    ]
+  },
+  {
+    "english": "{odometer_km} km",
+    "contexts": [
+      "ui.fuel_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_screen.dart:96"
+    ],
+    "placeholders": [
+      "odometer_km"
+    ]
+  },
+  {
+    "english": "{on_duty} on duty",
+    "contexts": [
+      "ui.leadership_dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/leadership_dashboard_screen.dart:216"
+    ],
+    "placeholders": [
+      "on_duty"
+    ]
+  },
+  {
+    "english": "{pending_count} pending",
+    "contexts": [
+      "ui.home_tab",
+      "ui.leadership_dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:299",
+      "lib/ui/leadership_dashboard_screen.dart:234",
+      "lib/ui/leadership_dashboard_screen.dart:240"
+    ],
+    "placeholders": [
+      "pending_count"
+    ]
+  },
+  {
+    "english": "{points} points · Rank #{rank}",
+    "contexts": [
+      "ui.gamification_screen"
+    ],
+    "sources": [
+      "lib/ui/gamification_screen.dart:66"
+    ],
+    "placeholders": [
+      "points",
+      "rank"
+    ]
+  },
+  {
+    "english": "{points} pts",
+    "contexts": [
+      "ui.gamification_screen"
+    ],
+    "sources": [
+      "lib/ui/gamification_screen.dart:136"
+    ],
+    "placeholders": [
+      "points"
+    ]
+  },
+  {
+    "english": "{quantity} {unit} × {unit_price} · Discount {discount_percent}%",
+    "contexts": [
+      "ui.order_detail_screen"
+    ],
+    "sources": [
+      "lib/ui/order_detail_screen.dart:78"
+    ],
+    "placeholders": [
+      "quantity",
+      "unit",
+      "unit_price",
+      "discount_percent"
+    ]
+  },
+  {
+    "english": "{remaining} remaining",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:274"
+    ],
+    "placeholders": [
+      "remaining"
+    ]
+  },
+  {
+    "english": "{roleLabel} · FieldPulse",
+    "contexts": [
+      "ui.leadership_dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/leadership_dashboard_screen.dart:55"
+    ],
+    "placeholders": [
+      "roleLabel"
+    ]
+  },
+  {
+    "english": "{stale} idle · {offline} offline",
+    "contexts": [
+      "ui.leadership_dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/leadership_dashboard_screen.dart:222"
+    ],
+    "placeholders": [
+      "stale",
+      "offline"
     ]
   },
   {
@@ -44,6 +289,18 @@
       "lib/ui/customer_create_screen.dart:302"
     ],
     "placeholders": []
+  },
+  {
+    "english": "+ {value1} more",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:323"
+    ],
+    "placeholders": [
+      "value1"
+    ]
   },
   {
     "english": "${collection['distance_meters'] == null ? '' : ' · customer {distance_meters} m'}",
@@ -108,6 +365,16 @@
     "placeholders": []
   },
   {
+    "english": "30-day leaderboard",
+    "contexts": [
+      "ui.gamification_screen"
+    ],
+    "sources": [
+      "lib/ui/gamification_screen.dart:120"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "A product can appear only once in an order.",
     "contexts": [
       "features.orders.order_repository"
@@ -138,12 +405,54 @@
     "placeholders": []
   },
   {
-    "english": "Add at least one product.",
+    "english": "Achievements",
     "contexts": [
-      "features.orders.order_repository"
+      "ui.gamification_screen"
     ],
     "sources": [
-      "lib/features/orders/order_repository.dart:266"
+      "lib/ui/gamification_screen.dart:69"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Activity",
+    "contexts": [
+      "ui.leadership_dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/leadership_dashboard_screen.dart:152"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Activity timeline",
+    "contexts": [
+      "ui.leads_screen"
+    ],
+    "sources": [
+      "lib/ui/leads_screen.dart:781"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Add activity",
+    "contexts": [
+      "ui.leads_screen"
+    ],
+    "sources": [
+      "lib/ui/leads_screen.dart:766"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Add at least one product.",
+    "contexts": [
+      "features.orders.order_repository",
+      "ui.order_create_screen"
+    ],
+    "sources": [
+      "lib/features/orders/order_repository.dart:266",
+      "lib/ui/order_create_screen.dart:148"
     ],
     "placeholders": []
   },
@@ -178,12 +487,45 @@
     "placeholders": []
   },
   {
-    "english": "Address",
+    "english": "Add lead activity",
     "contexts": [
-      "ui.customer_create_screen"
+      "ui.leads_screen"
     ],
     "sources": [
-      "lib/ui/customer_create_screen.dart:312"
+      "lib/ui/leads_screen.dart:828"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Add product",
+    "contexts": [
+      "ui.order_create_screen"
+    ],
+    "sources": [
+      "lib/ui/order_create_screen.dart:339"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Add the first refueling with vehicle, odometer, GPS and receipt evidence.",
+    "contexts": [
+      "ui.fuel_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_screen.dart:72"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Address",
+    "contexts": [
+      "ui.customer_create_screen",
+      "ui.leads_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:312",
+      "lib/ui/leads_screen.dart:286",
+      "lib/ui/leads_screen.dart:556"
     ],
     "placeholders": []
   },
@@ -191,11 +533,23 @@
     "english": "All",
     "contexts": [
       "ui.appointments_screen",
-      "ui.follow_ups_screen"
+      "ui.follow_ups_screen",
+      "ui.leads_screen"
     ],
     "sources": [
       "lib/ui/appointments_screen.dart:363",
-      "lib/ui/follow_ups_screen.dart:365"
+      "lib/ui/follow_ups_screen.dart:365",
+      "lib/ui/leads_screen.dart:127"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "All available products are already added.",
+    "contexts": [
+      "ui.order_create_screen"
+    ],
+    "sources": [
+      "lib/ui/order_create_screen.dart:78"
     ],
     "placeholders": []
   },
@@ -242,12 +596,32 @@
     "placeholders": []
   },
   {
+    "english": "An invoice is available only for approved orders.",
+    "contexts": [
+      "ui.invoice_screen"
+    ],
+    "sources": [
+      "lib/ui/invoice_screen.dart:16"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "AND accuracy<=? AND is_mock_location=0",
     "contexts": [
       "features.mileage.mileage_repository"
     ],
     "sources": [
       "lib/features/mileage/mileage_repository.dart:162"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "and implausible movement. When start and end odometer",
+    "contexts": [
+      "ui.mileage_screen"
+    ],
+    "sources": [
+      "lib/ui/mileage_screen.dart:229"
     ],
     "placeholders": []
   },
@@ -337,12 +711,52 @@
     "placeholders": []
   },
   {
+    "english": "Appointments, reminders and offline schedule",
+    "contexts": [
+      "ui.more_screen"
+    ],
+    "sources": [
+      "lib/ui/more_screen.dart:101"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Approved FieldPulse order · available offline on this device.",
+    "contexts": [
+      "ui.invoice_screen"
+    ],
+    "sources": [
+      "lib/ui/invoice_screen.dart:104"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Assigned actions stay available offline.",
     "contexts": [
       "ui.follow_ups_screen"
     ],
     "sources": [
       "lib/ui/follow_ups_screen.dart:339"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Assigned customer actions, due dates and completion",
+    "contexts": [
+      "ui.more_screen"
+    ],
+    "sources": [
+      "lib/ui/more_screen.dart:113"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Assigned routes and customer sequence",
+    "contexts": [
+      "ui.more_screen"
+    ],
+    "sources": [
+      "lib/ui/more_screen.dart:187"
     ],
     "placeholders": []
   },
@@ -355,6 +769,41 @@
       "lib/ui/appointments_screen.dart:204"
     ],
     "placeholders": []
+  },
+  {
+    "english": "Attendance history",
+    "contexts": [
+      "ui.history_screen",
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/history_screen.dart:14",
+      "lib/ui/home_tab.dart:724"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Automatic",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:541"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Automatic work day · {workdayStartTime}–{workdayEndTime}",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:586"
+    ],
+    "placeholders": [
+      "workdayStartTime",
+      "workdayEndTime"
+    ]
   },
   {
     "english": "Available to collect: {outstanding_balance} {currency}",
@@ -384,12 +833,14 @@
     "contexts": [
       "state.attendance_controller",
       "ui.customer_create_screen",
-      "ui.customer_statement_screen"
+      "ui.customer_statement_screen",
+      "ui.order_create_screen"
     ],
     "sources": [
       "lib/state/attendance_controller.dart:32",
       "lib/ui/customer_create_screen.dart:147",
-      "lib/ui/customer_statement_screen.dart:61"
+      "lib/ui/customer_statement_screen.dart:61",
+      "lib/ui/order_create_screen.dart:166"
     ],
     "placeholders": []
   },
@@ -436,6 +887,17 @@
     "placeholders": []
   },
   {
+    "english": "Business or prospect name",
+    "contexts": [
+      "ui.leads_screen"
+    ],
+    "sources": [
+      "lib/ui/leads_screen.dart:260",
+      "lib/ui/leads_screen.dart:528"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "BusinessOS",
     "contexts": [
       "ui.fieldpulse_splash_screen"
@@ -464,6 +926,27 @@
     ],
     "sources": [
       "lib/ui/collection_create_screen.dart:199"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Cached product catalog and pricing",
+    "contexts": [
+      "ui.more_screen"
+    ],
+    "sources": [
+      "lib/ui/more_screen.dart:208"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Calendar",
+    "contexts": [
+      "ui.more_screen"
+    ],
+    "sources": [
+      "lib/ui/more_screen.dart:99",
+      "lib/ui/more_screen.dart:105"
     ],
     "placeholders": []
   },
@@ -582,13 +1065,21 @@
     "contexts": [
       "ui.appointments_screen",
       "ui.customers_screen",
-      "ui.follow_ups_screen"
+      "ui.follow_ups_screen",
+      "ui.home_tab",
+      "ui.leadership_dashboard_screen",
+      "ui.leads_screen"
     ],
     "sources": [
       "lib/ui/appointments_screen.dart:561",
       "lib/ui/customers_screen.dart:213",
       "lib/ui/follow_ups_screen.dart:276",
-      "lib/ui/follow_ups_screen.dart:499"
+      "lib/ui/follow_ups_screen.dart:499",
+      "lib/ui/home_tab.dart:121",
+      "lib/ui/home_tab.dart:178",
+      "lib/ui/home_tab.dart:376",
+      "lib/ui/leadership_dashboard_screen.dart:486",
+      "lib/ui/leads_screen.dart:859"
     ],
     "placeholders": []
   },
@@ -599,6 +1090,16 @@
     ],
     "sources": [
       "lib/ui/follow_ups_screen.dart:258"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Capture prospects and move opportunities toward conversion.",
+    "contexts": [
+      "ui.leads_screen"
+    ],
+    "sources": [
+      "lib/ui/leads_screen.dart:83"
     ],
     "placeholders": []
   },
@@ -615,10 +1116,12 @@
   {
     "english": "Cash",
     "contexts": [
-      "ui.collection_create_screen"
+      "ui.collection_create_screen",
+      "ui.order_create_screen"
     ],
     "sources": [
-      "lib/ui/collection_create_screen.dart:33"
+      "lib/ui/collection_create_screen.dart:33",
+      "lib/ui/order_create_screen.dart:309"
     ],
     "placeholders": []
   },
@@ -784,6 +1287,41 @@
     ]
   },
   {
+    "english": "Collections",
+    "contexts": [
+      "ui.home_tab",
+      "ui.leadership_dashboard_screen",
+      "ui.more_screen"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:287",
+      "lib/ui/leadership_dashboard_screen.dart:238",
+      "lib/ui/more_screen.dart:123",
+      "lib/ui/more_screen.dart:127"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Company / Tenant ID",
+    "contexts": [
+      "ui.login_screen"
+    ],
+    "sources": [
+      "lib/ui/login_screen.dart:281"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Company policy synced",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:498"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Company timezone is unavailable.",
     "contexts": [
       "state.attendance_controller"
@@ -793,6 +1331,28 @@
       "lib/state/attendance_controller.dart:501"
     ],
     "placeholders": []
+  },
+  {
+    "english": "Company tracking policy",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:741"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Company: {rememberedTenant}",
+    "contexts": [
+      "ui.login_screen"
+    ],
+    "sources": [
+      "lib/ui/login_screen.dart:263"
+    ],
+    "placeholders": [
+      "rememberedTenant"
+    ]
   },
   {
     "english": "Complete",
@@ -828,12 +1388,35 @@
     "placeholders": []
   },
   {
-    "english": "Contact person",
+    "english": "Confirm End Day",
     "contexts": [
-      "ui.customer_create_screen"
+      "ui.home_tab"
     ],
     "sources": [
-      "lib/ui/customer_create_screen.dart:266"
+      "lib/ui/home_tab.dart:380"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Contact person",
+    "contexts": [
+      "ui.customer_create_screen",
+      "ui.leads_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:266",
+      "lib/ui/leads_screen.dart:267",
+      "lib/ui/leads_screen.dart:535"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Convert to customer",
+    "contexts": [
+      "ui.leads_screen"
+    ],
+    "sources": [
+      "lib/ui/leads_screen.dart:776"
     ],
     "placeholders": []
   },
@@ -846,6 +1429,30 @@
       "lib/ui/customer_create_screen.dart:139"
     ],
     "placeholders": []
+  },
+  {
+    "english": "Could not load team recognition: {error}",
+    "contexts": [
+      "ui.gamification_screen"
+    ],
+    "sources": [
+      "lib/ui/gamification_screen.dart:35"
+    ],
+    "placeholders": [
+      "error"
+    ]
+  },
+  {
+    "english": "Could not send notification: {error}",
+    "contexts": [
+      "ui.leadership_dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/leadership_dashboard_screen.dart:511"
+    ],
+    "placeholders": [
+      "error"
+    ]
   },
   {
     "english": "CREATE INDEX IF NOT EXISTS idx_appointments_sync",
@@ -978,18 +1585,33 @@
     "placeholders": []
   },
   {
+    "english": "Credit",
+    "contexts": [
+      "ui.order_create_screen"
+    ],
+    "sources": [
+      "lib/ui/order_create_screen.dart:310"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Currency",
     "contexts": [
       "ui.collection_create_screen",
       "ui.customer_statement_screen",
       "ui.expense_create_screen",
-      "ui.fuel_create_screen"
+      "ui.fuel_create_screen",
+      "ui.invoice_screen",
+      "ui.leads_screen"
     ],
     "sources": [
       "lib/ui/collection_create_screen.dart:179",
       "lib/ui/customer_statement_screen.dart:160",
       "lib/ui/expense_create_screen.dart:207",
-      "lib/ui/fuel_create_screen.dart:229"
+      "lib/ui/fuel_create_screen.dart:229",
+      "lib/ui/invoice_screen.dart:47",
+      "lib/ui/leads_screen.dart:354",
+      "lib/ui/leads_screen.dart:647"
     ],
     "placeholders": []
   },
@@ -1002,6 +1624,16 @@
     "sources": [
       "lib/features/collections/collection_repository.dart:92",
       "lib/features/expenses/expense_repository.dart:116"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Current goals and authoritative progress",
+    "contexts": [
+      "ui.more_screen"
+    ],
+    "sources": [
+      "lib/ui/more_screen.dart:166"
     ],
     "placeholders": []
   },
@@ -1022,7 +1654,11 @@
       "ui.collection_create_screen",
       "ui.collections_screen",
       "ui.customers_screen",
-      "ui.follow_ups_screen"
+      "ui.follow_ups_screen",
+      "ui.home_tab",
+      "ui.invoice_screen",
+      "ui.order_create_screen",
+      "ui.order_detail_screen"
     ],
     "sources": [
       "lib/ui/appointments_screen.dart:125",
@@ -1036,7 +1672,12 @@
       "lib/ui/follow_ups_screen.dart:122",
       "lib/ui/follow_ups_screen.dart:130",
       "lib/ui/follow_ups_screen.dart:329",
-      "lib/ui/follow_ups_screen.dart:412"
+      "lib/ui/follow_ups_screen.dart:412",
+      "lib/ui/home_tab.dart:666",
+      "lib/ui/invoice_screen.dart:39",
+      "lib/ui/order_create_screen.dart:291",
+      "lib/ui/order_create_screen.dart:296",
+      "lib/ui/order_detail_screen.dart:43"
     ],
     "placeholders": []
   },
@@ -1057,6 +1698,16 @@
     ],
     "sources": [
       "lib/ui/collections_screen.dart:42"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Customer balances, receipts and payments",
+    "contexts": [
+      "ui.more_screen"
+    ],
+    "sources": [
+      "lib/ui/more_screen.dart:124"
     ],
     "placeholders": []
   },
@@ -1151,6 +1802,18 @@
     "placeholders": []
   },
   {
+    "english": "Customer: {converted_customer_name}",
+    "contexts": [
+      "ui.leads_screen"
+    ],
+    "sources": [
+      "lib/ui/leads_screen.dart:520"
+    ],
+    "placeholders": [
+      "converted_customer_name"
+    ]
+  },
+  {
     "english": "Customer: {customer_name}",
     "contexts": [
       "ui.collection_detail_screen"
@@ -1163,6 +1826,18 @@
     ]
   },
   {
+    "english": "Customer: {name}",
+    "contexts": [
+      "ui.order_create_screen"
+    ],
+    "sources": [
+      "lib/ui/order_create_screen.dart:184"
+    ],
+    "placeholders": [
+      "name"
+    ]
+  },
+  {
     "english": "Customers",
     "contexts": [
       "ui.dashboard_screen"
@@ -1170,6 +1845,26 @@
     "sources": [
       "lib/ui/dashboard_screen.dart:51",
       "lib/ui/dashboard_screen.dart:223"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Date",
+    "contexts": [
+      "ui.invoice_screen"
+    ],
+    "sources": [
+      "lib/ui/invoice_screen.dart:43"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "date DESC",
+    "contexts": [
+      "ui.history_screen"
+    ],
+    "sources": [
+      "lib/ui/history_screen.dart:22"
     ],
     "placeholders": []
   },
@@ -1217,12 +1912,48 @@
     "placeholders": []
   },
   {
-    "english": "Discount must be between 0 and 100.",
+    "english": "Discount",
     "contexts": [
-      "features.orders.order_repository"
+      "ui.invoice_screen",
+      "ui.order_create_screen",
+      "ui.order_detail_screen"
     ],
     "sources": [
-      "lib/features/orders/order_repository.dart:305"
+      "lib/ui/invoice_screen.dart:78",
+      "lib/ui/order_create_screen.dart:207",
+      "lib/ui/order_detail_screen.dart:99"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Discount %",
+    "contexts": [
+      "ui.order_create_screen"
+    ],
+    "sources": [
+      "lib/ui/order_create_screen.dart:404"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Discount must be between 0 and 100.",
+    "contexts": [
+      "features.orders.order_repository",
+      "ui.order_create_screen"
+    ],
+    "sources": [
+      "lib/features/orders/order_repository.dart:305",
+      "lib/ui/order_create_screen.dart:127"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Distance",
+    "contexts": [
+      "ui.mileage_screen"
+    ],
+    "sources": [
+      "lib/ui/mileage_screen.dart:129"
     ],
     "placeholders": []
   },
@@ -1249,6 +1980,46 @@
     ]
   },
   {
+    "english": "Due date",
+    "contexts": [
+      "ui.invoice_screen"
+    ],
+    "sources": [
+      "lib/ui/invoice_screen.dart:46"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "e.g. shahab-demo",
+    "contexts": [
+      "ui.login_screen"
+    ],
+    "sources": [
+      "lib/ui/login_screen.dart:282"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Earned bonuses",
+    "contexts": [
+      "ui.gamification_screen"
+    ],
+    "sources": [
+      "lib/ui/gamification_screen.dart:100"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Edit",
+    "contexts": [
+      "ui.order_create_screen"
+    ],
+    "sources": [
+      "lib/ui/order_create_screen.dart:228"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Edit customer",
     "contexts": [
       "ui.customer_create_screen"
@@ -1259,12 +2030,67 @@
     "placeholders": []
   },
   {
-    "english": "Email",
+    "english": "Efficiency",
     "contexts": [
-      "ui.customer_create_screen"
+      "ui.mileage_screen"
     ],
     "sources": [
-      "lib/ui/customer_create_screen.dart:296"
+      "lib/ui/mileage_screen.dart:144"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Email",
+    "contexts": [
+      "ui.customer_create_screen",
+      "ui.leads_screen",
+      "ui.login_screen"
+    ],
+    "sources": [
+      "lib/ui/customer_create_screen.dart:296",
+      "lib/ui/leads_screen.dart:280",
+      "lib/ui/leads_screen.dart:549",
+      "lib/ui/login_screen.dart:297"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "End Day",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:561"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "End Day Reconciliation",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:246"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "End odometer km (optional)",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:339"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "End-of-day remarks (optional)",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:352"
     ],
     "placeholders": []
   },
@@ -1285,6 +2111,16 @@
     ],
     "sources": [
       "lib/ui/customer_create_screen.dart:362"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Enter a reason before marking this lead lost.",
+    "contexts": [
+      "ui.leads_screen"
+    ],
+    "sources": [
+      "lib/ui/leads_screen.dart:726"
     ],
     "placeholders": []
   },
@@ -1335,12 +2171,27 @@
   {
     "english": "Enter a valid odometer reading.",
     "contexts": [
-      "ui.fuel_create_screen"
+      "ui.fuel_create_screen",
+      "ui.home_tab"
     ],
     "sources": [
-      "lib/ui/fuel_create_screen.dart:102"
+      "lib/ui/fuel_create_screen.dart:102",
+      "lib/ui/home_tab.dart:131",
+      "lib/ui/home_tab.dart:405"
     ],
     "placeholders": []
+  },
+  {
+    "english": "Enter a valid quantity for {name}.",
+    "contexts": [
+      "ui.order_create_screen"
+    ],
+    "sources": [
+      "lib/ui/order_create_screen.dart:122"
+    ],
+    "placeholders": [
+      "name"
+    ]
   },
   {
     "english": "Enter a valid unit price.",
@@ -1349,6 +2200,16 @@
     ],
     "sources": [
       "lib/ui/fuel_create_screen.dart:131"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Enter your email and password to continue.",
+    "contexts": [
+      "ui.login_screen"
+    ],
+    "sources": [
+      "lib/ui/login_screen.dart:106"
     ],
     "placeholders": []
   },
@@ -1379,6 +2240,28 @@
     ],
     "sources": [
       "lib/core/db/app_database.dart:52"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Estimated value",
+    "contexts": [
+      "ui.leads_screen"
+    ],
+    "sources": [
+      "lib/ui/leads_screen.dart:342",
+      "lib/ui/leads_screen.dart:634"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Expected close date",
+    "contexts": [
+      "ui.leads_screen"
+    ],
+    "sources": [
+      "lib/ui/leads_screen.dart:365",
+      "lib/ui/leads_screen.dart:658"
     ],
     "placeholders": []
   },
@@ -1452,6 +2335,19 @@
     ]
   },
   {
+    "english": "Expenses",
+    "contexts": [
+      "ui.home_tab",
+      "ui.more_screen"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:292",
+      "lib/ui/more_screen.dart:133",
+      "lib/ui/more_screen.dart:136"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "failed_{phase}",
     "contexts": [
       "features.followups.follow_up_repository"
@@ -1484,12 +2380,32 @@
     "placeholders": []
   },
   {
+    "english": "FieldPulse could not identify this device. Restart the app and try again.",
+    "contexts": [
+      "ui.login_screen"
+    ],
+    "sources": [
+      "lib/ui/login_screen.dart:35"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Filled to full tank",
     "contexts": [
       "ui.fuel_create_screen"
     ],
     "sources": [
       "lib/ui/fuel_create_screen.dart:249"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Final pricing is revalidated by the server when this order synchronizes.",
+    "contexts": [
+      "ui.order_create_screen"
+    ],
+    "sources": [
+      "lib/ui/order_create_screen.dart:219"
     ],
     "placeholders": []
   },
@@ -1568,10 +2484,13 @@
   {
     "english": "Follow-ups",
     "contexts": [
-      "ui.customers_screen"
+      "ui.customers_screen",
+      "ui.more_screen"
     ],
     "sources": [
-      "lib/ui/customers_screen.dart:418"
+      "lib/ui/customers_screen.dart:418",
+      "lib/ui/more_screen.dart:111",
+      "lib/ui/more_screen.dart:117"
     ],
     "placeholders": []
   },
@@ -1606,6 +2525,30 @@
     "placeholders": []
   },
   {
+    "english": "Fuel",
+    "contexts": [
+      "ui.fuel_screen",
+      "ui.mileage_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_screen.dart:119",
+      "lib/ui/mileage_screen.dart:139"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Fuel {fuel_liters} L",
+    "contexts": [
+      "ui.mileage_screen"
+    ],
+    "sources": [
+      "lib/ui/mileage_screen.dart:215"
+    ],
+    "placeholders": [
+      "fuel_liters"
+    ]
+  },
+  {
     "english": "Fuel details",
     "contexts": [
       "ui.expense_create_screen"
@@ -1622,6 +2565,16 @@
     ],
     "sources": [
       "lib/features/expenses/expense_repository.dart:80"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Fuel entries",
+    "contexts": [
+      "ui.fuel_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_screen.dart:38"
     ],
     "placeholders": []
   },
@@ -1646,6 +2599,17 @@
     "placeholders": []
   },
   {
+    "english": "Fuel Management",
+    "contexts": [
+      "ui.more_screen"
+    ],
+    "sources": [
+      "lib/ui/more_screen.dart:142",
+      "lib/ui/more_screen.dart:148"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "fuel quantity",
     "contexts": [
       "ui.expense_create_screen",
@@ -1664,6 +2628,16 @@
     ],
     "sources": [
       "lib/features/expenses/expense_repository.dart:224"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Fuel station",
+    "contexts": [
+      "ui.fuel_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_screen.dart:95"
     ],
     "placeholders": []
   },
@@ -1722,6 +2696,16 @@
     ]
   },
   {
+    "english": "Full tank",
+    "contexts": [
+      "ui.fuel_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_screen.dart:97"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Full-tank entries are used for vehicle km/L calculations.",
     "contexts": [
       "ui.fuel_create_screen"
@@ -1738,6 +2722,16 @@
     ],
     "sources": [
       "lib/ui/fuel_create_screen.dart:285"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Gamification is not enabled for this organization.",
+    "contexts": [
+      "ui.gamification_screen"
+    ],
+    "sources": [
+      "lib/ui/gamification_screen.dart:40"
     ],
     "placeholders": []
   },
@@ -1763,12 +2757,56 @@
     "placeholders": []
   },
   {
+    "english": "Good day, {value1}",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:491"
+    ],
+    "placeholders": [
+      "value1"
+    ]
+  },
+  {
+    "english": "GPS {gps_distance_km} km",
+    "contexts": [
+      "ui.mileage_screen"
+    ],
+    "sources": [
+      "lib/ui/mileage_screen.dart:209"
+    ],
+    "placeholders": [
+      "gps_distance_km"
+    ]
+  },
+  {
     "english": "GPS captured automatically",
     "contexts": [
       "ui.fuel_create_screen"
     ],
     "sources": [
       "lib/ui/fuel_create_screen.dart:313"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "GPS distance filters mock locations, low-accuracy points,",
+    "contexts": [
+      "ui.mileage_screen"
+    ],
+    "sources": [
+      "lib/ui/mileage_screen.dart:228"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "GPS distance, odometer variance and fuel efficiency",
+    "contexts": [
+      "ui.more_screen"
+    ],
+    "sources": [
+      "lib/ui/more_screen.dart:156"
     ],
     "placeholders": []
   },
@@ -1799,6 +2837,28 @@
     ]
   },
   {
+    "english": "GPS: {value1}",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:749"
+    ],
+    "placeholders": [
+      "value1"
+    ]
+  },
+  {
+    "english": "Green = online · orange = idle · grey = offline/stale location",
+    "contexts": [
+      "ui.leadership_dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/leadership_dashboard_screen.dart:390"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Hello {name},",
     "contexts": [
       "ui.customers_screen"
@@ -1811,6 +2871,28 @@
     ]
   },
   {
+    "english": "Hello, {value1}",
+    "contexts": [
+      "ui.leadership_dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/leadership_dashboard_screen.dart:98"
+    ],
+    "placeholders": [
+      "value1"
+    ]
+  },
+  {
+    "english": "Hide password",
+    "contexts": [
+      "ui.login_screen"
+    ],
+    "sources": [
+      "lib/ui/login_screen.dart:316"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Home",
     "contexts": [
       "ui.dashboard_screen"
@@ -1819,6 +2901,19 @@
       "lib/ui/dashboard_screen.dart:218"
     ],
     "placeholders": []
+  },
+  {
+    "english": "Intervals: {value1}s moving / {value2}s stationary",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:752"
+    ],
+    "placeholders": [
+      "value1",
+      "value2"
+    ]
   },
   {
     "english": "Invalid server response.",
@@ -1831,12 +2926,66 @@
     "placeholders": []
   },
   {
+    "english": "Invoice",
+    "contexts": [
+      "ui.order_detail_screen"
+    ],
+    "sources": [
+      "lib/ui/order_detail_screen.dart:20"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "INVOICE",
+    "contexts": [
+      "ui.invoice_screen"
+    ],
+    "sources": [
+      "lib/ui/invoice_screen.dart:32"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Invoice {order_number}",
+    "contexts": [
+      "ui.invoice_screen"
+    ],
+    "sources": [
+      "lib/ui/invoice_screen.dart:22"
+    ],
+    "placeholders": [
+      "order_number"
+    ]
+  },
+  {
     "english": "is_mock_location INTEGER NOT NULL DEFAULT 0,",
     "contexts": [
       "core.db.app_database"
     ],
     "sources": [
       "lib/core/db/app_database.dart:204"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Items",
+    "contexts": [
+      "ui.invoice_screen",
+      "ui.order_detail_screen"
+    ],
+    "sources": [
+      "lib/ui/invoice_screen.dart:49",
+      "lib/ui/order_detail_screen.dart:71"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Keep going — achievements unlock from verified results",
+    "contexts": [
+      "ui.gamification_screen"
+    ],
+    "sources": [
+      "lib/ui/gamification_screen.dart:81"
     ],
     "placeholders": []
   },
@@ -1884,6 +3033,17 @@
     "placeholders": []
   },
   {
+    "english": "Lead",
+    "contexts": [
+      "ui.leads_screen"
+    ],
+    "sources": [
+      "lib/ui/leads_screen.dart:173",
+      "lib/ui/leads_screen.dart:488"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Lead activity saved locally.",
     "contexts": [
       "state.lead_controller"
@@ -1910,6 +3070,16 @@
     ],
     "sources": [
       "lib/state/lead_controller.dart:234"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Lead name is required.",
+    "contexts": [
+      "ui.leads_screen"
+    ],
+    "sources": [
+      "lib/ui/leads_screen.dart:716"
     ],
     "placeholders": []
   },
@@ -1966,12 +3136,43 @@
     ]
   },
   {
+    "english": "Leads & Pipeline",
+    "contexts": [
+      "ui.more_screen"
+    ],
+    "sources": [
+      "lib/ui/more_screen.dart:87",
+      "lib/ui/more_screen.dart:93"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Leads & sales pipeline",
+    "contexts": [
+      "ui.leads_screen"
+    ],
+    "sources": [
+      "lib/ui/leads_screen.dart:75"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Leave blank to derive it from amount ÷ liters.",
     "contexts": [
       "ui.expense_create_screen"
     ],
     "sources": [
       "lib/ui/expense_create_screen.dart:183"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Linked to customer visit",
+    "contexts": [
+      "ui.order_create_screen"
+    ],
+    "sources": [
+      "lib/ui/order_create_screen.dart:187"
     ],
     "placeholders": []
   },
@@ -1996,12 +3197,32 @@
     "placeholders": []
   },
   {
+    "english": "Live",
+    "contexts": [
+      "ui.leadership_dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/leadership_dashboard_screen.dart:220"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Local photo file is unavailable.",
     "contexts": [
       "features.visits.visit_repository"
     ],
     "sources": [
       "lib/features/visits/visit_repository.dart:794"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Local records remain available offline",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:725"
     ],
     "placeholders": []
   },
@@ -2042,6 +3263,16 @@
     ],
     "sources": [
       "lib/ui/appointments_screen.dart:234"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Location is stored locally first and syncs when connectivity is available.",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:552"
     ],
     "placeholders": []
   },
@@ -2140,6 +3371,26 @@
     "placeholders": []
   },
   {
+    "english": "Lost reason",
+    "contexts": [
+      "ui.leads_screen"
+    ],
+    "sources": [
+      "lib/ui/leads_screen.dart:696"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Manual",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:542"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Meeting",
     "contexts": [
       "ui.appointments_screen"
@@ -2174,11 +3425,13 @@
   {
     "english": "Message",
     "contexts": [
-      "ui.customers_screen"
+      "ui.customers_screen",
+      "ui.leadership_dashboard_screen"
     ],
     "sources": [
       "lib/ui/customers_screen.dart:203",
-      "lib/ui/customers_screen.dart:440"
+      "lib/ui/customers_screen.dart:440",
+      "lib/ui/leadership_dashboard_screen.dart:481"
     ],
     "placeholders": []
   },
@@ -2213,6 +3466,37 @@
     "placeholders": []
   },
   {
+    "english": "Mileage",
+    "contexts": [
+      "ui.more_screen"
+    ],
+    "sources": [
+      "lib/ui/more_screen.dart:154",
+      "lib/ui/more_screen.dart:159"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Missed / remaining customers",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:306"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "mistake, reopen the same attendance session to continue",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:567"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Mobile money",
     "contexts": [
       "ui.collection_create_screen"
@@ -2230,6 +3514,17 @@
     "sources": [
       "lib/ui/dashboard_screen.dart:54",
       "lib/ui/dashboard_screen.dart:238"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "My Account",
+    "contexts": [
+      "ui.more_screen"
+    ],
+    "sources": [
+      "lib/ui/more_screen.dart:50",
+      "lib/ui/more_screen.dart:56"
     ],
     "placeholders": []
   },
@@ -2294,12 +3589,63 @@
     "placeholders": []
   },
   {
+    "english": "New lead",
+    "contexts": [
+      "ui.leads_screen"
+    ],
+    "sources": [
+      "lib/ui/leads_screen.dart:51",
+      "lib/ui/leads_screen.dart:249"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "New order",
+    "contexts": [
+      "ui.order_create_screen"
+    ],
+    "sources": [
+      "lib/ui/order_create_screen.dart:285"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Next assigned visit",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:650"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No active reporting assignments found.",
+    "contexts": [
+      "ui.leadership_dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/leadership_dashboard_screen.dart:127"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "No active work day was found.",
     "contexts": [
       "state.attendance_controller"
     ],
     "sources": [
       "lib/state/attendance_controller.dart:372"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No activity cached yet.",
+    "contexts": [
+      "ui.leads_screen"
+    ],
+    "sources": [
+      "lib/ui/leads_screen.dart:786"
     ],
     "placeholders": []
   },
@@ -2322,6 +3668,16 @@
     ],
     "sources": [
       "lib/ui/appointments_screen.dart:397"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No approved fuel cost",
+    "contexts": [
+      "ui.mileage_screen"
+    ],
+    "sources": [
+      "lib/ui/mileage_screen.dart:69"
     ],
     "placeholders": []
   },
@@ -2386,6 +3742,16 @@
     "placeholders": []
   },
   {
+    "english": "No connection to the server. Check your internet connection and try again.",
+    "contexts": [
+      "ui.login_screen"
+    ],
+    "sources": [
+      "lib/ui/login_screen.dart:42"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "No customer",
     "contexts": [
       "ui.appointments_screen"
@@ -2436,6 +3802,56 @@
     "placeholders": []
   },
   {
+    "english": "No fuel entries yet.",
+    "contexts": [
+      "ui.fuel_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_screen.dart:69"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No leads in this stage.",
+    "contexts": [
+      "ui.leads_screen"
+    ],
+    "sources": [
+      "lib/ui/leads_screen.dart:156"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No mileage is available yet. Start and end a work day to create a record.",
+    "contexts": [
+      "ui.mileage_screen"
+    ],
+    "sources": [
+      "lib/ui/mileage_screen.dart:181"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No notifications yet",
+    "contexts": [
+      "ui.notifications_screen"
+    ],
+    "sources": [
+      "lib/ui/notifications_screen.dart:38"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No orders recorded yet.",
+    "contexts": [
+      "ui.orders_screen"
+    ],
+    "sources": [
+      "lib/ui/orders_screen.dart:51"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "No phone",
     "contexts": [
       "ui.customers_screen"
@@ -2443,6 +3859,16 @@
     "sources": [
       "lib/ui/customers_screen.dart:439",
       "lib/ui/customers_screen.dart:449"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No products added yet.",
+    "contexts": [
+      "ui.order_create_screen"
+    ],
+    "sources": [
+      "lib/ui/order_create_screen.dart:348"
     ],
     "placeholders": []
   },
@@ -2457,12 +3883,42 @@
     "placeholders": []
   },
   {
+    "english": "No recent team activity.",
+    "contexts": [
+      "ui.leadership_dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/leadership_dashboard_screen.dart:141"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "No transactions in this period.",
     "contexts": [
       "ui.customer_statement_screen"
     ],
     "sources": [
       "lib/ui/customer_statement_screen.dart:250"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No vehicle reference recorded.",
+    "contexts": [
+      "ui.mileage_screen"
+    ],
+    "sources": [
+      "lib/ui/mileage_screen.dart:156"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No work days yet.",
+    "contexts": [
+      "ui.history_screen"
+    ],
+    "sources": [
+      "lib/ui/history_screen.dart:30"
     ],
     "placeholders": []
   },
@@ -2489,10 +3945,12 @@
   {
     "english": "Not set",
     "contexts": [
-      "ui.appointments_screen"
+      "ui.appointments_screen",
+      "ui.leads_screen"
     ],
     "sources": [
-      "lib/ui/appointments_screen.dart:172"
+      "lib/ui/appointments_screen.dart:172",
+      "lib/ui/leads_screen.dart:885"
     ],
     "placeholders": []
   },
@@ -2500,11 +3958,14 @@
     "english": "Notes",
     "contexts": [
       "ui.appointments_screen",
-      "ui.follow_ups_screen"
+      "ui.follow_ups_screen",
+      "ui.leads_screen"
     ],
     "sources": [
       "lib/ui/appointments_screen.dart:244",
-      "lib/ui/follow_ups_screen.dart:212"
+      "lib/ui/follow_ups_screen.dart:212",
+      "lib/ui/leads_screen.dart:396",
+      "lib/ui/leads_screen.dart:706"
     ],
     "placeholders": []
   },
@@ -2514,13 +3975,15 @@
       "ui.collection_create_screen",
       "ui.customers_screen",
       "ui.expense_create_screen",
-      "ui.fuel_create_screen"
+      "ui.fuel_create_screen",
+      "ui.order_create_screen"
     ],
     "sources": [
       "lib/ui/collection_create_screen.dart:262",
       "lib/ui/customers_screen.dart:117",
       "lib/ui/expense_create_screen.dart:230",
-      "lib/ui/fuel_create_screen.dart:305"
+      "lib/ui/fuel_create_screen.dart:305",
+      "lib/ui/order_create_screen.dart:323"
     ],
     "placeholders": []
   },
@@ -2528,28 +3991,72 @@
     "english": "Notes: {notes}",
     "contexts": [
       "ui.collection_detail_screen",
-      "ui.expenses_screen"
+      "ui.expenses_screen",
+      "ui.invoice_screen",
+      "ui.order_detail_screen"
     ],
     "sources": [
       "lib/ui/collection_detail_screen.dart:55",
-      "lib/ui/expenses_screen.dart:65"
+      "lib/ui/expenses_screen.dart:65",
+      "lib/ui/invoice_screen.dart:98",
+      "lib/ui/order_detail_screen.dart:53"
     ],
     "placeholders": [
       "notes"
     ]
   },
   {
+    "english": "Notification sent.",
+    "contexts": [
+      "ui.leadership_dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/leadership_dashboard_screen.dart:506"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Notifications",
     "contexts": [
       "app",
-      "ui.dashboard_screen"
+      "ui.dashboard_screen",
+      "ui.leadership_dashboard_screen",
+      "ui.more_screen"
     ],
     "sources": [
       "lib/app.dart:52",
       "lib/ui/dashboard_screen.dart:168",
-      "lib/ui/dashboard_screen.dart:172"
+      "lib/ui/dashboard_screen.dart:172",
+      "lib/ui/leadership_dashboard_screen.dart:59",
+      "lib/ui/leadership_dashboard_screen.dart:63",
+      "lib/ui/more_screen.dart:62",
+      "lib/ui/more_screen.dart:68"
     ],
     "placeholders": []
+  },
+  {
+    "english": "Notify {salesman_name}",
+    "contexts": [
+      "ui.leadership_dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/leadership_dashboard_screen.dart:474"
+    ],
+    "placeholders": [
+      "salesman_name"
+    ]
+  },
+  {
+    "english": "Odometer {odometer} km",
+    "contexts": [
+      "ui.mileage_screen"
+    ],
+    "sources": [
+      "lib/ui/mileage_screen.dart:211"
+    ],
+    "placeholders": [
+      "odometer"
+    ]
   },
   {
     "english": "Odometer cannot be negative.",
@@ -2612,6 +4119,28 @@
     "placeholders": [
       "odometer_km"
     ]
+  },
+  {
+    "english": "Offline claims and finance review status",
+    "contexts": [
+      "ui.more_screen"
+    ],
+    "sources": [
+      "lib/ui/more_screen.dart:134"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Offline estimate",
+    "contexts": [
+      "ui.mileage_screen",
+      "ui.order_create_screen"
+    ],
+    "sources": [
+      "lib/ui/mileage_screen.dart:118",
+      "lib/ui/order_create_screen.dart:212"
+    ],
+    "placeholders": []
   },
   {
     "english": "Offline expense",
@@ -2730,6 +4259,18 @@
     ],
     "sources": [
       "lib/state/visit_controller.dart:340"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Offline order",
+    "contexts": [
+      "ui.order_detail_screen",
+      "ui.orders_screen"
+    ],
+    "sources": [
+      "lib/ui/order_detail_screen.dart:16",
+      "lib/ui/orders_screen.dart:73"
     ],
     "placeholders": []
   },
@@ -2897,6 +4438,16 @@
     "placeholders": []
   },
   {
+    "english": "Open",
+    "contexts": [
+      "ui.leads_screen"
+    ],
+    "sources": [
+      "lib/ui/leads_screen.dart:100"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Open app",
     "contexts": [
       "ui.customers_screen"
@@ -2919,10 +4470,12 @@
   {
     "english": "Order",
     "contexts": [
-      "ui.appointments_screen"
+      "ui.appointments_screen",
+      "ui.orders_screen"
     ],
     "sources": [
-      "lib/ui/appointments_screen.dart:114"
+      "lib/ui/appointments_screen.dart:114",
+      "lib/ui/orders_screen.dart:100"
     ],
     "placeholders": []
   },
@@ -2941,10 +4494,12 @@
   {
     "english": "Order saved locally.",
     "contexts": [
-      "state.order_controller"
+      "state.order_controller",
+      "ui.order_create_screen"
     ],
     "sources": [
-      "lib/state/order_controller.dart:102"
+      "lib/state/order_controller.dart:102",
+      "lib/ui/order_create_screen.dart:255"
     ],
     "placeholders": []
   },
@@ -2973,13 +4528,39 @@
     ]
   },
   {
+    "english": "Ordered: {ordered_at}",
+    "contexts": [
+      "ui.order_detail_screen"
+    ],
+    "sources": [
+      "lib/ui/order_detail_screen.dart:49"
+    ],
+    "placeholders": [
+      "ordered_at"
+    ]
+  },
+  {
     "english": "Orders",
     "contexts": [
-      "ui.dashboard_screen"
+      "ui.dashboard_screen",
+      "ui.home_tab",
+      "ui.leadership_dashboard_screen"
     ],
     "sources": [
       "lib/ui/dashboard_screen.dart:53",
-      "lib/ui/dashboard_screen.dart:233"
+      "lib/ui/dashboard_screen.dart:233",
+      "lib/ui/home_tab.dart:282",
+      "lib/ui/leadership_dashboard_screen.dart:232"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Orders are stored locally first and sync when online.",
+    "contexts": [
+      "ui.orders_screen"
+    ],
+    "sources": [
+      "lib/ui/orders_screen.dart:55"
     ],
     "placeholders": []
   },
@@ -2996,6 +4577,16 @@
       "lib/ui/call_history_screen.dart:24",
       "lib/ui/collection_create_screen.dart:38",
       "lib/ui/customers_screen.dart:24"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "other work stay unchanged. Location tracking will resume.",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:173"
     ],
     "placeholders": []
   },
@@ -3043,6 +4634,36 @@
     ]
   },
   {
+    "english": "Partial fill",
+    "contexts": [
+      "ui.fuel_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_screen.dart:97"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Password",
+    "contexts": [
+      "ui.login_screen"
+    ],
+    "sources": [
+      "lib/ui/login_screen.dart:310"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Payment",
+    "contexts": [
+      "ui.invoice_screen"
+    ],
+    "sources": [
+      "lib/ui/invoice_screen.dart:44"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Payment follow-up",
     "contexts": [
       "ui.call_history_screen",
@@ -3065,6 +4686,16 @@
     "placeholders": []
   },
   {
+    "english": "Payment type",
+    "contexts": [
+      "ui.order_create_screen"
+    ],
+    "sources": [
+      "lib/ui/order_create_screen.dart:307"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Payment: {payment_method}",
     "contexts": [
       "ui.collection_detail_screen"
@@ -3074,6 +4705,30 @@
     ],
     "placeholders": [
       "payment_method"
+    ]
+  },
+  {
+    "english": "Payment: {payment_type}",
+    "contexts": [
+      "ui.order_detail_screen"
+    ],
+    "sources": [
+      "lib/ui/order_detail_screen.dart:48"
+    ],
+    "placeholders": [
+      "payment_type"
+    ]
+  },
+  {
+    "english": "Payment: {paymentType}",
+    "contexts": [
+      "ui.order_create_screen"
+    ],
+    "sources": [
+      "lib/ui/order_create_screen.dart:185"
+    ],
+    "placeholders": [
+      "paymentType"
     ]
   },
   {
@@ -3135,10 +4790,13 @@
   {
     "english": "Phone",
     "contexts": [
-      "ui.customer_create_screen"
+      "ui.customer_create_screen",
+      "ui.leads_screen"
     ],
     "sources": [
-      "lib/ui/customer_create_screen.dart:276"
+      "lib/ui/customer_create_screen.dart:276",
+      "lib/ui/leads_screen.dart:274",
+      "lib/ui/leads_screen.dart:542"
     ],
     "placeholders": []
   },
@@ -3149,6 +4807,56 @@
     ],
     "sources": [
       "lib/state/visit_controller.dart:202"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Pipeline stage",
+    "contexts": [
+      "ui.leads_screen"
+    ],
+    "sources": [
+      "lib/ui/leads_screen.dart:608"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Planned",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:271"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Please check the sign-in details and try again.",
+    "contexts": [
+      "ui.login_screen"
+    ],
+    "sources": [
+      "lib/ui/login_screen.dart:38"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Please continue with your assigned route and update your visit status.",
+    "contexts": [
+      "ui.leadership_dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/leadership_dashboard_screen.dart:469"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Points, level, achievements and team leaderboard",
+    "contexts": [
+      "ui.more_screen"
+    ],
+    "sources": [
+      "lib/ui/more_screen.dart:77"
     ],
     "placeholders": []
   },
@@ -3185,10 +4893,51 @@
   {
     "english": "Priority",
     "contexts": [
-      "ui.follow_ups_screen"
+      "ui.follow_ups_screen",
+      "ui.leads_screen"
     ],
     "sources": [
-      "lib/ui/follow_ups_screen.dart:175"
+      "lib/ui/follow_ups_screen.dart:175",
+      "lib/ui/leads_screen.dart:316",
+      "lib/ui/leads_screen.dart:586"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Product",
+    "contexts": [
+      "ui.invoice_screen",
+      "ui.order_create_screen",
+      "ui.order_detail_screen"
+    ],
+    "sources": [
+      "lib/ui/invoice_screen.dart:54",
+      "lib/ui/order_create_screen.dart:96",
+      "lib/ui/order_create_screen.dart:365",
+      "lib/ui/order_detail_screen.dart:76"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Products",
+    "contexts": [
+      "ui.more_screen",
+      "ui.order_create_screen"
+    ],
+    "sources": [
+      "lib/ui/more_screen.dart:207",
+      "lib/ui/more_screen.dart:210",
+      "lib/ui/order_create_screen.dart:332"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Prospects, opportunity stages and conversion",
+    "contexts": [
+      "ui.more_screen"
+    ],
+    "sources": [
+      "lib/ui/more_screen.dart:89"
     ],
     "placeholders": []
   },
@@ -3203,12 +4952,32 @@
     "placeholders": []
   },
   {
+    "english": "Quantity",
+    "contexts": [
+      "ui.order_create_screen"
+    ],
+    "sources": [
+      "lib/ui/order_create_screen.dart:392"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Quantity must be greater than zero.",
     "contexts": [
       "features.orders.order_repository"
     ],
     "sources": [
       "lib/features/orders/order_repository.dart:302"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "readings exist, odometer distance is used for efficiency",
+    "contexts": [
+      "ui.mileage_screen"
+    ],
+    "sources": [
+      "lib/ui/mileage_screen.dart:230"
     ],
     "placeholders": []
   },
@@ -3243,6 +5012,16 @@
     "placeholders": []
   },
   {
+    "english": "Receipt pending",
+    "contexts": [
+      "ui.fuel_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_screen.dart:98"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Receipt photo is required.",
     "contexts": [
       "features.expenses.expense_repository"
@@ -3253,12 +5032,53 @@
     "placeholders": []
   },
   {
+    "english": "Receipt synced",
+    "contexts": [
+      "ui.fuel_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_screen.dart:98"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Recent collections",
     "contexts": [
       "ui.collections_screen"
     ],
     "sources": [
       "lib/ui/collections_screen.dart:73"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Recent field activity",
+    "contexts": [
+      "ui.leadership_dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/leadership_dashboard_screen.dart:133"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Recent mileage",
+    "contexts": [
+      "ui.mileage_screen"
+    ],
+    "sources": [
+      "lib/ui/mileage_screen.dart:170"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Recognition",
+    "contexts": [
+      "ui.more_screen"
+    ],
+    "sources": [
+      "lib/ui/more_screen.dart:75",
+      "lib/ui/more_screen.dart:81"
     ],
     "placeholders": []
   },
@@ -3315,6 +5135,26 @@
     "placeholders": [
       "reference_number"
     ]
+  },
+  {
+    "english": "Referral customers, orders, collections and visit activity",
+    "contexts": [
+      "ui.more_screen"
+    ],
+    "sources": [
+      "lib/ui/more_screen.dart:52"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Refresh team",
+    "contexts": [
+      "ui.leadership_dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/leadership_dashboard_screen.dart:76"
+    ],
+    "placeholders": []
   },
   {
     "english": "rejected: {code} ({reason})",
@@ -3380,12 +5220,63 @@
     "placeholders": []
   },
   {
+    "english": "Remove",
+    "contexts": [
+      "ui.order_create_screen"
+    ],
+    "sources": [
+      "lib/ui/order_create_screen.dart:370"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Reopen Day",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:182",
+      "lib/ui/home_tab.dart:579"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Reopen today's work day?",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:169"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Reopening…",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:579"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Reorder recommendations",
     "contexts": [
       "ui.customers_screen"
     ],
     "sources": [
       "lib/ui/customers_screen.dart:390"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Reporting hierarchy",
+    "contexts": [
+      "ui.leadership_dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/leadership_dashboard_screen.dart:119"
     ],
     "placeholders": []
   },
@@ -3431,6 +5322,16 @@
     "placeholders": []
   },
   {
+    "english": "Required when the opportunity is marked lost.",
+    "contexts": [
+      "ui.leads_screen"
+    ],
+    "sources": [
+      "lib/ui/leads_screen.dart:697"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Requires review",
     "contexts": [
       "ui.collection_detail_screen"
@@ -3461,6 +5362,36 @@
     "placeholders": []
   },
   {
+    "english": "Returns",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:297"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Review & save",
+    "contexts": [
+      "ui.order_create_screen"
+    ],
+    "sources": [
+      "lib/ui/order_create_screen.dart:424"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Review and upload pending offline work",
+    "contexts": [
+      "ui.more_screen"
+    ],
+    "sources": [
+      "lib/ui/more_screen.dart:217"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Review note: {review_note}",
     "contexts": [
       "ui.expenses_screen"
@@ -3471,6 +5402,16 @@
     "placeholders": [
       "review_note"
     ]
+  },
+  {
+    "english": "Review order",
+    "contexts": [
+      "ui.order_create_screen"
+    ],
+    "sources": [
+      "lib/ui/order_create_screen.dart:178"
+    ],
+    "placeholders": []
   },
   {
     "english": "Review tracking policy before automatic Start Day.",
@@ -3493,12 +5434,74 @@
     "placeholders": []
   },
   {
+    "english": "Route alerts, supervisor messages and status updates will appear here.",
+    "contexts": [
+      "ui.notifications_screen"
+    ],
+    "sources": [
+      "lib/ui/notifications_screen.dart:41"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Route alerts, supervisor messages and updates",
+    "contexts": [
+      "ui.more_screen"
+    ],
+    "sources": [
+      "lib/ui/more_screen.dart:64"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Routes",
+    "contexts": [
+      "ui.more_screen"
+    ],
+    "sources": [
+      "lib/ui/more_screen.dart:186",
+      "lib/ui/more_screen.dart:189"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Sales",
     "contexts": [
       "ui.customer_statement_screen"
     ],
     "sources": [
       "lib/ui/customer_statement_screen.dart:223"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Sales Manager",
+    "contexts": [
+      "ui.leadership_dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/leadership_dashboard_screen.dart:51"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Salesman",
+    "contexts": [
+      "ui.leadership_dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/leadership_dashboard_screen.dart:370",
+      "lib/ui/leadership_dashboard_screen.dart:437"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Salesmen, supervisors, and sales managers can sign in.",
+    "contexts": [
+      "ui.login_screen"
+    ],
+    "sources": [
+      "lib/ui/login_screen.dart:207"
     ],
     "placeholders": []
   },
@@ -3525,10 +5528,12 @@
   {
     "english": "Save changes",
     "contexts": [
-      "ui.customer_create_screen"
+      "ui.customer_create_screen",
+      "ui.leads_screen"
     ],
     "sources": [
-      "lib/ui/customer_create_screen.dart:515"
+      "lib/ui/customer_create_screen.dart:515",
+      "lib/ui/leads_screen.dart:756"
     ],
     "placeholders": []
   },
@@ -3585,10 +5590,33 @@
   {
     "english": "Save offline",
     "contexts": [
-      "ui.customers_screen"
+      "ui.customers_screen",
+      "ui.leads_screen"
     ],
     "sources": [
-      "lib/ui/customers_screen.dart:131"
+      "lib/ui/customers_screen.dart:131",
+      "lib/ui/leads_screen.dart:405",
+      "lib/ui/leads_screen.dart:867"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Save order",
+    "contexts": [
+      "ui.order_create_screen"
+    ],
+    "sources": [
+      "lib/ui/order_create_screen.dart:232"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Saved on this device after a successful sign-in.",
+    "contexts": [
+      "ui.login_screen"
+    ],
+    "sources": [
+      "lib/ui/login_screen.dart:283"
     ],
     "placeholders": []
   },
@@ -3608,13 +5636,15 @@
       "ui.collection_create_screen",
       "ui.customer_create_screen",
       "ui.expense_create_screen",
-      "ui.fuel_create_screen"
+      "ui.fuel_create_screen",
+      "ui.order_create_screen"
     ],
     "sources": [
       "lib/ui/collection_create_screen.dart:281",
       "lib/ui/customer_create_screen.dart:513",
       "lib/ui/expense_create_screen.dart:254",
-      "lib/ui/fuel_create_screen.dart:328"
+      "lib/ui/fuel_create_screen.dart:328",
+      "lib/ui/order_create_screen.dart:424"
     ],
     "placeholders": []
   },
@@ -3631,10 +5661,12 @@
   {
     "english": "Select a customer.",
     "contexts": [
-      "ui.collection_create_screen"
+      "ui.collection_create_screen",
+      "ui.order_create_screen"
     ],
     "sources": [
-      "lib/ui/collection_create_screen.dart:84"
+      "lib/ui/collection_create_screen.dart:84",
+      "lib/ui/order_create_screen.dart:142"
     ],
     "placeholders": []
   },
@@ -3736,6 +5768,56 @@
     "placeholders": []
   },
   {
+    "english": "Send",
+    "contexts": [
+      "ui.leadership_dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/leadership_dashboard_screen.dart:490"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Send notification",
+    "contexts": [
+      "ui.leadership_dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/leadership_dashboard_screen.dart:452"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Server pricing changed the offline estimate.",
+    "contexts": [
+      "ui.order_detail_screen"
+    ],
+    "sources": [
+      "lib/ui/order_detail_screen.dart:113"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Server summary",
+    "contexts": [
+      "ui.mileage_screen"
+    ],
+    "sources": [
+      "lib/ui/mileage_screen.dart:117"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Server summary is unavailable. You can still end the day offline; the record will sync later.",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:263"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Shop location",
     "contexts": [
       "ui.customer_create_screen"
@@ -3756,6 +5838,16 @@
     "placeholders": []
   },
   {
+    "english": "Show password",
+    "contexts": [
+      "ui.login_screen"
+    ],
+    "sources": [
+      "lib/ui/login_screen.dart:315"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Showing cached statement",
     "contexts": [
       "ui.customer_statement_screen"
@@ -3766,12 +5858,24 @@
     "placeholders": []
   },
   {
-    "english": "Sign out",
+    "english": "Sign in",
     "contexts": [
-      "ui.dashboard_screen"
+      "ui.login_screen"
     ],
     "sources": [
-      "lib/ui/dashboard_screen.dart:201"
+      "lib/ui/login_screen.dart:365"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Sign out",
+    "contexts": [
+      "ui.dashboard_screen",
+      "ui.leadership_dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/dashboard_screen.dart:201",
+      "lib/ui/leadership_dashboard_screen.dart:86"
     ],
     "placeholders": []
   },
@@ -3779,13 +5883,25 @@
     "english": "Signed-in tenant is unavailable.",
     "contexts": [
       "state.attendance_controller",
-      "state.order_controller"
+      "state.order_controller",
+      "ui.mileage_screen"
     ],
     "sources": [
       "lib/state/attendance_controller.dart:266",
       "lib/state/attendance_controller.dart:367",
       "lib/state/attendance_controller.dart:498",
-      "lib/state/order_controller.dart:65"
+      "lib/state/order_controller.dart:65",
+      "lib/ui/mileage_screen.dart:33"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Signing in…",
+    "contexts": [
+      "ui.login_screen"
+    ],
+    "sources": [
+      "lib/ui/login_screen.dart:365"
     ],
     "placeholders": []
   },
@@ -3802,10 +5918,24 @@
   {
     "english": "Smart Route",
     "contexts": [
-      "app"
+      "app",
+      "ui.more_screen"
     ],
     "sources": [
-      "lib/app.dart:49"
+      "lib/app.dart:49",
+      "lib/ui/more_screen.dart:174",
+      "lib/ui/more_screen.dart:180"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Source",
+    "contexts": [
+      "ui.leads_screen"
+    ],
+    "sources": [
+      "lib/ui/leads_screen.dart:296",
+      "lib/ui/leads_screen.dart:565"
     ],
     "placeholders": []
   },
@@ -3820,6 +5950,102 @@
     "placeholders": [
       "spent_at"
     ]
+  },
+  {
+    "english": "Start Day",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:92",
+      "lib/ui/home_tab.dart:142",
+      "lib/ui/home_tab.dart:597"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Start Day time and existing visits, orders, collections, and",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:172"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Start odometer km (optional)",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:113"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Start visit",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:710"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Start when you are ready. Attendance works offline.",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:587"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Start work day first",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:711"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Start: {odometer_start_km} km",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:343"
+    ],
+    "placeholders": [
+      "odometer_start_km"
+    ]
+  },
+  {
+    "english": "Started {start_time}",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:549"
+    ],
+    "placeholders": [
+      "start_time"
+    ]
+  },
+  {
+    "english": "Starting…",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:597"
+    ],
+    "placeholders": []
   },
   {
     "english": "Starts",
@@ -3866,10 +6092,12 @@
   {
     "english": "Status note: {status_note}",
     "contexts": [
-      "ui.collection_detail_screen"
+      "ui.collection_detail_screen",
+      "ui.order_detail_screen"
     ],
     "sources": [
-      "lib/ui/collection_detail_screen.dart:57"
+      "lib/ui/collection_detail_screen.dart:57",
+      "lib/ui/order_detail_screen.dart:55"
     ],
     "placeholders": [
       "status_note"
@@ -3879,15 +6107,28 @@
     "english": "Status: {status}",
     "contexts": [
       "ui.collection_detail_screen",
-      "ui.expenses_screen"
+      "ui.expenses_screen",
+      "ui.order_detail_screen"
     ],
     "sources": [
       "lib/ui/collection_detail_screen.dart:48",
-      "lib/ui/expenses_screen.dart:48"
+      "lib/ui/expenses_screen.dart:48",
+      "lib/ui/order_detail_screen.dart:47"
     ],
     "placeholders": [
       "status"
     ]
+  },
+  {
+    "english": "Stock & Returns",
+    "contexts": [
+      "ui.more_screen"
+    ],
+    "sources": [
+      "lib/ui/more_screen.dart:195",
+      "lib/ui/more_screen.dart:201"
+    ],
+    "placeholders": []
   },
   {
     "english": "Stop the current voice note before starting another one.",
@@ -3896,6 +6137,62 @@
     ],
     "sources": [
       "lib/state/visit_controller.dart:221"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Subtotal",
+    "contexts": [
+      "ui.invoice_screen",
+      "ui.order_create_screen",
+      "ui.order_detail_screen"
+    ],
+    "sources": [
+      "lib/ui/invoice_screen.dart:74",
+      "lib/ui/order_create_screen.dart:205",
+      "lib/ui/order_detail_screen.dart:94"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Supervisor",
+    "contexts": [
+      "ui.leadership_dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/leadership_dashboard_screen.dart:51",
+      "lib/ui/leadership_dashboard_screen.dart:428"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Switch company",
+    "contexts": [
+      "ui.login_screen"
+    ],
+    "sources": [
+      "lib/ui/login_screen.dart:192"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Sync",
+    "contexts": [
+      "ui.more_screen"
+    ],
+    "sources": [
+      "lib/ui/more_screen.dart:216",
+      "lib/ui/more_screen.dart:219"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Sync before closing",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:359"
     ],
     "placeholders": []
   },
@@ -3956,6 +6253,16 @@
     "placeholders": [
       "error"
     ]
+  },
+  {
+    "english": "Sync customers and products before creating an order.",
+    "contexts": [
+      "ui.orders_screen"
+    ],
+    "sources": [
+      "lib/ui/orders_screen.dart:20"
+    ],
+    "placeholders": []
   },
   {
     "english": "Sync customers before collecting.",
@@ -4045,13 +6352,17 @@
       "ui.call_history_screen",
       "ui.collection_detail_screen",
       "ui.collections_screen",
-      "ui.expenses_screen"
+      "ui.expenses_screen",
+      "ui.order_detail_screen",
+      "ui.orders_screen"
     ],
     "sources": [
       "lib/ui/call_history_screen.dart:70",
       "lib/ui/collection_detail_screen.dart:60",
       "lib/ui/collections_screen.dart:99",
-      "lib/ui/expenses_screen.dart:75"
+      "lib/ui/expenses_screen.dart:75",
+      "lib/ui/order_detail_screen.dart:58",
+      "lib/ui/orders_screen.dart:80"
     ],
     "placeholders": [
       "sync_status"
@@ -4100,6 +6411,17 @@
     "placeholders": []
   },
   {
+    "english": "Targets",
+    "contexts": [
+      "ui.more_screen"
+    ],
+    "sources": [
+      "lib/ui/more_screen.dart:165",
+      "lib/ui/more_screen.dart:168"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Targets refreshed.",
     "contexts": [
       "state.target_controller"
@@ -4112,10 +6434,32 @@
   {
     "english": "Team",
     "contexts": [
-      "app"
+      "app",
+      "ui.leadership_dashboard_screen"
     ],
     "sources": [
-      "lib/app.dart:51"
+      "lib/app.dart:51",
+      "lib/ui/leadership_dashboard_screen.dart:214"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Team live map",
+    "contexts": [
+      "ui.leadership_dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/leadership_dashboard_screen.dart:334"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "tenant_id=?",
+    "contexts": [
+      "ui.history_screen"
+    ],
+    "sources": [
+      "lib/ui/history_screen.dart:20"
     ],
     "placeholders": []
   },
@@ -4214,6 +6558,16 @@
     "placeholders": []
   },
   {
+    "english": "The email, password, or Company / Tenant ID is incorrect.",
+    "contexts": [
+      "ui.login_screen"
+    ],
+    "sources": [
+      "lib/ui/login_screen.dart:28"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "The entry, receipt and GPS evidence are saved offline first and sync when internet returns.",
     "contexts": [
       "ui.fuel_create_screen"
@@ -4254,6 +6608,16 @@
     "placeholders": []
   },
   {
+    "english": "The server could not complete the sign-in request. Please try again. If it continues, contact your administrator.",
+    "contexts": [
+      "ui.login_screen"
+    ],
+    "sources": [
+      "lib/ui/login_screen.dart:36"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "The SMS app could not be opened.",
     "contexts": [
       "ui.customers_screen"
@@ -4270,6 +6634,36 @@
     ],
     "sources": [
       "lib/state/attendance_controller.dart:514"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "The work day will close locally and pending data will sync later.",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:363"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "This account is already active on another device. Ask an administrator to revoke the old device before signing in here.",
+    "contexts": [
+      "ui.login_screen"
+    ],
+    "sources": [
+      "lib/ui/login_screen.dart:32"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "This account is not enabled for the FieldPulse mobile app. Ask your administrator to assign Salesman, Supervisor, or Sales Manager access.",
+    "contexts": [
+      "ui.login_screen"
+    ],
+    "sources": [
+      "lib/ui/login_screen.dart:29"
     ],
     "placeholders": []
   },
@@ -4304,6 +6698,16 @@
     "placeholders": []
   },
   {
+    "english": "This company account is suspended. Please contact your administrator.",
+    "contexts": [
+      "ui.login_screen"
+    ],
+    "sources": [
+      "lib/ui/login_screen.dart:31"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "This customer has no phone number.",
     "contexts": [
       "ui.customers_screen"
@@ -4311,6 +6715,36 @@
     "sources": [
       "lib/ui/customers_screen.dart:63",
       "lib/ui/customers_screen.dart:162"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "This device has been revoked for this account. Please contact your administrator.",
+    "contexts": [
+      "ui.login_screen"
+    ],
+    "sources": [
+      "lib/ui/login_screen.dart:33"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "This email is used in more than one company. Enter your Company / Tenant ID and try again.",
+    "contexts": [
+      "ui.login_screen"
+    ],
+    "sources": [
+      "lib/ui/login_screen.dart:26"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "This FieldPulse version is no longer supported. Update the app and try again.",
+    "contexts": [
+      "ui.login_screen"
+    ],
+    "sources": [
+      "lib/ui/login_screen.dart:34"
     ],
     "placeholders": []
   },
@@ -4333,6 +6767,18 @@
       "lib/core/config.dart:60"
     ],
     "placeholders": []
+  },
+  {
+    "english": "Timezone: {value1}",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:746"
+    ],
+    "placeholders": [
+      "value1"
+    ]
   },
   {
     "english": "Title",
@@ -4365,6 +6811,16 @@
     "placeholders": []
   },
   {
+    "english": "Today",
+    "contexts": [
+      "ui.mileage_screen"
+    ],
+    "sources": [
+      "lib/ui/mileage_screen.dart:109"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Today's closed work day could not be found.",
     "contexts": [
       "state.attendance_controller"
@@ -4375,12 +6831,86 @@
     "placeholders": []
   },
   {
+    "english": "Today's optimized customer order, priorities and distance",
+    "contexts": [
+      "ui.more_screen"
+    ],
+    "sources": [
+      "lib/ui/more_screen.dart:176"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Today's work day is closed. If End Day was tapped by",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:566"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Total",
+    "contexts": [
+      "ui.invoice_screen",
+      "ui.leads_screen",
+      "ui.order_detail_screen"
+    ],
+    "sources": [
+      "lib/ui/invoice_screen.dart:84",
+      "lib/ui/leads_screen.dart:109",
+      "lib/ui/order_detail_screen.dart:105"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Total amount *",
     "contexts": [
       "ui.fuel_create_screen"
     ],
     "sources": [
       "lib/ui/fuel_create_screen.dart:217"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Total cost",
+    "contexts": [
+      "ui.fuel_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_screen.dart:53"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Total liters",
+    "contexts": [
+      "ui.fuel_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_screen.dart:45"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Tracking active",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:538"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Tracking paused",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:539"
     ],
     "placeholders": []
   },
@@ -4417,6 +6947,26 @@
     "placeholders": []
   },
   {
+    "english": "Unable to sign in right now. Please try again.",
+    "contexts": [
+      "ui.login_screen"
+    ],
+    "sources": [
+      "lib/ui/login_screen.dart:11"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Unable to sign in. Please try again.",
+    "contexts": [
+      "ui.login_screen"
+    ],
+    "sources": [
+      "lib/ui/login_screen.dart:45"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Unit price (optional)",
     "contexts": [
       "ui.expense_create_screen"
@@ -4440,12 +6990,75 @@
     ]
   },
   {
+    "english": "Use saved company",
+    "contexts": [
+      "ui.login_screen"
+    ],
+    "sources": [
+      "lib/ui/login_screen.dart:191"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Use this only if End Day was tapped by mistake. Your original",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:171"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Used for km/L fuel-efficiency reporting.",
     "contexts": [
       "ui.expense_create_screen"
     ],
     "sources": [
       "lib/ui/expense_create_screen.dart:171"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Using safe offline policy",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:499"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Van stock, damaged goods and customer returns",
+    "contexts": [
+      "ui.more_screen"
+    ],
+    "sources": [
+      "lib/ui/more_screen.dart:197"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Variance {variance} km",
+    "contexts": [
+      "ui.mileage_screen"
+    ],
+    "sources": [
+      "lib/ui/mileage_screen.dart:213"
+    ],
+    "placeholders": [
+      "variance"
+    ]
+  },
+  {
+    "english": "Vehicle / plate (optional)",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:103",
+      "lib/ui/home_tab.dart:329"
     ],
     "placeholders": []
   },
@@ -4470,6 +7083,49 @@
       "lib/ui/fuel_create_screen.dart:108"
     ],
     "placeholders": []
+  },
+  {
+    "english": "Vehicle and odometer are optional. Add them when you want mileage reconciliation.",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:97"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Vehicle not recorded",
+    "contexts": [
+      "ui.fuel_screen"
+    ],
+    "sources": [
+      "lib/ui/fuel_screen.dart:90"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Vehicle refueling, odometer, GPS and receipt evidence",
+    "contexts": [
+      "ui.more_screen"
+    ],
+    "sources": [
+      "lib/ui/more_screen.dart:144"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Vehicle: {vehicle_reference}",
+    "contexts": [
+      "ui.mileage_screen"
+    ],
+    "sources": [
+      "lib/ui/mileage_screen.dart:155",
+      "lib/ui/mileage_screen.dart:208"
+    ],
+    "placeholders": [
+      "vehicle_reference"
+    ]
   },
   {
     "english": "Visit",
@@ -4528,10 +7184,12 @@
   {
     "english": "Visit: {visit_uuid}",
     "contexts": [
-      "ui.collection_detail_screen"
+      "ui.collection_detail_screen",
+      "ui.order_detail_screen"
     ],
     "sources": [
-      "lib/ui/collection_detail_screen.dart:53"
+      "lib/ui/collection_detail_screen.dart:53",
+      "lib/ui/order_detail_screen.dart:51"
     ],
     "placeholders": [
       "visit_uuid"
@@ -4540,11 +7198,15 @@
   {
     "english": "Visits",
     "contexts": [
-      "ui.dashboard_screen"
+      "ui.dashboard_screen",
+      "ui.home_tab",
+      "ui.leadership_dashboard_screen"
     ],
     "sources": [
       "lib/ui/dashboard_screen.dart:52",
-      "lib/ui/dashboard_screen.dart:228"
+      "lib/ui/dashboard_screen.dart:228",
+      "lib/ui/home_tab.dart:277",
+      "lib/ui/leadership_dashboard_screen.dart:226"
     ],
     "placeholders": []
   },
@@ -4598,6 +7260,16 @@
     "sources": [
       "lib/ui/appointments_screen.dart:488",
       "lib/ui/follow_ups_screen.dart:420"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "What happened?",
+    "contexts": [
+      "ui.leads_screen"
+    ],
+    "sources": [
+      "lib/ui/leads_screen.dart:851"
     ],
     "placeholders": []
   },
@@ -4683,6 +7355,56 @@
     "placeholders": []
   },
   {
+    "english": "while GPS stays the reconciliation baseline.",
+    "contexts": [
+      "ui.mileage_screen"
+    ],
+    "sources": [
+      "lib/ui/mileage_screen.dart:231"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Won",
+    "contexts": [
+      "ui.leads_screen"
+    ],
+    "sources": [
+      "lib/ui/leads_screen.dart:104"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Work day",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:528"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Work day closed and reconciliation saved.",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:439"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Work day reopened. Tracking has resumed.",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:198"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Work session tenant is unavailable.",
     "contexts": [
       "features.attendance.attendance_repository"
@@ -4704,6 +7426,36 @@
     "placeholders": []
   },
   {
+    "english": "Working",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:528"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "working without changing the original start time.",
+    "contexts": [
+      "ui.home_tab"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:568"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Your assigned field-sales team",
+    "contexts": [
+      "ui.leadership_dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/leadership_dashboard_screen.dart:106"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Your current location is captured with the expense claim.",
     "contexts": [
       "ui.expense_create_screen"
@@ -4714,12 +7466,32 @@
     "placeholders": []
   },
   {
+    "english": "Your offline-first work companion",
+    "contexts": [
+      "ui.login_screen"
+    ],
+    "sources": [
+      "lib/ui/login_screen.dart:204"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Your schedule stays cached for offline use.",
     "contexts": [
       "ui.appointments_screen"
     ],
     "sources": [
       "lib/ui/appointments_screen.dart:338"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Your supervisors and their field teams",
+    "contexts": [
+      "ui.leadership_dashboard_screen"
+    ],
+    "sources": [
+      "lib/ui/leadership_dashboard_screen.dart:105"
     ],
     "placeholders": []
   }
