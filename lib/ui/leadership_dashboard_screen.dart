@@ -110,6 +110,8 @@ class _LeadershipDashboardScreenState extends State<LeadershipDashboardScreen> {
                       children: [
                         Text(
                           'Hello, ${app.session?.name ?? ''}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: Theme.of(context).textTheme.titleLarge
                               ?.copyWith(
                                 color: Colors.white,
@@ -126,13 +128,14 @@ class _LeadershipDashboardScreenState extends State<LeadershipDashboardScreen> {
                             fontSize: 13,
                           ),
                         ),
+                        const SizedBox(height: 10),
+                        FieldPulseStatusPill(
+                          label: roleLabel,
+                          color: const Color(0xFF27D7A1),
+                          icon: Icons.verified_user_outlined,
+                        ),
                       ],
                     ),
-                  ),
-                  FieldPulseStatusPill(
-                    label: roleLabel,
-                    color: const Color(0xFF27D7A1),
-                    icon: Icons.verified_user_outlined,
                   ),
                 ],
               ),
