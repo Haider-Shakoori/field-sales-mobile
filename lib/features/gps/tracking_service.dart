@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:geolocator/geolocator.dart';
@@ -8,6 +9,34 @@ import 'gps_repository.dart';
 
 int trackingStaleThresholdSeconds(int movingSeconds) =>
     math.max(90, movingSeconds * 6);
+
+LocationSettings trackingLocationSettings({
+  required bool isIOS,
+  required int movingSeconds,
+}) {
+  if (isIOS) {
+    return AppleSettings(
+      accuracy: LocationAccuracy.bestForNavigation,
+      distanceFilter: 5,
+      activityType: ActivityType.otherNavigation,
+      pauseLocationUpdatesAutomatically: false,
+      showBackgroundLocationIndicator: true,
+      allowBackgroundLocationUpdates: true,
+    );
+  }
+
+  return AndroidSettings(
+    accuracy: LocationAccuracy.high,
+    distanceFilter: 5,
+    intervalDuration: Duration(seconds: math.max(5, movingSeconds)),
+    foregroundNotificationConfig: const ForegroundNotificationConfig(
+      notificationTitle: 'FieldPulse',
+      notificationText: 'Workday location tracking is active',
+      enableWakeLock: true,
+      setOngoing: true,
+    ),
+  );
+}
 
 class TrackingService {
   TrackingService({required this.db, required this.gpsRepository});
@@ -21,6 +50,8 @@ class TrackingService {
   int _movingSeconds = 15;
   DateTime? _lastFixAt;
   bool _restartInFlight = false;
+  bool _uploadInFlight = false;
+  DateTime? _lastUploadAttemptAt;
 
   bool get active => _sub != null;
 
@@ -73,39 +104,53 @@ class TrackingService {
     _sub = null;
     await previous?.cancel();
 
-    final settings = AndroidSettings(
-      accuracy: LocationAccuracy.high,
-      distanceFilter: 5,
-      intervalDuration: Duration(seconds: _movingSeconds),
-      foregroundNotificationConfig: const ForegroundNotificationConfig(
-        notificationTitle: 'FieldPulse',
-        notificationText: 'Workday location tracking is active',
-        enableWakeLock: true,
-        setOngoing: true,
-      ),
+    final settings = trackingLocationSettings(
+      isIOS: Platform.isIOS,
+      movingSeconds: _movingSeconds,
     );
 
     _sub = Geolocator.getPositionStream(locationSettings: settings).listen(
       (position) {
         _lastFixAt = DateTime.now().toUtc();
-        unawaited(
-          gpsRepository.store(
-            tenantId: tenantId,
-            latitude: position.latitude,
-            longitude: position.longitude,
-            accuracy: position.accuracy,
-            altitude: position.altitude,
-            speed: position.speed,
-            heading: position.heading,
-            isMock: position.isMocked,
-            recordedAt: position.timestamp,
-          ),
-        );
+        unawaited(_storeAndMaybeUpload(tenantId, position));
       },
       onError: (_) => _scheduleRestart(),
       onDone: _scheduleRestart,
       cancelOnError: false,
     );
+  }
+
+  Future<void> _storeAndMaybeUpload(String tenantId, Position position) async {
+    await gpsRepository.store(
+      tenantId: tenantId,
+      latitude: position.latitude,
+      longitude: position.longitude,
+      accuracy: position.accuracy,
+      altitude: position.altitude,
+      speed: position.speed,
+      heading: position.heading,
+      isMock: position.isMocked,
+      recordedAt: position.timestamp,
+    );
+
+    final now = DateTime.now().toUtc();
+    if (_uploadInFlight ||
+        (_lastUploadAttemptAt != null &&
+            now.difference(_lastUploadAttemptAt!).abs() <
+                const Duration(minutes: 1))) {
+      return;
+    }
+
+    _uploadInFlight = true;
+    _lastUploadAttemptAt = now;
+
+    try {
+      await gpsRepository.upload(tenantId);
+    } catch (_) {
+      // Local-first storage already succeeded. A later sync cycle will retry.
+    } finally {
+      _uploadInFlight = false;
+    }
   }
 
   void _startWatchdog() {
@@ -172,6 +217,8 @@ class TrackingService {
     _sub = null;
     _tenantId = null;
     _lastFixAt = null;
+    _lastUploadAttemptAt = null;
+    _uploadInFlight = false;
     unawaited(subscription?.cancel());
   }
 
