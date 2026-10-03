@@ -31,7 +31,7 @@ gamification_points_points_rank_rank,{points} points · Rank #{rank},,,ui.gamifi
 gamification_points_pts,{points} pts,,,ui.gamification_screen,lib/ui/gamification_screen.dart:136,points,Keep these placeholders unchanged: {points}
 order_detail_quantity_unit_unit_price_discount_discount_percent,{quantity} {unit} × {unit_price} · Discount {discount_percent}%,,,ui.order_detail_screen,lib/ui/order_detail_screen.dart:78,quantity; unit; unit_price; discount_percent,"Keep these placeholders unchanged: {quantity}, {unit}, {unit_price}, {discount_percent}"
 home_tab_remaining_remaining,{remaining} remaining,,,ui.home_tab,lib/ui/home_tab.dart:274,remaining,Keep these placeholders unchanged: {remaining}
-leadership_dashboard_rolelabel_fieldpulse,{roleLabel} · FieldPulse,,,ui.leadership_dashboard_screen,lib/ui/leadership_dashboard_screen.dart:55,roleLabel,Keep these placeholders unchanged: {roleLabel}
+leadership_dashboard_rolelabel_fieldpulse,{roleLabel} · FieldPulse,,,ui.leadership_dashboard_screen,lib/ui/leadership_dashboard_screen.dart:55,roleLabel,Keep these placeholders unchanged: {roleLabel} Keep product/technical names unchanged unless a standard localized form is required.
 reorder_recommendations_sku_purchase_count_approved_orders_confidence_confidence,{sku} · {purchase_count} approved orders · {confidence} confidence,,,ui.reorder_recommendations_screen,lib/ui/reorder_recommendations_screen.dart:185,sku; purchase_count; confidence,"Keep these placeholders unchanged: {sku}, {purchase_count}, {confidence}"
 stock_returns_sku_damaged_damaged_qty,{sku} · Damaged: {damaged_qty},,,ui.stock_returns_screen,lib/ui/stock_returns_screen.dart:150,sku; damaged_qty,"Keep these placeholders unchanged: {sku}, {damaged_qty}"
 leadership_dashboard_stale_idle_offline_offline,{stale} idle · {offline} offline,,,ui.leadership_dashboard_screen,lib/ui/leadership_dashboard_screen.dart:222,stale; offline,"Keep these placeholders unchanged: {stale}, {offline}"
@@ -40,7 +40,6 @@ reorder_recommendations_typical_interval_days_days,{typical_interval_days} days,
 visits_map_view_value1_kb_cached,{value1} KB cached,,,ui.visits_map_view,lib/ui/visits_map_view.dart:199,value1,Keep these placeholders unchanged: {value1}
 visits_map_view_value1_mb_cached,{value1} MB cached,,,ui.visits_map_view,lib/ui/visits_map_view.dart:202,value1,Keep these placeholders unchanged: {value1}
 reorder_recommendations_value1_d_overdue,{value1}d overdue,,,ui.reorder_recommendations_screen,lib/ui/reorder_recommendations_screen.dart:176,value1,Keep these placeholders unchanged: {value1}
-visits_map_view_openstreetmap_contributors,© OpenStreetMap contributors,,,ui.visits_map_view,lib/ui/visits_map_view.dart:631,,
 home_tab_value1_more,+ {value1} more,,,ui.home_tab,lib/ui/home_tab.dart:323,value1,Keep these placeholders unchanged: {value1}
 sync_value1_more_issues,+{value1} more issues,,,ui.sync_screen,lib/ui/sync_screen.dart:207,value1,Keep these placeholders unchanged: {value1}
 smart_route_distance_km,~{distance} km,,,ui.smart_route_screen,lib/ui/smart_route_screen.dart:346,distance,Keep these placeholders unchanged: {distance}
@@ -52,7 +51,7 @@ appointments_text_2_hours_before,2 hours before,,,ui.appointments_screen,lib/ui/
 appointments_text_30_minutes_before,30 minutes before,,,ui.appointments_screen,lib/ui/appointments_screen.dart:212,,
 gamification_text_30_day_leaderboard,30-day leaderboard,,,ui.gamification_screen,lib/ui/gamification_screen.dart:120,,
 order_a_product_can_appear_only_once_in_an_order,A product can appear only once in an order.,,,features.orders.order_repository,lib/features/orders/order_repository.dart:313,,
-attendance_a_usable_gps_location_is_required,A usable GPS location is required.,,,state.attendance_controller,lib/state/attendance_controller.dart:277,,
+attendance_a_usable_gps_location_is_required,A usable GPS location is required.,,,state.attendance_controller,lib/state/attendance_controller.dart:277,,Keep product/technical names unchanged unless a standard localized form is required.
 attendance_a_usable_location_is_required_to_end_the_day_turn_on,A usable location is required to end the day. Turn on location services and try again.,,,state.attendance_controller,lib/state/attendance_controller.dart:446,,
 gamification_achievements,Achievements,,,ui.gamification_screen,lib/ui/gamification_screen.dart:69,,
 common_active,Active,,,ui.visits_map_view; ui.visits_screen,lib/ui/visits_map_view.dart:360; lib/ui/visits_screen.dart:428,,
@@ -66,7 +65,7 @@ fuel_create_add_fuel_entry,Add fuel entry,,,ui.fuel_create_screen,lib/ui/fuel_cr
 leads_add_lead_activity,Add lead activity,,,ui.leads_screen,lib/ui/leads_screen.dart:828,,
 order_create_add_product,Add product,,,ui.order_create_screen,lib/ui/order_create_screen.dart:339,,
 stock_returns_add_returned_item,Add returned item,,,ui.stock_returns_screen,lib/ui/stock_returns_screen.dart:400,,
-fuel_add_the_first_refueling_with_vehicle_odometer_gps_and,"Add the first refueling with vehicle, odometer, GPS and receipt evidence.",,,ui.fuel_screen,lib/ui/fuel_screen.dart:72,,
+fuel_add_the_first_refueling_with_vehicle_odometer_gps_and,"Add the first refueling with vehicle, odometer, GPS and receipt evidence.",,,ui.fuel_screen,lib/ui/fuel_screen.dart:72,,Keep product/technical names unchanged unless a standard localized form is required.
 smart_route_add_to_today_s_route,Add to today's route,,,ui.smart_route_screen,lib/ui/smart_route_screen.dart:676,,
 common_address,Address,,,ui.customer_create_screen; ui.leads_screen,lib/ui/customer_create_screen.dart:312; lib/ui/leads_screen.dart:286; lib/ui/leads_screen.dart:556,,
 common_all,All,,,ui.appointments_screen; ui.follow_ups_screen; ui.leads_screen,lib/ui/appointments_screen.dart:363; lib/ui/follow_ups_screen.dart:365; lib/ui/leads_screen.dart:127,,
@@ -83,7 +82,7 @@ appointment_appointment_not_found,Appointment not found.,,,features.appointments
 appointment_appointment_saved_locally,Appointment saved locally.,,,state.appointment_controller,lib/state/appointment_controller.dart:102,,
 appointment_appointment_updated_locally,Appointment updated locally.,,,state.appointment_controller,lib/state/appointment_controller.dart:132,,
 more_appointments_reminders_and_offline_schedule,"Appointments, reminders and offline schedule",,,ui.more_screen,lib/ui/more_screen.dart:101,,
-invoice_approved_fieldpulse_order_available_offline_on_this_device,Approved FieldPulse order · available offline on this device.,,,ui.invoice_screen,lib/ui/invoice_screen.dart:104,,
+invoice_approved_fieldpulse_order_available_offline_on_this_device,Approved FieldPulse order · available offline on this device.,,,ui.invoice_screen,lib/ui/invoice_screen.dart:104,,Keep product/technical names unchanged unless a standard localized form is required.
 follow_ups_assigned_actions_stay_available_offline,Assigned actions stay available offline.,,,ui.follow_ups_screen,lib/ui/follow_ups_screen.dart:339,,
 more_assigned_customer_actions_due_dates_and_completion,"Assigned customer actions, due dates and completion",,,ui.more_screen,lib/ui/more_screen.dart:113,,
 salesman_account_assigned_elsewhere,Assigned elsewhere,,,ui.salesman_account_screen,lib/ui/salesman_account_screen.dart:342,,
@@ -103,7 +102,6 @@ customer_create_base_prices,Base prices,,,ui.customer_create_screen,lib/ui/custo
 sync_blocked_items_blockedcount,Blocked items: {blockedCount},,,ui.sync_screen,lib/ui/sync_screen.dart:108,blockedCount,Keep these placeholders unchanged: {blockedCount}
 reorder_recommendations_build_suggested_order,Build suggested order,,,ui.reorder_recommendations_screen,lib/ui/reorder_recommendations_screen.dart:233,,
 leads_business_or_prospect_name,Business or prospect name,,,ui.leads_screen,lib/ui/leads_screen.dart:260; lib/ui/leads_screen.dart:528,,
-fieldpulse_splash_businessos,BusinessOS,,,ui.fieldpulse_splash_screen,lib/ui/fieldpulse_splash_screen.dart:79,,
 common_busy,Busy,,,ui.call_history_screen; ui.customers_screen,lib/ui/call_history_screen.dart:20; lib/ui/customers_screen.dart:20,,
 smart_route_cached_value1,Cached {value1},,,ui.smart_route_screen,lib/ui/smart_route_screen.dart:358,value1,Keep these placeholders unchanged: {value1}
 collection_create_cached_customer_balance,Cached customer balance,,,ui.collection_create_screen,lib/ui/collection_create_screen.dart:199,,
@@ -162,7 +160,7 @@ stock_returns_condition,Condition,,,ui.stock_returns_screen,lib/ui/stock_returns
 home_tab_confirm_end_day,Confirm End Day,,,ui.home_tab,lib/ui/home_tab.dart:380,,
 common_contact_person,Contact person,,,ui.customer_create_screen; ui.leads_screen,lib/ui/customer_create_screen.dart:266; lib/ui/leads_screen.dart:267; lib/ui/leads_screen.dart:535,,
 leads_convert_to_customer,Convert to customer,,,ui.leads_screen,lib/ui/leads_screen.dart:776,,
-customer_create_could_not_get_a_precise_gps_fix_move_to_an_open_area_or,Could not get a precise GPS fix. Move to an open area or tap the shop on the map.,,,ui.customer_create_screen,lib/ui/customer_create_screen.dart:139,,
+customer_create_could_not_get_a_precise_gps_fix_move_to_an_open_area_or,Could not get a precise GPS fix. Move to an open area or tap the shop on the map.,,,ui.customer_create_screen,lib/ui/customer_create_screen.dart:139,,Keep product/technical names unchanged unless a standard localized form is required.
 gamification_could_not_load_team_recognition_error,Could not load team recognition: {error},,,ui.gamification_screen,lib/ui/gamification_screen.dart:35,error,Keep these placeholders unchanged: {error}
 leadership_dashboard_could_not_send_notification_error,Could not send notification: {error},,,ui.leadership_dashboard_screen,lib/ui/leadership_dashboard_screen.dart:511,error,Keep these placeholders unchanged: {error}
 order_create_credit,Credit,,,ui.order_create_screen,lib/ui/order_create_screen.dart:310,,
@@ -246,9 +244,9 @@ smart_route_extra_opportunity_stop,Extra opportunity stop,,,ui.smart_route_scree
 smart_route_extra_opportunity_stop_removed_from_today_s_route,Extra opportunity stop removed from today's route.,,,ui.smart_route_screen,lib/ui/smart_route_screen.dart:157,,
 sync_failures_are_blocked_for_review_and_repeated_uuid_requests,"failures are blocked for review, and repeated UUID requests",,,ui.sync_screen,lib/ui/sync_screen.dart:223,,
 dashboard_field_sales,Field Sales,,,ui.dashboard_screen,lib/ui/dashboard_screen.dart:50,,
-salesman_account_fieldpulse_account,FieldPulse account,,,ui.salesman_account_screen,lib/ui/salesman_account_screen.dart:154,,
-login_fieldpulse_could_not_identify_this_device_restart_the_app,FieldPulse could not identify this device. Restart the app and try again.,,,ui.login_screen,lib/ui/login_screen.dart:35,,
-visits_map_view_fieldpulse_sales_mobile_1_0_field_sales_mobile,FieldPulse Sales Mobile/1.0 (field-sales-mobile;,,,ui.visits_map_view,lib/ui/visits_map_view.dart:460,,
+salesman_account_fieldpulse_account,FieldPulse account,,,ui.salesman_account_screen,lib/ui/salesman_account_screen.dart:154,,Keep product/technical names unchanged unless a standard localized form is required.
+login_fieldpulse_could_not_identify_this_device_restart_the_app,FieldPulse could not identify this device. Restart the app and try again.,,,ui.login_screen,lib/ui/login_screen.dart:35,,Keep product/technical names unchanged unless a standard localized form is required.
+visits_map_view_fieldpulse_sales_mobile_1_0_field_sales_mobile,FieldPulse Sales Mobile/1.0 (field-sales-mobile;,,,ui.visits_map_view,lib/ui/visits_map_view.dart:460,,Keep product/technical names unchanged unless a standard localized form is required.
 fuel_create_filled_to_full_tank,Filled to full tank,,,ui.fuel_create_screen,lib/ui/fuel_create_screen.dart:249,,
 order_create_final_pricing_is_revalidated_by_the_server_when_this,Final pricing is revalidated by the server when this order synchronizes.,,,ui.order_create_screen,lib/ui/order_create_screen.dart:219,,
 smart_route_finish_estimated_departure_at,finish {estimated_departure_at},,,ui.smart_route_screen,lib/ui/smart_route_screen.dart:536,estimated_departure_at,Keep these placeholders unchanged: {estimated_departure_at}
@@ -288,13 +286,13 @@ customer_create_geofence_radius_meters,Geofence radius (meters),,,ui.customer_cr
 customer_geofence_radius_must_be_between_25_and_1000_meters,Geofence radius must be between 25 and 1000 meters.,,,features.customers.customer_repository,lib/features/customers/customer_repository.dart:41; lib/features/customers/customer_repository.dart:121,,
 home_tab_good_day_value1,"Good day, {value1}",,,ui.home_tab,lib/ui/home_tab.dart:491,value1,Keep these placeholders unchanged: {value1}
 visits_map_view_google_navigation_q_coords,google.navigation:q={coords},,,ui.visits_map_view,lib/ui/visits_map_view.dart:255,coords,Keep these placeholders unchanged: {coords}
-mileage_gps_gps_distance_km_km,GPS {gps_distance_km} km,,,ui.mileage_screen,lib/ui/mileage_screen.dart:209,gps_distance_km,Keep these placeholders unchanged: {gps_distance_km}
-fuel_create_gps_captured_automatically,GPS captured automatically,,,ui.fuel_create_screen,lib/ui/fuel_create_screen.dart:313,,
-mileage_gps_distance_filters_mock_locations_low_accuracy_points,"GPS distance filters mock locations, low-accuracy points,",,,ui.mileage_screen,lib/ui/mileage_screen.dart:228,,
-more_gps_distance_odometer_variance_and_fuel_efficiency,"GPS distance, odometer variance and fuel efficiency",,,ui.more_screen,lib/ui/more_screen.dart:156,,
-common_gps_evidence,GPS evidence,,,ui.collection_detail_screen; ui.expense_create_screen,lib/ui/collection_detail_screen.dart:98; lib/ui/expense_create_screen.dart:238,,
-expenses_gps_latitude_longitude_accuracy_m,"GPS: {latitude}, {longitude} · ±{accuracy} m",,,ui.expenses_screen,lib/ui/expenses_screen.dart:70,latitude; longitude; accuracy,"Keep these placeholders unchanged: {latitude}, {longitude}, {accuracy}"
-home_tab_gps_value1,GPS: {value1},,,ui.home_tab,lib/ui/home_tab.dart:749,value1,Keep these placeholders unchanged: {value1}
+mileage_gps_gps_distance_km_km,GPS {gps_distance_km} km,,,ui.mileage_screen,lib/ui/mileage_screen.dart:209,gps_distance_km,Keep these placeholders unchanged: {gps_distance_km} Keep product/technical names unchanged unless a standard localized form is required.
+fuel_create_gps_captured_automatically,GPS captured automatically,,,ui.fuel_create_screen,lib/ui/fuel_create_screen.dart:313,,Keep product/technical names unchanged unless a standard localized form is required.
+mileage_gps_distance_filters_mock_locations_low_accuracy_points,"GPS distance filters mock locations, low-accuracy points,",,,ui.mileage_screen,lib/ui/mileage_screen.dart:228,,Keep product/technical names unchanged unless a standard localized form is required.
+more_gps_distance_odometer_variance_and_fuel_efficiency,"GPS distance, odometer variance and fuel efficiency",,,ui.more_screen,lib/ui/more_screen.dart:156,,Keep product/technical names unchanged unless a standard localized form is required.
+common_gps_evidence,GPS evidence,,,ui.collection_detail_screen; ui.expense_create_screen,lib/ui/collection_detail_screen.dart:98; lib/ui/expense_create_screen.dart:238,,Keep product/technical names unchanged unless a standard localized form is required.
+expenses_gps_latitude_longitude_accuracy_m,"GPS: {latitude}, {longitude} · ±{accuracy} m",,,ui.expenses_screen,lib/ui/expenses_screen.dart:70,latitude; longitude; accuracy,"Keep these placeholders unchanged: {latitude}, {longitude}, {accuracy} Keep product/technical names unchanged unless a standard localized form is required."
+home_tab_gps_value1,GPS: {value1},,,ui.home_tab,lib/ui/home_tab.dart:749,value1,Keep these placeholders unchanged: {value1} Keep product/technical names unchanged unless a standard localized form is required.
 leadership_dashboard_green_online_orange_idle_grey_offline_stale_location,Green = online · orange = idle · grey = offline/stale location,,,ui.leadership_dashboard_screen,lib/ui/leadership_dashboard_screen.dart:390,,
 customers_hello_name,"Hello {name},",,,ui.customers_screen,lib/ui/customers_screen.dart:169,name,Keep these placeholders unchanged: {name}
 leadership_dashboard_hello_value1,"Hello, {value1}",,,ui.leadership_dashboard_screen,lib/ui/leadership_dashboard_screen.dart:98,value1,Keep these placeholders unchanged: {value1}
@@ -331,7 +329,7 @@ visits_list,List,,,ui.visits_screen,lib/ui/visits_screen.dart:618,,
 expense_create_liters_optional,Liters (optional),,,ui.expense_create_screen,lib/ui/expense_create_screen.dart:170,,
 fuel_create_liters,Liters *,,,ui.fuel_create_screen,lib/ui/fuel_create_screen.dart:192,,
 leadership_dashboard_live,Live,,,ui.leadership_dashboard_screen,lib/ui/leadership_dashboard_screen.dart:220,,
-smart_route_live_route_optimized_from_your_current_gps_position,"Live route: optimized from your current GPS position, business priority, and proximity.",,,ui.smart_route_screen,lib/ui/smart_route_screen.dart:352,,
+smart_route_live_route_optimized_from_your_current_gps_position,"Live route: optimized from your current GPS position, business priority, and proximity.",,,ui.smart_route_screen,lib/ui/smart_route_screen.dart:352,,Keep product/technical names unchanged unless a standard localized form is required.
 salesman_account_load_more_customers,Load more customers,,,ui.salesman_account_screen,lib/ui/salesman_account_screen.dart:238,,
 salesman_account_loading,Loading…,,,ui.salesman_account_screen,lib/ui/salesman_account_screen.dart:238,,
 visit_local_photo_file_is_unavailable,Local photo file is unavailable.,,,features.visits.visit_repository,lib/features/visits/visit_repository.dart:794,,
@@ -478,7 +476,7 @@ leads_open,Open,,,ui.leads_screen,lib/ui/leads_screen.dart:100,,
 customers_open_app,Open app,,,ui.customers_screen,lib/ui/customers_screen.dart:221,,
 customer_statement_opening,Opening,,,ui.customer_statement_screen,lib/ui/customer_statement_screen.dart:218,,
 smart_route_opportunity_added_to_today_s_route_and_re_optimized_from,Opportunity added to today's route and re-optimized from your current position.,,,ui.smart_route_screen,lib/ui/smart_route_screen.dart:134,,
-smart_route_optimized_by_business_priority_and_proximity_re_optimize,Optimized by business priority and proximity. Re-optimize when GPS is available.,,,ui.smart_route_screen,lib/ui/smart_route_screen.dart:353,,
+smart_route_optimized_by_business_priority_and_proximity_re_optimize,Optimized by business priority and proximity. Re-optimize when GPS is available.,,,ui.smart_route_screen,lib/ui/smart_route_screen.dart:353,,Keep product/technical names unchanged unless a standard localized form is required.
 common_order,Order,,,ui.appointments_screen; ui.orders_screen; ui.visits_screen,lib/ui/appointments_screen.dart:114; lib/ui/orders_screen.dart:100; lib/ui/visits_screen.dart:509,,
 common_order_discussion,Order discussion,,,ui.call_history_screen; ui.customers_screen,lib/ui/call_history_screen.dart:22; lib/ui/customers_screen.dart:22,,
 visits_order_placed,Order placed,,,ui.visits_screen,lib/ui/visits_screen.dart:25,,
@@ -593,7 +591,7 @@ smart_route_route_route_sequence,Route #{route_sequence},,,ui.smart_route_screen
 notifications_route_alerts_supervisor_messages_and_status_updates_will,"Route alerts, supervisor messages and status updates will appear here.",,,ui.notifications_screen,lib/ui/notifications_screen.dart:41,,
 more_route_alerts_supervisor_messages_and_updates,"Route alerts, supervisor messages and updates",,,ui.more_screen,lib/ui/more_screen.dart:64,,
 smart_route_route_load,Route load,,,ui.smart_route_screen,lib/ui/smart_route_screen.dart:378,,
-smart_route_route_refreshed_gps_was_unavailable_so_the_server_used,"Route refreshed. GPS was unavailable, so the server used business priority and the assigned route as the starting fallback.",,,ui.smart_route_screen,lib/ui/smart_route_screen.dart:103,,
+smart_route_route_refreshed_gps_was_unavailable_so_the_server_used,"Route refreshed. GPS was unavailable, so the server used business priority and the assigned route as the starting fallback.",,,ui.smart_route_screen,lib/ui/smart_route_screen.dart:103,,Keep product/technical names unchanged unless a standard localized form is required.
 more_routes,Routes,,,ui.more_screen,lib/ui/more_screen.dart:186; lib/ui/more_screen.dart:189,,
 customer_statement_sales,Sales,,,ui.customer_statement_screen,lib/ui/customer_statement_screen.dart:223,,
 leadership_dashboard_sales_manager,Sales Manager,,,ui.leadership_dashboard_screen,lib/ui/leadership_dashboard_screen.dart:51,,
@@ -696,17 +694,17 @@ expense_create_the_claim_is_stored_locally_first_and_can_sync_later,The claim is
 customer_create_the_customer_could_not_be_saved_your_changes_are_still_on,The customer could not be saved. Your changes are still on this screen; please try again.,,,ui.customer_create_screen,lib/ui/customer_create_screen.dart:215,,
 customers_the_customer_phone_number_is_invalid,The customer phone number is invalid.,,,ui.customers_screen,lib/ui/customers_screen.dart:239,,
 login_the_email_password_or_company_tenant_id_is_incorrect,"The email, password, or Company / Tenant ID is incorrect.",,,ui.login_screen,lib/ui/login_screen.dart:28,,
-fuel_create_the_entry_receipt_and_gps_evidence_are_saved_offline,"The entry, receipt and GPS evidence are saved offline first and sync when internet returns.",,,ui.fuel_create_screen,lib/ui/fuel_create_screen.dart:315,,
+fuel_create_the_entry_receipt_and_gps_evidence_are_saved_offline,"The entry, receipt and GPS evidence are saved offline first and sync when internet returns.",,,ui.fuel_create_screen,lib/ui/fuel_create_screen.dart:315,,Keep product/technical names unchanged unless a standard localized form is required.
 customers_the_phone_dialer_could_not_be_opened,The phone dialer could not be opened.,,,ui.customers_screen,lib/ui/customers_screen.dart:78,,
 visit_voice_recorder_the_recorded_voice_note_could_not_be_saved,The recorded voice note could not be saved.,,,features.visits.visit_voice_recorder,lib/features/visits/visit_voice_recorder.dart:19,,
 smart_route_the_remaining_route_fits_within_the_configured_workday,The remaining route fits within the configured workday capacity.,,,ui.smart_route_screen,lib/ui/smart_route_screen.dart:390,,
 attendance_the_saved_attendance_data_could_not_be_read_safely,The saved attendance data could not be read safely. Refresh the page and try End Day again.,,,state.attendance_controller,lib/state/attendance_controller.dart:43,,
 login_the_server_could_not_complete_the_sign_in_request_please,"The server could not complete the sign-in request. Please try again. If it continues, contact your administrator.",,,ui.login_screen,lib/ui/login_screen.dart:36,,
-customers_the_sms_app_could_not_be_opened,The SMS app could not be opened.,,,ui.customers_screen,lib/ui/customers_screen.dart:258,,
+customers_the_sms_app_could_not_be_opened,The SMS app could not be opened.,,,ui.customers_screen,lib/ui/customers_screen.dart:258,,Keep product/technical names unchanged unless a standard localized form is required.
 attendance_the_work_day_could_not_be_reopened_locally,The work day could not be reopened locally.,,,state.attendance_controller,lib/state/attendance_controller.dart:514,,
 home_tab_the_work_day_will_close_locally_and_pending_data_will,The work day will close locally and pending data will sync later.,,,ui.home_tab,lib/ui/home_tab.dart:363,,
 login_this_account_is_already_active_on_another_device_ask_an,This account is already active on another device. Ask an administrator to revoke the old device before signing in here.,,,ui.login_screen,lib/ui/login_screen.dart:32,,
-login_this_account_is_not_enabled_for_the_fieldpulse_mobile_app,"This account is not enabled for the FieldPulse mobile app. Ask your administrator to assign Salesman, Supervisor, or Sales Manager access.",,,ui.login_screen,lib/ui/login_screen.dart:29,,
+login_this_account_is_not_enabled_for_the_fieldpulse_mobile_app,"This account is not enabled for the FieldPulse mobile app. Ask your administrator to assign Salesman, Supervisor, or Sales Manager access.",,,ui.login_screen,lib/ui/login_screen.dart:29,,Keep product/technical names unchanged unless a standard localized form is required.
 collection_detail_this_amount_was_above_the_cached_outstanding_balance_at,This amount was above the cached outstanding balance at capture time. It cannot be verified above the authoritative server balance.,,,ui.collection_detail_screen,lib/ui/collection_detail_screen.dart:89,,
 visit_this_assigned_visit_has_no_customer_data,This assigned visit has no customer data.,,,state.visit_controller,lib/state/visit_controller.dart:80,,
 collection_create_this_collection_will_be_linked_to_the_current_customer,This collection will be linked to the current customer visit.,,,ui.collection_create_screen,lib/ui/collection_create_screen.dart:269,,
@@ -714,7 +712,7 @@ login_this_company_account_is_suspended_please_contact_your,This company account
 customers_this_customer_has_no_phone_number,This customer has no phone number.,,,ui.customers_screen,lib/ui/customers_screen.dart:63; lib/ui/customers_screen.dart:162,,
 login_this_device_has_been_revoked_for_this_account_please,This device has been revoked for this account. Please contact your administrator.,,,ui.login_screen,lib/ui/login_screen.dart:33,,
 login_this_email_is_used_in_more_than_one_company_enter_your,This email is used in more than one company. Enter your Company / Tenant ID and try again.,,,ui.login_screen,lib/ui/login_screen.dart:26,,
-login_this_fieldpulse_version_is_no_longer_supported_update_the,This FieldPulse version is no longer supported. Update the app and try again.,,,ui.login_screen,lib/ui/login_screen.dart:34,,
+login_this_fieldpulse_version_is_no_longer_supported_update_the,This FieldPulse version is no longer supported. Update the app and try again.,,,ui.login_screen,lib/ui/login_screen.dart:34,,Keep product/technical names unchanged unless a standard localized form is required.
 visit_this_visit_form_has_already_been_submitted,This visit form has already been submitted.,,,features.visits.visit_repository,lib/features/visits/visit_repository.dart:347,,
 home_tab_timezone_value1,Timezone: {value1},,,ui.home_tab,lib/ui/home_tab.dart:746,value1,Keep these placeholders unchanged: {value1}
 appointments_title,Title,,,ui.appointments_screen,lib/ui/appointments_screen.dart:92,,
@@ -745,7 +743,6 @@ smart_route_urgent,Urgent,,,ui.smart_route_screen,lib/ui/smart_route_screen.dart
 login_use_saved_company,Use saved company,,,ui.login_screen,lib/ui/login_screen.dart:191,,
 home_tab_use_this_only_if_end_day_was_tapped_by_mistake_your,Use this only if End Day was tapped by mistake. Your original,,,ui.home_tab,lib/ui/home_tab.dart:171,,
 expense_create_used_for_km_l_fuel_efficiency_reporting,Used for km/L fuel-efficiency reporting.,,,ui.expense_create_screen,lib/ui/expense_create_screen.dart:171,,
-visits_map_view_user_agent,User-Agent,,,ui.visits_map_view,lib/ui/visits_map_view.dart:459,,
 home_tab_using_safe_offline_policy,Using safe offline policy,,,ui.home_tab,lib/ui/home_tab.dart:499,,
 more_van_stock_damaged_goods_and_customer_returns,"Van stock, damaged goods and customer returns",,,ui.more_screen,lib/ui/more_screen.dart:197,,
 mileage_variance_variance_km,Variance {variance} km,,,ui.mileage_screen,lib/ui/mileage_screen.dart:213,variance,Keep these placeholders unchanged: {variance}
@@ -754,7 +751,7 @@ fuel_create_vehicle_plate,Vehicle / plate *,,,ui.fuel_create_screen,lib/ui/fuel_
 common_vehicle_plate_is_required,Vehicle / plate is required.,,,features.expenses.expense_repository; ui.fuel_create_screen,lib/features/expenses/expense_repository.dart:103; lib/ui/fuel_create_screen.dart:108,,
 home_tab_vehicle_and_odometer_are_optional_add_them_when_you_want,Vehicle and odometer are optional. Add them when you want mileage reconciliation.,,,ui.home_tab,lib/ui/home_tab.dart:97,,
 fuel_vehicle_not_recorded,Vehicle not recorded,,,ui.fuel_screen,lib/ui/fuel_screen.dart:90,,
-more_vehicle_refueling_odometer_gps_and_receipt_evidence,"Vehicle refueling, odometer, GPS and receipt evidence",,,ui.more_screen,lib/ui/more_screen.dart:144,,
+more_vehicle_refueling_odometer_gps_and_receipt_evidence,"Vehicle refueling, odometer, GPS and receipt evidence",,,ui.more_screen,lib/ui/more_screen.dart:144,,Keep product/technical names unchanged unless a standard localized form is required.
 mileage_vehicle_vehicle_reference,Vehicle: {vehicle_reference},,,ui.mileage_screen,lib/ui/mileage_screen.dart:155; lib/ui/mileage_screen.dart:208,vehicle_reference,Keep these placeholders unchanged: {vehicle_reference}
 appointments_visit,Visit,,,ui.appointments_screen,lib/ui/appointments_screen.dart:108,,
 common_visit_check_in_saved_locally,Visit check-in saved locally.,,,state.visit_controller; ui.visits_map_view,lib/state/visit_controller.dart:110; lib/ui/visits_map_view.dart:354,,
@@ -774,8 +771,8 @@ sync_coordinator_waiting_for_attendance_to_synchronize,Waiting for attendance to
 sync_waiting_for_retry_waitingcount,Waiting for retry: {waitingCount},,,ui.sync_screen,lib/ui/sync_screen.dart:107,waitingCount,Keep these placeholders unchanged: {waitingCount}
 common_waiting_to_sync,Waiting to sync,,,ui.appointments_screen; ui.follow_ups_screen,lib/ui/appointments_screen.dart:488; lib/ui/follow_ups_screen.dart:420,,
 leads_what_happened,What happened?,,,ui.leads_screen,lib/ui/leads_screen.dart:851,,
-customers_whatsapp_could_not_be_opened,WhatsApp could not be opened.,,,ui.customers_screen,lib/ui/customers_screen.dart:257,,
-mileage_while_gps_stays_the_reconciliation_baseline,while GPS stays the reconciliation baseline.,,,ui.mileage_screen,lib/ui/mileage_screen.dart:231,,
+customers_whatsapp_could_not_be_opened,WhatsApp could not be opened.,,,ui.customers_screen,lib/ui/customers_screen.dart:257,,Keep product/technical names unchanged unless a standard localized form is required.
+mileage_while_gps_stays_the_reconciliation_baseline,while GPS stays the reconciliation baseline.,,,ui.mileage_screen,lib/ui/mileage_screen.dart:231,,Keep product/technical names unchanged unless a standard localized form is required.
 smart_route_within_value1_km,within {value1} km,,,ui.smart_route_screen,lib/ui/smart_route_screen.dart:595,value1,Keep these placeholders unchanged: {value1}
 leads_won,Won,,,ui.leads_screen,lib/ui/leads_screen.dart:104,,
 home_tab_work_day,Work day,,,ui.home_tab,lib/ui/home_tab.dart:528,,
@@ -788,7 +785,7 @@ home_tab_working_without_changing_the_original_start_time,working without changi
 visit_forms_yes,Yes,,,ui.visit_forms_screen,lib/ui/visit_forms_screen.dart:360,,
 leadership_dashboard_your_assigned_field_sales_team,Your assigned field-sales team,,,ui.leadership_dashboard_screen,lib/ui/leadership_dashboard_screen.dart:106,,
 stock_returns_your_company_has_not_enabled_stock_enforcement_yet,Your company has not enabled stock enforcement yet.,,,ui.stock_returns_screen,lib/ui/stock_returns_screen.dart:119,,
-smart_route_your_company_has_turned_off_route_optimization_in,"Your company has turned off route optimization in FieldPulse settings. Your assigned customers, routes, visits, and normal field work are unchanged.",,,ui.smart_route_screen,lib/ui/smart_route_screen.dart:280,,
+smart_route_your_company_has_turned_off_route_optimization_in,"Your company has turned off route optimization in FieldPulse settings. Your assigned customers, routes, visits, and normal field work are unchanged.",,,ui.smart_route_screen,lib/ui/smart_route_screen.dart:280,,Keep product/technical names unchanged unless a standard localized form is required.
 expense_create_your_current_location_is_captured_with_the_expense_claim,Your current location is captured with the expense claim.,,,ui.expense_create_screen,lib/ui/expense_create_screen.dart:240,,
 login_your_offline_first_work_companion,Your offline-first work companion,,,ui.login_screen,lib/ui/login_screen.dart:204,,
 appointments_your_schedule_stays_cached_for_offline_use,Your schedule stays cached for offline use.,,,ui.appointments_screen,lib/ui/appointments_screen.dart:338,,
