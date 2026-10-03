@@ -5,6 +5,7 @@ import 'language_selector.dart';
 
 import 'package:provider/provider.dart';
 
+import '../l10n/locale_controller.dart';
 import '../state/app_state.dart';
 import 'gamification_screen.dart';
 import 'notifications_screen.dart';
@@ -40,6 +41,8 @@ class MoreScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<AppLocaleController>();
+
     return RefreshIndicator(
       onRefresh: () => syncAndReload(context, triggerSource: 'pull:more'),
       child: ListView(
