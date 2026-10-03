@@ -6,7 +6,6 @@ import '../state/order_controller.dart';
 import 'order_create_screen.dart';
 import 'order_detail_screen.dart';
 import 'sync_refresh.dart';
-import 'fieldpulse_theme.dart';
 import 'widgets/fieldpulse_ui.dart';
 
 class OrdersScreen extends StatelessWidget {
