@@ -1,13 +1,17 @@
 package com.businessos.fieldpulse
 
 import android.Manifest
+import android.app.ActivityManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.pm.PackageManager
+import android.location.LocationManager
 import android.media.MediaRecorder
 import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
+import android.os.StatFs
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -18,6 +22,7 @@ class MainActivity : FlutterActivity() {
         private const val notificationChannel = "field_sales/notifications"
         private const val operationalNotificationChannelId = "fieldpulse_operational"
         private const val audioChannel = "field_sales/voice_recorder"
+        private const val diagnosticsChannel = "field_sales/device_diagnostics"
         private const val notificationPermissionRequestCode = 9101
         private const val audioPermissionRequestCode = 9102
     }
@@ -104,6 +109,93 @@ class MainActivity : FlutterActivity() {
                 else -> result.notImplemented()
             }
         }
+
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            diagnosticsChannel,
+        ).setMethodCallHandler { call, result ->
+            if (call.method == "snapshot") {
+                result.success(deviceDiagnosticSnapshot())
+            } else {
+                result.notImplemented()
+            }
+        }
+    }
+
+    private fun deviceDiagnosticSnapshot(): Map<String, Any?> {
+        val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
+        val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val statFs = StatFs(filesDir.absolutePath)
+
+        val fineLocationGranted =
+            checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED
+        val coarseLocationGranted =
+            checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED
+        val backgroundLocationGranted =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION) ==
+                    PackageManager.PERMISSION_GRANTED
+            } else {
+                fineLocationGranted || coarseLocationGranted
+            }
+        val notificationGranted =
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+                checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
+                PackageManager.PERMISSION_GRANTED
+
+        val locationServicesEnabled = try {
+            locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+        } catch (_: Exception) {
+            false
+        }
+
+        val blockSize = statFs.blockSizeLong
+        val availableBytes = statFs.availableBlocksLong * blockSize
+        val totalBytes = statFs.blockCountLong * blockSize
+        val bytesPerMb = 1024L * 1024L
+
+        return mapOf(
+            "power_save_mode" to powerManager.isPowerSaveMode,
+            "battery_optimization_exempt" to
+                powerManager.isIgnoringBatteryOptimizations(packageName),
+            "background_restricted" to
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    activityManager.isBackgroundRestricted
+                } else {
+                    false
+                },
+            "location_services_enabled" to locationServicesEnabled,
+            "location_permission" to when {
+                fineLocationGranted -> "granted"
+                coarseLocationGranted -> "coarse"
+                else -> "denied"
+            },
+            "background_location_permission" to
+                if (backgroundLocationGranted) "granted" else "denied",
+            "notification_permission" to
+                if (notificationGranted) "granted" else "denied",
+            "storage_free_mb" to availableBytes / bytesPerMb,
+            "storage_total_mb" to totalBytes / bytesPerMb,
+            "root_signal_detected" to hasRootSignal(),
+        )
+    }
+
+    private fun hasRootSignal(): Boolean {
+        if (Build.TAGS?.contains("test-keys") == true) {
+            return true
+        }
+
+        return listOf(
+            "/system/app/Superuser.apk",
+            "/system/bin/su",
+            "/system/xbin/su",
+            "/sbin/su",
+            "/su/bin/su",
+        ).any { path -> File(path).exists() }
     }
 
     private fun requestAudioPermission(result: MethodChannel.Result) {
