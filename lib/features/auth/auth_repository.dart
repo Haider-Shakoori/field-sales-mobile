@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
 
@@ -66,10 +67,18 @@ class AuthRepository {
     var androidVersion = 'unknown';
 
     try {
-      final info = await DeviceInfoPlugin().androidInfo;
-      deviceModel = info.model;
-      manufacturer = info.manufacturer;
-      androidVersion = info.version.release;
+      final deviceInfo = DeviceInfoPlugin();
+      if (Platform.isIOS) {
+        final info = await deviceInfo.iosInfo;
+        deviceModel = info.model;
+        manufacturer = 'Apple';
+        androidVersion = info.systemVersion;
+      } else if (Platform.isAndroid) {
+        final info = await deviceInfo.androidInfo;
+        deviceModel = info.model;
+        manufacturer = info.manufacturer;
+        androidVersion = info.version.release;
+      }
     } catch (_) {
       // Device metadata is best-effort and must never block authentication.
     }
