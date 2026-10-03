@@ -11,6 +11,7 @@ import '../state/team_controller.dart';
 import '../features/team/team_repository.dart';
 import '../state/notification_controller.dart';
 import 'notifications_screen.dart';
+import 'widgets/fieldpulse_ui.dart';
 
 const _kabul = LatLng(34.5553, 69.2075);
 
@@ -52,7 +53,11 @@ class _LeadershipDashboardScreenState extends State<LeadershipDashboardScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('$roleLabel · FieldPulse'),
+        title: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: AlignmentDirectional.centerStart,
+          child: Text('$roleLabel · FieldPulse'),
+        ),
         actions: [
           Consumer<NotificationController>(
             builder: (context, notifications, _) => IconButton(
@@ -72,21 +77,57 @@ class _LeadershipDashboardScreenState extends State<LeadershipDashboardScreen> {
               ),
             ),
           ),
-          IconButton(
-            tooltip: 'Refresh team',
-            onPressed: team.busy ? null : _refresh,
-            icon: team.busy
-                ? const SizedBox.square(
-                    dimension: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.refresh),
-          ),
-          IconButton(
-            tooltip: 'Sign out',
-            onPressed: () => context.read<AppState>().logout(),
-            icon: const Icon(Icons.logout),
-          ),
+          if (MediaQuery.sizeOf(context).width >= 380) ...[
+            IconButton(
+              tooltip: 'Refresh team',
+              onPressed: team.busy ? null : _refresh,
+              icon: team.busy
+                  ? const SizedBox.square(
+                      dimension: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.refresh),
+            ),
+            IconButton(
+              tooltip: 'Sign out',
+              onPressed: () => context.read<AppState>().logout(),
+              icon: const Icon(Icons.logout),
+            ),
+          ] else
+            PopupMenuButton<String>(
+              tooltip: 'Team actions',
+              icon: const Icon(Icons.more_vert),
+              onSelected: (value) {
+                if (value == 'refresh') {
+                  unawaited(_refresh());
+                } else if (value == 'logout') {
+                  unawaited(context.read<AppState>().logout());
+                }
+              },
+              itemBuilder: (context) => [
+                PopupMenuItem<String>(
+                  value: 'refresh',
+                  enabled: !team.busy,
+                  child: const Row(
+                    children: [
+                      Icon(Icons.refresh),
+                      SizedBox(width: 10),
+                      Text('Refresh team'),
+                    ],
+                  ),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'logout',
+                  child: Row(
+                    children: [
+                      Icon(Icons.logout),
+                      SizedBox(width: 10),
+                      Text('Sign out'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
         ],
       ),
       body: RefreshIndicator(
@@ -94,17 +135,58 @@ class _LeadershipDashboardScreenState extends State<LeadershipDashboardScreen> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
           children: [
-            Text(
-              'Hello, ${app.session?.name ?? ''}',
-              style: Theme.of(context).textTheme.headlineSmall
-                  ?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              app.isSalesManager
-                  ? 'Your supervisors and their field teams'
-                  : 'Your assigned field-sales team',
-              style: Theme.of(context).textTheme.bodyMedium,
+            FieldPulseHeroCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const FieldPulseIconBadge(
+                        icon: Icons.groups_rounded,
+                        color: Color(0xFF7CC7FF),
+                        size: 52,
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Hello, ${app.session?.name ?? ''}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.titleLarge
+                                  ?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              app.isSalesManager
+                                  ? 'Your supervisors and their field teams'
+                                  : 'Your assigned field-sales team',
+                              style: const TextStyle(
+                                color: Color(0xFFBBD0E8),
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: FieldPulseStatusPill(
+                      label: roleLabel,
+                      color: const Color(0xFF27D7A1),
+                      icon: Icons.verified_user_outlined,
+                    ),
+                  ),
+                ],
+              ),
             ),
             if (team.message != null) ...[
               const SizedBox(height: 12),
@@ -259,8 +341,8 @@ class _SummaryGrid extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(card.$4, size: 22),
-                          const SizedBox(height: 10),
+                          FieldPulseIconBadge(icon: card.$4, size: 40),
+                          const SizedBox(height: 12),
                           Text(
                             card.$2,
                             style: Theme.of(context).textTheme.headlineSmall

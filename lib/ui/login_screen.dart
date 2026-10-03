@@ -8,6 +8,7 @@ import '../core/api/api_exception.dart';
 import '../features/notifications/push_service.dart';
 import '../state/app_state.dart';
 import '../state/attendance_controller.dart';
+import 'fieldpulse_theme.dart';
 import 'language_selector.dart';
 
 String friendlyLoginError(Object error) {
@@ -161,7 +162,13 @@ class _LoginScreenState extends State<LoginScreen> {
             padding: const EdgeInsets.all(24),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 480),
-              child: Card(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(28),
+                  border: Border.all(color: FieldPulseTheme.border),
+                  boxShadow: FieldPulseDecor.softShadow,
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(28),
                   child: AutofillGroup(
@@ -205,8 +212,23 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
-                        const Icon(Icons.route_rounded, size: 52),
-                        const SizedBox(height: 20),
+                        Align(
+                          child: Container(
+                            width: 68,
+                            height: 68,
+                            decoration: BoxDecoration(
+                              gradient: FieldPulseDecor.accentGradient,
+                              borderRadius: BorderRadius.circular(22),
+                              boxShadow: FieldPulseDecor.softShadow,
+                            ),
+                            child: const Icon(
+                              Icons.route_rounded,
+                              color: Colors.white,
+                              size: 34,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 22),
                         Text(
                           'FieldPulse',
                           style: Theme.of(context).textTheme.headlineMedium

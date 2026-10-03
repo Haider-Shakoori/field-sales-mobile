@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 
 import '../features/devices/device_health_repository.dart';
 import '../state/app_state.dart';
+import 'fieldpulse_theme.dart';
+import 'widgets/fieldpulse_ui.dart';
 
 class MobileDiagnosticsScreen extends StatefulWidget {
   const MobileDiagnosticsScreen({super.key});
@@ -284,57 +286,75 @@ class _StatusCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = switch (status) {
-      'healthy' => Colors.green,
-      'warning' => Colors.orange,
-      'critical' => Colors.red,
-      _ => Colors.grey,
+      'healthy' => const Color(0xFF27D7A1),
+      'warning' => const Color(0xFFFFB547),
+      'critical' => const Color(0xFFFF6B6B),
+      _ => const Color(0xFF8FB2D6),
     };
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.health_and_safety_outlined, color: color),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    'Mobile diagnostics',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
+    final label = status.isEmpty
+        ? 'Unknown'
+        : '${status[0].toUpperCase()}${status.substring(1)}';
+
+    return FieldPulseHeroCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const FieldPulseIconBadge(
+                icon: Icons.health_and_safety_rounded,
+                color: Color(0xFF7CC7FF),
+                size: 50,
+              ),
+              const SizedBox(width: 13),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Mobile diagnostics',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      collectedAt == null
+                          ? 'Inspect this phone and its field-work readiness.'
+                          : 'Last checked ${collectedAt!.toLocal().toString().split('.').first}',
+                      style: const TextStyle(
+                        color: Color(0xFFBBD0E8),
+                        fontSize: 12.5,
+                      ),
+                    ),
+                  ],
                 ),
-                Chip(
-                  label: Text(
-                    status.isEmpty
-                        ? 'Unknown'
-                        : '${status[0].toUpperCase()}${status.substring(1)}',
-                  ),
-                  side: BorderSide(color: color.withValues(alpha: .35)),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              collectedAt == null
-                  ? 'Run diagnostics to inspect this phone.'
-                  : 'Last checked ${collectedAt!.toLocal().toString().split('.').first}',
-            ),
-            const SizedBox(height: 14),
-            FilledButton.icon(
+              ),
+              FieldPulseStatusPill(label: label, color: color),
+            ],
+          ),
+          const SizedBox(height: 18),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              style: FilledButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: FieldPulseTheme.navy,
+              ),
               onPressed: loading ? null : onRun,
               icon: loading
                   ? const SizedBox.square(
                       dimension: 16,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Icon(Icons.play_arrow_outlined),
+                  : const Icon(Icons.refresh_rounded),
               label: Text(loading ? 'Checking…' : 'Run diagnostics'),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -390,44 +410,51 @@ class _MetricSection extends StatelessWidget {
   final List<_MetricRow> rows;
 
   @override
-  Widget build(BuildContext context) => Card(
-    child: Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Icon(icon),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  title,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-              ),
-            ],
-          ),
-          const Divider(height: 24),
-          for (final row in rows)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(child: Text(row.label)),
-                  const SizedBox(width: 12),
-                  Flexible(
-                    child: Text(
-                      row.value,
-                      textAlign: TextAlign.end,
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                ],
+  Widget build(BuildContext context) => FieldPulseInfoCard(
+    child: Column(
+      children: [
+        Row(
+          children: [
+            FieldPulseIconBadge(icon: icon),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                title,
+                style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
-        ],
-      ),
+          ],
+        ),
+        const SizedBox(height: 14),
+        const Divider(),
+        const SizedBox(height: 8),
+        for (final row in rows)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 7),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    row.label,
+                    style: const TextStyle(color: FieldPulseTheme.muted),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Flexible(
+                  child: Text(
+                    row.value,
+                    textAlign: TextAlign.end,
+                    style: const TextStyle(
+                      color: FieldPulseTheme.text,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
     ),
   );
 }

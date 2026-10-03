@@ -20,6 +20,7 @@ import '../state/target_controller.dart';
 import '../state/team_controller.dart';
 import '../state/visit_controller.dart';
 import 'customers_screen.dart';
+import 'fieldpulse_theme.dart';
 import 'home_tab.dart';
 import 'leadership_dashboard_screen.dart';
 import 'more_screen.dart';
@@ -162,8 +163,27 @@ class _DashboardScreenState extends State<DashboardScreen>
         sync.infrastructurePending;
 
     return Scaffold(
+      extendBody: true,
       appBar: AppBar(
-        title: Text(_titles[_index]),
+        title: Row(
+          children: [
+            Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                gradient: FieldPulseDecor.accentGradient,
+                borderRadius: BorderRadius.circular(11),
+              ),
+              child: const Icon(
+                Icons.route_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 11),
+            Text(_titles[_index]),
+          ],
+        ),
         actions: [
           Consumer<NotificationController>(
             builder: (context, notifications, _) => IconButton(
@@ -207,39 +227,52 @@ class _DashboardScreenState extends State<DashboardScreen>
         ],
       ),
       body: IndexedStack(index: _index, children: _pages),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _index,
-        onDestinationSelected: (value) {
-          setState(() => _index = value);
-          unawaited(syncAndReload(context, triggerSource: 'tab'));
-        },
-        destinations: [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: L10n.text('Home'),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        minimum: const EdgeInsets.fromLTRB(12, 0, 12, 10),
+        child: Container(
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: FieldPulseTheme.border),
+            boxShadow: FieldPulseDecor.softShadow,
           ),
-          NavigationDestination(
-            icon: Icon(Icons.storefront_outlined),
-            selectedIcon: Icon(Icons.storefront),
-            label: L10n.text('Customers'),
+          child: NavigationBar(
+            selectedIndex: _index,
+            onDestinationSelected: (value) {
+              setState(() => _index = value);
+              unawaited(syncAndReload(context, triggerSource: 'tab'));
+            },
+            destinations: [
+              NavigationDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+                label: L10n.text('Home'),
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.storefront_outlined),
+                selectedIcon: Icon(Icons.storefront),
+                label: L10n.text('Customers'),
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.location_on_outlined),
+                selectedIcon: Icon(Icons.location_on),
+                label: L10n.text('Visits'),
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.receipt_long_outlined),
+                selectedIcon: Icon(Icons.receipt_long),
+                label: L10n.text('Orders'),
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.more_horiz),
+                selectedIcon: Icon(Icons.more),
+                label: L10n.text('More'),
+              ),
+            ],
           ),
-          NavigationDestination(
-            icon: Icon(Icons.location_on_outlined),
-            selectedIcon: Icon(Icons.location_on),
-            label: L10n.text('Visits'),
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.receipt_long_outlined),
-            selectedIcon: Icon(Icons.receipt_long),
-            label: L10n.text('Orders'),
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.more_horiz),
-            selectedIcon: Icon(Icons.more),
-            label: L10n.text('More'),
-          ),
-        ],
+        ),
       ),
     );
   }
