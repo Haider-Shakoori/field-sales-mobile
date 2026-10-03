@@ -97,117 +97,116 @@ class SyncScreen extends StatelessWidget {
         FieldPulseGlassCard(
           padding: const EdgeInsets.all(20),
           child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Offline sync',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Offline sync',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+              const SizedBox(height: 12),
+              Text('Pending local changes: $pending'),
+              Text('Waiting for retry: ${sync.waitingCount}'),
+              Text('Blocked items: ${sync.blockedCount}'),
+              if (latestStatus != null) ...[
+                const SizedBox(height: 6),
+                Text(
+                  'Last cycle: $latestStatus'
+                  '${latestCompleted == null ? '' : ' · $latestCompleted'}',
                 ),
-                const SizedBox(height: 12),
-                Text('Pending local changes: $pending'),
-                Text('Waiting for retry: ${sync.waitingCount}'),
-                Text('Blocked items: ${sync.blockedCount}'),
-                if (latestStatus != null) ...[
-                  const SizedBox(height: 6),
-                  Text(
-                    'Last cycle: $latestStatus'
-                    '${latestCompleted == null ? '' : ' · $latestCompleted'}',
-                  ),
-                ],
-                const SizedBox(height: 16),
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: [
-                    FilledButton.icon(
-                      onPressed: busy ? null : () => _syncAll(context),
-                      icon: busy
-                          ? const SizedBox.square(
-                              dimension: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.sync),
-                      label: Text(busy ? 'Syncing…' : 'Sync now'),
-                    ),
-                    if (sync.issueCount > 0)
-                      OutlinedButton.icon(
-                        onPressed: busy ? null : () => _retryFailures(context),
-                        icon: const Icon(Icons.restart_alt),
-                        label: const Text('Retry failures now'),
-                      ),
-                  ],
-                ),
-                if (sync.message != null) ...[
-                  const SizedBox(height: 12),
-                  Text(sync.message!),
-                ],
               ],
-            ),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: [
+                  FilledButton.icon(
+                    onPressed: busy ? null : () => _syncAll(context),
+                    icon: busy
+                        ? const SizedBox.square(
+                            dimension: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.sync),
+                    label: Text(busy ? 'Syncing…' : 'Sync now'),
+                  ),
+                  if (sync.issueCount > 0)
+                    OutlinedButton.icon(
+                      onPressed: busy ? null : () => _retryFailures(context),
+                      icon: const Icon(Icons.restart_alt),
+                      label: const Text('Retry failures now'),
+                    ),
+                ],
+              ),
+              if (sync.message != null) ...[
+                const SizedBox(height: 12),
+                Text(sync.message!),
+              ],
+            ],
+          ),
         ),
         if (sync.issues.isNotEmpty) ...[
           const SizedBox(height: 16),
           FieldPulseGlassCard(
             padding: const EdgeInsets.all(16),
             child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Sync issues',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
-                  ),
-                  const SizedBox(height: 10),
-                  ...sync.issues.take(8).map((issue) {
-                    final type = _entityLabel(
-                      issue['entity_type']?.toString() ?? 'item',
-                    );
-                    final status = issue['status']?.toString() ?? 'retry_wait';
-                    final attempts = issue['attempts']?.toString() ?? '0';
-                    final next = issue['next_retry_at']?.toString();
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Sync issues',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                ),
+                const SizedBox(height: 10),
+                ...sync.issues.take(8).map((issue) {
+                  final type = _entityLabel(
+                    issue['entity_type']?.toString() ?? 'item',
+                  );
+                  final status = issue['status']?.toString() ?? 'retry_wait';
+                  final attempts = issue['attempts']?.toString() ?? '0';
+                  final next = issue['next_retry_at']?.toString();
 
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  '$type · $status · attempt $attempts',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                '$type · $status · attempt $attempts',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              Icon(
-                                status == 'blocked'
-                                    ? Icons.error_outline
-                                    : Icons.schedule,
-                                size: 20,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 3),
-                          Text(
-                            issue['error_message']?.toString() ??
-                                'Sync failed.',
-                          ),
-                          if (next != null)
-                            Text(
-                              'Next automatic retry: $next',
-                              style: TextStyle(color: Colors.grey.shade600),
                             ),
-                        ],
-                      ),
-                    );
-                  }),
-                  if (sync.issues.length > 8)
-                    Text(
-                      '+${sync.issues.length - 8} more issues',
-                      style: TextStyle(color: Colors.grey.shade600),
+                            Icon(
+                              status == 'blocked'
+                                  ? Icons.error_outline
+                                  : Icons.schedule,
+                              size: 20,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          issue['error_message']?.toString() ?? 'Sync failed.',
+                        ),
+                        if (next != null)
+                          Text(
+                            'Next automatic retry: $next',
+                            style: TextStyle(color: Colors.grey.shade600),
+                          ),
+                      ],
                     ),
-                ],
-              ),
+                  );
+                }),
+                if (sync.issues.length > 8)
+                  Text(
+                    '+${sync.issues.length - 8} more issues',
+                    style: TextStyle(color: Colors.grey.shade600),
+                  ),
+              ],
+            ),
           ),
         ],
         const SizedBox(height: 16),
