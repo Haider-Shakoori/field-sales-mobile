@@ -131,20 +131,22 @@ class DeviceHealthCollector {
     if (values.contains(ConnectivityResult.ethernet)) return 'ethernet';
     if (values.contains(ConnectivityResult.vpn)) return 'vpn';
     if (values.contains(ConnectivityResult.bluetooth)) return 'bluetooth';
-    if (values.isEmpty || values.every((value) => value == ConnectivityResult.none)) {
+    if (values.isEmpty ||
+        values.every((value) => value == ConnectivityResult.none)) {
       return 'offline';
     }
 
     return 'other';
   }
 
-  String _locationPermission(LocationPermission permission) => switch (permission) {
-    LocationPermission.always => 'always',
-    LocationPermission.whileInUse => 'while_in_use',
-    LocationPermission.denied => 'denied',
-    LocationPermission.deniedForever => 'denied_forever',
-    _ => 'unknown',
-  };
+  String _locationPermission(LocationPermission permission) =>
+      switch (permission) {
+        LocationPermission.always => 'always',
+        LocationPermission.whileInUse => 'while_in_use',
+        LocationPermission.denied => 'denied',
+        LocationPermission.deniedForever => 'denied_forever',
+        _ => 'unknown',
+      };
 }
 
 class DeviceHealthRepository {
@@ -205,7 +207,9 @@ class DeviceHealthRepository {
     final local = await collect(tenantId);
 
     try {
-      final response = Map<String, dynamic>.from(await api.get('device/health'));
+      final response = Map<String, dynamic>.from(
+        await api.get('device/health'),
+      );
       final issues = response['health_issues'] is List
           ? List<Map<String, dynamic>>.from(
               (response['health_issues'] as List).map(
@@ -283,7 +287,8 @@ class DeviceHealthRepository {
         .toUtc()
         .subtract(const Duration(hours: 24))
         .toIso8601String();
-    final mock = Sqflite.firstIntValue(
+    final mock =
+        Sqflite.firstIntValue(
           await db.db.rawQuery(
             'SELECT COUNT(*) FROM local_gps_points '
             'WHERE tenant_id=? AND is_mock_location=1 AND recorded_at>=?',
@@ -301,7 +306,8 @@ class DeviceHealthRepository {
   Future<Map<String, dynamic>> _syncHealth(String tenantId) async {
     var pending = 0;
 
-    final queue = Sqflite.firstIntValue(
+    final queue =
+        Sqflite.firstIntValue(
           await db.db.rawQuery(
             'SELECT COUNT(*) FROM sync_queue '
             'WHERE tenant_id=? AND status IN (?,?,?,?)',
@@ -340,7 +346,8 @@ class DeviceHealthRepository {
       }
     }
 
-    final failed = Sqflite.firstIntValue(
+    final failed =
+        Sqflite.firstIntValue(
           await db.db.rawQuery(
             'SELECT COUNT(*) FROM local_sync_failures '
             'WHERE tenant_id=? AND status=?',
@@ -348,7 +355,8 @@ class DeviceHealthRepository {
           ),
         ) ??
         0;
-    final blocked = Sqflite.firstIntValue(
+    final blocked =
+        Sqflite.firstIntValue(
           await db.db.rawQuery(
             'SELECT COUNT(*) FROM local_sync_failures '
             'WHERE tenant_id=? AND status=?',
@@ -476,7 +484,11 @@ DeviceHealthClassification classifyDeviceHealth(Map<String, dynamic> metrics) {
     } else {
       final age = DateTime.now().toUtc().difference(lastGps.toUtc()).abs();
       if (age > const Duration(minutes: 10)) {
-        add('gps_fix_stale', 'critical', 'The latest GPS fix is over 10 minutes old.');
+        add(
+          'gps_fix_stale',
+          'critical',
+          'The latest GPS fix is over 10 minutes old.',
+        );
       } else if (age > const Duration(minutes: 5)) {
         add('gps_fix_delayed', 'warning', 'The latest GPS fix is delayed.');
       }
@@ -484,7 +496,11 @@ DeviceHealthClassification classifyDeviceHealth(Map<String, dynamic> metrics) {
   }
 
   if (metrics['notification_permission'] == 'denied') {
-    add('notifications_denied', 'warning', 'Notification permission is disabled.');
+    add(
+      'notifications_denied',
+      'warning',
+      'Notification permission is disabled.',
+    );
   }
 
   if (storageFree != null) {
@@ -496,13 +512,25 @@ DeviceHealthClassification classifyDeviceHealth(Map<String, dynamic> metrics) {
   }
 
   if (blocked > 0) {
-    add('sync_blocked', 'critical', '$blocked sync item(s) require intervention.');
+    add(
+      'sync_blocked',
+      'critical',
+      '$blocked sync item(s) require intervention.',
+    );
   }
   if (failed > 0) {
-    add('sync_failures', 'warning', '$failed sync item(s) are waiting after a failure.');
+    add(
+      'sync_failures',
+      'warning',
+      '$failed sync item(s) are waiting after a failure.',
+    );
   }
   if (pending >= 100) {
-    add('sync_backlog', 'warning', '$pending items are waiting to synchronize.');
+    add(
+      'sync_backlog',
+      'warning',
+      '$pending items are waiting to synchronize.',
+    );
   }
 
   if (metrics['mock_location_detected'] == true) {
@@ -527,7 +555,11 @@ DeviceHealthClassification classifyDeviceHealth(Map<String, dynamic> metrics) {
     );
   }
   if (metrics['network_type'] == 'offline') {
-    add('network_offline', 'warning', 'No active network connection is available.');
+    add(
+      'network_offline',
+      'warning',
+      'No active network connection is available.',
+    );
   }
 
   final status = issues.any((issue) => issue['severity'] == 'critical')
