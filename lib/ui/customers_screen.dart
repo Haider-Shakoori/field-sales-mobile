@@ -1,6 +1,7 @@
 import 'package:field_sales_mobile/l10n/localized_material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../l10n/l10n.dart';
 
 import '../state/call_activity_controller.dart';
 import '../state/master_data_controller.dart';
@@ -98,7 +99,7 @@ class CustomersScreen extends StatelessWidget {
                     DropdownButtonFormField<String>(
                       initialValue: outcome,
                       hint: const Text('Outcome (optional)'),
-                      decoration: const InputDecoration(labelText: 'Outcome'),
+                      decoration: InputDecoration(labelText: L10n.text('Outcome')),
                       items: callOutcomes.entries
                           .map(
                             (entry) => DropdownMenuItem(
@@ -113,8 +114,8 @@ class CustomersScreen extends StatelessWidget {
                     TextField(
                       controller: notes,
                       maxLines: 4,
-                      decoration: const InputDecoration(
-                        labelText: 'Notes (optional)',
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Notes (optional)'),
                         alignLabelWithHint: true,
                       ),
                     ),
@@ -181,7 +182,7 @@ class CustomersScreen extends StatelessWidget {
                   children: [
                     DropdownButtonFormField<String>(
                       initialValue: channel,
-                      decoration: const InputDecoration(labelText: 'Channel'),
+                      decoration: InputDecoration(labelText: L10n.text('Channel')),
                       items: const [
                         DropdownMenuItem(
                           value: 'whatsapp',
@@ -199,8 +200,8 @@ class CustomersScreen extends StatelessWidget {
                       maxLines: 5,
                       maxLength: 1600,
                       autofocus: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Message',
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Message'),
                         alignLabelWithHint: true,
                       ),
                     ),
@@ -387,7 +388,7 @@ class CustomersScreen extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 IconButton(
-                                  tooltip: 'Reorder recommendations',
+                                  tooltip: L10n.text('Reorder recommendations'),
                                   visualDensity: VisualDensity.compact,
                                   onPressed: () => Navigator.of(context).push(
                                     MaterialPageRoute(
@@ -401,7 +402,7 @@ class CustomersScreen extends StatelessWidget {
                                   icon: const Icon(Icons.auto_awesome_outlined),
                                 ),
                                 IconButton(
-                                  tooltip: 'Statement',
+                                  tooltip: L10n.text('Statement'),
                                   visualDensity: VisualDensity.compact,
                                   onPressed: () => Navigator.of(context).push(
                                     MaterialPageRoute(
@@ -415,7 +416,7 @@ class CustomersScreen extends StatelessWidget {
                                   ),
                                 ),
                                 IconButton(
-                                  tooltip: 'Follow-ups',
+                                  tooltip: L10n.text('Follow-ups'),
                                   visualDensity: VisualDensity.compact,
                                   onPressed: () => Navigator.of(context).push(
                                     MaterialPageRoute(
@@ -428,7 +429,7 @@ class CustomersScreen extends StatelessWidget {
                                   ),
                                 ),
                                 IconButton(
-                                  tooltip: 'Call history',
+                                  tooltip: L10n.text('Call history'),
                                   visualDensity: VisualDensity.compact,
                                   onPressed: () =>
                                       _showHistory(context, customer),
