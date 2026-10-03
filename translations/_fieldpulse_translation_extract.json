@@ -40,6 +40,16 @@
     "placeholders": []
   },
   {
+    "english": "Collection amount must be greater than zero.",
+    "contexts": [
+      "features.collections.collection_repository"
+    ],
+    "sources": [
+      "lib/features/collections/collection_repository.dart:80"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "CREATE INDEX IF NOT EXISTS idx_appointments_sync",
     "contexts": [
       "core.db.app_database"
@@ -170,6 +180,38 @@
     "placeholders": []
   },
   {
+    "english": "Currency must be a three-letter code.",
+    "contexts": [
+      "features.collections.collection_repository",
+      "features.expenses.expense_repository"
+    ],
+    "sources": [
+      "lib/features/collections/collection_repository.dart:92",
+      "lib/features/expenses/expense_repository.dart:116"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Customer is not available offline.",
+    "contexts": [
+      "features.customers.customer_repository"
+    ],
+    "sources": [
+      "lib/features/customers/customer_repository.dart:132"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Customer statement response is incomplete.",
+    "contexts": [
+      "features.financial_documents.customer_statement_repository"
+    ],
+    "sources": [
+      "lib/features/financial_documents/customer_statement_repository.dart:74"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Device is offline; changes stay queued locally.",
     "contexts": [
       "core.sync.sync_coordinator"
@@ -210,6 +252,28 @@
     "placeholders": []
   },
   {
+    "english": "Expense amount must be greater than zero.",
+    "contexts": [
+      "features.expenses.expense_repository"
+    ],
+    "sources": [
+      "lib/features/expenses/expense_repository.dart:75"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "failed_{phase}",
+    "contexts": [
+      "features.followups.follow_up_repository"
+    ],
+    "sources": [
+      "lib/features/followups/follow_up_repository.dart:227"
+    ],
+    "placeholders": [
+      "phase"
+    ]
+  },
+  {
     "english": "failed_count INTEGER NOT NULL DEFAULT 0,",
     "contexts": [
       "core.db.app_database"
@@ -226,6 +290,97 @@
     ],
     "sources": [
       "lib/core/db/app_database.dart:80"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Follow-up not found.",
+    "contexts": [
+      "features.followups.follow_up_repository"
+    ],
+    "sources": [
+      "lib/features/followups/follow_up_repository.dart:95"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Follow-up status must be completed or cancelled.",
+    "contexts": [
+      "features.followups.follow_up_repository"
+    ],
+    "sources": [
+      "lib/features/followups/follow_up_repository.dart:85"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Fuel details are only valid for fuel expenses.",
+    "contexts": [
+      "features.expenses.expense_repository"
+    ],
+    "sources": [
+      "lib/features/expenses/expense_repository.dart:80"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Fuel liters are required.",
+    "contexts": [
+      "features.expenses.expense_repository"
+    ],
+    "sources": [
+      "lib/features/expenses/expense_repository.dart:97"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Fuel liters must be greater than zero.",
+    "contexts": [
+      "features.expenses.expense_repository"
+    ],
+    "sources": [
+      "lib/features/expenses/expense_repository.dart:84"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Fuel receipt file is unavailable.",
+    "contexts": [
+      "features.expenses.expense_repository"
+    ],
+    "sources": [
+      "lib/features/expenses/expense_repository.dart:224"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Fuel station is required.",
+    "contexts": [
+      "features.expenses.expense_repository"
+    ],
+    "sources": [
+      "lib/features/expenses/expense_repository.dart:106"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Fuel unit price must be greater than zero.",
+    "contexts": [
+      "features.expenses.expense_repository"
+    ],
+    "sources": [
+      "lib/features/expenses/expense_repository.dart:88"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Geofence radius must be between 25 and 1000 meters.",
+    "contexts": [
+      "features.customers.customer_repository"
+    ],
+    "sources": [
+      "lib/features/customers/customer_repository.dart:41",
+      "lib/features/customers/customer_repository.dart:121"
     ],
     "placeholders": []
   },
@@ -283,6 +438,16 @@
     "placeholders": []
   },
   {
+    "english": "Lead not found.",
+    "contexts": [
+      "features.leads.lead_repository"
+    ],
+    "sources": [
+      "lib/features/leads/lead_repository.dart:492"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "location TEXT,",
     "contexts": [
       "core.db.app_database"
@@ -303,12 +468,53 @@
     "placeholders": []
   },
   {
+    "english": "No cached customer statement is available offline.",
+    "contexts": [
+      "features.financial_documents.customer_statement_repository"
+    ],
+    "sources": [
+      "lib/features/financial_documents/customer_statement_repository.dart:60"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Notifications",
     "contexts": [
       "app"
     ],
     "sources": [
       "lib/app.dart:52"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Odometer cannot be negative.",
+    "contexts": [
+      "features.expenses.expense_repository"
+    ],
+    "sources": [
+      "lib/features/expenses/expense_repository.dart:92"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Odometer reading is required.",
+    "contexts": [
+      "features.expenses.expense_repository"
+    ],
+    "sources": [
+      "lib/features/expenses/expense_repository.dart:100"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "OfflineMapCache.initialize() must run before maps.",
+    "contexts": [
+      "features.maps.offline_map_cache"
+    ],
+    "sources": [
+      "lib/features/maps/offline_map_cache.dart:36",
+      "lib/features/maps/offline_map_cache.dart:45"
     ],
     "placeholders": []
   },
@@ -443,6 +649,29 @@
     "placeholders": []
   },
   {
+    "english": "Receipt photo is required.",
+    "contexts": [
+      "features.expenses.expense_repository"
+    ],
+    "sources": [
+      "lib/features/expenses/expense_repository.dart:110"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "rejected: {code} ({reason})",
+    "contexts": [
+      "features.gps.gps_repository"
+    ],
+    "sources": [
+      "lib/features/gps/gps_repository.dart:252"
+    ],
+    "placeholders": [
+      "code",
+      "reason"
+    ]
+  },
+  {
     "english": "Release builds require an HTTPS API_BASE_URL.",
     "contexts": [
       "core.config"
@@ -494,6 +723,36 @@
     "placeholders": []
   },
   {
+    "english": "Select a valid expense category.",
+    "contexts": [
+      "features.expenses.expense_repository"
+    ],
+    "sources": [
+      "lib/features/expenses/expense_repository.dart:71"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Select a valid follow-up priority.",
+    "contexts": [
+      "features.followups.follow_up_repository"
+    ],
+    "sources": [
+      "lib/features/followups/follow_up_repository.dart:54"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Select a valid follow-up type.",
+    "contexts": [
+      "features.followups.follow_up_repository"
+    ],
+    "sources": [
+      "lib/features/followups/follow_up_repository.dart:51"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "SELECT COUNT(*) AS total FROM local_sync_failures",
     "contexts": [
       "core.sync.sync_retry_store"
@@ -517,10 +776,22 @@
   {
     "english": "SELECT COUNT(*) AS total FROM sync_queue",
     "contexts": [
-      "core.sync.local_dependency_guard"
+      "core.sync.local_dependency_guard",
+      "features.master_data.master_data_repository"
     ],
     "sources": [
-      "lib/core/sync/local_dependency_guard.dart:43"
+      "lib/core/sync/local_dependency_guard.dart:43",
+      "lib/features/master_data/master_data_repository.dart:88"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Selected customer is missing an ID.",
+    "contexts": [
+      "features.collections.collection_repository"
+    ],
+    "sources": [
+      "lib/features/collections/collection_repository.dart:96"
     ],
     "placeholders": []
   },
@@ -627,12 +898,52 @@
     "placeholders": []
   },
   {
-    "english": "tenant_id=? AND sync_status<>?",
+    "english": "tenant_id=? AND (sync_status<>? OR pending_conversion=1)",
     "contexts": [
-      "features.appointments.appointment_repository"
+      "features.leads.lead_repository"
     ],
     "sources": [
-      "lib/features/appointments/appointment_repository.dart:138"
+      "lib/features/leads/lead_repository.dart:243"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "tenant_id=? AND sync_status IN (?,?,?)",
+    "contexts": [
+      "features.calls.call_activity_repository",
+      "features.collections.collection_repository",
+      "features.expenses.expense_repository",
+      "features.gps.gps_repository"
+    ],
+    "sources": [
+      "lib/features/calls/call_activity_repository.dart:75",
+      "lib/features/collections/collection_repository.dart:155",
+      "lib/features/expenses/expense_repository.dart:168",
+      "lib/features/gps/gps_repository.dart:286"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "tenant_id=? AND sync_status<>?",
+    "contexts": [
+      "features.appointments.appointment_repository",
+      "features.followups.follow_up_repository",
+      "features.leads.lead_repository"
+    ],
+    "sources": [
+      "lib/features/appointments/appointment_repository.dart:138",
+      "lib/features/followups/follow_up_repository.dart:124",
+      "lib/features/leads/lead_repository.dart:323"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "tenant_id=? AND sync_status=?",
+    "contexts": [
+      "features.gps.gps_repository"
+    ],
+    "sources": [
+      "lib/features/gps/gps_repository.dart:145"
     ],
     "placeholders": []
   },
@@ -657,6 +968,16 @@
     "placeholders": []
   },
   {
+    "english": "Vehicle / plate is required.",
+    "contexts": [
+      "features.expenses.expense_repository"
+    ],
+    "sources": [
+      "lib/features/expenses/expense_repository.dart:103"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Waiting for attendance to synchronize.",
     "contexts": [
       "core.sync.sync_coordinator"
@@ -668,12 +989,42 @@
     "placeholders": []
   },
   {
-    "english": "WHERE tenant_id=? AND sync_status<>?",
+    "english": "WHERE tenant_id=? AND (sync_status<>? OR pending_conversion=1)",
     "contexts": [
-      "features.appointments.appointment_repository"
+      "features.leads.lead_repository"
     ],
     "sources": [
-      "lib/features/appointments/appointment_repository.dart:124"
+      "lib/features/leads/lead_repository.dart:222"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "WHERE tenant_id=? AND sync_status<>?",
+    "contexts": [
+      "features.appointments.appointment_repository",
+      "features.calls.call_activity_repository",
+      "features.collections.collection_repository",
+      "features.expenses.expense_repository",
+      "features.followups.follow_up_repository",
+      "features.leads.lead_repository"
+    ],
+    "sources": [
+      "lib/features/appointments/appointment_repository.dart:124",
+      "lib/features/calls/call_activity_repository.dart:61",
+      "lib/features/collections/collection_repository.dart:58",
+      "lib/features/expenses/expense_repository.dart:44",
+      "lib/features/followups/follow_up_repository.dart:36",
+      "lib/features/leads/lead_repository.dart:227"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "WHERE tenant_id=? AND sync_status=\"pending\"",
+    "contexts": [
+      "features.gps.gps_repository"
+    ],
+    "sources": [
+      "lib/features/gps/gps_repository.dart:121"
     ],
     "placeholders": []
   },
@@ -685,6 +1036,16 @@
     "sources": [
       "lib/features/attendance/attendance_repository.dart:120",
       "lib/features/attendance/attendance_repository.dart:173"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Workday location tracking is active",
+    "contexts": [
+      "features.gps.tracking_service"
+    ],
+    "sources": [
+      "lib/features/gps/tracking_service.dart:34"
     ],
     "placeholders": []
   }
