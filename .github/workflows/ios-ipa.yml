@@ -1,5 +1,5 @@
 name: ios-unsigned-ipa
-# Trigger: premium UI IPA build
+# Trigger: fresh IPA build
 
 on:
   workflow_dispatch:
