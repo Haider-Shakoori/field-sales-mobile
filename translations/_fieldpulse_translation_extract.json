@@ -1,11 +1,71 @@
 [
   {
+    "english": "A product can appear only once in an order.",
+    "contexts": [
+      "features.orders.order_repository"
+    ],
+    "sources": [
+      "lib/features/orders/order_repository.dart:313"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Add at least one product.",
+    "contexts": [
+      "features.orders.order_repository"
+    ],
+    "sources": [
+      "lib/features/orders/order_repository.dart:266"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Add at least one returned product.",
+    "contexts": [
+      "features.stock.stock_repository"
+    ],
+    "sources": [
+      "lib/features/stock/stock_repository.dart:158"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "ADD COLUMN sync_status TEXT NOT NULL DEFAULT \"synced\"",
     "contexts": [
       "core.db.app_database"
     ],
     "sources": [
       "lib/core/db/app_database.dart:1021"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "All products in an order must use one currency.",
+    "contexts": [
+      "features.orders.order_repository"
+    ],
+    "sources": [
+      "lib/features/orders/order_repository.dart:344"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "AND accuracy<=? AND is_mock_location=0",
+    "contexts": [
+      "features.mileage.mileage_repository"
+    ],
+    "sources": [
+      "lib/features/mileage/mileage_repository.dart:162"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "AND sync_status IN (?,?,?)",
+    "contexts": [
+      "features.visits.visit_repository"
+    ],
+    "sources": [
+      "lib/features/visits/visit_repository.dart:670"
     ],
     "placeholders": []
   },
@@ -218,6 +278,16 @@
     ],
     "sources": [
       "lib/core/sync/sync_coordinator.dart:88"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Discount must be between 0 and 100.",
+    "contexts": [
+      "features.orders.order_repository"
+    ],
+    "sources": [
+      "lib/features/orders/order_repository.dart:305"
     ],
     "placeholders": []
   },
@@ -448,6 +518,26 @@
     "placeholders": []
   },
   {
+    "english": "Local photo file is unavailable.",
+    "contexts": [
+      "features.visits.visit_repository"
+    ],
+    "sources": [
+      "lib/features/visits/visit_repository.dart:794"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Local voice note file is unavailable.",
+    "contexts": [
+      "features.visits.visit_repository"
+    ],
+    "sources": [
+      "lib/features/visits/visit_repository.dart:943"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "location TEXT,",
     "contexts": [
       "core.db.app_database"
@@ -649,6 +739,16 @@
     "placeholders": []
   },
   {
+    "english": "Quantity must be greater than zero.",
+    "contexts": [
+      "features.orders.order_repository"
+    ],
+    "sources": [
+      "lib/features/orders/order_repository.dart:302"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Receipt photo is required.",
     "contexts": [
       "features.expenses.expense_repository"
@@ -723,6 +823,46 @@
     "placeholders": []
   },
   {
+    "english": "requestPermission",
+    "contexts": [
+      "features.visits.visit_voice_recorder"
+    ],
+    "sources": [
+      "lib/features/visits/visit_voice_recorder.dart:9"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Required visit forms are waiting for completion or sync.",
+    "contexts": [
+      "features.visits.visit_repository"
+    ],
+    "sources": [
+      "lib/features/visits/visit_repository.dart:593"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Return condition must be resalable or damaged.",
+    "contexts": [
+      "features.stock.stock_repository"
+    ],
+    "sources": [
+      "lib/features/stock/stock_repository.dart:187"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Return quantity must be greater than zero.",
+    "contexts": [
+      "features.stock.stock_repository"
+    ],
+    "sources": [
+      "lib/features/stock/stock_repository.dart:184"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Select a valid expense category.",
     "contexts": [
       "features.expenses.expense_repository"
@@ -792,6 +932,16 @@
     ],
     "sources": [
       "lib/features/collections/collection_repository.dart:96"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Selected product is missing an ID.",
+    "contexts": [
+      "features.orders.order_repository"
+    ],
+    "sources": [
+      "lib/features/orders/order_repository.dart:310"
     ],
     "placeholders": []
   },
@@ -908,18 +1058,32 @@
     "placeholders": []
   },
   {
+    "english": "tenant_id=? AND sync_status IN (?,?,?,?)",
+    "contexts": [
+      "features.visits.visit_repository"
+    ],
+    "sources": [
+      "lib/features/visits/visit_repository.dart:440"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "tenant_id=? AND sync_status IN (?,?,?)",
     "contexts": [
       "features.calls.call_activity_repository",
       "features.collections.collection_repository",
       "features.expenses.expense_repository",
-      "features.gps.gps_repository"
+      "features.gps.gps_repository",
+      "features.orders.order_repository",
+      "features.stock.stock_repository"
     ],
     "sources": [
       "lib/features/calls/call_activity_repository.dart:75",
       "lib/features/collections/collection_repository.dart:155",
       "lib/features/expenses/expense_repository.dart:168",
-      "lib/features/gps/gps_repository.dart:286"
+      "lib/features/gps/gps_repository.dart:286",
+      "lib/features/orders/order_repository.dart:457",
+      "lib/features/stock/stock_repository.dart:212"
     ],
     "placeholders": []
   },
@@ -944,6 +1108,26 @@
     ],
     "sources": [
       "lib/features/gps/gps_repository.dart:145"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "The recorded voice note could not be saved.",
+    "contexts": [
+      "features.visits.visit_voice_recorder"
+    ],
+    "sources": [
+      "lib/features/visits/visit_voice_recorder.dart:19"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "This visit form has already been submitted.",
+    "contexts": [
+      "features.visits.visit_repository"
+    ],
+    "sources": [
+      "lib/features/visits/visit_repository.dart:347"
     ],
     "placeholders": []
   },
@@ -989,6 +1173,16 @@
     "placeholders": []
   },
   {
+    "english": "WHERE i.tenant_id=? AND o.status=? AND o.sync_status<>?",
+    "contexts": [
+      "features.stock.stock_repository"
+    ],
+    "sources": [
+      "lib/features/stock/stock_repository.dart:34"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "WHERE tenant_id=? AND (sync_status<>? OR pending_conversion=1)",
     "contexts": [
       "features.leads.lead_repository"
@@ -1006,7 +1200,9 @@
       "features.collections.collection_repository",
       "features.expenses.expense_repository",
       "features.followups.follow_up_repository",
-      "features.leads.lead_repository"
+      "features.leads.lead_repository",
+      "features.orders.order_repository",
+      "features.visits.visit_repository"
     ],
     "sources": [
       "lib/features/appointments/appointment_repository.dart:124",
@@ -1014,7 +1210,12 @@
       "lib/features/collections/collection_repository.dart:58",
       "lib/features/expenses/expense_repository.dart:44",
       "lib/features/followups/follow_up_repository.dart:36",
-      "lib/features/leads/lead_repository.dart:227"
+      "lib/features/leads/lead_repository.dart:227",
+      "lib/features/orders/order_repository.dart:252",
+      "lib/features/visits/visit_repository.dart:408",
+      "lib/features/visits/visit_repository.dart:413",
+      "lib/features/visits/visit_repository.dart:418",
+      "lib/features/visits/visit_repository.dart:423"
     ],
     "placeholders": []
   },
