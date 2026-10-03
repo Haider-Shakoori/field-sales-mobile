@@ -1,6 +1,7 @@
 import 'package:field_sales_mobile/l10n/localized_material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../l10n/l10n.dart';
 
 import '../state/call_activity_controller.dart';
@@ -99,7 +100,9 @@ class CustomersScreen extends StatelessWidget {
                     DropdownButtonFormField<String>(
                       initialValue: outcome,
                       hint: const Text('Outcome (optional)'),
-                      decoration: InputDecoration(labelText: L10n.text('Outcome')),
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Outcome'),
+                      ),
                       items: callOutcomes.entries
                           .map(
                             (entry) => DropdownMenuItem(
@@ -182,7 +185,9 @@ class CustomersScreen extends StatelessWidget {
                   children: [
                     DropdownButtonFormField<String>(
                       initialValue: channel,
-                      decoration: InputDecoration(labelText: L10n.text('Channel')),
+                      decoration: InputDecoration(
+                        labelText: L10n.text('Channel'),
+                      ),
                       items: const [
                         DropdownMenuItem(
                           value: 'whatsapp',
