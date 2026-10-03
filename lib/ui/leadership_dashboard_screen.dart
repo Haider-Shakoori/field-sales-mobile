@@ -77,21 +77,57 @@ class _LeadershipDashboardScreenState extends State<LeadershipDashboardScreen> {
               ),
             ),
           ),
-          IconButton(
-            tooltip: 'Refresh team',
-            onPressed: team.busy ? null : _refresh,
-            icon: team.busy
-                ? const SizedBox.square(
-                    dimension: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.refresh),
-          ),
-          IconButton(
-            tooltip: 'Sign out',
-            onPressed: () => context.read<AppState>().logout(),
-            icon: const Icon(Icons.logout),
-          ),
+          if (MediaQuery.sizeOf(context).width >= 380) ...[
+            IconButton(
+              tooltip: 'Refresh team',
+              onPressed: team.busy ? null : _refresh,
+              icon: team.busy
+                  ? const SizedBox.square(
+                      dimension: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.refresh),
+            ),
+            IconButton(
+              tooltip: 'Sign out',
+              onPressed: () => context.read<AppState>().logout(),
+              icon: const Icon(Icons.logout),
+            ),
+          ] else
+            PopupMenuButton<String>(
+              tooltip: 'Team actions',
+              icon: const Icon(Icons.more_vert),
+              onSelected: (value) {
+                if (value == 'refresh') {
+                  unawaited(_refresh());
+                } else if (value == 'logout') {
+                  unawaited(context.read<AppState>().logout());
+                }
+              },
+              itemBuilder: (context) => [
+                PopupMenuItem<String>(
+                  value: 'refresh',
+                  enabled: !team.busy,
+                  child: const Row(
+                    children: [
+                      Icon(Icons.refresh),
+                      SizedBox(width: 10),
+                      Text('Refresh team'),
+                    ],
+                  ),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'logout',
+                  child: Row(
+                    children: [
+                      Icon(Icons.logout),
+                      SizedBox(width: 10),
+                      Text('Sign out'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
         ],
       ),
       body: RefreshIndicator(
