@@ -20,6 +20,7 @@ import '../state/target_controller.dart';
 import '../state/team_controller.dart';
 import '../state/visit_controller.dart';
 import 'customers_screen.dart';
+import 'fieldpulse_theme.dart';
 import 'home_tab.dart';
 import 'leadership_dashboard_screen.dart';
 import 'more_screen.dart';
@@ -162,8 +163,27 @@ class _DashboardScreenState extends State<DashboardScreen>
         sync.infrastructurePending;
 
     return Scaffold(
+      extendBody: true,
       appBar: AppBar(
-        title: Text(_titles[_index]),
+        title: Row(
+          children: [
+            Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                gradient: FieldPulseDecor.accentGradient,
+                borderRadius: BorderRadius.circular(11),
+              ),
+              child: const Icon(
+                Icons.route_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 11),
+            Text(_titles[_index]),
+          ],
+        ),
         actions: [
           Consumer<NotificationController>(
             builder: (context, notifications, _) => IconButton(
@@ -207,7 +227,18 @@ class _DashboardScreenState extends State<DashboardScreen>
         ],
       ),
       body: IndexedStack(index: _index, children: _pages),
-      bottomNavigationBar: NavigationBar(
+      bottomNavigationBar: SafeArea(
+        top: false,
+        minimum: const EdgeInsets.fromLTRB(12, 0, 12, 10),
+        child: Container(
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: FieldPulseTheme.border),
+            boxShadow: FieldPulseDecor.softShadow,
+          ),
+          child: NavigationBar(
         selectedIndex: _index,
         onDestinationSelected: (value) {
           setState(() => _index = value);
@@ -240,7 +271,9 @@ class _DashboardScreenState extends State<DashboardScreen>
             label: L10n.text('More'),
           ),
         ],
-      ),
+      ),,
+        ),
+      )
     );
   }
 }
