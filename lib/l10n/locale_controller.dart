@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+
 import '../core/storage/secret_store.dart';
 import 'l10n.dart';
 
 class AppLocaleController extends ChangeNotifier {
-  AppLocaleController({SecretStore? storage}) : _storage = storage ?? SecretStore();
+  AppLocaleController({SecretStore? storage})
+    : _storage = storage ?? SecretStore();
 
   static const _preferenceKey = 'fieldpulse.locale';
   final SecretStore _storage;
