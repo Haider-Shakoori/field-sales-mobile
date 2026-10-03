@@ -1,5 +1,6 @@
 import 'package:field_sales_mobile/l10n/localized_material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/l10n.dart';
 
 import '../state/collection_controller.dart';
 
@@ -154,7 +155,7 @@ class _CollectionCreateScreenState extends State<CollectionCreateScreen> {
         children: [
           DropdownButtonFormField<String>(
             initialValue: _customerId,
-            decoration: const InputDecoration(labelText: 'Customer'),
+            decoration: InputDecoration(labelText: L10n.text('Customer')),
             items: widget.customers
                 .map(
                   (customer) => DropdownMenuItem(
@@ -176,7 +177,7 @@ class _CollectionCreateScreenState extends State<CollectionCreateScreen> {
           const SizedBox(height: 12),
           DropdownButtonFormField<String>(
             initialValue: _currency,
-            decoration: const InputDecoration(labelText: 'Currency'),
+            decoration: InputDecoration(labelText: L10n.text('Currency')),
             items: availableCurrencies
                 .map(
                   (currency) =>
@@ -229,12 +230,12 @@ class _CollectionCreateScreenState extends State<CollectionCreateScreen> {
           TextField(
             controller: _amount,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: const InputDecoration(labelText: 'Amount'),
+            decoration: InputDecoration(labelText: L10n.text('Amount')),
           ),
           const SizedBox(height: 12),
           DropdownButtonFormField<String>(
             initialValue: _paymentMethod,
-            decoration: const InputDecoration(labelText: 'Payment method'),
+            decoration: InputDecoration(labelText: L10n.text('Payment method')),
             items: _methods.entries
                 .map(
                   (entry) => DropdownMenuItem(
@@ -251,15 +252,15 @@ class _CollectionCreateScreenState extends State<CollectionCreateScreen> {
             const SizedBox(height: 12),
             TextField(
               controller: _reference,
-              decoration: const InputDecoration(labelText: 'Reference number'),
+              decoration: InputDecoration(labelText: L10n.text('Reference number')),
             ),
           ],
           const SizedBox(height: 12),
           TextField(
             controller: _notes,
             maxLines: 3,
-            decoration: const InputDecoration(
-              labelText: 'Notes (optional)',
+            decoration: InputDecoration(
+              labelText: L10n.text('Notes (optional)'),
               alignLabelWithHint: true,
             ),
           ),
