@@ -43,11 +43,119 @@ class MoreScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     context.watch<AppLocaleController>();
+    final app = context.watch<AppState>();
+
+    final actions = <_MoreAction>[
+      if (app.isSalesman)
+        const _MoreAction(
+          icon: Icons.account_circle_outlined,
+          title: 'My Account',
+          subtitle: 'Portfolio & activity',
+          screen: SalesmanAccountScreen(),
+        ),
+      const _MoreAction(
+        icon: Icons.notifications_outlined,
+        title: 'Notifications',
+        subtitle: 'Alerts & updates',
+        screen: NotificationsScreen(),
+      ),
+      if (app.gamificationEnabled)
+        const _MoreAction(
+          icon: Icons.emoji_events_outlined,
+          title: 'Recognition',
+          subtitle: 'Points & leaderboard',
+          screen: GamificationScreen(),
+        ),
+      const _MoreAction(
+        icon: Icons.filter_alt_outlined,
+        title: 'Leads & Pipeline',
+        subtitle: 'Prospects & stages',
+        screen: LeadsScreen(),
+      ),
+      const _MoreAction(
+        icon: Icons.calendar_month_outlined,
+        title: 'Calendar',
+        subtitle: 'Appointments',
+        screen: AppointmentsScreen(),
+      ),
+      const _MoreAction(
+        icon: Icons.follow_the_signs_outlined,
+        title: 'Follow-ups',
+        subtitle: 'Customer actions',
+        screen: FollowUpsScreen(),
+      ),
+      const _MoreAction(
+        icon: Icons.payments_outlined,
+        title: 'Collections',
+        subtitle: 'Receipts & payments',
+        screen: CollectionsScreen(),
+      ),
+      const _MoreAction(
+        icon: Icons.receipt_long_outlined,
+        title: 'Expenses',
+        subtitle: 'Claims & review',
+        screen: ExpensesScreen(),
+      ),
+      const _MoreAction(
+        icon: Icons.local_gas_station_outlined,
+        title: 'Fuel Management',
+        subtitle: 'Fuel & evidence',
+        screen: FuelScreen(),
+      ),
+      const _MoreAction(
+        icon: Icons.route_outlined,
+        title: 'Mileage',
+        subtitle: 'Distance & efficiency',
+        screen: MileageScreen(),
+      ),
+      const _MoreAction(
+        icon: Icons.track_changes_outlined,
+        title: 'Targets',
+        subtitle: 'Goals & progress',
+        screen: TargetsScreen(),
+      ),
+      const _MoreAction(
+        icon: Icons.alt_route_rounded,
+        title: 'Smart Route',
+        subtitle: 'Optimized day plan',
+        screen: SmartRouteScreen(),
+      ),
+      const _MoreAction(
+        icon: Icons.route_outlined,
+        title: 'Routes',
+        subtitle: 'Assigned sequences',
+        screen: RoutesScreen(),
+      ),
+      const _MoreAction(
+        icon: Icons.local_shipping_outlined,
+        title: 'Stock & Returns',
+        subtitle: 'Van stock & returns',
+        screen: StockReturnsScreen(),
+      ),
+      const _MoreAction(
+        icon: Icons.inventory_2_outlined,
+        title: 'Products',
+        subtitle: 'Catalog & pricing',
+        screen: ProductsScreen(),
+      ),
+      const _MoreAction(
+        icon: Icons.health_and_safety_outlined,
+        title: 'Mobile Diagnostics',
+        subtitle: 'Device health',
+        screen: MobileDiagnosticsScreen(),
+      ),
+      const _MoreAction(
+        icon: Icons.sync_outlined,
+        title: 'Sync',
+        subtitle: 'Offline queue',
+        screen: SyncScreen(),
+      ),
+    ];
 
     return RefreshIndicator(
       onRefresh: () => syncAndReload(context, triggerSource: 'pull:more'),
       child: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
         children: [
           const FieldPulseHeroCard(
             child: Row(
@@ -93,199 +201,95 @@ class MoreScreen extends StatelessWidget {
           const SizedBox(height: 10),
           const Card(child: LanguageSelectorButton()),
           const SizedBox(height: 8),
-          if (context.watch<AppState>().isSalesman)
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.account_circle_outlined),
-                title: const Text('My Account'),
-                subtitle: const Text(
-                  'Referral customers, orders, collections and visit activity',
-                ),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () =>
-                    _open(context, 'My Account', const SalesmanAccountScreen()),
-              ),
-            ),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.notifications_outlined),
-              title: const Text('Notifications'),
-              subtitle: const Text(
-                'Route alerts, supervisor messages and updates',
-              ),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () =>
-                  _open(context, 'Notifications', const NotificationsScreen()),
-            ),
+          const FieldPulseSectionHeader(
+            title: 'Field tools',
+            subtitle: 'Open the modules you use during the work day',
           ),
-          if (context.watch<AppState>().gamificationEnabled)
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.emoji_events_outlined),
-                title: const Text('Recognition'),
-                subtitle: const Text(
-                  'Points, level, achievements and team leaderboard',
-                ),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () =>
-                    _open(context, 'Recognition', const GamificationScreen()),
-              ),
-            ),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.filter_alt_outlined),
-              title: const Text('Leads & Pipeline'),
-              subtitle: const Text(
-                'Prospects, opportunity stages and conversion',
-              ),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () =>
-                  _open(context, 'Leads & Pipeline', const LeadsScreen()),
-            ),
-          ),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.calendar_month_outlined),
-              title: const Text('Calendar'),
-              subtitle: const Text(
-                'Appointments, reminders and offline schedule',
-              ),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () =>
-                  _open(context, 'Calendar', const AppointmentsScreen()),
-            ),
-          ),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.follow_the_signs_outlined),
-              title: const Text('Follow-ups'),
-              subtitle: const Text(
-                'Assigned customer actions, due dates and completion',
-              ),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () =>
-                  _open(context, 'Follow-ups', const FollowUpsScreen()),
-            ),
-          ),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.payments_outlined),
-              title: const Text('Collections'),
-              subtitle: const Text('Customer balances, receipts and payments'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () =>
-                  _open(context, 'Collections', const CollectionsScreen()),
-            ),
-          ),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.receipt_long_outlined),
-              title: const Text('Expenses'),
-              subtitle: const Text('Offline claims and finance review status'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => _open(context, 'Expenses', const ExpensesScreen()),
-            ),
-          ),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.local_gas_station_outlined),
-              title: const Text('Fuel Management'),
-              subtitle: const Text(
-                'Vehicle refueling, odometer, GPS and receipt evidence',
-              ),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () =>
-                  _open(context, 'Fuel Management', const FuelScreen()),
-            ),
-          ),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.route_outlined),
-              title: const Text('Mileage'),
-              subtitle: const Text(
-                'GPS distance, odometer variance and fuel efficiency',
-              ),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => _open(context, 'Mileage', const MileageScreen()),
-            ),
-          ),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.track_changes_outlined),
-              title: const Text('Targets'),
-              subtitle: const Text('Current goals and authoritative progress'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => _open(context, 'Targets', const TargetsScreen()),
-            ),
-          ),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.alt_route),
-              title: const Text('Smart Route'),
-              subtitle: const Text(
-                'Today\'s optimized customer order, priorities and distance',
-              ),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () =>
-                  _open(context, 'Smart Route', const SmartRouteScreen()),
-            ),
-          ),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.route_outlined),
-              title: const Text('Routes'),
-              subtitle: const Text('Assigned routes and customer sequence'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => _open(context, 'Routes', const RoutesScreen()),
-            ),
-          ),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.local_shipping_outlined),
-              title: const Text('Stock & Returns'),
-              subtitle: const Text(
-                'Van stock, damaged goods and customer returns',
-              ),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () =>
-                  _open(context, 'Stock & Returns', const StockReturnsScreen()),
-            ),
-          ),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.inventory_2_outlined),
-              title: const Text('Products'),
-              subtitle: const Text('Cached product catalog and pricing'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => _open(context, 'Products', const ProductsScreen()),
-            ),
-          ),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.health_and_safety_outlined),
-              title: const Text('Mobile Diagnostics'),
-              subtitle: const Text(
-                'Battery, GPS, background tracking, permissions and sync health',
-              ),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => _open(
-                context,
-                'Mobile Diagnostics',
-                const MobileDiagnosticsScreen(),
-              ),
-            ),
-          ),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.sync_outlined),
-              title: const Text('Sync'),
-              subtitle: const Text('Review and upload pending offline work'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => _open(context, 'Sync', const SyncScreen()),
-            ),
+          const SizedBox(height: 10),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final width = (constraints.maxWidth - 12) / 2;
+
+              return Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: [
+                  for (final action in actions)
+                    SizedBox(
+                      width: width,
+                      child: _MoreActionCard(
+                        action: action,
+                        onTap: () =>
+                            _open(context, action.title, action.screen),
+                      ),
+                    ),
+                ],
+              );
+            },
           ),
         ],
       ),
     );
   }
+}
+
+class _MoreAction {
+  const _MoreAction({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.screen,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final Widget screen;
+}
+
+class _MoreActionCard extends StatelessWidget {
+  const _MoreActionCard({
+    required this.action,
+    required this.onTap,
+  });
+
+  final _MoreAction action;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Card(
+    margin: EdgeInsets.zero,
+    child: InkWell(
+      borderRadius: BorderRadius.circular(20),
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: SizedBox(
+          height: 104,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              FieldPulseIconBadge(icon: action.icon, size: 40),
+              const Spacer(),
+              Text(
+                action.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                action.subtitle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
 }
