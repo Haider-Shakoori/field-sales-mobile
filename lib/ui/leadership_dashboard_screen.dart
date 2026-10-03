@@ -53,7 +53,11 @@ class _LeadershipDashboardScreenState extends State<LeadershipDashboardScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('$roleLabel · FieldPulse'),
+        title: Text(
+          '$roleLabel · FieldPulse',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
         actions: [
           Consumer<NotificationController>(
             builder: (context, notifications, _) => IconButton(
