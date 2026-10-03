@@ -173,6 +173,108 @@ class FieldPulseInfoCard extends StatelessWidget {
   );
 }
 
+class FieldPulsePageBackground extends StatelessWidget {
+  const FieldPulsePageBackground({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+    decoration: const BoxDecoration(gradient: FieldPulseDecor.pageGradient),
+    child: Stack(
+      fit: StackFit.expand,
+      children: [
+        IgnorePointer(
+          child: Align(
+            alignment: const Alignment(1.25, -1.15),
+            child: Container(
+              width: 260,
+              height: 260,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    FieldPulseTheme.cyan.withValues(alpha: .10),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        IgnorePointer(
+          child: Align(
+            alignment: const Alignment(-1.25, .95),
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    FieldPulseTheme.blue.withValues(alpha: .075),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        child,
+      ],
+    ),
+  );
+}
+
+class FieldPulseGlassCard extends StatelessWidget {
+  const FieldPulseGlassCard({
+    super.key,
+    required this.child,
+    this.padding = const EdgeInsets.all(16),
+    this.margin = const EdgeInsets.only(bottom: 12),
+    this.onTap,
+    this.tint,
+  });
+
+  final Widget child;
+  final EdgeInsets padding;
+  final EdgeInsets margin;
+  final VoidCallback? onTap;
+  final Color? tint;
+
+  @override
+  Widget build(BuildContext context) {
+    final decoration = BoxDecoration(
+      gradient: FieldPulseDecor.glassGradient,
+      borderRadius: BorderRadius.circular(24),
+      border: Border.all(color: Colors.white.withValues(alpha: .90)),
+      boxShadow: FieldPulseDecor.glassShadow,
+    );
+
+    final content = Ink(
+      decoration: decoration,
+      child: Padding(padding: padding, child: child),
+    );
+
+    return Container(
+      margin: margin,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(24),
+        clipBehavior: Clip.antiAlias,
+        child: onTap == null
+            ? content
+            : InkWell(
+                onTap: onTap,
+                splashColor: (tint ?? FieldPulseTheme.blue).withValues(alpha: .07),
+                highlightColor: (tint ?? FieldPulseTheme.blue).withValues(alpha: .035),
+                child: content,
+              ),
+      ),
+    );
+  }
+}
+
 class FieldPulseGlassPanel extends StatelessWidget {
   const FieldPulseGlassPanel({
     super.key,
@@ -187,15 +289,15 @@ class FieldPulseGlassPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ClipRRect(
-    borderRadius: BorderRadius.circular(22),
+    borderRadius: BorderRadius.circular(24),
     child: BackdropFilter(
       filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: .86),
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: Colors.white.withValues(alpha: .9)),
-          boxShadow: FieldPulseDecor.softShadow,
+          gradient: FieldPulseDecor.glassGradient,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: Colors.white.withValues(alpha: .92)),
+          boxShadow: FieldPulseDecor.glassShadow,
         ),
         child: Padding(padding: padding, child: child),
       ),
