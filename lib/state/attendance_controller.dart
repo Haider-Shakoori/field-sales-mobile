@@ -106,9 +106,7 @@ class AttendanceController extends ChangeNotifier {
 
     final tenantId = appState.session?.tenantId;
     final policy = appState.policy;
-    if (tenantId == null ||
-        !working ||
-        policy?.gpsTrackingEnabled != true) {
+    if (tenantId == null || !working || policy?.gpsTrackingEnabled != true) {
       return;
     }
 
