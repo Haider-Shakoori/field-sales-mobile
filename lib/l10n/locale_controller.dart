@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
+import '../core/storage/secret_store.dart';
 import 'l10n.dart';
 
 class AppLocaleController extends ChangeNotifier {
+  AppLocaleController({SecretStore? storage}) : _storage = storage ?? SecretStore();
+
   static const _preferenceKey = 'fieldpulse.locale';
+  final SecretStore _storage;
 
   String _code = 'en';
 
@@ -25,8 +27,7 @@ class AppLocaleController extends ChangeNotifier {
   ];
 
   Future<void> restore() async {
-    final prefs = await SharedPreferences.getInstance();
-    final saved = prefs.getString(_preferenceKey) ?? 'en';
+    final saved = await _storage.read(_preferenceKey) ?? 'en';
     _code = L10n.supportedCodes.contains(saved) ? saved : 'en';
     await L10n.initialize(_code);
   }
@@ -37,8 +38,7 @@ class AppLocaleController extends ChangeNotifier {
     await L10n.load(code);
     _code = code;
 
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_preferenceKey, code);
+    await _storage.write(_preferenceKey, code);
 
     notifyListeners();
   }
