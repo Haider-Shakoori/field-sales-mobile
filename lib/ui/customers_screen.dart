@@ -337,132 +337,122 @@ class CustomersScreen extends StatelessWidget {
                     onTap: () => _edit(context, customer),
                     padding: const EdgeInsets.fromLTRB(14, 14, 10, 8),
                     child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CircleAvatar(
-                                  radius: 24,
-                                  child: Text(
-                                    displayName.characters.first.toUpperCase(),
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        displayName,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleMedium
-                                            ?.copyWith(
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                      ),
-                                      if (details.isNotEmpty) ...[
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          details,
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium,
-                                        ),
-                                      ],
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(width: 4),
-                                const Padding(
-                                  padding: EdgeInsets.only(top: 8),
-                                  child: Icon(Icons.chevron_right),
-                                ),
-                              ],
+                            CircleAvatar(
+                              radius: 24,
+                              child: Text(
+                                displayName.characters.first.toUpperCase(),
+                              ),
                             ),
-                            const SizedBox(height: 10),
-                            const Divider(height: 1),
-                            const SizedBox(height: 4),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                IconButton(
-                                  tooltip: L10n.text('Reorder recommendations'),
-                                  visualDensity: VisualDensity.compact,
-                                  onPressed: () => Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) =>
-                                          ReorderRecommendationsScreen(
-                                            customer: customer,
-                                            products: state.products,
-                                          ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    displayName,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(fontWeight: FontWeight.w600),
+                                  ),
+                                  if (details.isNotEmpty) ...[
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      details,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium,
                                     ),
-                                  ),
-                                  icon: const Icon(Icons.auto_awesome_outlined),
-                                ),
-                                IconButton(
-                                  tooltip: L10n.text('Statement'),
-                                  visualDensity: VisualDensity.compact,
-                                  onPressed: () => Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) => CustomerStatementScreen(
-                                        customer: customer,
-                                      ),
-                                    ),
-                                  ),
-                                  icon: const Icon(
-                                    Icons.account_balance_wallet_outlined,
-                                  ),
-                                ),
-                                IconButton(
-                                  tooltip: L10n.text('Follow-ups'),
-                                  visualDensity: VisualDensity.compact,
-                                  onPressed: () => Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) =>
-                                          FollowUpsScreen(customer: customer),
-                                    ),
-                                  ),
-                                  icon: const Icon(
-                                    Icons.follow_the_signs_outlined,
-                                  ),
-                                ),
-                                IconButton(
-                                  tooltip: L10n.text('Call history'),
-                                  visualDensity: VisualDensity.compact,
-                                  onPressed: () =>
-                                      _showHistory(context, customer),
-                                  icon: const Icon(Icons.history),
-                                ),
-                                IconButton(
-                                  tooltip: phone.isEmpty
-                                      ? 'No phone'
-                                      : 'Message',
-                                  visualDensity: VisualDensity.compact,
-                                  onPressed: phone.isEmpty
-                                      ? null
-                                      : () =>
-                                            _messageCustomer(context, customer),
-                                  icon: const Icon(Icons.chat_bubble_outline),
-                                ),
-                                IconButton(
-                                  tooltip: phone.isEmpty ? 'No phone' : 'Call',
-                                  visualDensity: VisualDensity.compact,
-                                  onPressed: phone.isEmpty || callState.busy
-                                      ? null
-                                      : () => _callCustomer(context, customer),
-                                  icon: const Icon(Icons.call_outlined),
-                                ),
-                              ],
+                                  ],
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            const Padding(
+                              padding: EdgeInsets.only(top: 8),
+                              child: Icon(Icons.chevron_right),
                             ),
                           ],
                         ),
+                        const SizedBox(height: 10),
+                        const Divider(height: 1),
+                        const SizedBox(height: 4),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            IconButton(
+                              tooltip: L10n.text('Reorder recommendations'),
+                              visualDensity: VisualDensity.compact,
+                              onPressed: () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => ReorderRecommendationsScreen(
+                                    customer: customer,
+                                    products: state.products,
+                                  ),
+                                ),
+                              ),
+                              icon: const Icon(Icons.auto_awesome_outlined),
+                            ),
+                            IconButton(
+                              tooltip: L10n.text('Statement'),
+                              visualDensity: VisualDensity.compact,
+                              onPressed: () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => CustomerStatementScreen(
+                                    customer: customer,
+                                  ),
+                                ),
+                              ),
+                              icon: const Icon(
+                                Icons.account_balance_wallet_outlined,
+                              ),
+                            ),
+                            IconButton(
+                              tooltip: L10n.text('Follow-ups'),
+                              visualDensity: VisualDensity.compact,
+                              onPressed: () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      FollowUpsScreen(customer: customer),
+                                ),
+                              ),
+                              icon: const Icon(Icons.follow_the_signs_outlined),
+                            ),
+                            IconButton(
+                              tooltip: L10n.text('Call history'),
+                              visualDensity: VisualDensity.compact,
+                              onPressed: () => _showHistory(context, customer),
+                              icon: const Icon(Icons.history),
+                            ),
+                            IconButton(
+                              tooltip: phone.isEmpty ? 'No phone' : 'Message',
+                              visualDensity: VisualDensity.compact,
+                              onPressed: phone.isEmpty
+                                  ? null
+                                  : () => _messageCustomer(context, customer),
+                              icon: const Icon(Icons.chat_bubble_outline),
+                            ),
+                            IconButton(
+                              tooltip: phone.isEmpty ? 'No phone' : 'Call',
+                              visualDensity: VisualDensity.compact,
+                              onPressed: phone.isEmpty || callState.busy
+                                  ? null
+                                  : () => _callCustomer(context, customer),
+                              icon: const Icon(Icons.call_outlined),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   );
                 },
               ),
