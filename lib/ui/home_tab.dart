@@ -1,5 +1,6 @@
 import 'package:field_sales_mobile/l10n/localized_material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/l10n.dart';
 
 import '../state/app_state.dart';
 import '../state/attendance_controller.dart';
@@ -99,8 +100,8 @@ class HomeTab extends StatelessWidget {
             const SizedBox(height: 12),
             TextField(
               controller: vehicle,
-              decoration: const InputDecoration(
-                labelText: 'Vehicle / plate (optional)',
+              decoration: InputDecoration(
+                labelText: L10n.text('Vehicle / plate (optional)'),
               ),
             ),
             const SizedBox(height: 12),
@@ -109,8 +110,8 @@ class HomeTab extends StatelessWidget {
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
               ),
-              decoration: const InputDecoration(
-                labelText: 'Start odometer km (optional)',
+              decoration: InputDecoration(
+                labelText: L10n.text('Start odometer km (optional)'),
               ),
             ),
           ],
@@ -325,8 +326,8 @@ class HomeTab extends StatelessWidget {
                       const SizedBox(height: 14),
                       TextField(
                         controller: vehicle,
-                        decoration: const InputDecoration(
-                          labelText: 'Vehicle / plate (optional)',
+                        decoration: InputDecoration(
+                          labelText: L10n.text('Vehicle / plate (optional)'),
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -336,7 +337,7 @@ class HomeTab extends StatelessWidget {
                           decimal: true,
                         ),
                         decoration: InputDecoration(
-                          labelText: 'End odometer km (optional)',
+                          labelText: L10n.text('End odometer km (optional)'),
                           helperText:
                               controller.session?['odometer_start_km'] == null
                               ? null
@@ -348,8 +349,8 @@ class HomeTab extends StatelessWidget {
                         controller: remarks,
                         maxLines: 3,
                         maxLength: 2000,
-                        decoration: const InputDecoration(
-                          labelText: 'End-of-day remarks (optional)',
+                        decoration: InputDecoration(
+                          labelText: L10n.text('End-of-day remarks (optional)'),
                           alignLabelWithHint: true,
                         ),
                       ),
