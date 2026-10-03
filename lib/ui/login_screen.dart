@@ -164,10 +164,10 @@ class _LoginScreenState extends State<LoginScreen> {
               constraints: const BoxConstraints(maxWidth: 480),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(28),
-                  border: Border.all(color: FieldPulseTheme.border),
-                  boxShadow: FieldPulseDecor.softShadow,
+                  gradient: FieldPulseDecor.premiumSurfaceGradient,
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(color: Colors.white),
+                  boxShadow: FieldPulseDecor.premiumShadow,
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(28),
