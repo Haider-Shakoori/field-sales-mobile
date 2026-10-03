@@ -84,7 +84,10 @@ class _MobileDiagnosticsScreenState extends State<MobileDiagnosticsScreen> {
               title: 'Battery & background',
               icon: Icons.battery_6_bar_outlined,
               rows: [
-                _MetricRow('Battery', _percent(result.metrics['battery_level'])),
+                _MetricRow(
+                  'Battery',
+                  _percent(result.metrics['battery_level']),
+                ),
                 _MetricRow('Charging', _yesNo(result.metrics['is_charging'])),
                 _MetricRow(
                   'Battery saver',
@@ -146,7 +149,10 @@ class _MobileDiagnosticsScreenState extends State<MobileDiagnosticsScreen> {
               title: 'Connectivity & sync',
               icon: Icons.sync_outlined,
               rows: [
-                _MetricRow('Network', _humanize(result.metrics['network_type'])),
+                _MetricRow(
+                  'Network',
+                  _humanize(result.metrics['network_type']),
+                ),
                 _MetricRow(
                   'Pending sync',
                   '${result.metrics['pending_sync_count'] ?? 0}',
@@ -214,8 +220,7 @@ class _MobileDiagnosticsScreenState extends State<MobileDiagnosticsScreen> {
 
   String _percent(dynamic value) => value == null ? 'Unknown' : '$value%';
 
-  String _megabytes(dynamic value) =>
-      value == null ? 'Unknown' : '$value MB';
+  String _megabytes(dynamic value) => value == null ? 'Unknown' : '$value MB';
 
   String _yesNo(dynamic value) => switch (value) {
     true => 'Yes',
@@ -347,7 +352,10 @@ class _IssuesCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Needs attention', style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            'Needs attention',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
           const SizedBox(height: 10),
           for (final issue in issues)
             ListTile(
