@@ -1,5 +1,6 @@
 import 'package:field_sales_mobile/l10n/localized_material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/l10n.dart';
 
 import '../features/orders/order_repository.dart';
 import '../state/order_controller.dart';
@@ -288,7 +289,7 @@ class _OrderCreateScreenState extends State<OrderCreateScreen> {
         children: [
           DropdownButtonFormField<String>(
             initialValue: _customerId,
-            decoration: const InputDecoration(labelText: 'Customer'),
+            decoration: InputDecoration(labelText: L10n.text('Customer')),
             items: widget.customers
                 .map(
                   (customer) => DropdownMenuItem(
@@ -304,7 +305,7 @@ class _OrderCreateScreenState extends State<OrderCreateScreen> {
           const SizedBox(height: 12),
           DropdownButtonFormField<String>(
             initialValue: _paymentType,
-            decoration: const InputDecoration(labelText: 'Payment type'),
+            decoration: InputDecoration(labelText: L10n.text('Payment type')),
             items: const [
               DropdownMenuItem(value: 'cash', child: Text('Cash')),
               DropdownMenuItem(value: 'credit', child: Text('Credit')),
@@ -319,8 +320,8 @@ class _OrderCreateScreenState extends State<OrderCreateScreen> {
           TextField(
             controller: _notes,
             maxLines: 3,
-            decoration: const InputDecoration(
-              labelText: 'Notes (optional)',
+            decoration: InputDecoration(
+              labelText: L10n.text('Notes (optional)'),
               alignLabelWithHint: true,
             ),
           ),
@@ -367,7 +368,7 @@ class _OrderCreateScreenState extends State<OrderCreateScreen> {
                           ),
                         ),
                         IconButton(
-                          tooltip: 'Remove',
+                          tooltip: L10n.text('Remove'),
                           onPressed: _saving
                               ? null
                               : () {
@@ -388,8 +389,8 @@ class _OrderCreateScreenState extends State<OrderCreateScreen> {
                             keyboardType: const TextInputType.numberWithOptions(
                               decimal: true,
                             ),
-                            decoration: const InputDecoration(
-                              labelText: 'Quantity',
+                            decoration: InputDecoration(
+                              labelText: L10n.text('Quantity'),
                             ),
                           ),
                         ),
@@ -400,8 +401,8 @@ class _OrderCreateScreenState extends State<OrderCreateScreen> {
                             keyboardType: const TextInputType.numberWithOptions(
                               decimal: true,
                             ),
-                            decoration: const InputDecoration(
-                              labelText: 'Discount %',
+                            decoration: InputDecoration(
+                              labelText: L10n.text('Discount %'),
                             ),
                           ),
                         ),
