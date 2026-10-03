@@ -1,4 +1,5 @@
 import 'package:field_sales_mobile/features/gps/tracking_service.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
