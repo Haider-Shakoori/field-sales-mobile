@@ -1,5 +1,6 @@
 import 'package:field_sales_mobile/l10n/localized_material.dart';
 import 'package:provider/provider.dart';
+
 import '../l10n/l10n.dart';
 
 import '../features/expenses/expense_repository.dart';
@@ -169,7 +170,9 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                       ),
                       decoration: InputDecoration(
                         labelText: L10n.text('Liters (optional)'),
-                        helperText: L10n.text('Used for km/L fuel-efficiency reporting.'),
+                        helperText: L10n.text(
+                          'Used for km/L fuel-efficiency reporting.',
+                        ),
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -180,7 +183,9 @@ class _ExpenseCreateScreenState extends State<ExpenseCreateScreen> {
                       ),
                       decoration: InputDecoration(
                         labelText: L10n.text('Unit price (optional)'),
-                        helperText: L10n.text('Leave blank to derive it from amount ÷ liters.'),
+                        helperText: L10n.text(
+                          'Leave blank to derive it from amount ÷ liters.',
+                        ),
                       ),
                     ),
                     const SizedBox(height: 10),
