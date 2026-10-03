@@ -34,7 +34,8 @@ class DashboardScreen extends StatefulWidget {
   State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen> {
+class _DashboardScreenState extends State<DashboardScreen>
+    with WidgetsBindingObserver {
   var _index = 0;
 
   static const _pages = [
@@ -56,12 +57,39 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         unawaited(_initializeData());
       }
     });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      unawaited(_refreshPresenceOnResume());
+    }
+  }
+
+  Future<void> _refreshPresenceOnResume() async {
+    if (!mounted) return;
+
+    final app = context.read<AppState>();
+    if (app.isSalesman) {
+      await context.read<AttendanceController>().refreshLivePresence();
+      if (!mounted) return;
+      await context.read<SyncController>().run(triggerSource: 'resume');
+    } else {
+      await app.heartbeatNow();
+    }
   }
 
   Future<void> _initializeData() async {
@@ -81,6 +109,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
       context.read<ExpenseController>().reloadLocal(),
       context.read<TargetController>().reloadLocal(),
     ]);
+
+    if (!mounted) return;
+
+    await context.read<AttendanceController>().refreshLivePresence();
 
     if (!mounted) return;
 
