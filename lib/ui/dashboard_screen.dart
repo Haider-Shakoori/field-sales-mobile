@@ -239,39 +239,39 @@ class _DashboardScreenState extends State<DashboardScreen>
             boxShadow: FieldPulseDecor.softShadow,
           ),
           child: NavigationBar(
-        selectedIndex: _index,
-        onDestinationSelected: (value) {
-          setState(() => _index = value);
-          unawaited(syncAndReload(context, triggerSource: 'tab'));
-        },
-        destinations: [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: L10n.text('Home'),
+            selectedIndex: _index,
+            onDestinationSelected: (value) {
+              setState(() => _index = value);
+              unawaited(syncAndReload(context, triggerSource: 'tab'));
+            },
+            destinations: [
+              NavigationDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+                label: L10n.text('Home'),
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.storefront_outlined),
+                selectedIcon: Icon(Icons.storefront),
+                label: L10n.text('Customers'),
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.location_on_outlined),
+                selectedIcon: Icon(Icons.location_on),
+                label: L10n.text('Visits'),
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.receipt_long_outlined),
+                selectedIcon: Icon(Icons.receipt_long),
+                label: L10n.text('Orders'),
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.more_horiz),
+                selectedIcon: Icon(Icons.more),
+                label: L10n.text('More'),
+              ),
+            ],
           ),
-          NavigationDestination(
-            icon: Icon(Icons.storefront_outlined),
-            selectedIcon: Icon(Icons.storefront),
-            label: L10n.text('Customers'),
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.location_on_outlined),
-            selectedIcon: Icon(Icons.location_on),
-            label: L10n.text('Visits'),
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.receipt_long_outlined),
-            selectedIcon: Icon(Icons.receipt_long),
-            label: L10n.text('Orders'),
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.more_horiz),
-            selectedIcon: Icon(Icons.more),
-            label: L10n.text('More'),
-          ),
-        ],
-      ),
         ),
       ),
     );
