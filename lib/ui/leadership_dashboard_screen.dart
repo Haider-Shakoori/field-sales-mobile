@@ -10,7 +10,6 @@ import '../state/app_state.dart';
 import '../state/team_controller.dart';
 import '../features/team/team_repository.dart';
 import '../state/notification_controller.dart';
-import 'fieldpulse_theme.dart';
 import 'notifications_screen.dart';
 import 'widgets/fieldpulse_ui.dart';
 
