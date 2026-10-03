@@ -263,11 +263,7 @@
   "device_health_location_services_are_disabled_during_the_active_work_day": "",
   "device_health_notification_permission_is_disabled": "",
   "device_health_pending_items_are_waiting_to_synchronize": "",
-  "device_health_select_count_from_local_sync_failures": "",
-  "device_health_select_count_from_sync_queue": "",
   "device_health_the_latest_gps_fix_is_delayed": "",
-  "device_health_where_tenant_id_and_is_mock_location_1_and_recorded_at": "",
-  "device_health_where_tenant_id_and_sync_status_not_in": "",
   "expense_create_category": "",
   "expense_create_enter_a_valid_expense_amount": "",
   "expense_create_fuel_details": "",
@@ -856,5 +852,9 @@
   "visits_sync_master_data_or_add_coordinates_to_customers_to_see": "",
   "visits_today_s_assigned_visits": "",
   "visits_unplanned": "",
-  "visits_voice_note": ""
+  "visits_voice_note": "",
+  "common_language": "",
+  "common_english": "",
+  "common_dari": "",
+  "common_pashto": ""
 }
