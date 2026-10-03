@@ -53,10 +53,10 @@ class _LeadershipDashboardScreenState extends State<LeadershipDashboardScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          '$roleLabel · FieldPulse',
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
+        title: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: AlignmentDirectional.centerStart,
+          child: Text('$roleLabel · FieldPulse'),
         ),
         actions: [
           Consumer<NotificationController>(
@@ -168,17 +168,21 @@ class _LeadershipDashboardScreenState extends State<LeadershipDashboardScreen> {
                             fontSize: 13,
                           ),
                         ),
-                        const SizedBox(height: 10),
-                        FieldPulseStatusPill(
-                          label: roleLabel,
-                          color: const Color(0xFF27D7A1),
-                          icon: Icons.verified_user_outlined,
-                        ),
                       ],
                     ),
                   ),
                 ],
               ),
+              const SizedBox(height: 12),
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: FieldPulseStatusPill(
+                  label: roleLabel,
+                  color: const Color(0xFF27D7A1),
+                  icon: Icons.verified_user_outlined,
+                ),
+              ),
+              const SizedBox(height: 2),
             ),
             if (team.message != null) ...[
               const SizedBox(height: 12),
