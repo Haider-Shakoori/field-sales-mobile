@@ -13,6 +13,7 @@ import 'expenses_screen.dart';
 import 'fuel_screen.dart';
 import 'follow_ups_screen.dart';
 import 'mileage_screen.dart';
+import 'mobile_diagnostics_screen.dart';
 import 'leads_screen.dart';
 import 'products_screen.dart';
 import 'routes_screen.dart';
@@ -208,6 +209,21 @@ class MoreScreen extends StatelessWidget {
               subtitle: const Text('Cached product catalog and pricing'),
               trailing: const Icon(Icons.chevron_right),
               onTap: () => _open(context, 'Products', const ProductsScreen()),
+            ),
+          ),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.health_and_safety_outlined),
+              title: const Text('Mobile Diagnostics'),
+              subtitle: const Text(
+                'Battery, GPS, background tracking, permissions and sync health',
+              ),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => _open(
+                context,
+                'Mobile Diagnostics',
+                const MobileDiagnosticsScreen(),
+              ),
             ),
           ),
           Card(
