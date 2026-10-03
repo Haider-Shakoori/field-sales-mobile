@@ -1,10 +1,11 @@
-import 'package:flutter/material.dart';
+import 'package:field_sales_mobile/l10n/localized_material.dart';
 import 'package:provider/provider.dart';
 
 import '../core/api/api_exception.dart';
 import '../features/notifications/push_service.dart';
 import '../state/app_state.dart';
 import '../state/attendance_controller.dart';
+import 'language_selector.dart';
 
 String friendlyLoginError(Object error) {
   if (error is! ApiException) {
@@ -161,6 +162,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      const Align(
+                        alignment: AlignmentDirectional.centerEnd,
+                        child: LanguageSelectorButton(compact: true),
+                      ),
+                      const SizedBox(height: 8),
                       if (rememberedTenant != null)
                         Align(
                           alignment: Alignment.centerRight,
