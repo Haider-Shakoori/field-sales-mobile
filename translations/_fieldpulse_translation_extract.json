@@ -1,5 +1,17 @@
 [
   {
+    "english": "{active_customers} active",
+    "contexts": [
+      "ui.salesman_account_screen"
+    ],
+    "sources": [
+      "lib/ui/salesman_account_screen.dart:210"
+    ],
+    "placeholders": [
+      "active_customers"
+    ]
+  },
+  {
     "english": "{active} active",
     "contexts": [
       "ui.home_tab",
@@ -11,6 +23,19 @@
     ],
     "placeholders": [
       "active"
+    ]
+  },
+  {
+    "english": "{currency} {amount} overdue",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:441"
+    ],
+    "placeholders": [
+      "currency",
+      "amount"
     ]
   },
   {
@@ -26,6 +51,30 @@
     ]
   },
   {
+    "english": "{distance_from_previous_km} km from previous",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:511"
+    ],
+    "placeholders": [
+      "distance_from_previous_km"
+    ]
+  },
+  {
+    "english": "{distance_km} km away",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:645"
+    ],
+    "placeholders": [
+      "distance_km"
+    ]
+  },
+  {
     "english": "{effective_distance_km} km",
     "contexts": [
       "ui.mileage_screen"
@@ -36,6 +85,18 @@
     ],
     "placeholders": [
       "effective_distance_km"
+    ]
+  },
+  {
+    "english": "{estimated_travel_minutes} min",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:374"
+    ],
+    "placeholders": [
+      "estimated_travel_minutes"
     ]
   },
   {
@@ -77,6 +138,54 @@
     ]
   },
   {
+    "english": "{label} is above the maximum.",
+    "contexts": [
+      "ui.visit_forms_screen"
+    ],
+    "sources": [
+      "lib/ui/visit_forms_screen.dart:278"
+    ],
+    "placeholders": [
+      "label"
+    ]
+  },
+  {
+    "english": "{label} is below the minimum.",
+    "contexts": [
+      "ui.visit_forms_screen"
+    ],
+    "sources": [
+      "lib/ui/visit_forms_screen.dart:275"
+    ],
+    "placeholders": [
+      "label"
+    ]
+  },
+  {
+    "english": "{label} is required.",
+    "contexts": [
+      "ui.visit_forms_screen"
+    ],
+    "sources": [
+      "lib/ui/visit_forms_screen.dart:257"
+    ],
+    "placeholders": [
+      "label"
+    ]
+  },
+  {
+    "english": "{label} must be a number.",
+    "contexts": [
+      "ui.visit_forms_screen"
+    ],
+    "sources": [
+      "lib/ui/visit_forms_screen.dart:265"
+    ],
+    "placeholders": [
+      "label"
+    ]
+  },
+  {
     "english": "{latitude}, {longitude} · ±{accuracy} m",
     "contexts": [
       "ui.collection_detail_screen"
@@ -91,12 +200,36 @@
     ]
   },
   {
+    "english": "{length} customers ·",
+    "contexts": [
+      "ui.visits_map_view"
+    ],
+    "sources": [
+      "lib/ui/visits_map_view.dart:510"
+    ],
+    "placeholders": [
+      "length"
+    ]
+  },
+  {
     "english": "{length} salesmen",
     "contexts": [
       "ui.leadership_dashboard_screen"
     ],
     "sources": [
       "lib/ui/leadership_dashboard_screen.dart:431"
+    ],
+    "placeholders": [
+      "length"
+    ]
+  },
+  {
+    "english": "{length} visited",
+    "contexts": [
+      "ui.visits_map_view"
+    ],
+    "sources": [
+      "lib/ui/visits_map_view.dart:511"
     ],
     "placeholders": [
       "length"
@@ -179,6 +312,18 @@
     ]
   },
   {
+    "english": "{overflowStops} stop(s) exceed the configured workday capacity. Consider removing optional stops or reprioritizing the remaining route.",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:389"
+    ],
+    "placeholders": [
+      "overflowStops"
+    ]
+  },
+  {
     "english": "{pending_count} pending",
     "contexts": [
       "ui.home_tab",
@@ -191,6 +336,18 @@
     ],
     "placeholders": [
       "pending_count"
+    ]
+  },
+  {
+    "english": "{planned_visit_minutes} min visit",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:520"
+    ],
+    "placeholders": [
+      "planned_visit_minutes"
     ]
   },
   {
@@ -258,6 +415,33 @@
     ]
   },
   {
+    "english": "{sku} · {purchase_count} approved orders · {confidence} confidence",
+    "contexts": [
+      "ui.reorder_recommendations_screen"
+    ],
+    "sources": [
+      "lib/ui/reorder_recommendations_screen.dart:185"
+    ],
+    "placeholders": [
+      "sku",
+      "purchase_count",
+      "confidence"
+    ]
+  },
+  {
+    "english": "{sku} · Damaged: {damaged_qty}",
+    "contexts": [
+      "ui.stock_returns_screen"
+    ],
+    "sources": [
+      "lib/ui/stock_returns_screen.dart:150"
+    ],
+    "placeholders": [
+      "sku",
+      "damaged_qty"
+    ]
+  },
+  {
     "english": "{stale} idle · {offline} offline",
     "contexts": [
       "ui.leadership_dashboard_screen"
@@ -268,6 +452,68 @@
     "placeholders": [
       "stale",
       "offline"
+    ]
+  },
+  {
+    "english": "{type} · {status} · attempt {attempts}",
+    "contexts": [
+      "ui.sync_screen"
+    ],
+    "sources": [
+      "lib/ui/sync_screen.dart:177"
+    ],
+    "placeholders": [
+      "type",
+      "status",
+      "attempts"
+    ]
+  },
+  {
+    "english": "{typical_interval_days} days",
+    "contexts": [
+      "ui.reorder_recommendations_screen"
+    ],
+    "sources": [
+      "lib/ui/reorder_recommendations_screen.dart:201"
+    ],
+    "placeholders": [
+      "typical_interval_days"
+    ]
+  },
+  {
+    "english": "{value1} KB cached",
+    "contexts": [
+      "ui.visits_map_view"
+    ],
+    "sources": [
+      "lib/ui/visits_map_view.dart:199"
+    ],
+    "placeholders": [
+      "value1"
+    ]
+  },
+  {
+    "english": "{value1} MB cached",
+    "contexts": [
+      "ui.visits_map_view"
+    ],
+    "sources": [
+      "lib/ui/visits_map_view.dart:202"
+    ],
+    "placeholders": [
+      "value1"
+    ]
+  },
+  {
+    "english": "{value1}d overdue",
+    "contexts": [
+      "ui.reorder_recommendations_screen"
+    ],
+    "sources": [
+      "lib/ui/reorder_recommendations_screen.dart:176"
+    ],
+    "placeholders": [
+      "value1"
     ]
   },
   {
@@ -291,6 +537,16 @@
     "placeholders": []
   },
   {
+    "english": "© OpenStreetMap contributors",
+    "contexts": [
+      "ui.visits_map_view"
+    ],
+    "sources": [
+      "lib/ui/visits_map_view.dart:631"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "+ {value1} more",
     "contexts": [
       "ui.home_tab"
@@ -300,6 +556,42 @@
     ],
     "placeholders": [
       "value1"
+    ]
+  },
+  {
+    "english": "+{value1} more issues",
+    "contexts": [
+      "ui.sync_screen"
+    ],
+    "sources": [
+      "lib/ui/sync_screen.dart:207"
+    ],
+    "placeholders": [
+      "value1"
+    ]
+  },
+  {
+    "english": "~{distance} km",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:346"
+    ],
+    "placeholders": [
+      "distance"
+    ]
+  },
+  {
+    "english": "~{estimated_travel_minutes} min travel",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:518"
+    ],
+    "placeholders": [
+      "estimated_travel_minutes"
     ]
   },
   {
@@ -415,6 +707,28 @@
     "placeholders": []
   },
   {
+    "english": "Active",
+    "contexts": [
+      "ui.visits_map_view",
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_map_view.dart:360",
+      "lib/ui/visits_screen.dart:428"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Active visit",
+    "contexts": [
+      "ui.visits_map_view"
+    ],
+    "sources": [
+      "lib/ui/visits_map_view.dart:324"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Activity",
     "contexts": [
       "ui.leadership_dashboard_screen"
@@ -507,12 +821,32 @@
     "placeholders": []
   },
   {
+    "english": "Add returned item",
+    "contexts": [
+      "ui.stock_returns_screen"
+    ],
+    "sources": [
+      "lib/ui/stock_returns_screen.dart:400"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Add the first refueling with vehicle, odometer, GPS and receipt evidence.",
     "contexts": [
       "ui.fuel_screen"
     ],
     "sources": [
       "lib/ui/fuel_screen.dart:72"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Add to today's route",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:676"
     ],
     "placeholders": []
   },
@@ -751,12 +1085,32 @@
     "placeholders": []
   },
   {
+    "english": "Assigned elsewhere",
+    "contexts": [
+      "ui.salesman_account_screen"
+    ],
+    "sources": [
+      "lib/ui/salesman_account_screen.dart:342"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Assigned routes and customer sequence",
     "contexts": [
       "ui.more_screen"
     ],
     "sources": [
       "lib/ui/more_screen.dart:187"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Assigned to me",
+    "contexts": [
+      "ui.salesman_account_screen"
+    ],
+    "sources": [
+      "lib/ui/salesman_account_screen.dart:340"
     ],
     "placeholders": []
   },
@@ -806,6 +1160,20 @@
     ]
   },
   {
+    "english": "Available stock: {available_stock} {unit}{value2}",
+    "contexts": [
+      "ui.reorder_recommendations_screen"
+    ],
+    "sources": [
+      "lib/ui/reorder_recommendations_screen.dart:214"
+    ],
+    "placeholders": [
+      "available_stock",
+      "unit",
+      "value2"
+    ]
+  },
+  {
     "english": "Available to collect: {outstanding_balance} {currency}",
     "contexts": [
       "ui.collection_create_screen"
@@ -834,13 +1202,17 @@
       "state.attendance_controller",
       "ui.customer_create_screen",
       "ui.customer_statement_screen",
-      "ui.order_create_screen"
+      "ui.order_create_screen",
+      "ui.reorder_recommendations_screen",
+      "ui.stock_returns_screen"
     ],
     "sources": [
       "lib/state/attendance_controller.dart:32",
       "lib/ui/customer_create_screen.dart:147",
       "lib/ui/customer_statement_screen.dart:61",
-      "lib/ui/order_create_screen.dart:166"
+      "lib/ui/order_create_screen.dart:166",
+      "lib/ui/reorder_recommendations_screen.dart:49",
+      "lib/ui/stock_returns_screen.dart:309"
     ],
     "placeholders": []
   },
@@ -887,6 +1259,28 @@
     "placeholders": []
   },
   {
+    "english": "Blocked items: {blockedCount}",
+    "contexts": [
+      "ui.sync_screen"
+    ],
+    "sources": [
+      "lib/ui/sync_screen.dart:108"
+    ],
+    "placeholders": [
+      "blockedCount"
+    ]
+  },
+  {
+    "english": "Build suggested order",
+    "contexts": [
+      "ui.reorder_recommendations_screen"
+    ],
+    "sources": [
+      "lib/ui/reorder_recommendations_screen.dart:233"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Business or prospect name",
     "contexts": [
       "ui.leads_screen"
@@ -918,6 +1312,18 @@
       "lib/ui/customers_screen.dart:20"
     ],
     "placeholders": []
+  },
+  {
+    "english": "Cached {value1}",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:358"
+    ],
+    "placeholders": [
+      "value1"
+    ]
   },
   {
     "english": "Cached customer balance",
@@ -1068,7 +1474,8 @@
       "ui.follow_ups_screen",
       "ui.home_tab",
       "ui.leadership_dashboard_screen",
-      "ui.leads_screen"
+      "ui.leads_screen",
+      "ui.visits_screen"
     ],
     "sources": [
       "lib/ui/appointments_screen.dart:561",
@@ -1079,7 +1486,8 @@
       "lib/ui/home_tab.dart:178",
       "lib/ui/home_tab.dart:376",
       "lib/ui/leadership_dashboard_screen.dart:486",
-      "lib/ui/leads_screen.dart:859"
+      "lib/ui/leads_screen.dart:859",
+      "lib/ui/visits_screen.dart:156"
     ],
     "placeholders": []
   },
@@ -1090,6 +1498,16 @@
     ],
     "sources": [
       "lib/ui/follow_ups_screen.dart:258"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Capture a visit photo first, then return to this form.",
+    "contexts": [
+      "ui.visit_forms_screen"
+    ],
+    "sources": [
+      "lib/ui/visit_forms_screen.dart:477"
     ],
     "placeholders": []
   },
@@ -1168,6 +1586,73 @@
     "placeholders": []
   },
   {
+    "english": "Check in",
+    "contexts": [
+      "ui.visits_map_view",
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_map_view.dart:360",
+      "lib/ui/visits_screen.dart:647"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Check out",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:160",
+      "lib/ui/visits_screen.dart:543"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Check out · {customer_name}",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:121"
+    ],
+    "placeholders": [
+      "customer_name"
+    ]
+  },
+  {
+    "english": "Check out of the active visit first.",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:57"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Check-in: {checked_in_at}",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:435"
+    ],
+    "placeholders": [
+      "checked_in_at"
+    ]
+  },
+  {
+    "english": "Check-ins are stored locally first and can sync later.",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:378"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Cheque",
     "contexts": [
       "ui.collection_create_screen"
@@ -1200,10 +1685,12 @@
   {
     "english": "Collect",
     "contexts": [
-      "ui.collections_screen"
+      "ui.collections_screen",
+      "ui.visits_screen"
     ],
     "sources": [
-      "lib/ui/collections_screen.dart:122"
+      "lib/ui/collections_screen.dart:122",
+      "lib/ui/visits_screen.dart:517"
     ],
     "placeholders": []
   },
@@ -1236,6 +1723,16 @@
     ],
     "sources": [
       "lib/features/collections/collection_repository.dart:80"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Collection made",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:26"
     ],
     "placeholders": []
   },
@@ -1291,13 +1788,16 @@
     "contexts": [
       "ui.home_tab",
       "ui.leadership_dashboard_screen",
-      "ui.more_screen"
+      "ui.more_screen",
+      "ui.salesman_account_screen"
     ],
     "sources": [
       "lib/ui/home_tab.dart:287",
       "lib/ui/leadership_dashboard_screen.dart:238",
       "lib/ui/more_screen.dart:123",
-      "lib/ui/more_screen.dart:127"
+      "lib/ui/more_screen.dart:127",
+      "lib/ui/salesman_account_screen.dart:185",
+      "lib/ui/salesman_account_screen.dart:353"
     ],
     "placeholders": []
   },
@@ -1355,6 +1855,16 @@
     ]
   },
   {
+    "english": "Complaint received",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:27"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Complete",
     "contexts": [
       "ui.appointments_screen",
@@ -1378,6 +1888,16 @@
     "placeholders": []
   },
   {
+    "english": "Completed",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:428"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Completion note",
     "contexts": [
       "ui.follow_ups_screen"
@@ -1388,12 +1908,42 @@
     "placeholders": []
   },
   {
+    "english": "Condition",
+    "contexts": [
+      "ui.stock_returns_screen"
+    ],
+    "sources": [
+      "lib/ui/stock_returns_screen.dart:376"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Confirm End Day",
     "contexts": [
       "ui.home_tab"
     ],
     "sources": [
       "lib/ui/home_tab.dart:380"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "connection reset",
+    "contexts": [
+      "ui.visits_map_view"
+    ],
+    "sources": [
+      "lib/ui/visits_map_view.dart:71"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "connection terminated",
+    "contexts": [
+      "ui.visits_map_view"
+    ],
+    "sources": [
+      "lib/ui/visits_map_view.dart:72"
     ],
     "placeholders": []
   },
@@ -1648,6 +2198,16 @@
     "placeholders": []
   },
   {
+    "english": "Current targets",
+    "contexts": [
+      "ui.targets_screen"
+    ],
+    "sources": [
+      "lib/ui/targets_screen.dart:104"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Customer",
     "contexts": [
       "ui.appointments_screen",
@@ -1658,7 +2218,12 @@
       "ui.home_tab",
       "ui.invoice_screen",
       "ui.order_create_screen",
-      "ui.order_detail_screen"
+      "ui.order_detail_screen",
+      "ui.reorder_recommendations_screen",
+      "ui.salesman_account_screen",
+      "ui.smart_route_screen",
+      "ui.stock_returns_screen",
+      "ui.visits_screen"
     ],
     "sources": [
       "lib/ui/appointments_screen.dart:125",
@@ -1677,7 +2242,16 @@
       "lib/ui/invoice_screen.dart:39",
       "lib/ui/order_create_screen.dart:291",
       "lib/ui/order_create_screen.dart:296",
-      "lib/ui/order_detail_screen.dart:43"
+      "lib/ui/order_detail_screen.dart:43",
+      "lib/ui/reorder_recommendations_screen.dart:114",
+      "lib/ui/salesman_account_screen.dart:323",
+      "lib/ui/smart_route_screen.dart:478",
+      "lib/ui/smart_route_screen.dart:632",
+      "lib/ui/stock_returns_screen.dart:335",
+      "lib/ui/stock_returns_screen.dart:340",
+      "lib/ui/visits_screen.dart:84",
+      "lib/ui/visits_screen.dart:295",
+      "lib/ui/visits_screen.dart:423"
     ],
     "placeholders": []
   },
@@ -1742,6 +2316,16 @@
     "placeholders": []
   },
   {
+    "english": "Customer data is not available offline yet.",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:216"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Customer follow-ups",
     "contexts": [
       "ui.follow_ups_screen"
@@ -1772,6 +2356,26 @@
     "placeholders": []
   },
   {
+    "english": "Customer or product data is not available offline yet.",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:187"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Customer returns",
+    "contexts": [
+      "ui.stock_returns_screen"
+    ],
+    "sources": [
+      "lib/ui/stock_returns_screen.dart:164"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Customer saved locally. It will sync when online.",
     "contexts": [
       "state.master_data_controller"
@@ -1798,6 +2402,16 @@
     ],
     "sources": [
       "lib/features/financial_documents/customer_statement_repository.dart:74"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Customer unavailable",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:30"
     ],
     "placeholders": []
   },
@@ -1845,6 +2459,26 @@
     "sources": [
       "lib/ui/dashboard_screen.dart:51",
       "lib/ui/dashboard_screen.dart:223"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Customers in planned order",
+    "contexts": [
+      "ui.visits_map_view"
+    ],
+    "sources": [
+      "lib/ui/visits_map_view.dart:559"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Damaged",
+    "contexts": [
+      "ui.stock_returns_screen"
+    ],
+    "sources": [
+      "lib/ui/stock_returns_screen.dart:382"
     ],
     "placeholders": []
   },
@@ -1990,6 +2624,28 @@
     "placeholders": []
   },
   {
+    "english": "Due in {due}d",
+    "contexts": [
+      "ui.reorder_recommendations_screen"
+    ],
+    "sources": [
+      "lib/ui/reorder_recommendations_screen.dart:179"
+    ],
+    "placeholders": [
+      "due"
+    ]
+  },
+  {
+    "english": "Due today",
+    "contexts": [
+      "ui.reorder_recommendations_screen"
+    ],
+    "sources": [
+      "lib/ui/reorder_recommendations_screen.dart:178"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "e.g. shahab-demo",
     "contexts": [
       "ui.login_screen"
@@ -2036,6 +2692,16 @@
     ],
     "sources": [
       "lib/ui/mileage_screen.dart:144"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Elevated",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:213"
     ],
     "placeholders": []
   },
@@ -2255,6 +2921,18 @@
     "placeholders": []
   },
   {
+    "english": "ETA {estimated_arrival_at}",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:531"
+    ],
+    "placeholders": [
+      "estimated_arrival_at"
+    ]
+  },
+  {
     "english": "Expected close date",
     "contexts": [
       "ui.leads_screen"
@@ -2348,6 +3026,46 @@
     "placeholders": []
   },
   {
+    "english": "Extra",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:382"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Extra opportunity stop",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:497"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Extra opportunity stop removed from today's route.",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:157"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "failed host lookup",
+    "contexts": [
+      "ui.visits_map_view"
+    ],
+    "sources": [
+      "lib/ui/visits_map_view.dart:74"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "failed_{phase}",
     "contexts": [
       "features.followups.follow_up_repository"
@@ -2370,6 +3088,16 @@
     "placeholders": []
   },
   {
+    "english": "failures are blocked for review, and repeated UUID requests",
+    "contexts": [
+      "ui.sync_screen"
+    ],
+    "sources": [
+      "lib/ui/sync_screen.dart:223"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Field Sales",
     "contexts": [
       "ui.dashboard_screen"
@@ -2380,12 +3108,32 @@
     "placeholders": []
   },
   {
+    "english": "FieldPulse account",
+    "contexts": [
+      "ui.salesman_account_screen"
+    ],
+    "sources": [
+      "lib/ui/salesman_account_screen.dart:154"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "FieldPulse could not identify this device. Restart the app and try again.",
     "contexts": [
       "ui.login_screen"
     ],
     "sources": [
       "lib/ui/login_screen.dart:35"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "FieldPulse Sales Mobile/1.0 (field-sales-mobile;",
+    "contexts": [
+      "ui.visits_map_view"
+    ],
+    "sources": [
+      "lib/ui/visits_map_view.dart:460"
     ],
     "placeholders": []
   },
@@ -2408,6 +3156,18 @@
       "lib/ui/order_create_screen.dart:219"
     ],
     "placeholders": []
+  },
+  {
+    "english": "finish {estimated_departure_at}",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:536"
+    ],
+    "placeholders": [
+      "estimated_departure_at"
+    ]
   },
   {
     "english": "first_failed_at TEXT NOT NULL,",
@@ -2511,6 +3271,16 @@
     ],
     "sources": [
       "lib/state/attendance_controller.dart:41"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Forms",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:535"
     ],
     "placeholders": []
   },
@@ -2736,6 +3506,29 @@
     "placeholders": []
   },
   {
+    "english": "geo:{coords}?q={coords}({value1})",
+    "contexts": [
+      "ui.visits_map_view"
+    ],
+    "sources": [
+      "lib/ui/visits_map_view.dart:256"
+    ],
+    "placeholders": [
+      "coords",
+      "value1"
+    ]
+  },
+  {
+    "english": "Geofence pending sync",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:401"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Geofence radius (meters)",
     "contexts": [
       "ui.customer_create_screen"
@@ -2766,6 +3559,18 @@
     ],
     "placeholders": [
       "value1"
+    ]
+  },
+  {
+    "english": "google.navigation:q={coords}",
+    "contexts": [
+      "ui.visits_map_view"
+    ],
+    "sources": [
+      "lib/ui/visits_map_view.dart:255"
+    ],
+    "placeholders": [
+      "coords"
     ]
   },
   {
@@ -2893,12 +3698,53 @@
     "placeholders": []
   },
   {
+    "english": "High",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:212",
+      "lib/ui/smart_route_screen.dart:370"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Home",
     "contexts": [
       "ui.dashboard_screen"
     ],
     "sources": [
       "lib/ui/dashboard_screen.dart:218"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "I understand and agree",
+    "contexts": [
+      "ui.privacy_dialog"
+    ],
+    "sources": [
+      "lib/ui/privacy_dialog.dart:20"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Inactive",
+    "contexts": [
+      "ui.routes_screen"
+    ],
+    "sources": [
+      "lib/ui/routes_screen.dart:49"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Inside geofence",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:397"
     ],
     "placeholders": []
   },
@@ -2988,6 +3834,18 @@
       "lib/ui/gamification_screen.dart:81"
     ],
     "placeholders": []
+  },
+  {
+    "english": "Last cycle: {latestStatus}",
+    "contexts": [
+      "ui.sync_screen"
+    ],
+    "sources": [
+      "lib/ui/sync_screen.dart:112"
+    ],
+    "placeholders": [
+      "latestStatus"
+    ]
   },
   {
     "english": "last_error TEXT,",
@@ -3177,6 +4035,16 @@
     "placeholders": []
   },
   {
+    "english": "List",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:618"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Liters (optional)",
     "contexts": [
       "ui.expense_create_screen"
@@ -3203,6 +4071,36 @@
     ],
     "sources": [
       "lib/ui/leadership_dashboard_screen.dart:220"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Live route: optimized from your current GPS position, business priority, and proximity.",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:352"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Load more customers",
+    "contexts": [
+      "ui.salesman_account_screen"
+    ],
+    "sources": [
+      "lib/ui/salesman_account_screen.dart:238"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Loading…",
+    "contexts": [
+      "ui.salesman_account_screen"
+    ],
+    "sources": [
+      "lib/ui/salesman_account_screen.dart:238"
     ],
     "placeholders": []
   },
@@ -3243,6 +4141,16 @@
     ],
     "sources": [
       "lib/features/visits/visit_repository.dart:943"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Local-first by design",
+    "contexts": [
+      "ui.sync_screen"
+    ],
+    "sources": [
+      "lib/ui/sync_screen.dart:219"
     ],
     "placeholders": []
   },
@@ -3351,6 +4259,16 @@
     "placeholders": []
   },
   {
+    "english": "Location tracking policy",
+    "contexts": [
+      "ui.privacy_dialog"
+    ],
+    "sources": [
+      "lib/ui/privacy_dialog.dart:7"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Location tracking will continue locally until you sign in again.",
     "contexts": [
       "state.attendance_controller"
@@ -3387,6 +4305,16 @@
     ],
     "sources": [
       "lib/ui/home_tab.dart:542"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Map",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:623"
     ],
     "placeholders": []
   },
@@ -3539,6 +4467,66 @@
     "placeholders": []
   },
   {
+    "english": "My referred customers",
+    "contexts": [
+      "ui.salesman_account_screen"
+    ],
+    "sources": [
+      "lib/ui/salesman_account_screen.dart:201"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "My stock",
+    "contexts": [
+      "ui.stock_returns_screen"
+    ],
+    "sources": [
+      "lib/ui/stock_returns_screen.dart:128"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Navigate",
+    "contexts": [
+      "ui.visits_map_view"
+    ],
+    "sources": [
+      "lib/ui/visits_map_view.dart:338"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Nearby customers inside your assignment scope but outside today's assigned route. Add one only when it makes business sense.",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:602"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Nearby opportunities",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:589"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Nearest first",
+    "contexts": [
+      "ui.visits_map_view"
+    ],
+    "sources": [
+      "lib/ui/visits_map_view.dart:560"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "New appointment",
     "contexts": [
       "ui.appointments_screen"
@@ -3565,6 +4553,16 @@
     ],
     "sources": [
       "lib/ui/customer_create_screen.dart:232"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "New customer return",
+    "contexts": [
+      "ui.stock_returns_screen"
+    ],
+    "sources": [
+      "lib/ui/stock_returns_screen.dart:329"
     ],
     "placeholders": []
   },
@@ -3610,12 +4608,44 @@
     "placeholders": []
   },
   {
+    "english": "New return",
+    "contexts": [
+      "ui.stock_returns_screen"
+    ],
+    "sources": [
+      "lib/ui/stock_returns_screen.dart:171"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Next assigned visit",
     "contexts": [
       "ui.home_tab"
     ],
     "sources": [
       "lib/ui/home_tab.dart:650"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Next automatic retry: {next}",
+    "contexts": [
+      "ui.sync_screen"
+    ],
+    "sources": [
+      "lib/ui/sync_screen.dart:198"
+    ],
+    "placeholders": [
+      "next"
+    ]
+  },
+  {
+    "english": "No",
+    "contexts": [
+      "ui.visit_forms_screen"
+    ],
+    "sources": [
+      "lib/ui/visit_forms_screen.dart:361"
     ],
     "placeholders": []
   },
@@ -3646,6 +4676,16 @@
     ],
     "sources": [
       "lib/ui/leads_screen.dart:786"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No address",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:320"
     ],
     "placeholders": []
   },
@@ -3722,6 +4762,16 @@
     "placeholders": []
   },
   {
+    "english": "no cached tiles yet",
+    "contexts": [
+      "ui.visits_map_view"
+    ],
+    "sources": [
+      "lib/ui/visits_map_view.dart:194"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "No call activity recorded yet.",
     "contexts": [
       "ui.call_history_screen"
@@ -3752,6 +4802,26 @@
     "placeholders": []
   },
   {
+    "english": "No credit outstanding",
+    "contexts": [
+      "ui.salesman_account_screen"
+    ],
+    "sources": [
+      "lib/ui/salesman_account_screen.dart:366"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No current targets are cached. Pull to refresh when online.",
+    "contexts": [
+      "ui.targets_screen"
+    ],
+    "sources": [
+      "lib/ui/targets_screen.dart:113"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "No customer",
     "contexts": [
       "ui.appointments_screen"
@@ -3762,12 +4832,54 @@
     "placeholders": []
   },
   {
-    "english": "No customers are available offline yet.",
+    "english": "No customer returns recorded.",
     "contexts": [
-      "ui.follow_ups_screen"
+      "ui.stock_returns_screen"
     ],
     "sources": [
-      "lib/ui/follow_ups_screen.dart:80"
+      "lib/ui/stock_returns_screen.dart:180"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No customer visits recorded yet.",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:374"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No customers are available in today's assigned route or territory.",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:424"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No customers are available offline yet.",
+    "contexts": [
+      "ui.follow_ups_screen",
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/follow_ups_screen.dart:80",
+      "lib/ui/visits_screen.dart:66"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No customers are currently attributed to you as referrals.",
+    "contexts": [
+      "ui.salesman_account_screen"
+    ],
+    "sources": [
+      "lib/ui/salesman_account_screen.dart:221"
     ],
     "placeholders": []
   },
@@ -3778,6 +4890,16 @@
     ],
     "sources": [
       "lib/ui/customers_screen.dart:298"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No customers with map coordinates yet.",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:569"
     ],
     "placeholders": []
   },
@@ -3832,6 +4954,16 @@
     "placeholders": []
   },
   {
+    "english": "No navigation app is available.",
+    "contexts": [
+      "ui.visits_map_view"
+    ],
+    "sources": [
+      "lib/ui/visits_map_view.dart:275"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "No notifications yet",
     "contexts": [
       "ui.notifications_screen"
@@ -3873,6 +5005,16 @@
     "placeholders": []
   },
   {
+    "english": "No products cached yet. Pull down to sync.",
+    "contexts": [
+      "ui.products_screen"
+    ],
+    "sources": [
+      "lib/ui/products_screen.dart:29"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "No receipt attached.",
     "contexts": [
       "ui.fuel_create_screen"
@@ -3889,6 +5031,66 @@
     ],
     "sources": [
       "lib/ui/leadership_dashboard_screen.dart:141"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No repeat-purchase recommendation is due yet. At least two approved purchases of a product are required.",
+    "contexts": [
+      "ui.reorder_recommendations_screen"
+    ],
+    "sources": [
+      "lib/ui/reorder_recommendations_screen.dart:145"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No routes cached yet. Pull down to sync.",
+    "contexts": [
+      "ui.routes_screen"
+    ],
+    "sources": [
+      "lib/ui/routes_screen.dart:28"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No salesman stock has been issued yet.",
+    "contexts": [
+      "ui.stock_returns_screen"
+    ],
+    "sources": [
+      "lib/ui/stock_returns_screen.dart:142"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No stock needed",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:28"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No suggested quantity is currently available to order.",
+    "contexts": [
+      "ui.reorder_recommendations_screen"
+    ],
+    "sources": [
+      "lib/ui/reorder_recommendations_screen.dart:79"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "No target history cached yet.",
+    "contexts": [
+      "ui.targets_screen"
+    ],
+    "sources": [
+      "lib/ui/targets_screen.dart:131"
     ],
     "placeholders": []
   },
@@ -3913,6 +5115,16 @@
     "placeholders": []
   },
   {
+    "english": "No visit forms apply to this customer.",
+    "contexts": [
+      "ui.visit_forms_screen"
+    ],
+    "sources": [
+      "lib/ui/visit_forms_screen.dart:87"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "No work days yet.",
     "contexts": [
       "ui.history_screen"
@@ -3929,6 +5141,26 @@
     ],
     "sources": [
       "lib/ui/appointments_screen.dart:200"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Normal",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:215"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Not now",
+    "contexts": [
+      "ui.privacy_dialog"
+    ],
+    "sources": [
+      "lib/ui/privacy_dialog.dart:16"
     ],
     "placeholders": []
   },
@@ -3959,13 +5191,15 @@
     "contexts": [
       "ui.appointments_screen",
       "ui.follow_ups_screen",
-      "ui.leads_screen"
+      "ui.leads_screen",
+      "ui.visits_screen"
     ],
     "sources": [
       "lib/ui/appointments_screen.dart:244",
       "lib/ui/follow_ups_screen.dart:212",
       "lib/ui/leads_screen.dart:396",
-      "lib/ui/leads_screen.dart:706"
+      "lib/ui/leads_screen.dart:706",
+      "lib/ui/visits_screen.dart:146"
     ],
     "placeholders": []
   },
@@ -3976,14 +5210,16 @@
       "ui.customers_screen",
       "ui.expense_create_screen",
       "ui.fuel_create_screen",
-      "ui.order_create_screen"
+      "ui.order_create_screen",
+      "ui.stock_returns_screen"
     ],
     "sources": [
       "lib/ui/collection_create_screen.dart:262",
       "lib/ui/customers_screen.dart:117",
       "lib/ui/expense_create_screen.dart:230",
       "lib/ui/fuel_create_screen.dart:305",
-      "lib/ui/order_create_screen.dart:323"
+      "lib/ui/order_create_screen.dart:323",
+      "lib/ui/stock_returns_screen.dart:420"
     ],
     "placeholders": []
   },
@@ -4121,6 +5357,16 @@
     ]
   },
   {
+    "english": "Offline changes are preserved locally. Sync runs in dependency",
+    "contexts": [
+      "ui.sync_screen"
+    ],
+    "sources": [
+      "lib/ui/sync_screen.dart:221"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Offline claims and finance review status",
     "contexts": [
       "ui.more_screen"
@@ -4149,6 +5395,16 @@
     ],
     "sources": [
       "lib/ui/expenses_screen.dart:131"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Offline map · cached tiles only",
+    "contexts": [
+      "ui.visits_map_view"
+    ],
+    "sources": [
+      "lib/ui/visits_map_view.dart:518"
     ],
     "placeholders": []
   },
@@ -4243,6 +5499,16 @@
     "placeholders": []
   },
   {
+    "english": "Offline mode: showing the last cached smart route.",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:112"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Offline mode: showing the latest local data.",
     "contexts": [
       "state.master_data_controller"
@@ -4283,6 +5549,16 @@
     "sources": [
       "lib/ui/collection_detail_screen.dart:34",
       "lib/ui/collections_screen.dart:91"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Offline sync",
+    "contexts": [
+      "ui.sync_screen"
+    ],
+    "sources": [
+      "lib/ui/sync_screen.dart:102"
     ],
     "placeholders": []
   },
@@ -4438,6 +5714,28 @@
     "placeholders": []
   },
   {
+    "english": "One-off purchases are not treated as recurring demand.",
+    "contexts": [
+      "ui.reorder_recommendations_screen"
+    ],
+    "sources": [
+      "lib/ui/reorder_recommendations_screen.dart:120"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Online map · {cacheBytes}",
+    "contexts": [
+      "ui.visits_map_view"
+    ],
+    "sources": [
+      "lib/ui/visits_map_view.dart:517"
+    ],
+    "placeholders": [
+      "cacheBytes"
+    ]
+  },
+  {
     "english": "Open",
     "contexts": [
       "ui.leads_screen"
@@ -4468,14 +5766,36 @@
     "placeholders": []
   },
   {
+    "english": "Opportunity added to today's route and re-optimized from your current position.",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:134"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Optimized by business priority and proximity. Re-optimize when GPS is available.",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:353"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Order",
     "contexts": [
       "ui.appointments_screen",
-      "ui.orders_screen"
+      "ui.orders_screen",
+      "ui.visits_screen"
     ],
     "sources": [
       "lib/ui/appointments_screen.dart:114",
-      "lib/ui/orders_screen.dart:100"
+      "lib/ui/orders_screen.dart:100",
+      "lib/ui/visits_screen.dart:509"
     ],
     "placeholders": []
   },
@@ -4488,6 +5808,16 @@
     "sources": [
       "lib/ui/call_history_screen.dart:22",
       "lib/ui/customers_screen.dart:22"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Order placed",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:25"
     ],
     "placeholders": []
   },
@@ -4528,6 +5858,16 @@
     ]
   },
   {
+    "english": "order, transient failures use backoff, permanent validation",
+    "contexts": [
+      "ui.sync_screen"
+    ],
+    "sources": [
+      "lib/ui/sync_screen.dart:222"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Ordered: {ordered_at}",
     "contexts": [
       "ui.order_detail_screen"
@@ -4544,13 +5884,26 @@
     "contexts": [
       "ui.dashboard_screen",
       "ui.home_tab",
-      "ui.leadership_dashboard_screen"
+      "ui.leadership_dashboard_screen",
+      "ui.salesman_account_screen"
     ],
     "sources": [
       "lib/ui/dashboard_screen.dart:53",
       "lib/ui/dashboard_screen.dart:233",
       "lib/ui/home_tab.dart:282",
-      "lib/ui/leadership_dashboard_screen.dart:232"
+      "lib/ui/leadership_dashboard_screen.dart:232",
+      "lib/ui/salesman_account_screen.dart:180",
+      "lib/ui/salesman_account_screen.dart:349"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Orders are checked against your available van stock.",
+    "contexts": [
+      "ui.stock_returns_screen"
+    ],
+    "sources": [
+      "lib/ui/stock_returns_screen.dart:118"
     ],
     "placeholders": []
   },
@@ -4593,10 +5946,12 @@
   {
     "english": "Outcome",
     "contexts": [
-      "ui.customers_screen"
+      "ui.customers_screen",
+      "ui.visits_screen"
     ],
     "sources": [
-      "lib/ui/customers_screen.dart:101"
+      "lib/ui/customers_screen.dart:101",
+      "lib/ui/visits_screen.dart:128"
     ],
     "placeholders": []
   },
@@ -4621,6 +5976,48 @@
     "placeholders": []
   },
   {
+    "english": "Outcome: {outcome}",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:441"
+    ],
+    "placeholders": [
+      "outcome"
+    ]
+  },
+  {
+    "english": "Outside geofence",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:399"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "outside planned capacity",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:538"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Outstanding",
+    "contexts": [
+      "ui.salesman_account_screen"
+    ],
+    "sources": [
+      "lib/ui/salesman_account_screen.dart:363"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Outstanding: {outstanding_balance} {currency}",
     "contexts": [
       "ui.collection_create_screen"
@@ -4632,6 +6029,16 @@
       "outstanding_balance",
       "currency"
     ]
+  },
+  {
+    "english": "Overflow",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:381"
+    ],
+    "placeholders": []
   },
   {
     "english": "Partial fill",
@@ -4765,6 +6172,18 @@
     ]
   },
   {
+    "english": "Pending local changes: {pending}",
+    "contexts": [
+      "ui.sync_screen"
+    ],
+    "sources": [
+      "lib/ui/sync_screen.dart:106"
+    ],
+    "placeholders": [
+      "pending"
+    ]
+  },
+  {
     "english": "Pending sync",
     "contexts": [
       "ui.dashboard_screen"
@@ -4801,6 +6220,28 @@
     "placeholders": []
   },
   {
+    "english": "Photo",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:502"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Photo · {client_uuid}",
+    "contexts": [
+      "ui.visit_forms_screen"
+    ],
+    "sources": [
+      "lib/ui/visit_forms_screen.dart:449"
+    ],
+    "placeholders": [
+      "client_uuid"
+    ]
+  },
+  {
     "english": "Photo saved locally.",
     "contexts": [
       "state.visit_controller"
@@ -4821,12 +6262,24 @@
     "placeholders": []
   },
   {
-    "english": "Planned",
+    "english": "Plan status pending",
     "contexts": [
-      "ui.home_tab"
+      "ui.visits_screen"
     ],
     "sources": [
-      "lib/ui/home_tab.dart:271"
+      "lib/ui/visits_screen.dart:410"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Planned",
+    "contexts": [
+      "ui.home_tab",
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/home_tab.dart:271",
+      "lib/ui/visits_screen.dart:406"
     ],
     "placeholders": []
   },
@@ -4908,13 +6361,22 @@
     "contexts": [
       "ui.invoice_screen",
       "ui.order_create_screen",
-      "ui.order_detail_screen"
+      "ui.order_detail_screen",
+      "ui.products_screen",
+      "ui.reorder_recommendations_screen",
+      "ui.stock_returns_screen"
     ],
     "sources": [
       "lib/ui/invoice_screen.dart:54",
       "lib/ui/order_create_screen.dart:96",
       "lib/ui/order_create_screen.dart:365",
-      "lib/ui/order_detail_screen.dart:76"
+      "lib/ui/order_detail_screen.dart:76",
+      "lib/ui/products_screen.dart:45",
+      "lib/ui/reorder_recommendations_screen.dart:167",
+      "lib/ui/stock_returns_screen.dart:148",
+      "lib/ui/stock_returns_screen.dart:349",
+      "lib/ui/stock_returns_screen.dart:354",
+      "lib/ui/stock_returns_screen.dart:406"
     ],
     "placeholders": []
   },
@@ -4954,10 +6416,12 @@
   {
     "english": "Quantity",
     "contexts": [
-      "ui.order_create_screen"
+      "ui.order_create_screen",
+      "ui.stock_returns_screen"
     ],
     "sources": [
-      "lib/ui/order_create_screen.dart:392"
+      "lib/ui/order_create_screen.dart:392",
+      "lib/ui/stock_returns_screen.dart:369"
     ],
     "placeholders": []
   },
@@ -4972,12 +6436,32 @@
     "placeholders": []
   },
   {
+    "english": "Re-optimize now",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:401"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "readings exist, odometer distance is used for efficiency",
     "contexts": [
       "ui.mileage_screen"
     ],
     "sources": [
       "lib/ui/mileage_screen.dart:230"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Reason (optional)",
+    "contexts": [
+      "ui.stock_returns_screen"
+    ],
+    "sources": [
+      "lib/ui/stock_returns_screen.dart:394"
     ],
     "placeholders": []
   },
@@ -5137,12 +6621,42 @@
     ]
   },
   {
+    "english": "Referral account data is unavailable.",
+    "contexts": [
+      "ui.salesman_account_screen"
+    ],
+    "sources": [
+      "lib/ui/salesman_account_screen.dart:102"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Referral customers, orders, collections and visit activity",
     "contexts": [
       "ui.more_screen"
     ],
     "sources": [
       "lib/ui/more_screen.dart:52"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Referred customers",
+    "contexts": [
+      "ui.salesman_account_screen"
+    ],
+    "sources": [
+      "lib/ui/salesman_account_screen.dart:175"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Refresh setting",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:288"
     ],
     "placeholders": []
   },
@@ -5210,6 +6724,38 @@
     "placeholders": []
   },
   {
+    "english": "remain idempotent.",
+    "contexts": [
+      "ui.sync_screen"
+    ],
+    "sources": [
+      "lib/ui/sync_screen.dart:224"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Remaining",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:368"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Remaining: {value1}",
+    "contexts": [
+      "ui.targets_screen"
+    ],
+    "sources": [
+      "lib/ui/targets_screen.dart:80"
+    ],
+    "placeholders": [
+      "value1"
+    ]
+  },
+  {
     "english": "Reminder",
     "contexts": [
       "ui.appointments_screen"
@@ -5226,6 +6772,16 @@
     ],
     "sources": [
       "lib/ui/order_create_screen.dart:370"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Remove extra stop",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:571"
     ],
     "placeholders": []
   },
@@ -5263,10 +6819,12 @@
   {
     "english": "Reorder recommendations",
     "contexts": [
-      "ui.customers_screen"
+      "ui.customers_screen",
+      "ui.reorder_recommendations_screen"
     ],
     "sources": [
-      "lib/ui/customers_screen.dart:390"
+      "lib/ui/customers_screen.dart:390",
+      "lib/ui/reorder_recommendations_screen.dart:101"
     ],
     "placeholders": []
   },
@@ -5312,6 +6870,16 @@
     "placeholders": []
   },
   {
+    "english": "Required before checkout",
+    "contexts": [
+      "ui.visit_forms_screen"
+    ],
+    "sources": [
+      "lib/ui/visit_forms_screen.dart:130"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Required visit forms are waiting for completion or sync.",
     "contexts": [
       "features.visits.visit_repository"
@@ -5338,6 +6906,46 @@
     ],
     "sources": [
       "lib/ui/collection_detail_screen.dart:87"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Resalable",
+    "contexts": [
+      "ui.stock_returns_screen"
+    ],
+    "sources": [
+      "lib/ui/stock_returns_screen.dart:380"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Retry",
+    "contexts": [
+      "ui.salesman_account_screen"
+    ],
+    "sources": [
+      "lib/ui/salesman_account_screen.dart:437"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Retry failures now",
+    "contexts": [
+      "ui.sync_screen"
+    ],
+    "sources": [
+      "lib/ui/sync_screen.dart:135"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Return",
+    "contexts": [
+      "ui.stock_returns_screen"
+    ],
+    "sources": [
+      "lib/ui/stock_returns_screen.dart:190"
     ],
     "placeholders": []
   },
@@ -5434,6 +7042,28 @@
     "placeholders": []
   },
   {
+    "english": "Route",
+    "contexts": [
+      "ui.routes_screen"
+    ],
+    "sources": [
+      "lib/ui/routes_screen.dart:44"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Route #{route_sequence}",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:522"
+    ],
+    "placeholders": [
+      "route_sequence"
+    ]
+  },
+  {
     "english": "Route alerts, supervisor messages and status updates will appear here.",
     "contexts": [
       "ui.notifications_screen"
@@ -5450,6 +7080,26 @@
     ],
     "sources": [
       "lib/ui/more_screen.dart:64"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Route load",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:378"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Route refreshed. GPS was unavailable, so the server used business priority and the assigned route as the starting fallback.",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:103"
     ],
     "placeholders": []
   },
@@ -5487,11 +7137,23 @@
   {
     "english": "Salesman",
     "contexts": [
-      "ui.leadership_dashboard_screen"
+      "ui.leadership_dashboard_screen",
+      "ui.salesman_account_screen"
     ],
     "sources": [
       "lib/ui/leadership_dashboard_screen.dart:370",
-      "lib/ui/leadership_dashboard_screen.dart:437"
+      "lib/ui/leadership_dashboard_screen.dart:437",
+      "lib/ui/salesman_account_screen.dart:147"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Salesman stock control enabled",
+    "contexts": [
+      "ui.stock_returns_screen"
+    ],
+    "sources": [
+      "lib/ui/stock_returns_screen.dart:113"
     ],
     "placeholders": []
   },
@@ -5578,6 +7240,16 @@
     "placeholders": []
   },
   {
+    "english": "Save form",
+    "contexts": [
+      "ui.visit_forms_screen"
+    ],
+    "sources": [
+      "lib/ui/visit_forms_screen.dart:517"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Save fuel entry",
     "contexts": [
       "ui.fuel_create_screen"
@@ -5609,6 +7281,28 @@
       "lib/ui/order_create_screen.dart:232"
     ],
     "placeholders": []
+  },
+  {
+    "english": "Save return",
+    "contexts": [
+      "ui.stock_returns_screen"
+    ],
+    "sources": [
+      "lib/ui/stock_returns_screen.dart:426"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Saved · {status}",
+    "contexts": [
+      "ui.visit_forms_screen"
+    ],
+    "sources": [
+      "lib/ui/visit_forms_screen.dart:131"
+    ],
+    "placeholders": [
+      "status"
+    ]
   },
   {
     "english": "Saved on this device after a successful sign-in.",
@@ -5667,6 +7361,16 @@
     "sources": [
       "lib/ui/collection_create_screen.dart:84",
       "lib/ui/order_create_screen.dart:142"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Select a product and valid quantity.",
+    "contexts": [
+      "ui.stock_returns_screen"
+    ],
+    "sources": [
+      "lib/ui/stock_returns_screen.dart:251"
     ],
     "placeholders": []
   },
@@ -5734,6 +7438,16 @@
       "lib/features/master_data/master_data_repository.dart:88",
       "lib/state/attendance_controller.dart:331",
       "lib/state/sync_controller.dart:101"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Select date",
+    "contexts": [
+      "ui.visit_forms_screen"
+    ],
+    "sources": [
+      "lib/ui/visit_forms_screen.dart:420"
     ],
     "placeholders": []
   },
@@ -5814,6 +7528,16 @@
     ],
     "sources": [
       "lib/ui/home_tab.dart:263"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Shop closed",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:29"
     ],
     "placeholders": []
   },
@@ -5929,6 +7653,26 @@
     "placeholders": []
   },
   {
+    "english": "Smart route is unavailable offline until it has been synced once.",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:111"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Smart route planning is disabled",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:266"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Source",
     "contexts": [
       "ui.leads_screen"
@@ -5938,6 +7682,18 @@
       "lib/ui/leads_screen.dart:565"
     ],
     "placeholders": []
+  },
+  {
+    "english": "Source: {type}",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:345"
+    ],
+    "placeholders": [
+      "type"
+    ]
   },
   {
     "english": "Spent: {spent_at}",
@@ -5986,10 +7742,12 @@
   {
     "english": "Start visit",
     "contexts": [
-      "ui.home_tab"
+      "ui.home_tab",
+      "ui.visits_screen"
     ],
     "sources": [
-      "lib/ui/home_tab.dart:710"
+      "lib/ui/home_tab.dart:710",
+      "lib/ui/visits_screen.dart:350"
     ],
     "placeholders": []
   },
@@ -6010,6 +7768,19 @@
     ],
     "sources": [
       "lib/ui/home_tab.dart:711"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Start your work day before checking in.",
+    "contexts": [
+      "ui.visits_map_view",
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_map_view.dart:368",
+      "lib/ui/visits_screen.dart:49",
+      "lib/ui/visits_screen.dart:339"
     ],
     "placeholders": []
   },
@@ -6131,12 +7902,55 @@
     "placeholders": []
   },
   {
+    "english": "Stock control disabled",
+    "contexts": [
+      "ui.stock_returns_screen"
+    ],
+    "sources": [
+      "lib/ui/stock_returns_screen.dart:114"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Stop {plannedOrder}",
+    "contexts": [
+      "ui.visits_map_view"
+    ],
+    "sources": [
+      "lib/ui/visits_map_view.dart:315",
+      "lib/ui/visits_map_view.dart:611"
+    ],
+    "placeholders": [
+      "plannedOrder"
+    ]
+  },
+  {
     "english": "Stop the current voice note before starting another one.",
     "contexts": [
       "state.visit_controller"
     ],
     "sources": [
       "lib/state/visit_controller.dart:221"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Stop voice",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:489"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Stops",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:367"
     ],
     "placeholders": []
   },
@@ -6151,6 +7965,26 @@
       "lib/ui/invoice_screen.dart:74",
       "lib/ui/order_create_screen.dart:205",
       "lib/ui/order_detail_screen.dart:94"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Suggested",
+    "contexts": [
+      "ui.reorder_recommendations_screen"
+    ],
+    "sources": [
+      "lib/ui/reorder_recommendations_screen.dart:193"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Suggestions use approved purchase cadence and recent average quantities.",
+    "contexts": [
+      "ui.reorder_recommendations_screen"
+    ],
+    "sources": [
+      "lib/ui/reorder_recommendations_screen.dart:119"
     ],
     "placeholders": []
   },
@@ -6275,12 +8109,52 @@
     "placeholders": []
   },
   {
+    "english": "Sync failed.",
+    "contexts": [
+      "ui.sync_screen"
+    ],
+    "sources": [
+      "lib/ui/sync_screen.dart:194"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Sync issues",
+    "contexts": [
+      "ui.sync_screen"
+    ],
+    "sources": [
+      "lib/ui/sync_screen.dart:156"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Sync issues need attention",
     "contexts": [
       "ui.dashboard_screen"
     ],
     "sources": [
       "lib/ui/dashboard_screen.dart:191"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Sync master data or add coordinates to customers to see them on the map.",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:573"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Sync now",
+    "contexts": [
+      "ui.sync_screen"
+    ],
+    "sources": [
+      "lib/ui/sync_screen.dart:129"
     ],
     "placeholders": []
   },
@@ -6371,10 +8245,12 @@
   {
     "english": "Sync: {syncStatus}",
     "contexts": [
-      "ui.expenses_screen"
+      "ui.expenses_screen",
+      "ui.visits_screen"
     ],
     "sources": [
-      "lib/ui/expenses_screen.dart:137"
+      "lib/ui/expenses_screen.dart:137",
+      "lib/ui/visits_screen.dart:447"
     ],
     "placeholders": [
       "syncStatus"
@@ -6387,6 +8263,16 @@
     ],
     "sources": [
       "lib/core/db/app_database.dart:98"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Syncing…",
+    "contexts": [
+      "ui.sync_screen"
+    ],
+    "sources": [
+      "lib/ui/sync_screen.dart:129"
     ],
     "placeholders": []
   },
@@ -6407,6 +8293,26 @@
     ],
     "sources": [
       "lib/ui/customer_create_screen.dart:380"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Tap to edit and retry",
+    "contexts": [
+      "ui.visit_forms_screen"
+    ],
+    "sources": [
+      "lib/ui/visit_forms_screen.dart:133"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Target history",
+    "contexts": [
+      "ui.targets_screen"
+    ],
+    "sources": [
+      "lib/ui/targets_screen.dart:123"
     ],
     "placeholders": []
   },
@@ -6528,6 +8434,16 @@
     "placeholders": []
   },
   {
+    "english": "That product/condition is already added.",
+    "contexts": [
+      "ui.stock_returns_screen"
+    ],
+    "sources": [
+      "lib/ui/stock_returns_screen.dart:264"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "The claim is stored locally first and can sync later.",
     "contexts": [
       "ui.expense_create_screen"
@@ -6594,6 +8510,16 @@
     ],
     "sources": [
       "lib/features/visits/visit_voice_recorder.dart:19"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "The remaining route fits within the configured workday capacity.",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:390"
     ],
     "placeholders": []
   },
@@ -6821,6 +8747,16 @@
     "placeholders": []
   },
   {
+    "english": "Today's assigned visits",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:255"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Today's closed work day could not be found.",
     "contexts": [
       "state.attendance_controller"
@@ -6837,6 +8773,16 @@
     ],
     "sources": [
       "lib/ui/more_screen.dart:176"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Today's smart route",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:329"
     ],
     "placeholders": []
   },
@@ -6925,6 +8871,16 @@
     "placeholders": []
   },
   {
+    "english": "Travel",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:373"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Turn on location services and try again.",
     "contexts": [
       "ui.customer_create_screen"
@@ -6943,6 +8899,16 @@
     "sources": [
       "lib/ui/appointments_screen.dart:100",
       "lib/ui/follow_ups_screen.dart:154"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Typical cycle",
+    "contexts": [
+      "ui.reorder_recommendations_screen"
+    ],
+    "sources": [
+      "lib/ui/reorder_recommendations_screen.dart:200"
     ],
     "placeholders": []
   },
@@ -6990,6 +8956,27 @@
     ]
   },
   {
+    "english": "Unplanned",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:408"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Urgent",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:211",
+      "lib/ui/smart_route_screen.dart:369"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Use saved company",
     "contexts": [
       "ui.login_screen"
@@ -7016,6 +9003,16 @@
     ],
     "sources": [
       "lib/ui/expense_create_screen.dart:171"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "User-Agent",
+    "contexts": [
+      "ui.visits_map_view"
+    ],
+    "sources": [
+      "lib/ui/visits_map_view.dart:459"
     ],
     "placeholders": []
   },
@@ -7140,10 +9137,12 @@
   {
     "english": "Visit check-in saved locally.",
     "contexts": [
-      "state.visit_controller"
+      "state.visit_controller",
+      "ui.visits_map_view"
     ],
     "sources": [
-      "lib/state/visit_controller.dart:110"
+      "lib/state/visit_controller.dart:110",
+      "lib/ui/visits_map_view.dart:354"
     ],
     "placeholders": []
   },
@@ -7154,6 +9153,26 @@
     ],
     "sources": [
       "lib/state/visit_controller.dart:147"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Visit form",
+    "contexts": [
+      "ui.visit_forms_screen"
+    ],
+    "sources": [
+      "lib/ui/visit_forms_screen.dart:117"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Visit forms",
+    "contexts": [
+      "ui.visit_forms_screen"
+    ],
+    "sources": [
+      "lib/ui/visit_forms_screen.dart:72"
     ],
     "placeholders": []
   },
@@ -7196,17 +9215,44 @@
     ]
   },
   {
+    "english": "Visited",
+    "contexts": [
+      "ui.smart_route_screen",
+      "ui.visits_map_view"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:214",
+      "lib/ui/smart_route_screen.dart:371",
+      "lib/ui/visits_map_view.dart:325",
+      "lib/ui/visits_map_view.dart:612"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Visits",
     "contexts": [
       "ui.dashboard_screen",
       "ui.home_tab",
-      "ui.leadership_dashboard_screen"
+      "ui.leadership_dashboard_screen",
+      "ui.salesman_account_screen"
     ],
     "sources": [
       "lib/ui/dashboard_screen.dart:52",
       "lib/ui/dashboard_screen.dart:228",
       "lib/ui/home_tab.dart:277",
-      "lib/ui/leadership_dashboard_screen.dart:226"
+      "lib/ui/leadership_dashboard_screen.dart:226",
+      "lib/ui/salesman_account_screen.dart:190",
+      "lib/ui/salesman_account_screen.dart:357"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Voice note",
+    "contexts": [
+      "ui.visits_screen"
+    ],
+    "sources": [
+      "lib/ui/visits_screen.dart:490"
     ],
     "placeholders": []
   },
@@ -7250,6 +9296,18 @@
       "lib/core/sync/sync_coordinator.dart:187"
     ],
     "placeholders": []
+  },
+  {
+    "english": "Waiting for retry: {waitingCount}",
+    "contexts": [
+      "ui.sync_screen"
+    ],
+    "sources": [
+      "lib/ui/sync_screen.dart:107"
+    ],
+    "placeholders": [
+      "waitingCount"
+    ]
   },
   {
     "english": "Waiting to sync",
@@ -7365,6 +9423,18 @@
     "placeholders": []
   },
   {
+    "english": "within {value1} km",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:595"
+    ],
+    "placeholders": [
+      "value1"
+    ]
+  },
+  {
     "english": "Won",
     "contexts": [
       "ui.leads_screen"
@@ -7446,12 +9516,42 @@
     "placeholders": []
   },
   {
+    "english": "Yes",
+    "contexts": [
+      "ui.visit_forms_screen"
+    ],
+    "sources": [
+      "lib/ui/visit_forms_screen.dart:360"
+    ],
+    "placeholders": []
+  },
+  {
     "english": "Your assigned field-sales team",
     "contexts": [
       "ui.leadership_dashboard_screen"
     ],
     "sources": [
       "lib/ui/leadership_dashboard_screen.dart:106"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Your company has not enabled stock enforcement yet.",
+    "contexts": [
+      "ui.stock_returns_screen"
+    ],
+    "sources": [
+      "lib/ui/stock_returns_screen.dart:119"
+    ],
+    "placeholders": []
+  },
+  {
+    "english": "Your company has turned off route optimization in FieldPulse settings. Your assigned customers, routes, visits, and normal field work are unchanged.",
+    "contexts": [
+      "ui.smart_route_screen"
+    ],
+    "sources": [
+      "lib/ui/smart_route_screen.dart:280"
     ],
     "placeholders": []
   },
