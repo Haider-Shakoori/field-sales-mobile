@@ -2,6 +2,7 @@ import 'package:field_sales_mobile/l10n/localized_material.dart';
 import 'package:provider/provider.dart';
 
 import '../l10n/l10n.dart';
+import '../l10n/locale_controller.dart';
 
 import '../core/api/api_exception.dart';
 import '../features/notifications/push_service.dart';
@@ -150,7 +151,10 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) {
+    context.watch<AppLocaleController>();
+
+    return Scaffold(
     body: SafeArea(
       child: Center(
         child: SingleChildScrollView(
@@ -384,5 +388,6 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     ),
-  );
+    );
+  }
 }
