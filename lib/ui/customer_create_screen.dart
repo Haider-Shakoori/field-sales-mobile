@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import '../l10n/l10n.dart';
 
 import 'package:field_sales_mobile/l10n/localized_material.dart';
