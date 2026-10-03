@@ -91,7 +91,7 @@ class FieldPulseStatusPill extends StatelessWidget {
           style: TextStyle(
             color: color,
             fontSize: 12,
-            fontWeight: FontWeight.w750,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ],
