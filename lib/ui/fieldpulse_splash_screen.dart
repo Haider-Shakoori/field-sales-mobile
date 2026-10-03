@@ -1,6 +1,6 @@
 import 'dart:ui' as ui;
 
-import 'package:flutter/material.dart';
+import 'package:field_sales_mobile/l10n/localized_material.dart';
 
 class FieldPulseSplashScreen extends StatelessWidget {
   const FieldPulseSplashScreen({super.key});
