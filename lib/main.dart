@@ -17,6 +17,7 @@ import 'features/appointments/appointment_repository.dart';
 import 'features/attendance/attendance_repository.dart';
 import 'features/auth/auth_repository.dart';
 import 'features/customers/customer_repository.dart';
+import 'features/devices/device_health_repository.dart';
 import 'features/calls/call_activity_repository.dart';
 import 'features/collections/collection_repository.dart';
 import 'features/expenses/expense_repository.dart';
@@ -73,6 +74,11 @@ Future<void> main() async {
   final attendance = AttendanceRepository(api: api, db: db);
   final gps = GpsRepository(api: api, db: db);
   final tracking = TrackingService(db: db, gpsRepository: gps);
+  final deviceHealth = DeviceHealthRepository(
+    api: api,
+    db: db,
+    trackingActive: () => tracking.active,
+  );
   final visits = VisitRepository(api: api, db: db);
   final calls = CallActivityRepository(api: api, db: db);
   final collections = CollectionRepository(api: api, db: db);
@@ -105,7 +111,11 @@ Future<void> main() async {
     source: masterSource,
   );
 
-  final appState = AppState(auth: auth, settings: settings);
+  final appState = AppState(
+    auth: auth,
+    settings: settings,
+    deviceHealth: deviceHealth,
+  );
 
   final syncCoordinator = SyncCoordinator(
     db: db,
@@ -250,6 +260,7 @@ Future<void> main() async {
         Provider.value(value: team),
         Provider.value(value: mileage),
         Provider.value(value: gamification),
+        Provider.value(value: deviceHealth),
         Provider.value(value: push),
         Provider.value(value: retryStore),
         Provider.value(value: syncCoordinator),
