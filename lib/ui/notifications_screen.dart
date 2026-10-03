@@ -43,13 +43,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               tint: item.unread ? FieldPulseTheme.blue : FieldPulseTheme.muted,
               child: ListTile(
                 leading: FieldPulseIconBadge(
-                  color: item.unread ? FieldPulseTheme.blue : FieldPulseTheme.muted,
-                  icon:
-                    item.type == 'team.supervisor_nudge'
-                        ? Icons.campaign_outlined
-                        : item.type == 'route.missed_visits'
-                        ? Icons.route_outlined
-                        : Icons.notifications_outlined,
+                  color: item.unread
+                      ? FieldPulseTheme.blue
+                      : FieldPulseTheme.muted,
+                  icon: item.type == 'team.supervisor_nudge'
+                      ? Icons.campaign_outlined
+                      : item.type == 'route.missed_visits'
+                      ? Icons.route_outlined
+                      : Icons.notifications_outlined,
                 ),
                 title: Row(
                   children: [
