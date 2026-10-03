@@ -136,53 +136,57 @@ class _LeadershipDashboardScreenState extends State<LeadershipDashboardScreen> {
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
           children: [
             FieldPulseHeroCard(
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const FieldPulseIconBadge(
-                    icon: Icons.groups_rounded,
-                    color: Color(0xFF7CC7FF),
-                    size: 52,
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Hello, ${app.session?.name ?? ''}',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.titleLarge
-                              ?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w800,
+                  Row(
+                    children: [
+                      const FieldPulseIconBadge(
+                        icon: Icons.groups_rounded,
+                        color: Color(0xFF7CC7FF),
+                        size: 52,
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Hello, ${app.session?.name ?? ''}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.titleLarge
+                                  ?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              app.isSalesManager
+                                  ? 'Your supervisors and their field teams'
+                                  : 'Your assigned field-sales team',
+                              style: const TextStyle(
+                                color: Color(0xFFBBD0E8),
+                                fontSize: 13,
                               ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          app.isSalesManager
-                              ? 'Your supervisors and their field teams'
-                              : 'Your assigned field-sales team',
-                          style: const TextStyle(
-                            color: Color(0xFFBBD0E8),
-                            fontSize: 13,
-                          ),
-                        ),
-                      ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: FieldPulseStatusPill(
+                      label: roleLabel,
+                      color: const Color(0xFF27D7A1),
+                      icon: Icons.verified_user_outlined,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
-              Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: FieldPulseStatusPill(
-                  label: roleLabel,
-                  color: const Color(0xFF27D7A1),
-                  icon: Icons.verified_user_outlined,
-                ),
-              ),
-              const SizedBox(height: 2),
             ),
             if (team.message != null) ...[
               const SizedBox(height: 12),
