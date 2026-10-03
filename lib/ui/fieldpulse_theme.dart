@@ -5,9 +5,9 @@ abstract final class FieldPulseTheme {
   static const navySoft = Color(0xFF0D2747);
   static const blue = Color(0xFF176BFF);
   static const cyan = Color(0xFF14CFE0);
-  static const canvas = Color(0xFFF3F6FA);
+  static const canvas = Color(0xFFEEF3F9);
   static const surface = Color(0xFFFFFFFF);
-  static const surfaceSoft = Color(0xFFF8FAFD);
+  static const surfaceSoft = Color(0xFFF7FAFD);
   static const text = Color(0xFF0F1E31);
   static const muted = Color(0xFF66758A);
   static const border = Color(0xFFE2E8F0);
@@ -74,10 +74,10 @@ abstract final class FieldPulseTheme {
           fontWeight: FontWeight.w700,
         ),
       ),
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         elevation: 0,
         scrolledUnderElevation: 0,
-        backgroundColor: Color(0xFFF7F9FC),
+        backgroundColor: Colors.white.withValues(alpha: .76),
         foregroundColor: text,
         centerTitle: false,
         titleSpacing: 20,
@@ -88,17 +88,17 @@ abstract final class FieldPulseTheme {
       cardTheme: CardThemeData(
         elevation: 0,
         margin: const EdgeInsets.only(bottom: 12),
-        color: surface,
+        color: Colors.white.withValues(alpha: .82),
         surfaceTintColor: Colors.transparent,
-        shadowColor: const Color(0xFF142A44).withValues(alpha: .08),
+        shadowColor: const Color(0xFF142A44).withValues(alpha: .10),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(22),
-          side: const BorderSide(color: border),
+          borderRadius: BorderRadius.circular(24),
+          side: BorderSide(color: Colors.white.withValues(alpha: .90)),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.white,
+        fillColor: Colors.white.withValues(alpha: .80),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 16,
@@ -166,7 +166,7 @@ abstract final class FieldPulseTheme {
       iconButtonTheme: IconButtonThemeData(
         style: IconButton.styleFrom(
           foregroundColor: const Color(0xFF43546A),
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.white.withValues(alpha: .78),
           minimumSize: const Size(42, 42),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(13),
@@ -177,8 +177,8 @@ abstract final class FieldPulseTheme {
       navigationBarTheme: NavigationBarThemeData(
         height: 72,
         elevation: 0,
-        backgroundColor: Colors.white,
-        indicatorColor: const Color(0xFFEAF2FF),
+        backgroundColor: Colors.white.withValues(alpha: .76),
+        indicatorColor: const Color(0xFFE4EFFF),
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         indicatorShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
@@ -211,15 +211,15 @@ abstract final class FieldPulseTheme {
         minLeadingWidth: 28,
       ),
       chipTheme: base.chipTheme.copyWith(
-        backgroundColor: const Color(0xFFF1F5F9),
-        selectedColor: const Color(0xFFE6F0FF),
+        backgroundColor: Colors.white.withValues(alpha: .68),
+        selectedColor: const Color(0xFFE2EDFF),
         side: const BorderSide(color: border),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         labelStyle: const TextStyle(color: text, fontWeight: FontWeight.w600),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       ),
       dialogTheme: DialogThemeData(
-        backgroundColor: surface,
+        backgroundColor: Colors.white.withValues(alpha: .96),
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         titleTextStyle: const TextStyle(
@@ -228,10 +228,13 @@ abstract final class FieldPulseTheme {
           fontWeight: FontWeight.w800,
         ),
       ),
-      bottomSheetTheme: const BottomSheetThemeData(
-        backgroundColor: surface,
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: Colors.white.withValues(alpha: .96),
         surfaceTintColor: Colors.transparent,
         showDragHandle: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
       ),
       dividerTheme: const DividerThemeData(
         color: border,
@@ -263,12 +266,32 @@ abstract final class FieldPulseTheme {
         },
       ),
       popupMenuTheme: PopupMenuThemeData(
-        color: Colors.white,
+        color: Colors.white.withValues(alpha: .96),
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
           side: const BorderSide(color: border),
+        ),
+      ),
+      segmentedButtonTheme: SegmentedButtonThemeData(
+        style: ButtonStyle(
+          backgroundColor: WidgetStateProperty.resolveWith(
+            (states) => states.contains(WidgetState.selected)
+                ? const Color(0xFFE4EEFF)
+                : Colors.white.withValues(alpha: .68),
+          ),
+          foregroundColor: WidgetStateProperty.resolveWith(
+            (states) => states.contains(WidgetState.selected)
+                ? blue
+                : const Color(0xFF607086),
+          ),
+          side: WidgetStatePropertyAll(
+            BorderSide(color: Colors.white.withValues(alpha: .92)),
+          ),
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          ),
         ),
       ),
       checkboxTheme: CheckboxThemeData(
@@ -306,20 +329,50 @@ class FieldPulseDecor {
   static const premiumSurfaceGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFFFFFFFF), Color(0xFFF8FBFF)],
+    colors: [Color(0xEFFFFFFF), Color(0xCFF5FAFF)],
+  );
+
+  static const glassGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xE8FFFFFF), Color(0xBFF2F8FF)],
   );
 
   static const subtleCanvasGradient = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
-    colors: [Color(0xFFF8FAFD), FieldPulseTheme.canvas],
+    colors: [Color(0xFFF9FBFE), Color(0xFFEEF4FA), Color(0xFFEAF1F8)],
+  );
+
+  static const pageGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFFF8FBFF), Color(0xFFEEF5FC), Color(0xFFF3F6FB)],
   );
 
   static List<BoxShadow> softShadow = [
     BoxShadow(
-      color: const Color(0xFF15314F).withValues(alpha: .065),
-      blurRadius: 26,
-      offset: const Offset(0, 10),
+      color: const Color(0xFF15314F).withValues(alpha: .07),
+      blurRadius: 28,
+      offset: const Offset(0, 11),
+    ),
+    BoxShadow(
+      color: Colors.white.withValues(alpha: .68),
+      blurRadius: 1,
+      offset: const Offset(0, -1),
+    ),
+  ];
+
+  static List<BoxShadow> glassShadow = [
+    BoxShadow(
+      color: const Color(0xFF12365A).withValues(alpha: .09),
+      blurRadius: 30,
+      offset: const Offset(0, 12),
+    ),
+    BoxShadow(
+      color: Colors.white.withValues(alpha: .80),
+      blurRadius: 1,
+      offset: const Offset(0, -1),
     ),
   ];
 
