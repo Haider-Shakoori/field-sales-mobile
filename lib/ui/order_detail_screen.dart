@@ -1,5 +1,6 @@
 import 'package:field_sales_mobile/l10n/localized_material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/l10n.dart';
 
 import '../state/order_controller.dart';
 import 'invoice_screen.dart';
@@ -17,7 +18,7 @@ class OrderDetailScreen extends StatelessWidget {
         actions: [
           if (order['status'] == 'approved')
             IconButton(
-              tooltip: 'Invoice',
+              tooltip: L10n.text('Invoice'),
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => InvoiceScreen(order: order)),
               ),
