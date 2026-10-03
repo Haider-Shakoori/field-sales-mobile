@@ -211,7 +211,7 @@ class _MobileDiagnosticsScreenState extends State<MobileDiagnosticsScreen> {
             ),
           ],
           if (_loading && result == null)
-            const FieldPulsePremiumLoading(label: 'Checking device health…'),
+            const FieldPulsePremiumLoading(label: 'Checking…'),
         ],
       ),
     );
