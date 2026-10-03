@@ -80,6 +80,25 @@ class L10n {
     return input;
   }
 
+  static void installForTesting({
+    required Map<String, String> english,
+    required Map<String, String> active,
+    String code = 'fa',
+  }) {
+    _english = Map<String, String>.unmodifiable(english);
+    _active = Map<String, String>.unmodifiable(active);
+    _code = code;
+    _englishToKey = {
+      for (final entry in _english.entries) entry.value: entry.key,
+    };
+    _templates = _english.entries
+        .where((entry) => entry.value.contains('{'))
+        .map((entry) => _TemplateMatcher.from(entry.key, entry.value))
+        .whereType<_TemplateMatcher>()
+        .toList(growable: false);
+    _cache.clear();
+  }
+
   static Future<Map<String, String>> _loadCatalog(String code) async {
     final raw = await rootBundle.loadString('assets/lang/$code.json');
     final decoded = jsonDecode(raw) as Map<String, dynamic>;
