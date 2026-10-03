@@ -24,6 +24,18 @@ jobs:
 
       - run: flutter pub get --enforce-lockfile
 
+      - name: Validate translation CSV
+        shell: bash
+        run: python3 tool/import_translations.py translations/fieldpulse_mobile_translation_template.csv --validate-only
+
+      - name: Publish translation template
+        uses: actions/upload-artifact@v4
+        with:
+          name: fieldpulse-translation-template
+          path: translations/fieldpulse_mobile_translation_template.csv
+          if-no-files-found: error
+          retention-days: 30
+
       - name: Verify Dart formatting
         shell: bash
         run: |
