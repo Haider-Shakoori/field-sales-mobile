@@ -294,11 +294,7 @@ class FieldPulseDecor {
   static const appGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [
-      Color(0xFF07182E),
-      Color(0xFF0B2F55),
-      Color(0xFF0B6282),
-    ],
+    colors: [Color(0xFF07182E), Color(0xFF0B2F55), Color(0xFF0B6282)],
   );
 
   static const accentGradient = LinearGradient(
