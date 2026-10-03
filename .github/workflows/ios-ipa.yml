@@ -42,6 +42,8 @@ jobs:
         shell: bash
         run: |
           PLIST="ios/Runner/Info.plist"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName FieldPulse" "$PLIST" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Set :CFBundleName FieldPulse" "$PLIST" 2>/dev/null || true
           /usr/libexec/PlistBuddy -c "Add :NSLocationWhenInUseUsageDescription string FieldPulse uses your location for assigned visits, attendance, routes, and field activity." "$PLIST" 2>/dev/null ||             /usr/libexec/PlistBuddy -c "Set :NSLocationWhenInUseUsageDescription FieldPulse uses your location for assigned visits, attendance, routes, and field activity." "$PLIST"
           /usr/libexec/PlistBuddy -c "Add :NSLocationAlwaysAndWhenInUseUsageDescription string FieldPulse uses background location during an active work session when company policy enables it." "$PLIST" 2>/dev/null ||             /usr/libexec/PlistBuddy -c "Set :NSLocationAlwaysAndWhenInUseUsageDescription FieldPulse uses background location during an active work session when company policy enables it." "$PLIST"
           /usr/libexec/PlistBuddy -c "Add :NSCameraUsageDescription string FieldPulse uses the camera for visit evidence, receipts, and field documentation." "$PLIST" 2>/dev/null ||             /usr/libexec/PlistBuddy -c "Set :NSCameraUsageDescription FieldPulse uses the camera for visit evidence, receipts, and field documentation." "$PLIST"

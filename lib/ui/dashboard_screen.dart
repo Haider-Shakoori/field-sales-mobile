@@ -163,7 +163,7 @@ class _DashboardScreenState extends State<DashboardScreen>
         sync.infrastructurePending;
 
     return Scaffold(
-      extendBody: true,
+      extendBody: false,
       appBar: AppBar(
         title: Row(
           children: [
