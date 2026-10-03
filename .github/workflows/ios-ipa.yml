@@ -1,5 +1,4 @@
 name: ios-unsigned-ipa
-# Trigger: fresh IPA build
 
 on:
   workflow_dispatch:
@@ -32,38 +31,115 @@ jobs:
       - name: Generate iOS runner
         shell: bash
         run: |
-          flutter create             --platforms=ios             --org com.businessos             --project-name fieldpulse             .
+          flutter create \
+            --platforms=ios \
+            --org com.businessos \
+            --project-name fieldpulse \
+            .
 
-          # Keep the iOS identity aligned with the existing FieldPulse app.
-          sed -i '' 's/com\.businessos\.fieldpulse/com.businessos.fieldpulse/g' ios/Runner.xcodeproj/project.pbxproj || true
           sed -i '' 's/com\.businessos\.fieldSalesMobile/com.businessos.fieldpulse/g' ios/Runner.xcodeproj/project.pbxproj || true
           sed -i '' 's/com\.businessos\.fieldSalesMobileTests/com.businessos.fieldpulseTests/g' ios/Runner.xcodeproj/project.pbxproj || true
 
-      - name: Add required iOS usage descriptions
+      - name: Apply FieldPulse launcher icon
+        shell: bash
+        run: |
+          python3 -m pip install --quiet pillow
+          python3 <<'PY'
+          import json
+          from pathlib import Path
+          from PIL import Image
+
+          source = Path("android/app/src/main/res/drawable-nodpi/fieldpulse_launcher_foreground.png")
+          iconset = Path("ios/Runner/Assets.xcassets/AppIcon.appiconset")
+          contents_path = iconset / "Contents.json"
+
+          if not source.exists():
+              raise SystemExit(f"Missing FieldPulse logo source: {source}")
+          if not contents_path.exists():
+              raise SystemExit(f"Missing iOS AppIcon catalog: {contents_path}")
+
+          logo = Image.open(source).convert("RGBA")
+          bbox = logo.getbbox()
+          if bbox:
+              logo = logo.crop(bbox)
+
+          contents = json.loads(contents_path.read_text())
+          navy = (3, 23, 51, 255)
+          written = []
+
+          for item in contents.get("images", []):
+              filename = item.get("filename")
+              size = item.get("size")
+              scale = item.get("scale")
+              if not filename or not size or not scale:
+                  continue
+
+              points = float(size.split("x")[0])
+              multiplier = int(scale.rstrip("x"))
+              pixels = int(round(points * multiplier))
+
+              canvas = Image.new("RGBA", (pixels, pixels), navy)
+
+              # Keep breathing room so iOS masks do not clip the logo.
+              max_logo = max(1, int(pixels * 0.72))
+              resized = logo.copy()
+              resized.thumbnail((max_logo, max_logo), Image.Resampling.LANCZOS)
+
+              x = (pixels - resized.width) // 2
+              y = (pixels - resized.height) // 2
+              canvas.alpha_composite(resized, (x, y))
+              canvas.convert("RGB").save(iconset / filename, "PNG")
+              written.append((filename, pixels))
+
+          if not written:
+              raise SystemExit("No iOS AppIcon files were generated.")
+
+          print(f"Generated {len(written)} FieldPulse AppIcon images.")
+          print("Largest icons:", sorted(written, key=lambda x: x[1], reverse=True)[:5])
+          PY
+
+      - name: Configure iOS app metadata and permissions
         shell: bash
         run: |
           PLIST="ios/Runner/Info.plist"
           /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName FieldPulse" "$PLIST" 2>/dev/null || true
           /usr/libexec/PlistBuddy -c "Set :CFBundleName FieldPulse" "$PLIST" 2>/dev/null || true
-          /usr/libexec/PlistBuddy -c "Add :NSLocationWhenInUseUsageDescription string FieldPulse uses your location for assigned visits, attendance, routes, and field activity." "$PLIST" 2>/dev/null ||             /usr/libexec/PlistBuddy -c "Set :NSLocationWhenInUseUsageDescription FieldPulse uses your location for assigned visits, attendance, routes, and field activity." "$PLIST"
-          /usr/libexec/PlistBuddy -c "Add :NSLocationAlwaysAndWhenInUseUsageDescription string FieldPulse uses background location during an active work session when company policy enables it." "$PLIST" 2>/dev/null ||             /usr/libexec/PlistBuddy -c "Set :NSLocationAlwaysAndWhenInUseUsageDescription FieldPulse uses background location during an active work session when company policy enables it." "$PLIST"
-          /usr/libexec/PlistBuddy -c "Add :NSCameraUsageDescription string FieldPulse uses the camera for visit evidence, receipts, and field documentation." "$PLIST" 2>/dev/null ||             /usr/libexec/PlistBuddy -c "Set :NSCameraUsageDescription FieldPulse uses the camera for visit evidence, receipts, and field documentation." "$PLIST"
-          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string FieldPulse accesses selected photos only when you attach field evidence." "$PLIST" 2>/dev/null ||             /usr/libexec/PlistBuddy -c "Set :NSPhotoLibraryUsageDescription FieldPulse accesses selected photos only when you attach field evidence." "$PLIST"
-          /usr/libexec/PlistBuddy -c "Add :NSMicrophoneUsageDescription string FieldPulse uses the microphone only when you record a field voice note." "$PLIST" 2>/dev/null ||             /usr/libexec/PlistBuddy -c "Set :NSMicrophoneUsageDescription FieldPulse uses the microphone only when you record a field voice note." "$PLIST"
+          /usr/libexec/PlistBuddy -c "Add :NSLocationWhenInUseUsageDescription string FieldPulse uses your location for assigned visits, attendance, routes, and field activity." "$PLIST" 2>/dev/null || \
+            /usr/libexec/PlistBuddy -c "Set :NSLocationWhenInUseUsageDescription FieldPulse uses your location for assigned visits, attendance, routes, and field activity." "$PLIST"
+          /usr/libexec/PlistBuddy -c "Add :NSLocationAlwaysAndWhenInUseUsageDescription string FieldPulse uses background location during an active work session when company policy enables it." "$PLIST" 2>/dev/null || \
+            /usr/libexec/PlistBuddy -c "Set :NSLocationAlwaysAndWhenInUseUsageDescription FieldPulse uses background location during an active work session when company policy enables it." "$PLIST"
+          /usr/libexec/PlistBuddy -c "Add :NSCameraUsageDescription string FieldPulse uses the camera for visit evidence, receipts, and field documentation." "$PLIST" 2>/dev/null || \
+            /usr/libexec/PlistBuddy -c "Set :NSCameraUsageDescription FieldPulse uses the camera for visit evidence, receipts, and field documentation." "$PLIST"
+          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string FieldPulse accesses selected photos only when you attach field evidence." "$PLIST" 2>/dev/null || \
+            /usr/libexec/PlistBuddy -c "Set :NSPhotoLibraryUsageDescription FieldPulse accesses selected photos only when you attach field evidence." "$PLIST"
+          /usr/libexec/PlistBuddy -c "Add :NSMicrophoneUsageDescription string FieldPulse uses the microphone only when you record a field voice note." "$PLIST" 2>/dev/null || \
+            /usr/libexec/PlistBuddy -c "Set :NSMicrophoneUsageDescription FieldPulse uses the microphone only when you record a field voice note." "$PLIST"
 
       - name: Build unsigned iOS app
         shell: bash
         run: |
           APP_VERSION="$(awk '/^version:/ {print $2}' pubspec.yaml)"
           APP_VERSION_NAME="${APP_VERSION%%+*}"
-          APP_VERSION_CODE="${APP_VERSION##*+}"
+          # Use a fresh iOS build number each GitHub run so sideloaded installs refresh metadata/icon.
+          APP_VERSION_CODE="${GITHUB_RUN_NUMBER}"
 
-          flutter build ios --release --no-codesign             --build-name="${APP_VERSION_NAME}"             --build-number="${APP_VERSION_CODE}"             --dart-define=API_BASE_URL=https://fieldpulse.businessos.af/api/v1             --dart-define=APP_VERSION="${APP_VERSION_NAME}"
+          flutter build ios --release --no-codesign \
+            --build-name="${APP_VERSION_NAME}" \
+            --build-number="${APP_VERSION_CODE}" \
+            --dart-define=API_BASE_URL=https://fieldpulse.businessos.af/api/v1 \
+            --dart-define=APP_VERSION="${APP_VERSION_NAME}"
+
+      - name: Verify built FieldPulse icon catalog
+        shell: bash
+        run: |
+          test -d build/ios/iphoneos/Runner.app
+          test -f ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json
+          echo "FieldPulse AppIcon source catalog:"
+          find ios/Runner/Assets.xcassets/AppIcon.appiconset -maxdepth 1 -type f -name '*.png' | sort | head -20
 
       - name: Package unsigned IPA
         shell: bash
         run: |
-          test -d build/ios/iphoneos/Runner.app
           rm -rf dist
           mkdir -p dist/Payload
           cp -R build/ios/iphoneos/Runner.app dist/Payload/
