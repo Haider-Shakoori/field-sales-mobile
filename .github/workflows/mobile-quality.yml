@@ -43,6 +43,19 @@ jobs:
             exit 1
           fi
 
+      - name: Upload formatter output
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: formatted-ui-sources
+          path: |
+            lib/ui/login_screen.dart
+            lib/ui/more_screen.dart
+            lib/ui/orders_screen.dart
+            lib/ui/widgets/fieldpulse_ui.dart
+          if-no-files-found: error
+          retention-days: 1
+
       - name: Analyze
         run: flutter analyze
 
