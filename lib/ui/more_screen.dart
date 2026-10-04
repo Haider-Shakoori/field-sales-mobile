@@ -201,7 +201,10 @@ class MoreScreen extends StatelessWidget {
             subtitle: 'Language and personal app settings',
           ),
           const SizedBox(height: 10),
-          const Card(child: LanguageSelectorButton()),
+          const FieldPulseGlassCard(
+            padding: EdgeInsets.zero,
+            child: LanguageSelectorButton(),
+          ),
           const SizedBox(height: 8),
           const FieldPulseSectionHeader(
             title: 'Field tools',
@@ -210,7 +213,10 @@ class MoreScreen extends StatelessWidget {
           const SizedBox(height: 10),
           LayoutBuilder(
             builder: (context, constraints) {
-              final width = (constraints.maxWidth - 12) / 2;
+              final oneColumn = constraints.maxWidth < 390;
+              final width = oneColumn
+                  ? constraints.maxWidth
+                  : (constraints.maxWidth - 12) / 2;
 
               return Wrap(
                 spacing: 12,
@@ -256,37 +262,42 @@ class _MoreActionCard extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) => Card(
+  Widget build(BuildContext context) => FieldPulseGlassCard(
     margin: EdgeInsets.zero,
-    child: InkWell(
-      borderRadius: BorderRadius.circular(20),
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: SizedBox(
-          height: 104,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    onTap: onTap,
+    padding: const EdgeInsets.all(15),
+    child: SizedBox(
+      height: 116,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
-              FieldPulseIconBadge(icon: action.icon, size: 40),
+              FieldPulseIconBadge(icon: action.icon, size: 42),
               const Spacer(),
-              Text(
-                action.title,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleSmall
-                    ?.copyWith(fontWeight: FontWeight.w800),
-              ),
-              const SizedBox(height: 3),
-              Text(
-                action.subtitle,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodySmall,
+              Icon(
+                Icons.arrow_outward_rounded,
+                size: 18,
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: .72),
               ),
             ],
           ),
-        ),
+          const Spacer(),
+          Text(
+            action.title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.titleSmall
+                ?.copyWith(fontWeight: FontWeight.w800, height: 1.15),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            action.subtitle,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(height: 1.25),
+          ),
+        ],
       ),
     ),
   );
