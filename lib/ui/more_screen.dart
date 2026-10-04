@@ -278,7 +278,8 @@ class _MoreActionCard extends StatelessWidget {
               Icon(
                 Icons.arrow_outward_rounded,
                 size: 18,
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: .72),
+                color: Theme.of(context).colorScheme.primary
+                    .withValues(alpha: .72),
               ),
             ],
           ),
@@ -295,7 +296,8 @@ class _MoreActionCard extends StatelessWidget {
             action.subtitle,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(height: 1.25),
+            style: Theme.of(context).textTheme.bodySmall
+                ?.copyWith(height: 1.25),
           ),
         ],
       ),

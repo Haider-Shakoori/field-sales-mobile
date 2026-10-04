@@ -112,8 +112,9 @@ class OrdersScreen extends StatelessWidget {
                                       customer,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style:
-                                          Theme.of(context).textTheme.bodySmall,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall,
                                     ),
                                   ],
                                 ],
@@ -122,9 +123,7 @@ class OrdersScreen extends StatelessWidget {
                             const SizedBox(width: 10),
                             Text(
                               "${order['grand_total'] ?? 0} ${order['currency'] ?? ''}",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleSmall
+                              style: Theme.of(context).textTheme.titleSmall
                                   ?.copyWith(fontWeight: FontWeight.w800),
                             ),
                           ],

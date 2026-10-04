@@ -58,10 +58,7 @@ class FieldPulseIconBadge extends StatelessWidget {
       gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [
-          color.withValues(alpha: .17),
-          color.withValues(alpha: .065),
-        ],
+        colors: [color.withValues(alpha: .17), color.withValues(alpha: .065)],
       ),
       borderRadius: BorderRadius.circular(size * .32),
       border: Border.all(color: color.withValues(alpha: .15)),
@@ -470,24 +467,17 @@ class FieldPulseEmptyState extends StatelessWidget {
               Text(
                 title,
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -.2,
-                ),
+                style: Theme.of(context).textTheme.titleLarge
+                    ?.copyWith(fontWeight: FontWeight.w800, letterSpacing: -.2),
               ),
               const SizedBox(height: 8),
               Text(
                 message,
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: FieldPulseTheme.muted,
-                  height: 1.45,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium
+                    ?.copyWith(color: FieldPulseTheme.muted, height: 1.45),
               ),
-              if (action != null) ...[
-                const SizedBox(height: 20),
-                action!,
-              ],
+              if (action != null) ...[const SizedBox(height: 20), action!],
             ],
           ),
         ),
