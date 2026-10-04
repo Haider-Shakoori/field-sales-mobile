@@ -233,14 +233,9 @@ class _DashboardScreenState extends State<DashboardScreen>
       bottomNavigationBar: SafeArea(
         top: false,
         minimum: const EdgeInsets.fromLTRB(12, 0, 12, 10),
-        child: Container(
-          clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(
-            gradient: FieldPulseDecor.glassGradient,
-            borderRadius: BorderRadius.circular(28),
-            border: Border.all(color: Colors.white.withValues(alpha: .92)),
-            boxShadow: FieldPulseDecor.glassShadow,
-          ),
+        child: FieldPulseGlassPanel(
+          padding: EdgeInsets.zero,
+          blur: 22,
           child: NavigationBar(
             selectedIndex: _index,
             onDestinationSelected: (value) {
