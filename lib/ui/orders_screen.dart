@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../state/master_data_controller.dart';
 import '../state/order_controller.dart';
+import 'fieldpulse_theme.dart';
 import 'order_create_screen.dart';
 import 'order_detail_screen.dart';
 import 'sync_refresh.dart';
@@ -63,34 +64,96 @@ class OrdersScreen extends StatelessWidget {
                 itemBuilder: (_, index) {
                   final order = state.orders[index];
                   final synced = order['sync_status'] == 'synced';
+                  final syncColor = synced
+                      ? FieldPulseTheme.success
+                      : FieldPulseTheme.warning;
+                  final customer =
+                      order['customer_name']?.toString().trim() ?? '';
+                  final status = order['status']?.toString().trim() ?? '';
+                  final payment =
+                      order['payment_type']?.toString().trim() ?? '';
 
                   return FieldPulseGlassCard(
-                    padding: EdgeInsets.zero,
+                    padding: const EdgeInsets.all(16),
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (_) => OrderDetailScreen(order: order),
                       ),
                     ),
-                    child: ListTile(
-                      leading: const FieldPulseIconBadge(
-                        icon: Icons.receipt_long_outlined,
-                        size: 42,
-                      ),
-                      title: Text(
-                        order['order_number']?.toString() ?? 'Offline order',
-                      ),
-                      subtitle: Text(
-                        [
-                          order['customer_name'],
-                          order['payment_type'],
-                          order['status'],
-                          if (!synced) "Sync: ${order['sync_status']}",
-                        ].where((value) => value != null).join(' · '),
-                      ),
-                      trailing: Text(
-                        "${order['grand_total'] ?? 0} ${order['currency'] ?? ''}",
-                        style: const TextStyle(fontWeight: FontWeight.w600),
-                      ),
+                    tint: syncColor,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const FieldPulseIconBadge(
+                              icon: Icons.receipt_long_outlined,
+                              size: 44,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    order['order_number']?.toString() ??
+                                        'Offline order',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(fontWeight: FontWeight.w800),
+                                  ),
+                                  if (customer.isNotEmpty) ...[
+                                    const SizedBox(height: 3),
+                                    Text(
+                                      customer,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style:
+                                          Theme.of(context).textTheme.bodySmall,
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              "${order['grand_total'] ?? 0} ${order['currency'] ?? ''}",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleSmall
+                                  ?.copyWith(fontWeight: FontWeight.w800),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 13),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            FieldPulseStatusPill(
+                              label: synced ? 'Synced' : 'Pending sync',
+                              color: syncColor,
+                              icon: synced
+                                  ? Icons.cloud_done_outlined
+                                  : Icons.cloud_upload_outlined,
+                            ),
+                            if (status.isNotEmpty)
+                              FieldPulseStatusPill(
+                                label: status,
+                                color: FieldPulseTheme.blue,
+                              ),
+                            if (payment.isNotEmpty)
+                              FieldPulseStatusPill(
+                                label: payment,
+                                color: FieldPulseTheme.muted,
+                              ),
+                          ],
+                        ),
+                      ],
                     ),
                   );
                 },
