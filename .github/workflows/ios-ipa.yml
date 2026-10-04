@@ -1,5 +1,5 @@
 name: ios-unsigned-ipa
-# Trigger: fresh IPA build 2026-10-04
+# Trigger: fresh IPA build 2026-10-04 v2
 
 on:
   workflow_dispatch:
@@ -44,8 +44,9 @@ jobs:
       - name: Apply FieldPulse launcher icon
         shell: bash
         run: |
-          python3 -m pip install --quiet pillow
-          python3 <<'PY'
+          python3 -m venv .venv-icons
+          .venv-icons/bin/python -m pip install --quiet pillow
+          .venv-icons/bin/python <<'PY'
           import json
           from pathlib import Path
           from PIL import Image
