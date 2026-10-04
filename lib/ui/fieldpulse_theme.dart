@@ -35,6 +35,8 @@ abstract final class FieldPulseTheme {
       colorScheme: scheme,
       scaffoldBackgroundColor: canvas,
       fontFamily: 'Roboto',
+      visualDensity: VisualDensity.standard,
+      materialTapTargetSize: MaterialTapTargetSize.padded,
     );
 
     return base.copyWith(
@@ -98,7 +100,7 @@ abstract final class FieldPulseTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.white.withValues(alpha: .80),
+        fillColor: Colors.white.withValues(alpha: .90),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 16,
@@ -109,42 +111,42 @@ abstract final class FieldPulseTheme {
         prefixIconColor: const Color(0xFF6F7F93),
         suffixIconColor: const Color(0xFF6F7F93),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(18),
           borderSide: const BorderSide(color: border),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(18),
           borderSide: const BorderSide(color: border),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(18),
           borderSide: const BorderSide(color: blue, width: 1.6),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(18),
           borderSide: const BorderSide(color: Color(0xFFE24747)),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(18),
           borderSide: const BorderSide(color: Color(0xFFE24747), width: 1.6),
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          minimumSize: const Size(0, 52),
+          minimumSize: const Size(0, 54),
           backgroundColor: blue,
           foregroundColor: Colors.white,
           disabledBackgroundColor: const Color(0xFFB9C5D4),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(18),
           ),
           textStyle: const TextStyle(fontWeight: FontWeight.w700),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          minimumSize: const Size(0, 50),
+          minimumSize: const Size(0, 52),
           foregroundColor: text,
           side: const BorderSide(color: border),
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
@@ -175,7 +177,7 @@ abstract final class FieldPulseTheme {
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        height: 72,
+        height: 74,
         elevation: 0,
         backgroundColor: Colors.white.withValues(alpha: .76),
         indicatorColor: const Color(0xFFE4EFFF),
@@ -193,7 +195,7 @@ abstract final class FieldPulseTheme {
         }),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           return TextStyle(
-            fontSize: 11.5,
+            fontSize: 12,
             fontWeight: states.contains(WidgetState.selected)
                 ? FontWeight.w700
                 : FontWeight.w600,
@@ -207,7 +209,7 @@ abstract final class FieldPulseTheme {
         iconColor: Color(0xFF53657B),
         textColor: text,
         subtitleTextStyle: TextStyle(color: muted, fontSize: 13),
-        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 7),
         minLeadingWidth: 28,
       ),
       chipTheme: base.chipTheme.copyWith(
@@ -221,7 +223,7 @@ abstract final class FieldPulseTheme {
       dialogTheme: DialogThemeData(
         backgroundColor: Colors.white.withValues(alpha: .96),
         surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
         titleTextStyle: const TextStyle(
           color: text,
           fontSize: 20,
@@ -245,14 +247,18 @@ abstract final class FieldPulseTheme {
         behavior: SnackBarBehavior.floating,
         backgroundColor: navy,
         contentTextStyle: const TextStyle(color: Colors.white),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       ),
-      floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        elevation: 4,
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        elevation: 7,
+        focusElevation: 8,
+        hoverElevation: 9,
+        highlightElevation: 3,
         backgroundColor: blue,
         foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(17)),
+        extendedPadding: const EdgeInsets.symmetric(horizontal: 20),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(20)),
         ),
       ),
       progressIndicatorTheme: const ProgressIndicatorThemeData(
@@ -262,7 +268,7 @@ abstract final class FieldPulseTheme {
       pageTransitionsTheme: const PageTransitionsTheme(
         builders: {
           TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
-          TargetPlatform.iOS: FadeUpwardsPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
         },
       ),
       popupMenuTheme: PopupMenuThemeData(
@@ -290,7 +296,7 @@ abstract final class FieldPulseTheme {
             BorderSide(color: Colors.white.withValues(alpha: .92)),
           ),
           shape: WidgetStatePropertyAll(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
           ),
         ),
       ),
@@ -317,7 +323,7 @@ class FieldPulseDecor {
   static const appGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFF07182E), Color(0xFF0B2F55), Color(0xFF0B6282)],
+    colors: [Color(0xFF06162B), Color(0xFF0B315A), Color(0xFF0C6689)],
   );
 
   static const accentGradient = LinearGradient(
@@ -335,7 +341,7 @@ class FieldPulseDecor {
   static const glassGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xE8FFFFFF), Color(0xBFF2F8FF)],
+    colors: [Color(0xF2FFFFFF), Color(0xC9F1F7FF)],
   );
 
   static const subtleCanvasGradient = LinearGradient(
@@ -365,9 +371,9 @@ class FieldPulseDecor {
 
   static List<BoxShadow> glassShadow = [
     BoxShadow(
-      color: const Color(0xFF12365A).withValues(alpha: .09),
-      blurRadius: 30,
-      offset: const Offset(0, 12),
+      color: const Color(0xFF12365A).withValues(alpha: .085),
+      blurRadius: 34,
+      offset: const Offset(0, 14),
     ),
     BoxShadow(
       color: Colors.white.withValues(alpha: .80),
