@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../fieldpulse_theme.dart';
 
@@ -54,8 +55,23 @@ class FieldPulseIconBadge extends StatelessWidget {
     width: size,
     height: size,
     decoration: BoxDecoration(
-      color: color.withValues(alpha: .10),
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          color.withValues(alpha: .17),
+          color.withValues(alpha: .065),
+        ],
+      ),
       borderRadius: BorderRadius.circular(size * .32),
+      border: Border.all(color: color.withValues(alpha: .15)),
+      boxShadow: [
+        BoxShadow(
+          color: color.withValues(alpha: .10),
+          blurRadius: 14,
+          offset: const Offset(0, 6),
+        ),
+      ],
     ),
     child: Icon(icon, color: color, size: size * .48),
   );
@@ -116,7 +132,8 @@ class FieldPulseHeroCard extends StatelessWidget {
     clipBehavior: Clip.antiAlias,
     decoration: BoxDecoration(
       gradient: FieldPulseDecor.appGradient,
-      borderRadius: BorderRadius.circular(26),
+      borderRadius: BorderRadius.circular(28),
+      border: Border.all(color: Colors.white.withValues(alpha: .10)),
       boxShadow: FieldPulseDecor.premiumShadow,
     ),
     child: Stack(
@@ -226,7 +243,7 @@ class FieldPulsePageBackground extends StatelessWidget {
   );
 }
 
-class FieldPulseGlassCard extends StatelessWidget {
+class FieldPulseGlassCard extends StatefulWidget {
   const FieldPulseGlassCard({
     super.key,
     required this.child,
@@ -243,37 +260,57 @@ class FieldPulseGlassCard extends StatelessWidget {
   final Color? tint;
 
   @override
+  State<FieldPulseGlassCard> createState() => _FieldPulseGlassCardState();
+}
+
+class _FieldPulseGlassCardState extends State<FieldPulseGlassCard> {
+  var _pressed = false;
+
+  void _setPressed(bool value) {
+    if (_pressed == value) return;
+    setState(() => _pressed = value);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final accent = widget.tint ?? FieldPulseTheme.blue;
     final decoration = BoxDecoration(
       gradient: FieldPulseDecor.glassGradient,
       borderRadius: BorderRadius.circular(24),
-      border: Border.all(color: Colors.white.withValues(alpha: .90)),
+      border: Border.all(color: Colors.white.withValues(alpha: .94)),
       boxShadow: FieldPulseDecor.glassShadow,
     );
 
     final content = Ink(
       decoration: decoration,
-      child: Padding(padding: padding, child: child),
+      child: Padding(padding: widget.padding, child: widget.child),
     );
 
-    return Container(
-      margin: margin,
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(24),
-        clipBehavior: Clip.antiAlias,
-        child: onTap == null
-            ? content
-            : InkWell(
-                onTap: onTap,
-                splashColor: (tint ?? FieldPulseTheme.blue).withValues(
-                  alpha: .07,
+    return AnimatedScale(
+      scale: widget.onTap == null || !_pressed ? 1 : .985,
+      duration: const Duration(milliseconds: 120),
+      curve: Curves.easeOutCubic,
+      child: Container(
+        margin: widget.margin,
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(24),
+          clipBehavior: Clip.antiAlias,
+          child: widget.onTap == null
+              ? content
+              : InkWell(
+                  onTapDown: (_) => _setPressed(true),
+                  onTapCancel: () => _setPressed(false),
+                  onTapUp: (_) => _setPressed(false),
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    widget.onTap?.call();
+                  },
+                  splashColor: accent.withValues(alpha: .075),
+                  highlightColor: accent.withValues(alpha: .035),
+                  child: content,
                 ),
-                highlightColor: (tint ?? FieldPulseTheme.blue).withValues(
-                  alpha: .035,
-                ),
-                child: content,
-              ),
+        ),
       ),
     );
   }
@@ -329,10 +366,10 @@ class FieldPulseMetricTile extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.all(15),
     decoration: BoxDecoration(
-      gradient: FieldPulseDecor.premiumSurfaceGradient,
-      borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: FieldPulseTheme.border),
-      boxShadow: FieldPulseDecor.softShadow,
+      gradient: FieldPulseDecor.glassGradient,
+      borderRadius: BorderRadius.circular(22),
+      border: Border.all(color: Colors.white.withValues(alpha: .94)),
+      boxShadow: FieldPulseDecor.glassShadow,
     ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -413,25 +450,48 @@ class FieldPulseEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 48),
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        FieldPulseIconBadge(icon: icon, size: 62),
-        const SizedBox(height: 18),
-        Text(
-          title,
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.titleLarge,
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 28),
+    child: Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 440),
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(26, 30, 26, 26),
+          decoration: BoxDecoration(
+            gradient: FieldPulseDecor.glassGradient,
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(color: Colors.white.withValues(alpha: .95)),
+            boxShadow: FieldPulseDecor.glassShadow,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              FieldPulseIconBadge(icon: icon, size: 64),
+              const SizedBox(height: 18),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -.2,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: FieldPulseTheme.muted,
+                  height: 1.45,
+                ),
+              ),
+              if (action != null) ...[
+                const SizedBox(height: 20),
+                action!,
+              ],
+            ],
+          ),
         ),
-        const SizedBox(height: 7),
-        Text(
-          message,
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-        if (action != null) ...[const SizedBox(height: 18), action!],
-      ],
+      ),
     ),
   );
 }
