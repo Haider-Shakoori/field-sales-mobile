@@ -10,6 +10,7 @@ import '../state/app_state.dart';
 import '../state/attendance_controller.dart';
 import 'fieldpulse_theme.dart';
 import 'language_selector.dart';
+import 'widgets/fieldpulse_ui.dart';
 
 String friendlyLoginError(Object error) {
   if (error is! ApiException) {
@@ -156,19 +157,16 @@ class _LoginScreenState extends State<LoginScreen> {
     context.watch<AppLocaleController>();
 
     return Scaffold(
-      body: SafeArea(
+      body: FieldPulsePageBackground(
+        child: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 480),
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: FieldPulseDecor.premiumSurfaceGradient,
-                  borderRadius: BorderRadius.circular(30),
-                  border: Border.all(color: Colors.white),
-                  boxShadow: FieldPulseDecor.premiumShadow,
-                ),
+              child: FieldPulseGlassPanel(
+                padding: EdgeInsets.zero,
+                blur: 24,
                 child: Padding(
                   padding: const EdgeInsets.all(28),
                   child: AutofillGroup(
@@ -240,6 +238,23 @@ class _LoginScreenState extends State<LoginScreen> {
                         Text(
                           'Salesmen, supervisors, and sales managers can sign in.',
                           style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        const SizedBox(height: 14),
+                        const Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            FieldPulseStatusPill(
+                              label: 'Offline-ready',
+                              color: FieldPulseTheme.success,
+                              icon: Icons.cloud_done_outlined,
+                            ),
+                            FieldPulseStatusPill(
+                              label: 'Secure sync',
+                              color: FieldPulseTheme.blue,
+                              icon: Icons.verified_user_outlined,
+                            ),
+                          ],
                         ),
                         if (context.watch<AppState>().authNotice != null) ...[
                           const SizedBox(height: 16),
@@ -411,6 +426,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ),
+      ),
       ),
     );
   }
