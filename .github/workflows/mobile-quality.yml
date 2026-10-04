@@ -33,7 +33,15 @@ jobs:
         run: flutter pub get --enforce-lockfile
 
       - name: Verify formatting
-        run: dart format --output=none --set-exit-if-changed lib test
+        shell: bash
+        run: |
+          dart format lib test
+          if ! git diff --quiet -- lib test; then
+            echo "::group::Formatting diff"
+            git diff -- lib test
+            echo "::endgroup::"
+            exit 1
+          fi
 
       - name: Analyze
         run: flutter analyze
