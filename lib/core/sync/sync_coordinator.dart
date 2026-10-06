@@ -39,6 +39,7 @@ class SyncCoordinator {
     required this.expenses,
     required this.targets,
     this.followUps,
+    this.refreshConfiguration,
   });
 
   final AppDatabase db;
@@ -57,6 +58,7 @@ class SyncCoordinator {
   final ExpenseRepository expenses;
   final TargetRepository targets;
   final FollowUpRepository? followUps;
+  final Future<void> Function()? refreshConfiguration;
 
   Future<SyncCycleReport> run(
     String tenantId, {
@@ -140,6 +142,11 @@ class SyncCoordinator {
         failed++;
       }
     }
+
+    await stage('configuration', () async {
+      await refreshConfiguration?.call();
+      return const SyncStageReport.success('configuration');
+    });
 
     await stage('customers', () async {
       final result = await customers.syncPending(tenantId);
