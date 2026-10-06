@@ -18,6 +18,8 @@ class GpsRepository {
   final AppDatabase db;
   final SyncRetryStore retry;
   final _battery = Battery();
+  DateTime? _telemetryAt;
+  Map<String, dynamic> _telemetryCache = const {};
 
   Future<void> store({
     required String tenantId,
@@ -74,14 +76,10 @@ class GpsRepository {
       }
     }
 
-    final battery = await _battery.batteryLevel;
-    final charging = (await _battery.batteryState) == BatteryState.charging;
-    final connectivity = await Connectivity().checkConnectivity();
-    final network = connectivity.contains(ConnectivityResult.wifi)
-        ? 'wifi'
-        : connectivity.any((item) => item == ConnectivityResult.mobile)
-        ? 'cellular'
-        : 'offline';
+    final telemetry = await _telemetry();
+    final battery = telemetry['battery_level'] as int?;
+    final charging = telemetry['is_charging'] == true;
+    final network = telemetry['network_status']?.toString() ?? 'unknown';
 
     final maxSequence =
         Sqflite.firstIntValue(
@@ -112,6 +110,44 @@ class GpsRepository {
       'sync_status': 'pending',
       'created_at': DateTime.now().toUtc().toIso8601String(),
     });
+  }
+
+  Future<Map<String, dynamic>> _telemetry() async {
+    final now = DateTime.now().toUtc();
+    if (_telemetryAt != null &&
+        now.difference(_telemetryAt!).abs() < const Duration(minutes: 1) &&
+        _telemetryCache.isNotEmpty) {
+      return _telemetryCache;
+    }
+
+    int? battery;
+    var charging = false;
+    var network = 'unknown';
+
+    try {
+      battery = await _battery.batteryLevel;
+      final state = await _battery.batteryState;
+      charging = state == BatteryState.charging || state == BatteryState.full;
+    } catch (_) {}
+
+    try {
+      final connectivity = await Connectivity().checkConnectivity();
+      network = connectivity.contains(ConnectivityResult.wifi)
+          ? 'wifi'
+          : connectivity.any((item) => item == ConnectivityResult.mobile)
+          ? 'cellular'
+          : connectivity.any((item) => item != ConnectivityResult.none)
+          ? 'other'
+          : 'offline';
+    } catch (_) {}
+
+    _telemetryAt = now;
+    _telemetryCache = {
+      'battery_level': battery,
+      'is_charging': charging,
+      'network_status': network,
+    };
+    return _telemetryCache;
   }
 
   Future<int> pendingCount(String tenantId) async =>
@@ -271,6 +307,22 @@ class GpsRepository {
         error: error,
       );
       rethrow;
+    }
+  }
+
+  Future<void> uploadAll(String tenantId, {int maxBatches = 5}) async {
+    if (tenantId.isEmpty || maxBatches <= 0) return;
+
+    for (var batch = 0; batch < maxBatches; batch++) {
+      final before = await pendingCount(tenantId);
+      if (before == 0) return;
+
+      await upload(tenantId);
+
+      final after = await pendingCount(tenantId);
+      if (after == 0 || after >= before) return;
+
+      await Future<void>.delayed(Duration.zero);
     }
   }
 

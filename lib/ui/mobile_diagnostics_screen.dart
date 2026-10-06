@@ -82,6 +82,15 @@ class _MobileDiagnosticsScreenState extends State<MobileDiagnosticsScreen> {
               _IssuesCard(issues: result.issues),
             ],
             const SizedBox(height: 12),
+            _ReliabilityActionsCard(
+              onLocationSettings: () =>
+                  context.read<DeviceHealthRepository>().openLocationSettings(),
+              onAppSettings: () =>
+                  context.read<DeviceHealthRepository>().openAppSettings(),
+              onBatterySettings: () =>
+                  context.read<DeviceHealthRepository>().openBatterySettings(),
+            ),
+            const SizedBox(height: 12),
             _MetricSection(
               title: 'Battery & background',
               icon: Icons.battery_6_bar_outlined,
@@ -137,6 +146,18 @@ class _MobileDiagnosticsScreenState extends State<MobileDiagnosticsScreen> {
                 _MetricRow(
                   'Last GPS fix',
                   _time(result.metrics['last_gps_fix_at']),
+                ),
+                _MetricRow(
+                  'Last GPS upload',
+                  _time(result.metrics['last_gps_upload_at']),
+                ),
+                _MetricRow(
+                  'GPS points · last hour',
+                  '${result.metrics['gps_points_last_hour'] ?? 0}',
+                ),
+                _MetricRow(
+                  'Pending GPS points',
+                  '${result.metrics['pending_gps_points'] ?? 0}',
                 ),
                 _MetricRow(
                   'Mock-location signal',
@@ -391,6 +412,67 @@ class _IssuesCard extends StatelessWidget {
             ),
         ],
       ),
+    ),
+  );
+}
+
+class _ReliabilityActionsCard extends StatelessWidget {
+  const _ReliabilityActionsCard({
+    required this.onLocationSettings,
+    required this.onAppSettings,
+    required this.onBatterySettings,
+  });
+
+  final Future<bool> Function() onLocationSettings;
+  final Future<bool> Function() onAppSettings;
+  final Future<bool> Function() onBatterySettings;
+
+  @override
+  Widget build(BuildContext context) => FieldPulseInfoCard(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const FieldPulseIconBadge(icon: Icons.shield_outlined),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Tracking reliability',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        const Text(
+          'For reliable background GPS, keep precise/background location enabled '
+          'and remove restrictive battery optimization for FieldPulse.',
+          style: TextStyle(color: FieldPulseTheme.muted),
+        ),
+        const SizedBox(height: 14),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            OutlinedButton.icon(
+              onPressed: () => onLocationSettings(),
+              icon: const Icon(Icons.location_on_outlined),
+              label: const Text('Location settings'),
+            ),
+            OutlinedButton.icon(
+              onPressed: () => onAppSettings(),
+              icon: const Icon(Icons.admin_panel_settings_outlined),
+              label: const Text('App permissions'),
+            ),
+            OutlinedButton.icon(
+              onPressed: () => onBatterySettings(),
+              icon: const Icon(Icons.battery_saver_outlined),
+              label: const Text('Battery settings'),
+            ),
+          ],
+        ),
+      ],
     ),
   );
 }

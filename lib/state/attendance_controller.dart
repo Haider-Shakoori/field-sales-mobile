@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 import '../core/api/api_exception.dart';
@@ -48,7 +48,7 @@ String friendlyAttendanceError(Object error) {
       : message;
 }
 
-class AttendanceController extends ChangeNotifier {
+class AttendanceController extends ChangeNotifier with WidgetsBindingObserver {
   AttendanceController({
     required this.appState,
     required this.attendance,
@@ -59,6 +59,7 @@ class AttendanceController extends ChangeNotifier {
   }) {
     attendance.api.onDeviceRevoked = handleRevocation;
     attendance.api.onSessionExpired = handleSessionExpiration;
+    WidgetsBinding.instance.addObserver(this);
   }
 
   final AppState appState;
@@ -95,8 +96,43 @@ class AttendanceController extends ChangeNotifier {
       await _flushPending();
       await reconcile();
       await evaluateAutomaticPolicy();
+      await _refreshTrackingWarning();
     }
     notifyListeners();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && appState.signedIn) {
+      unawaited(_recoverAfterResume());
+    }
+  }
+
+  Future<void> _recoverAfterResume() async {
+    try {
+      await refreshPolicyAndEvaluate();
+      await _refreshTrackingWarning();
+      if (working) {
+        await refreshLivePresence(locationTimeout: const Duration(seconds: 8));
+      }
+    } catch (_) {
+      // Resume recovery is self-healing and must never block the UI.
+    }
+  }
+
+  Future<void> _refreshTrackingWarning() async {
+    if (!working) return;
+
+    final warning = await tracking.reliabilityWarning();
+    final current = message?.trim() ?? '';
+
+    if (warning != null) {
+      if (current.isEmpty || current.startsWith('Tracking reliability:')) {
+        message = warning;
+      }
+    } else if (current.startsWith('Tracking reliability:')) {
+      message = null;
+    }
   }
 
   Future<void> refreshLivePresence({
@@ -126,7 +162,7 @@ class AttendanceController extends ChangeNotifier {
     );
 
     try {
-      await gps.upload(tenantId);
+      await gps.uploadAll(tenantId, maxBatches: 10);
     } catch (_) {
       // The fresh point stays queued locally and will upload on the next sync.
     }
@@ -301,6 +337,7 @@ class AttendanceController extends ChangeNotifier {
       session = await attendance.active(tenantId);
       todaySession = session;
       await reconcile();
+      await _refreshTrackingWarning();
       unawaited(_flushPending());
     } catch (error) {
       message = '$error'.replaceFirst('Bad state: ', '');
@@ -515,6 +552,7 @@ class AttendanceController extends ChangeNotifier {
       }
 
       await reconcile();
+      await _refreshTrackingWarning();
       unawaited(_flushPending());
     } catch (error) {
       message = '$error'.replaceFirst('Bad state: ', '');
@@ -662,7 +700,7 @@ class AttendanceController extends ChangeNotifier {
       await gps.uploadPrivacyAcknowledgements(tenantId);
       await attendance.drain(tenantId);
       if (appState.session?.tenantId == tenantId) {
-        await gps.upload(tenantId);
+        await gps.uploadAll(tenantId, maxBatches: 10);
       }
     } catch (_) {
       // Offline and transient API failures leave local rows pending for retry.
@@ -728,6 +766,7 @@ class AttendanceController extends ChangeNotifier {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     tracking.stop();
     _stopUploader();
     _boundary?.cancel();
