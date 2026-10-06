@@ -189,7 +189,7 @@ class SyncCoordinator {
       );
     } else {
       await stage('gps', () async {
-        await gps.upload(tenantId);
+        await gps.uploadAll(tenantId, maxBatches: 10);
         return const SyncStageReport.success('gps');
       });
 
