@@ -97,6 +97,7 @@ class AttendanceController extends ChangeNotifier with WidgetsBindingObserver {
       await _flushPending();
       await reconcile();
       await evaluateAutomaticPolicy();
+      await _refreshTrackingWarning();
     }
     notifyListeners();
   }
@@ -111,11 +112,27 @@ class AttendanceController extends ChangeNotifier with WidgetsBindingObserver {
   Future<void> _recoverAfterResume() async {
     try {
       await refreshPolicyAndEvaluate();
+      await _refreshTrackingWarning();
       if (working) {
         await refreshLivePresence(locationTimeout: const Duration(seconds: 8));
       }
     } catch (_) {
       // Resume recovery is self-healing and must never block the UI.
+    }
+  }
+
+  Future<void> _refreshTrackingWarning() async {
+    if (!working) return;
+
+    final warning = await tracking.reliabilityWarning();
+    final current = message?.trim() ?? '';
+
+    if (warning != null) {
+      if (current.isEmpty || current.startsWith('Tracking reliability:')) {
+        message = warning;
+      }
+    } else if (current.startsWith('Tracking reliability:')) {
+      message = null;
     }
   }
 
@@ -321,6 +338,7 @@ class AttendanceController extends ChangeNotifier with WidgetsBindingObserver {
       session = await attendance.active(tenantId);
       todaySession = session;
       await reconcile();
+      await _refreshTrackingWarning();
       unawaited(_flushPending());
     } catch (error) {
       message = '$error'.replaceFirst('Bad state: ', '');
@@ -535,6 +553,7 @@ class AttendanceController extends ChangeNotifier with WidgetsBindingObserver {
       }
 
       await reconcile();
+      await _refreshTrackingWarning();
       unawaited(_flushPending());
     } catch (error) {
       message = '$error'.replaceFirst('Bad state: ', '');
