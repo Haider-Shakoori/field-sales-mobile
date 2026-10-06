@@ -14,6 +14,8 @@ void main() {
     ).readAsStringSync();
     final diagnostics = File('lib/ui/mobile_diagnostics_screen.dart')
         .readAsStringSync();
+    final iosWorkflow = File('.github/workflows/ios-ipa.yml')
+        .readAsStringSync();
 
     expect(tracking, contains('bool _processingPosition = false'));
     expect(tracking, contains('Position? _queuedPosition'));
@@ -23,6 +25,11 @@ void main() {
     expect(tracking, contains('distanceFilter: 0'));
     expect(tracking, contains('Tracking reliability:'));
     expect(tracking, contains('Duration(minutes: 2)'));
+    expect(
+      tracking,
+      contains('iPhone is locked or FieldPulse is in the background.'),
+    );
+    expect(tracking, contains('Precise Location is disabled'));
 
     expect(attendance, contains('with WidgetsBindingObserver'));
     expect(attendance, contains('AppLifecycleState.resumed'));
@@ -40,5 +47,15 @@ void main() {
     expect(diagnostics, contains('Tracking reliability'));
     expect(diagnostics, contains('GPS points · last hour'));
     expect(diagnostics, contains('Pending GPS points'));
+    expect(diagnostics, contains('set FieldPulse location access to'));
+    expect(diagnostics, contains('Always'));
+    expect(diagnostics, contains('Precise Location enabled'));
+
+    expect(iosWorkflow, contains('UIBackgroundModes'));
+    expect(iosWorkflow, contains('UIBackgroundModes:0 string location'));
+    expect(
+      iosWorkflow,
+      contains('NSLocationAlwaysAndWhenInUseUsageDescription'),
+    );
   });
 }

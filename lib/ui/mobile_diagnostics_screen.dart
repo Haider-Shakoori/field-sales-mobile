@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:field_sales_mobile/l10n/localized_material.dart';
 import 'package:provider/provider.dart';
 
@@ -83,6 +84,7 @@ class _MobileDiagnosticsScreenState extends State<MobileDiagnosticsScreen> {
             ],
             const SizedBox(height: 12),
             _ReliabilityActionsCard(
+              isAndroid: defaultTargetPlatform == TargetPlatform.android,
               onLocationSettings: () =>
                   context.read<DeviceHealthRepository>().openLocationSettings(),
               onAppSettings: () =>
@@ -418,11 +420,13 @@ class _IssuesCard extends StatelessWidget {
 
 class _ReliabilityActionsCard extends StatelessWidget {
   const _ReliabilityActionsCard({
+    required this.isAndroid,
     required this.onLocationSettings,
     required this.onAppSettings,
     required this.onBatterySettings,
   });
 
+  final bool isAndroid;
   final Future<bool> Function() onLocationSettings;
   final Future<bool> Function() onAppSettings;
   final Future<bool> Function() onBatterySettings;
@@ -445,10 +449,13 @@ class _ReliabilityActionsCard extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 8),
-        const Text(
-          'For reliable background GPS, keep precise/background location enabled '
-          'and remove restrictive battery optimization for FieldPulse.',
-          style: TextStyle(color: FieldPulseTheme.muted),
+        Text(
+          isAndroid
+              ? 'For reliable background GPS, keep precise/background location '
+                    'enabled and remove restrictive battery optimization for FieldPulse.'
+              : 'For reliable background GPS, set FieldPulse location access to '
+                    'Always and keep Precise Location enabled.',
+          style: const TextStyle(color: FieldPulseTheme.muted),
         ),
         const SizedBox(height: 14),
         Wrap(
@@ -465,11 +472,12 @@ class _ReliabilityActionsCard extends StatelessWidget {
               icon: const Icon(Icons.admin_panel_settings_outlined),
               label: const Text('App permissions'),
             ),
-            OutlinedButton.icon(
-              onPressed: () => onBatterySettings(),
-              icon: const Icon(Icons.battery_saver_outlined),
-              label: const Text('Battery settings'),
-            ),
+            if (isAndroid)
+              OutlinedButton.icon(
+                onPressed: () => onBatterySettings(),
+                icon: const Icon(Icons.battery_saver_outlined),
+                label: const Text('Battery settings'),
+              ),
           ],
         ),
       ],

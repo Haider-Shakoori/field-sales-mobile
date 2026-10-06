@@ -295,11 +295,17 @@ class TrackingService {
   }
 
   Future<String?> reliabilityWarning() async {
-    if (!Platform.isAndroid) return null;
+    if (!Platform.isAndroid && !Platform.isIOS) return null;
 
     try {
       final permission = await Geolocator.checkPermission();
       if (permission != LocationPermission.always) {
+        if (Platform.isIOS) {
+          return 'Tracking reliability: set FieldPulse location access to '
+              '"Always" so GPS can continue during an active workday when the '
+              'iPhone is locked or FieldPulse is in the background.';
+        }
+
         return 'Tracking reliability: set FieldPulse location permission to '
             '"Allow all the time" so workday GPS can continue after Android '
             'puts the app in the background.';
@@ -307,7 +313,7 @@ class TrackingService {
 
       final accuracy = await Geolocator.getLocationAccuracy();
       if (accuracy == LocationAccuracyStatus.reduced) {
-        return 'Tracking reliability: Precise location is disabled. Enable '
+        return 'Tracking reliability: Precise Location is disabled. Enable '
             'precise location for FieldPulse to improve route accuracy.';
       }
     } catch (_) {
