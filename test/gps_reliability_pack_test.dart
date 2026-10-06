@@ -4,16 +4,16 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('GPS reliability pack keeps tracking self-healing', () {
-    final tracking =
-        File('lib/features/gps/tracking_service.dart').readAsStringSync();
-    final attendance =
-        File('lib/state/attendance_controller.dart').readAsStringSync();
+    final tracking = File('lib/features/gps/tracking_service.dart')
+        .readAsStringSync();
+    final attendance = File('lib/state/attendance_controller.dart')
+        .readAsStringSync();
     final gps = File('lib/features/gps/gps_repository.dart').readAsStringSync();
     final native = File(
       'android/app/src/main/kotlin/com/businessos/fieldpulse/MainActivity.kt',
     ).readAsStringSync();
-    final diagnostics =
-        File('lib/ui/mobile_diagnostics_screen.dart').readAsStringSync();
+    final diagnostics = File('lib/ui/mobile_diagnostics_screen.dart')
+        .readAsStringSync();
 
     expect(tracking, contains('bool _processingPosition = false'));
     expect(tracking, contains('Position? _queuedPosition'));
