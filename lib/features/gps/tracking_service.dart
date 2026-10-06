@@ -185,7 +185,7 @@ class TrackingService {
     _lastUploadAttemptAt = now;
 
     try {
-      await gpsRepository.upload(tenantId);
+      await gpsRepository.uploadAll(tenantId, maxBatches: 3);
     } catch (_) {
       // Local-first storage already succeeded. A later sync cycle will retry.
     } finally {
