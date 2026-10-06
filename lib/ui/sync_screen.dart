@@ -1,6 +1,7 @@
 import 'package:field_sales_mobile/l10n/localized_material.dart';
 import 'package:provider/provider.dart';
 
+import '../state/app_state.dart';
 import '../state/call_activity_controller.dart';
 import '../state/collection_controller.dart';
 import '../state/expense_controller.dart';
@@ -60,6 +61,7 @@ class SyncScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
     final master = context.watch<MasterDataController>();
     final visits = context.watch<VisitController>();
     final calls = context.watch<CallActivityController>();
@@ -141,6 +143,56 @@ class SyncScreen extends StatelessWidget {
                 const SizedBox(height: 12),
                 Text(sync.message!),
               ],
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        FieldPulseGlassCard(
+          padding: const EdgeInsets.all(18),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const FieldPulseIconBadge(
+                icon: Icons.tune_rounded,
+                color: FieldPulseTheme.cyan,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Web configuration',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 17,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      appState.configurationFetchedAt == null
+                          ? 'No synchronized policy snapshot yet.'
+                          : 'Last refreshed ${appState.configurationFetchedAt!.toLocal().toString().split('.').first}',
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      appState.configurationVersion == null
+                          ? 'Version unavailable'
+                          : 'Version ${appState.configurationVersion!.substring(0, 12)}',
+                      style: const TextStyle(
+                        color: FieldPulseTheme.muted,
+                        fontSize: 12,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Tracking rules, feature switches and device policy are '
+                      'pulled from the web console during every online sync.',
+                      style: TextStyle(color: FieldPulseTheme.muted),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

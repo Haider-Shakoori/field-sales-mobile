@@ -138,6 +138,8 @@ Future<void> main() async {
     expenses: expenses,
     targets: targets,
     followUps: followUps,
+    refreshConfiguration: () =>
+        appState.refreshServerConfiguration(notify: false),
   );
 
   final masterDataController = MasterDataController(
@@ -228,6 +230,10 @@ Future<void> main() async {
     db: db,
     coordinator: syncCoordinator,
     retryStore: retryStore,
+    afterSync: () async {
+      await attendanceController.reconcile();
+      await attendanceController.evaluateAutomaticPolicy();
+    },
   );
 
   await appState.restore();

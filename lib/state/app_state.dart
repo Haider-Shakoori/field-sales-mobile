@@ -17,6 +17,10 @@ class AppState extends ChangeNotifier {
   AuthSession? session;
   AttendanceTrackingSettings? policy;
   bool gamificationEnabled = false;
+  Map<String, dynamic> devicePolicy = const {};
+  String? configurationVersion;
+  DateTime? configurationFetchedAt;
+  DateTime? configurationUpdatedAt;
   String? authNotice;
   bool get signedIn => session != null;
   bool get isSalesman => session?.isSalesman == true;
@@ -67,8 +71,17 @@ class AppState extends ChangeNotifier {
     session = await auth.restore();
     if (session != null) {
       policy = await settings.load(session!.tenantId);
-      final features = await settings.features();
+      final features = await settings.loadFeatures(session!.tenantId);
+      devicePolicy = await settings.loadDevicePolicy(session!.tenantId);
+      final meta = await settings.loadConfigurationMeta(session!.tenantId);
       gamificationEnabled = features['gamification_enabled'] == true;
+      configurationVersion = meta['configuration_version']?.toString();
+      configurationFetchedAt = DateTime.tryParse(
+        meta['fetched_at']?.toString() ?? '',
+      );
+      configurationUpdatedAt = DateTime.tryParse(
+        meta['updated_at']?.toString() ?? '',
+      );
     }
     restored = true;
     _syncHeartbeat();
@@ -80,17 +93,28 @@ class AppState extends ChangeNotifier {
   Future<void> login(String email, String password, {String? tenant}) async {
     session = await auth.login(email, password, tenant: tenant);
     authNotice = null;
-    policy = await settings.refresh(session!.tenantId);
-    final features = await settings.features();
-    gamificationEnabled = features['gamification_enabled'] == true;
+    await refreshServerConfiguration(notify: false);
     _syncHeartbeat();
     notifyListeners();
   }
 
-  Future<void> refreshPolicy() async {
-    if (session == null) return;
-    policy = await settings.refresh(session!.tenantId);
-    notifyListeners();
+  Future<void> refreshPolicy() => refreshServerConfiguration();
+
+  Future<void> refreshServerConfiguration({bool notify = true}) async {
+    final current = session;
+    if (current == null) return;
+
+    final snapshot = await settings.syncConfiguration(current.tenantId);
+    policy = snapshot.tracking;
+    gamificationEnabled = snapshot.features['gamification_enabled'] == true;
+    devicePolicy = snapshot.device;
+    configurationVersion = snapshot.version;
+    configurationFetchedAt = snapshot.fetchedAt;
+    configurationUpdatedAt = snapshot.updatedAt;
+
+    if (notify) {
+      notifyListeners();
+    }
   }
 
   Future<void> logout() async {
@@ -98,6 +122,10 @@ class AppState extends ChangeNotifier {
     session = null;
     policy = null;
     gamificationEnabled = false;
+    devicePolicy = const {};
+    configurationVersion = null;
+    configurationFetchedAt = null;
+    configurationUpdatedAt = null;
     authNotice = null;
     _syncHeartbeat();
     notifyListeners();
@@ -110,6 +138,10 @@ class AppState extends ChangeNotifier {
     session = null;
     policy = null;
     gamificationEnabled = false;
+    devicePolicy = const {};
+    configurationVersion = null;
+    configurationFetchedAt = null;
+    configurationUpdatedAt = null;
     authNotice = notice;
     notifyListeners();
   }

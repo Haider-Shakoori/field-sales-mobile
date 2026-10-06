@@ -11,12 +11,14 @@ class SyncController extends ChangeNotifier {
     required this.db,
     required this.coordinator,
     required this.retryStore,
+    this.afterSync,
   });
 
   final AppState appState;
   final AppDatabase db;
   final SyncCoordinator coordinator;
   final SyncRetryStore retryStore;
+  final Future<void> Function()? afterSync;
 
   bool busy = false;
   String? message;
@@ -67,6 +69,14 @@ class SyncController extends ChangeNotifier {
       );
 
       final report = lastReport!;
+      if (report.status != 'deferred') {
+        try {
+          await afterSync?.call();
+        } catch (_) {
+          // Applying fresh policy should never turn a successful data sync
+          // into a failed sync cycle. The next resume/sync will retry it.
+        }
+      }
       message = switch (report.status) {
         'success' => 'Sync completed successfully.',
         'deferred' =>
