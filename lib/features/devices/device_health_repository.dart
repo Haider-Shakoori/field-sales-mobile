@@ -125,6 +125,22 @@ class DeviceHealthCollector {
     return values;
   }
 
+  Future<bool> openLocationSettings() =>
+      _invokeSettingsAction('openLocationSettings');
+
+  Future<bool> openAppSettings() => _invokeSettingsAction('openAppSettings');
+
+  Future<bool> openBatterySettings() =>
+      _invokeSettingsAction('openBatterySettings');
+
+  Future<bool> _invokeSettingsAction(String method) async {
+    try {
+      return await _diagnosticsChannel.invokeMethod<bool>(method) ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
+
   String _networkType(List<ConnectivityResult> values) {
     if (values.contains(ConnectivityResult.wifi)) return 'wifi';
     if (values.contains(ConnectivityResult.mobile)) return 'cellular';
@@ -161,6 +177,12 @@ class DeviceHealthRepository {
   final AppDatabase db;
   final TrackingActiveReader trackingActive;
   final DeviceHealthCollector collector;
+
+  Future<bool> openLocationSettings() => collector.openLocationSettings();
+
+  Future<bool> openAppSettings() => collector.openAppSettings();
+
+  Future<bool> openBatterySettings() => collector.openBatterySettings();
 
   Future<DeviceHealthResult> collect(String tenantId) async {
     final metrics = await collector.collectPlatform();
@@ -251,6 +273,9 @@ class DeviceHealthRepository {
       'root_signal_detected',
       'mock_location_detected',
       'last_gps_fix_at',
+      'last_gps_upload_at',
+      'pending_gps_points',
+      'gps_points_last_hour',
     };
 
     return {
@@ -283,6 +308,39 @@ class DeviceHealthRepository {
       limit: 1,
     );
 
+    final latestUpload = await db.db.query(
+      'local_gps_points',
+      columns: const ['uploaded_at'],
+      where: 'tenant_id=? AND uploaded_at IS NOT NULL',
+      whereArgs: [tenantId],
+      orderBy: 'uploaded_at DESC',
+      limit: 1,
+    );
+
+    final pendingGps =
+        Sqflite.firstIntValue(
+          await db.db.rawQuery(
+            'SELECT COUNT(*) FROM local_gps_points '
+            'WHERE tenant_id=? AND sync_status=?',
+            [tenantId, 'pending'],
+          ),
+        ) ??
+        0;
+
+    final oneHourAgo = DateTime.now()
+        .toUtc()
+        .subtract(const Duration(hours: 1))
+        .toIso8601String();
+    final pointsLastHour =
+        Sqflite.firstIntValue(
+          await db.db.rawQuery(
+            'SELECT COUNT(*) FROM local_gps_points '
+            'WHERE tenant_id=? AND recorded_at>=?',
+            [tenantId, oneHourAgo],
+          ),
+        ) ??
+        0;
+
     final since = DateTime.now()
         .toUtc()
         .subtract(const Duration(hours: 24))
@@ -299,6 +357,11 @@ class DeviceHealthRepository {
 
     return {
       'last_gps_fix_at': latest.isEmpty ? null : latest.first['recorded_at'],
+      'last_gps_upload_at': latestUpload.isEmpty
+          ? null
+          : latestUpload.first['uploaded_at'],
+      'pending_gps_points': pendingGps,
+      'gps_points_last_hour': pointsLastHour,
       'mock_location_detected': mock > 0,
     };
   }
