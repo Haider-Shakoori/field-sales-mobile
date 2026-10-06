@@ -25,6 +25,7 @@ void main() {
     expect(settings, isA<AndroidSettings>());
     final android = settings as AndroidSettings;
     expect(android.intervalDuration, const Duration(seconds: 15));
-    expect(android.distanceFilter, 5);
+    expect(android.distanceFilter, 0);
+    expect(android.accuracy, LocationAccuracy.bestForNavigation);
   });
 }
