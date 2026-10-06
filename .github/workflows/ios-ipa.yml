@@ -117,6 +117,17 @@ jobs:
           /usr/libexec/PlistBuddy -c "Add :NSMicrophoneUsageDescription string FieldPulse uses the microphone only when you record a field voice note." "$PLIST" 2>/dev/null || \
             /usr/libexec/PlistBuddy -c "Set :NSMicrophoneUsageDescription FieldPulse uses the microphone only when you record a field voice note." "$PLIST"
 
+          # Explicitly enable Core Location while FieldPulse is backgrounded or
+          # the screen is locked. The iOS runner is generated fresh in CI, so
+          # this must be applied on every IPA build.
+          /usr/libexec/PlistBuddy -c "Delete :UIBackgroundModes" "$PLIST" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :UIBackgroundModes array" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Add :UIBackgroundModes:0 string location" "$PLIST"
+
+          # Verify the critical background-location keys before compiling.
+          /usr/libexec/PlistBuddy -c "Print :UIBackgroundModes" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Print :NSLocationAlwaysAndWhenInUseUsageDescription" "$PLIST"
+
       - name: Build unsigned iOS app
         shell: bash
         run: |
