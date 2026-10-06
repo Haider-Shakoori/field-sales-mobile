@@ -125,13 +125,28 @@ class DeviceHealthCollector {
     return values;
   }
 
-  Future<bool> openLocationSettings() =>
-      _invokeSettingsAction('openLocationSettings');
+  Future<bool> openLocationSettings() async {
+    if (Platform.isIOS) {
+      return Geolocator.openLocationSettings();
+    }
 
-  Future<bool> openAppSettings() => _invokeSettingsAction('openAppSettings');
+    final opened = await _invokeSettingsAction('openLocationSettings');
+    return opened || await Geolocator.openLocationSettings();
+  }
 
-  Future<bool> openBatterySettings() =>
-      _invokeSettingsAction('openBatterySettings');
+  Future<bool> openAppSettings() async {
+    if (Platform.isIOS) {
+      return Geolocator.openAppSettings();
+    }
+
+    final opened = await _invokeSettingsAction('openAppSettings');
+    return opened || await Geolocator.openAppSettings();
+  }
+
+  Future<bool> openBatterySettings() async {
+    if (!Platform.isAndroid) return false;
+    return _invokeSettingsAction('openBatterySettings');
+  }
 
   Future<bool> _invokeSettingsAction(String method) async {
     try {
