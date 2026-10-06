@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 import '../core/api/api_exception.dart';
@@ -48,7 +49,7 @@ String friendlyAttendanceError(Object error) {
       : message;
 }
 
-class AttendanceController extends ChangeNotifier {
+class AttendanceController extends ChangeNotifier with WidgetsBindingObserver {
   AttendanceController({
     required this.appState,
     required this.attendance,
@@ -59,6 +60,7 @@ class AttendanceController extends ChangeNotifier {
   }) {
     attendance.api.onDeviceRevoked = handleRevocation;
     attendance.api.onSessionExpired = handleSessionExpiration;
+    WidgetsBinding.instance.addObserver(this);
   }
 
   final AppState appState;
@@ -97,6 +99,24 @@ class AttendanceController extends ChangeNotifier {
       await evaluateAutomaticPolicy();
     }
     notifyListeners();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && appState.signedIn) {
+      unawaited(_recoverAfterResume());
+    }
+  }
+
+  Future<void> _recoverAfterResume() async {
+    try {
+      await refreshPolicyAndEvaluate();
+      if (working) {
+        await refreshLivePresence(locationTimeout: const Duration(seconds: 8));
+      }
+    } catch (_) {
+      // Resume recovery is self-healing and must never block the UI.
+    }
   }
 
   Future<void> refreshLivePresence({
@@ -728,6 +748,7 @@ class AttendanceController extends ChangeNotifier {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     tracking.stop();
     _stopUploader();
     _boundary?.cancel();
