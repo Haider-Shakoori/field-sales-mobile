@@ -25,7 +25,7 @@ void main() {
     expect(tracking, contains('distanceFilter: 0'));
     expect(tracking, contains('Tracking reliability:'));
     expect(tracking, contains('Duration(minutes: 2)'));
-    expect(tracking, contains('when the iPhone is locked'));
+    expect(tracking, contains('iPhone is locked or FieldPulse is in the background.'));
     expect(tracking, contains('Precise Location is disabled'));
 
     expect(attendance, contains('with WidgetsBindingObserver'));
