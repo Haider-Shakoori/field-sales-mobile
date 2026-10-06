@@ -99,9 +99,7 @@ class SettingsRepository {
     }
   }
 
-  Future<MobileConfigurationSnapshot> syncConfiguration(
-    String tenantId,
-  ) async {
+  Future<MobileConfigurationSnapshot> syncConfiguration(String tenantId) async {
     final fetchedAt = DateTime.now().toUtc();
 
     try {
