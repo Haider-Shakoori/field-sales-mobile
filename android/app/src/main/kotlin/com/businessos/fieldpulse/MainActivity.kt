@@ -5,13 +5,16 @@ import android.app.ActivityManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.media.MediaRecorder
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.os.StatFs
+import android.provider.Settings
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -114,11 +117,54 @@ class MainActivity : FlutterActivity() {
             flutterEngine.dartExecutor.binaryMessenger,
             diagnosticsChannel,
         ).setMethodCallHandler { call, result ->
-            if (call.method == "snapshot") {
-                result.success(deviceDiagnosticSnapshot())
-            } else {
-                result.notImplemented()
+            when (call.method) {
+                "snapshot" -> result.success(deviceDiagnosticSnapshot())
+                "openLocationSettings" -> {
+                    openSettings(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                    result.success(true)
+                }
+                "openAppSettings" -> {
+                    openAppDetails()
+                    result.success(true)
+                }
+                "openBatterySettings" -> {
+                    openBatterySettings()
+                    result.success(true)
+                }
+                else -> result.notImplemented()
             }
+        }
+    }
+
+    private fun openSettings(action: String) {
+        try {
+            startActivity(Intent(action).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        } catch (_: Exception) {
+            openAppDetails()
+        }
+    }
+
+    private fun openAppDetails() {
+        val intent = Intent(
+            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+            Uri.parse("package:$packageName"),
+        ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
+    }
+
+    private fun openBatterySettings() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            openAppDetails()
+            return
+        }
+
+        try {
+            startActivity(
+                Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+            )
+        } catch (_: Exception) {
+            openAppDetails()
         }
     }
 
