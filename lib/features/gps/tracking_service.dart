@@ -294,6 +294,29 @@ class TrackingService {
     unawaited(serviceStatusSubscription?.cancel());
   }
 
+  Future<String?> reliabilityWarning() async {
+    if (!Platform.isAndroid) return null;
+
+    try {
+      final permission = await Geolocator.checkPermission();
+      if (permission != LocationPermission.always) {
+        return 'Tracking reliability: set FieldPulse location permission to '
+            '"Allow all the time" so workday GPS can continue after Android '
+            'puts the app in the background.';
+      }
+
+      final accuracy = await Geolocator.getLocationAccuracy();
+      if (accuracy == LocationAccuracyStatus.reduced) {
+        return 'Tracking reliability: Precise location is disabled. Enable '
+            'precise location for FieldPulse to improve route accuracy.';
+      }
+    } catch (_) {
+      // Diagnostics will surface platform-specific problems separately.
+    }
+
+    return null;
+  }
+
   Future<Position?> oneShot({
     Duration timeout = const Duration(seconds: 20),
   }) async {
