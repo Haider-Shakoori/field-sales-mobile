@@ -146,7 +146,7 @@ class AttendanceController extends ChangeNotifier with WidgetsBindingObserver {
     );
 
     try {
-      await gps.upload(tenantId);
+      await gps.uploadAll(tenantId, maxBatches: 10);
     } catch (_) {
       // The fresh point stays queued locally and will upload on the next sync.
     }
@@ -682,7 +682,7 @@ class AttendanceController extends ChangeNotifier with WidgetsBindingObserver {
       await gps.uploadPrivacyAcknowledgements(tenantId);
       await attendance.drain(tenantId);
       if (appState.session?.tenantId == tenantId) {
-        await gps.upload(tenantId);
+        await gps.uploadAll(tenantId, maxBatches: 10);
       }
     } catch (_) {
       // Offline and transient API failures leave local rows pending for retry.
