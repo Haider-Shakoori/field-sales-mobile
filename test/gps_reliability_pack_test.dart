@@ -14,8 +14,8 @@ void main() {
     ).readAsStringSync();
     final diagnostics = File('lib/ui/mobile_diagnostics_screen.dart')
         .readAsStringSync();
-    final iosWorkflow =
-        File('.github/workflows/ios-ipa.yml').readAsStringSync();
+    final iosWorkflow = File('.github/workflows/ios-ipa.yml')
+        .readAsStringSync();
 
     expect(tracking, contains('bool _processingPosition = false'));
     expect(tracking, contains('Position? _queuedPosition'));
