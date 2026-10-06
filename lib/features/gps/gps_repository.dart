@@ -310,10 +310,7 @@ class GpsRepository {
     }
   }
 
-  Future<void> uploadAll(
-    String tenantId, {
-    int maxBatches = 5,
-  }) async {
+  Future<void> uploadAll(String tenantId, {int maxBatches = 5}) async {
     if (tenantId.isEmpty || maxBatches <= 0) return;
 
     for (var batch = 0; batch < maxBatches; batch++) {
