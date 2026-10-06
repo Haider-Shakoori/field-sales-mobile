@@ -83,9 +83,8 @@ class _MobileDiagnosticsScreenState extends State<MobileDiagnosticsScreen> {
             ],
             const SizedBox(height: 12),
             _ReliabilityActionsCard(
-              onLocationSettings: () => context
-                  .read<DeviceHealthRepository>()
-                  .openLocationSettings(),
+              onLocationSettings: () =>
+                  context.read<DeviceHealthRepository>().openLocationSettings(),
               onAppSettings: () =>
                   context.read<DeviceHealthRepository>().openAppSettings(),
               onBatterySettings: () =>
