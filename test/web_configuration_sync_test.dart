@@ -4,13 +4,11 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('web configuration participates in the normal sync lifecycle', () {
-    final settings = File(
-      'lib/features/settings/settings_repository.dart',
-    ).readAsStringSync();
+    final settings = File('lib/features/settings/settings_repository.dart')
+        .readAsStringSync();
     final appState = File('lib/state/app_state.dart').readAsStringSync();
-    final coordinator = File(
-      'lib/core/sync/sync_coordinator.dart',
-    ).readAsStringSync();
+    final coordinator = File('lib/core/sync/sync_coordinator.dart')
+        .readAsStringSync();
     final syncScreen = File('lib/ui/sync_screen.dart').readAsStringSync();
 
     expect(settings, contains("api.get('settings/sync')"));
