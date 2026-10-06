@@ -30,7 +30,7 @@ void main() {
     expect(attendance, contains('_refreshTrackingWarning()'));
 
     expect(gps, contains('Future<void> uploadAll('));
-    expect(gps, contains("_telemetryCache"));
+    expect(gps, contains('_telemetryCache'));
     expect(gps, contains('maxBatches = 5'));
 
     expect(native, contains('openLocationSettings'));
