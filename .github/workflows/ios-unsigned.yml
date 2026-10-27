@@ -44,6 +44,8 @@ jobs:
               s=s.replace(marker, f'<key>{key}</key>\n<string>{value}</string>\n'+marker)
           p.write_text(s)
           PY
+      - name: Use compatible device_info_plus release
+        run: flutter pub add 'device_info_plus:^11.5.0'
       - name: Resolve dependencies
         run: flutter pub get
       - name: Analyze GPS source
