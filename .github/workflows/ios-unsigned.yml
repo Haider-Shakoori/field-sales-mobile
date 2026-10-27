@@ -1,0 +1,56 @@
+name: Unsigned iOS IPA (Sideloadly)
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'lib/features/gps/tracking_service.dart'
+      - '.github/workflows/ios-unsigned.yml'
+jobs:
+  build-ios:
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Generate iOS platform files if absent
+        run: |
+          if [ ! -d ios/Runner.xcodeproj ]; then
+            flutter create --platforms=ios --project-name field_sales_mobile .
+          fi
+      - name: Configure iOS permissions
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('ios/Runner/Info.plist')
+          s=p.read_text()
+          marker='</dict>'
+          values={
+            'NSLocationWhenInUseUsageDescription':'FieldPulse needs GPS to start attendance and record field visits.',
+            'NSLocationAlwaysAndWhenInUseUsageDescription':'FieldPulse records location during active work sessions, including background tracking.',
+            'NSLocationAlwaysUsageDescription':'FieldPulse records GPS during active work sessions.',
+          }
+          for key,value in values.items():
+            if '<key>'+key+'</key>' not in s:
+              s=s.replace(marker, f'<key>{key}</key>\n<string>{value}</string>\n'+marker)
+          p.write_text(s)
+          PY
+      - name: Resolve dependencies
+        run: flutter pub get
+      - name: Analyze GPS source
+        run: flutter analyze lib/features/gps/tracking_service.dart
+      - name: Build unsigned iOS app
+        run: flutter build ios --release --no-codesign
+      - name: Package unsigned IPA
+        run: |
+          mkdir -p build/unsigned/Payload
+          cp -R build/ios/iphoneos/Runner.app build/unsigned/Payload/
+          cd build/unsigned
+          zip -qr ../FieldPulse-unsigned-Sideloadly.ipa Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: FieldPulse-unsigned-Sideloadly
+          path: build/FieldPulse-unsigned-Sideloadly.ipa
+          if-no-files-found: error
