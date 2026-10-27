@@ -324,30 +324,44 @@ class TrackingService {
   }
 
   Future<Position?> oneShot({
-    Duration timeout = const Duration(seconds: 20),
+    Duration timeout = const Duration(seconds: 45),
   }) async {
-    if (!await Geolocator.isLocationServiceEnabled()) return null;
-
+    if (!await Geolocator.isLocationServiceEnabled()) {
+      throw StateError('Location Services are disabled. Enable them in Settings.');
+    }
     var permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
     }
-
-    if (permission == LocationPermission.denied ||
-        permission == LocationPermission.deniedForever) {
-      return null;
+    if (permission == LocationPermission.deniedForever) {
+      throw StateError('Location permission is blocked. Enable it in iPhone Settings.');
     }
-
-    try {
-      final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-        ),
-      ).timeout(timeout);
-
-      return position.accuracy <= 200 ? position : null;
-    } catch (_) {
-      return null;
+    if (permission == LocationPermission.denied) {
+      throw StateError('Location permission is required to start your work day.');
     }
+    Position? lastFix;
+    for (var attempt = 0; attempt < 2; attempt++) {
+      try {
+        final position = await Geolocator.getCurrentPosition(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.high,
+          ),
+        ).timeout(timeout);
+        lastFix = position;
+        if (position.accuracy <= 200) return position;
+      } on TimeoutException {
+        if (attempt == 1) {
+          throw StateError('GPS timed out. Move outdoors and retry Start Day.');
+        }
+      } catch (error) {
+        if (error is StateError) rethrow;
+        if (attempt == 1) {
+          throw StateError('GPS failed: $error');
+        }
+      }
+    }
+    throw StateError(
+      'GPS accuracy is ${lastFix?.accuracy.toStringAsFixed(0) ?? "unknown"}m; 200m or better is required.',
+    );
   }
 }
