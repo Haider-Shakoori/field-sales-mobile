@@ -113,7 +113,14 @@ class AttendanceController extends ChangeNotifier with WidgetsBindingObserver {
       await refreshPolicyAndEvaluate();
       await _refreshTrackingWarning();
       if (working) {
-        await refreshLivePresence(locationTimeout: const Duration(seconds: 8));
+        // A successful device heartbeat does not imply GPS is running.
+        // Reconcile the active workday to recover a stopped location stream.
+        await reconcile();
+        try {
+          await refreshLivePresence(locationTimeout: const Duration(seconds: 35));
+        } catch (_) {
+          // Keep the workday active; the tracking watchdog and sync retry.
+        }
       }
     } catch (_) {
       // Resume recovery is self-healing and must never block the UI.
