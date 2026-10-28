@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'lib/features/gps/tracking_service.dart'
+      - 'lib/ui/visits_map_view.dart'
       - '.github/workflows/ios-unsigned.yml'
 jobs:
   build-ios:
@@ -49,7 +50,7 @@ jobs:
       - name: Resolve dependencies
         run: flutter pub get
       - name: Analyze GPS source
-        run: flutter analyze lib/features/gps/tracking_service.dart
+        run: flutter analyze lib/features/gps/tracking_service.dart lib/ui/visits_map_view.dart
       - name: Build unsigned iOS app
         run: flutter build ios --release --no-codesign
       - name: Package unsigned IPA
