@@ -114,6 +114,7 @@ class _VisitsMapViewState extends State<VisitsMapView> {
   Timer? _refreshTimer;
   StreamSubscription<bool>? _connectivitySubscription;
   bool _locating = false;
+  String? _locationError;
   bool _centered = false;
   bool _online = true;
   int? _cacheBytes;
@@ -158,7 +159,7 @@ class _VisitsMapViewState extends State<VisitsMapView> {
       (_) => unawaited(_locate(moveCamera: true)),
     );
     _refreshTimer = Timer.periodic(
-      const Duration(seconds: 60),
+      const Duration(seconds: 15),
       (_) => unawaited(_locate()),
     );
   }
@@ -211,7 +212,7 @@ class _VisitsMapViewState extends State<VisitsMapView> {
 
     try {
       if (!await Geolocator.isLocationServiceEnabled()) {
-        return;
+        throw StateError('Location Services are disabled.');
       }
 
       var permission = await Geolocator.checkPermission();
@@ -221,28 +222,35 @@ class _VisitsMapViewState extends State<VisitsMapView> {
 
       if (permission == LocationPermission.denied ||
           permission == LocationPermission.deniedForever) {
-        return;
+        throw StateError('FieldPulse location permission is unavailable.');
       }
 
       final fix = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.high,
         ),
-      ).timeout(const Duration(seconds: 12));
+      ).timeout(const Duration(seconds: 35));
 
       if (!mounted) {
         return;
       }
 
       final point = LatLng(fix.latitude, fix.longitude);
-      setState(() => _position = point);
+      setState(() {
+        _position = point;
+        _locationError = null;
+      });
 
       if (moveCamera || !_centered) {
         _centered = true;
         _mapController.move(point, 14);
       }
-    } catch (_) {
-      // A map position is best-effort; cached customers remain browsable.
+    } catch (error) {
+      if (mounted) {
+        setState(() => _locationError = error is TimeoutException
+            ? 'GPS timed out. Try outdoors or near a window.'
+            : error.toString().replaceFirst('Bad state: ', ''));
+      }
     } finally {
       _locating = false;
     }
@@ -523,6 +531,20 @@ class _VisitsMapViewState extends State<VisitsMapView> {
             ),
           ),
         ),
+        if (_locationError != null)
+          Positioned(
+            left: 12,
+            right: 70,
+            top: 12,
+            child: Material(
+              color: Colors.orange.shade50,
+              borderRadius: BorderRadius.circular(8),
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Text(_locationError!, style: const TextStyle(color: Colors.black87)),
+              ),
+            ),
+          ),
         Positioned(
           right: 12,
           top: 12,
